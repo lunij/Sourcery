@@ -1155,8 +1155,7 @@ class SourcerySpecTests: QuickSpec {
                                               usingTemplates: Paths(include: [
                                                 Stubs.templateDirectory + "Basic.stencil",
                                                 Stubs.templateDirectory + "Other.stencil",
-                                                Stubs.templateDirectory + "SourceryTemplateStencil.sourcerytemplate",
-                                                Stubs.templateDirectory + "SourceryTemplateEJS.sourcerytemplate"
+                                                Stubs.templateDirectory + "SourceryTemplateStencil.sourcerytemplate"
                                               ]),
                                               output: Output(outputFile), baseIndentation: 0)
                             }.toNot(throwError())
@@ -1215,8 +1214,7 @@ class SourcerySpecTests: QuickSpec {
                                                                         Stubs.templateDirectory + "GenerationWays.stencil",
                                                                         Stubs.templateDirectory + "Include.stencil",
                                                                         Stubs.templateDirectory + "Partial.stencil",
-                                                                        Stubs.templateDirectory + "SourceryTemplateStencil.sourcerytemplate",
-                                                                        Stubs.templateDirectory + "SourceryTemplateEJS.sourcerytemplate"
+                                                                        Stubs.templateDirectory + "SourceryTemplateStencil.sourcerytemplate"
                                                                     ]),
                                               output: Output(outputFile), baseIndentation: 0)
                             }.toNot(throwError())

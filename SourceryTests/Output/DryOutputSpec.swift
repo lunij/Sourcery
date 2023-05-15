@@ -9,104 +9,10 @@ import PathKit
 #endif
 @testable import SourceryFramework
 @testable import SourceryRuntime
-@testable import SourceryJS
 
 
 class DryOutputSpec: QuickSpec {
     override func spec() {
-        // MARK: - DryOutput + JavaScriptTemplate
-        describe("DryOutput+JavaScriptTemplate") {
-            let outputDir: Path = {
-                return Stubs.cleanTemporarySourceryDir()
-            }()
-            let output = Output(outputDir)
-
-            it("has no stdout json output if isDryRun equal false (*also default value)") {
-                let templatePath = Stubs.jsTemplates + Path("Equality.ejs")
-                let sourcery = Sourcery(cacheDisabled: true)
-                let outputInterceptor = OutputInterceptor()
-                sourcery.dryOutput = outputInterceptor.handleOutput(_:)
-
-                expect {
-                    try sourcery.processFiles(.sources(Paths(include: [Stubs.sourceDirectory])),
-                                              usingTemplates: Paths(include: [templatePath]),
-                                              output: output,
-                                              isDryRun: false,
-                                              baseIndentation: 0)
-                }.toNot(throwError())
-
-                expect(outputInterceptor.result).to(beNil())
-            }
-
-            it("generates correct output, if isDryRun equal true") {
-                let templatePath = Stubs.jsTemplates + Path("Equality.ejs")
-                let expectedResult = try? (Stubs.resultDirectory + Path("Basic.swift")).read(.utf8)
-                let sourcery = Sourcery(cacheDisabled: true)
-                let outputInterceptor = OutputInterceptor()
-                sourcery.dryOutput = outputInterceptor.handleOutput(_:)
-
-                expect {
-                    try sourcery.processFiles(.sources(Paths(include: [Stubs.sourceDirectory])),
-                                              usingTemplates: Paths(include: [templatePath]),
-                                              output: output,
-                                              isDryRun: true, baseIndentation: 0)
-                }.toNot(throwError())
-
-                expect(outputInterceptor.result).to(equal(expectedResult))
-            }
-
-            it("handles includes") {
-                let templatePath = Stubs.jsTemplates + Path("Includes.ejs")
-                let expectedResult = try? (Stubs.resultDirectory + Path("Basic+Other.swift")).read(.utf8)
-                let sourcery = Sourcery(cacheDisabled: true)
-                let outputInterceptor = OutputInterceptor()
-                sourcery.dryOutput = outputInterceptor.handleOutput(_:)
-
-                expect {
-                    try sourcery.processFiles(.sources(Paths(include: [Stubs.sourceDirectory])),
-                                              usingTemplates: Paths(include: [templatePath]),
-                                              output: output,
-                                              isDryRun: true, baseIndentation: 0)
-                }.toNot(throwError())
-
-                expect(outputInterceptor.result).to(equal(expectedResult))
-            }
-
-            it("handles includes from included files relatively") {
-                let templatePath = Stubs.jsTemplates + Path("SubfolderIncludes.ejs")
-                let expectedResult = try? (Stubs.resultDirectory + Path("Basic.swift")).read(.utf8)
-                let sourcery = Sourcery(cacheDisabled: true)
-                let outputInterceptor = OutputInterceptor()
-                sourcery.dryOutput = outputInterceptor.handleOutput(_:)
-
-                expect {
-                    try sourcery.processFiles(.sources(Paths(include: [Stubs.sourceDirectory])),
-                                              usingTemplates: Paths(include: [templatePath]),
-                                              output: output,
-                                              isDryRun: true, baseIndentation: 0)
-                }.toNot(throwError())
-
-                expect(outputInterceptor.result).to(equal(expectedResult))
-            }
-
-            it("handles free functions") {
-                let templatePath = Stubs.jsTemplates + Path("Function.ejs")
-                let expectedResult = try? (Stubs.resultDirectory + Path("Function.swift")).read(.utf8)
-                let sourcery = Sourcery(cacheDisabled: true)
-                let outputInterceptor = OutputInterceptor()
-                sourcery.dryOutput = outputInterceptor.handleOutput(_:)
-
-                expect {
-                    try sourcery.processFiles(.sources(Paths(include: [Stubs.sourceDirectory])),
-                                              usingTemplates: Paths(include: [templatePath]),
-                                              output: output,
-                                              isDryRun: true, baseIndentation: 0)
-                }.toNot(throwError())
-
-                expect(outputInterceptor.result).to(equal(expectedResult))
-            }
-        }
-
         // MARK: - DryOutput + StencilTemplate
         describe("DryOutput+StencilTemplate") {
             it("has no stdout json output if isDryRun equal false (*also default value)") {

@@ -47,7 +47,6 @@ extension Path {
     public var isTemplateFile: Bool {
         return self.extension == "stencil" ||
             self.extension == "swifttemplate" ||
-            self.extension == "ejs" ||
             self.extension == "sourcerytemplate"
     }
 

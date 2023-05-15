@@ -4,7 +4,6 @@ public struct SourceryTemplate: Decodable {
     public struct Instance: Decodable {
         public enum Kind: String, Codable, Equatable {
             case stencil
-            case ejs
         }
 
         public var content: String

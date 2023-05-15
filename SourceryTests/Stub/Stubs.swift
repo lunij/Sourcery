@@ -23,7 +23,6 @@ enum Stubs {
     #endif
     private static let basePath = bundle.resourcePath.flatMap { Path($0) }!
     static let swiftTemplates = basePath + Path("SwiftTemplates/")
-    static let jsTemplates = basePath + Path("JavaScriptTemplates/")
     static let sourceDirectory = basePath + Path("Source/")
     static let sourceForPerformance = basePath + Path("Performance-Code/")
     static let sourceForDryRun = basePath + Path("DryRun-Code/")

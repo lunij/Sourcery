@@ -29,5 +29,4 @@ func == (lhs: FooSubclass, rhs: FooSubclass) -> Bool {
 }
 
 // Found 3 types
-// SourceryTemplateEJS Found 3 types
 // SourceryTemplateStencil found 3 types

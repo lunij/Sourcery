@@ -14,7 +14,6 @@ let package = Package(
         .executable(name: "sourcery", targets: ["SourceryExecutable"]),
         .library(name: "SourceryRuntime", targets: ["SourceryRuntime"]),
         .library(name: "SourceryStencil", targets: ["SourceryStencil"]),
-        .library(name: "SourceryJS", targets: ["SourceryJS"]),
         .library(name: "SourcerySwift", targets: ["SourcerySwift"]),
         .library(name: "SourceryFramework", targets: ["SourceryFramework"]),
         .plugin(name: "SourceryCommandPlugin", targets: ["SourceryCommandPlugin"])
@@ -46,7 +45,6 @@ let package = Package(
                 "SourceryFramework",
                 "SourceryRuntime",
                 "SourceryStencil",
-                "SourceryJS",
                 "SourcerySwift",
                 "Commander",
                 "PathKit",
@@ -104,19 +102,6 @@ let package = Package(
             ]
         ),
         .target(
-            name: "SourceryJS",
-            dependencies: [
-                "PathKit"
-            ],
-            path: "SourceryJS",
-            exclude: [
-                "Info.plist"
-            ],
-            resources: [
-                .copy("Resources/ejs.js")
-            ]
-        ),
-        .target(
             name: "SourcerySwift",
             dependencies: [
               "PathKit",
@@ -166,7 +151,6 @@ let package = Package(
             resources: [
                 .copy("Stub/Configs"),
                 .copy("Stub/Errors"),
-                .copy("Stub/JavaScriptTemplates"),
                 .copy("Stub/SwiftTemplates"),
                 .copy("Stub/Performance-Code"),
                 .copy("Stub/DryRun-Code"),

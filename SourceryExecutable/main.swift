@@ -12,7 +12,6 @@ import PathKit
 import SourceryRuntime
 import SourceryFramework
 import SourceryUtils
-import SourceryJS
 import SourceryLib
 
 extension Path: ArgumentConvertible {
@@ -114,10 +113,9 @@ func runCLI() {
         	or should be passed one by one (e.g. --args arg1=value --args arg2). Arguments are accessible in templates \
         	via `argument.<name>`. To pass in string you should use escaped quotes (\\").
         	"""),
-        Option<Path>("ejsPath", default: "", description: "Path to EJS file for JavaScript templates."),
         Option<Path>("cacheBasePath", default: "", description: "Base path to Sourcery's cache directory"),
         Option<Path>("buildPath", default: "", description: "Sets a custom build path")
-    ) { watcherEnabled, disableCache, verboseLogging, logAST, logBenchmark, parseDocumentation, quiet, prune, serialParse, sources, excludeSources, templates, excludeTemplates, output, isDryRun, configPaths, forceParse, baseIndentation, args, ejsPath, cacheBasePath, buildPath in
+    ) { watcherEnabled, disableCache, verboseLogging, logAST, logBenchmark, parseDocumentation, quiet, prune, serialParse, sources, excludeSources, templates, excludeTemplates, output, isDryRun, configPaths, forceParse, baseIndentation, args, cacheBasePath, buildPath in
         do {
             Log.stackMessages = isDryRun
             switch (quiet, verboseLogging) {
@@ -128,11 +126,6 @@ func runCLI() {
             }
             Log.logBenchmarks = (verboseLogging || logBenchmark) && !quiet
             Log.logAST = (verboseLogging || logAST) && !quiet
-
-            // if ejsPath is not provided use default value or executable path
-            EJSTemplate.ejsPath = ejsPath.string.isEmpty
-                ? (EJSTemplate.ejsPath ?? Path(ProcessInfo.processInfo.arguments[0]).parent() + "ejs.js")
-                : ejsPath
 
             let configurations = configPaths.flatMap { configPath -> [Configuration] in
                 let yamlPath: Path = configPath.isDirectory ? configPath + ".sourcery.yml" : configPath

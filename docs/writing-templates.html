@@ -304,8 +304,6 @@ Sourcery also uses its extension <a href="https://github.com/SwiftGen/StencilSwi
 <p>Sourcery treats all the templates as independent and so will generate files based on partial templates too. To avoid that use <code>exclude</code> in <a href="usage.html#configuration-file">configuration file</a>.</p>
 <h2 id='swift-templates' class='heading'>Swift templates</h2>
 
-<p>Swift templates syntax is very similar to EJS:</p>
-
 <ul>
 <li>Control flow with <code>&lt;% %&gt;</code></li>
 <li>Output value with <code>&lt;%= %&gt;</code></li>
@@ -328,18 +326,7 @@ Sourcery also uses its extension <a href="https://github.com/SwiftGen/StencilSwi
 <pre class="highlight swift"><code><span class="kt">Foo</span>
 <span class="kt">Bar</span>
 </code></pre>
-<h2 id='javascript-templates' class='heading'>JavaScript templates</h2>
 
-<p>JavaScript templates are powered by <a href="http://ejs.co">EJS</a> and support all the features available in this template engine.</p>
-
-<p><strong>Example</strong>: <a href="https://github.com/krzysztofzablocki/Sourcery/blob/master/Sourcery/Templates/JSExport.ejs">JSExport.ejs</a></p>
-<div class="aside aside-note">
-    <p class="aside-title">Note</p>
-    <p>when using JavaScript templates with Sourcery built using Swift Package Manager you must provide path to EJS source code using <code>--ejsPath</code> command line argument. Download EJS source code <a href="https://github.com/krzysztofzablocki/Sourcery/blob/master/SourceryJS/Sources/ejs.js">here</a>, put it in some path and pass it when running Sourcery. Otherwise JavaScript templates will be ignored (you will see a warning in the console output).</p>
-
-</div>
-
-<p>You can also use <code>SourceryJS</code> framework independently of Sourcery. You can add it as a Carthage or SPM dependency.</p>
 <h2 id='using-source-annotations' class='heading'>Using Source Annotations</h2>
 
 <p>Sourcery supports annotating your classes and variables with special annotations, similar to how attributes work in Rust / Java</p>

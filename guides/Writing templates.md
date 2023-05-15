@@ -53,8 +53,6 @@ Sourcery treats all the templates as independent and so will generate files base
 
 ## Swift templates
 
-Swift templates syntax is very similar to EJS:
-
 - Control flow with `<% %>`
 - Output value with `<%= %>`
 - Trim extra new line after control flow tag with `-%>`
@@ -79,16 +77,6 @@ Output:
 Foo
 Bar
 ```
-
-## JavaScript templates
-
-JavaScript templates are powered by [EJS](http://ejs.co) and support all the features available in this template engine.
-
-**Example**: [JSExport.ejs](https://github.com/krzysztofzablocki/Sourcery/blob/master/Sourcery/Templates/JSExport.ejs)
-
-> Note: when using JavaScript templates with Sourcery built using Swift Package Manager you must provide path to EJS source code using `--ejsPath` command line argument. Download EJS source code [here](https://github.com/krzysztofzablocki/Sourcery/blob/master/SourceryJS/Sources/ejs.js), put it in some path and pass it when running Sourcery. Otherwise JavaScript templates will be ignored (you will see a warning in the console output).
-
-You can also use `SourceryJS` framework independently of Sourcery. You can add it as a Carthage or SPM dependency.
 
 ## Using Source Annotations
 
