@@ -53,8 +53,7 @@ let package = Package(
                 "Yams",
                 "StencilSwiftKit",
                 .product(name: "SwiftSyntax", package: "swift-syntax"),
-                "XcodeProj",
-                "TryCatch"
+                "XcodeProj"
             ],
             path: "Sourcery",
             exclude: [
@@ -154,7 +153,6 @@ let package = Package(
                 "Generated/AutoCodable.generated.swift"
             ]
         ),
-        .target(name: "TryCatch", path: "TryCatch", exclude: ["Info.plist"]),
         .testTarget(
             name: "SourceryLibTests",
             dependencies: [
