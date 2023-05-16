@@ -1,135 +1,118 @@
 import Foundation
-import Quick
-import Nimble
 @testable import CodableContext
+import XCTest
 
-class CodableContextTests: QuickSpec {
-    override func spec() {
+class CodableContextTests: XCTestCase {
+    let encoder: JSONEncoder = {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = .prettyPrinted
+        return encoder
+    }()
 
-        let encoder: JSONEncoder = {
-            let encoder = JSONEncoder()
-            encoder.outputFormatting = .prettyPrinted
-            return encoder
-        }()
+    let decoder = JSONDecoder()
 
-        let decoder = JSONDecoder()
+    func test_enumWithCaseKey_codesValueWithAssociatedValues() {
+        let value = AssociatedValuesEnum.someCase(id: 0, name: "a")
 
-        describe("enum") {
+        let encoded = try! encoder.encode(value)
 
-            context("with enum case key") {
-
-                it("codes value with associated values") {
-                    let value = AssociatedValuesEnum.someCase(id: 0, name: "a")
-
-                    let encoded = try! encoder.encode(value)
-                    expect(String(data: encoded, encoding: .utf8)).to(equal("""
-                    {
-                      "type" : "someCase",
-                      "id" : 0,
-                      "name" : "a"
-                    }
-                    """
-                    ))
-
-                    let decoded = try! decoder.decode(AssociatedValuesEnum.self, from: encoded)
-                    expect(decoded).to(equal(value))
-                }
-
-                it("can't use value with unnamed associated values") {
-                    let value = AssociatedValuesEnum.unnamedCase(0, "a")
-                    let encoded = "{\"type\" : \"unnamedCase\"}".data(using: .utf8)!
-
-                    expect { try encoder.encode(value) }.to(throwError())
-                    expect { try decoder.decode(AssociatedValuesEnum.self, from: encoded) }.to(throwError())
-                }
-
-                it("can't use value with mixed associated values") {
-                    let value = AssociatedValuesEnum.mixCase(0, name: "a")
-                    let encoded = "{\"type\" : \"mixCase\"}".data(using: .utf8)!
-
-                    expect { try encoder.encode(value) }.to(throwError())
-                    expect { try decoder.decode(AssociatedValuesEnum.self, from: encoded) }.to(throwError())
-                }
-
-                it("codes value without associated values") {
-                    let value = AssociatedValuesEnum.anotherCase
-
-                    let encoded = try! encoder.encode(value)
-                    expect(String(data: encoded, encoding: .utf8)).to(equal("""
-                    {
-                      "type" : "anotherCase"
-                    }
-                    """
-                    ))
-
-                    let decoded = try! decoder.decode(AssociatedValuesEnum.self, from: encoded)
-                    expect(decoded).to(equal(value))
-                }
-            }
-
-            context("without enum case key") {
-
-                it("codes value with associated values") {
-                    let value = AssociatedValuesEnumNoCaseKey.someCase(id: 0, name: "a")
-
-                    let encoded = try! encoder.encode(value)
-                    expect(String(data: encoded, encoding: .utf8)).to(equal("""
-                    {
-                      "someCase" : {
-                        "id" : 0,
-                        "name" : "a"
-                      }
-                    }
-                    """
-                    ))
-
-                    let decoded = try! decoder.decode(AssociatedValuesEnumNoCaseKey.self, from: encoded)
-                    expect(decoded).to(equal(value))
-                }
-
-                it("codes value with unnamed associated values") {
-                    let value = AssociatedValuesEnumNoCaseKey.unnamedCase(0, "a")
-
-                    let encoded = try! encoder.encode(value)
-                    expect(String(data: encoded, encoding: .utf8)).to(equal("""
-                    {
-                      "unnamedCase" : [
-                        0,
-                        "a"
-                      ]
-                    }
-                    """
-                    ))
-
-                    let decoded = try! decoder.decode(AssociatedValuesEnumNoCaseKey.self, from: encoded)
-                    expect(decoded).to(equal(value))
-                }
-
-                it("can't use value with mixed associated values") {
-                    let value = AssociatedValuesEnumNoCaseKey.mixCase(0, name: "a")
-                    let encoded = "{\"type\" : \"mixCase\"}".data(using: .utf8)!
-
-                    expect { try encoder.encode(value) }.to(throwError())
-                    expect { try decoder.decode(AssociatedValuesEnumNoCaseKey.self, from: encoded) }.to(throwError())
-                }
-
-                it("codes value without assoicated values") {
-                    let value = AssociatedValuesEnumNoCaseKey.anotherCase
-
-                    let encoded = try! encoder.encode(value)
-                    expect(String(data: encoded, encoding: .utf8)).to(equal("""
-                    {
-                      "anotherCase" : {
-
-                      }
-                    }
-                    """
-                    ))
-
-                    let decoded = try! decoder.decode(AssociatedValuesEnumNoCaseKey.self, from: encoded)
-                    expect(decoded).to(equal(value))
-                }
-            }
+        XCTAssertEqual(String(data: encoded, encoding: .utf8), """
+        {
+          "type" : "someCase",
+          "id" : 0,
+          "name" : "a"
         }
+        """)
+
+        let decoded = try! decoder.decode(AssociatedValuesEnum.self, from: encoded)
+        XCTAssertEqual(decoded, value)
+    }
+
+    func test_enumWithCaseKey_cannotUseValueWithUnnamedAssociatedValues() {
+        let value = AssociatedValuesEnum.unnamedCase(0, "a")
+        let encoded = "{\"type\" : \"unnamedCase\"}".data(using: .utf8)!
+
+        XCTAssertThrowsError(try encoder.encode(value))
+        XCTAssertThrowsError(try decoder.decode(AssociatedValuesEnum.self, from: encoded))
+    }
+
+    func test_enumWithCaseKey_cannotUseValueWithMixedAssociatedValues() {
+        let value = AssociatedValuesEnum.mixCase(0, name: "a")
+        let encoded = "{\"type\" : \"mixCase\"}".data(using: .utf8)!
+
+        XCTAssertThrowsError(try encoder.encode(value))
+        XCTAssertThrowsError(try decoder.decode(AssociatedValuesEnum.self, from: encoded))
+    }
+
+    func test_enumWithCaseKey_codesValueWithoutAssociatedValues() {
+        let value = AssociatedValuesEnum.anotherCase
+
+        let encoded = try! encoder.encode(value)
+        XCTAssertEqual(String(data: encoded, encoding: .utf8), """
+        {
+          "type" : "anotherCase"
+        }
+        """)
+
+        let decoded = try! decoder.decode(AssociatedValuesEnum.self, from: encoded)
+        XCTAssertEqual(decoded, value)
+    }
+
+    func test_enumWithoutCaseKey_codesValueWithAssociatedValues() {
+        let value = AssociatedValuesEnumNoCaseKey.someCase(id: 0, name: "a")
+
+        let encoded = try! encoder.encode(value)
+        XCTAssertEqual(String(data: encoded, encoding: .utf8), """
+        {
+          "someCase" : {
+            "id" : 0,
+            "name" : "a"
+          }
+        }
+        """)
+
+        let decoded = try! decoder.decode(AssociatedValuesEnumNoCaseKey.self, from: encoded)
+        XCTAssertEqual(decoded, value)
+    }
+
+    func test_enumWithoutCaseKey_codesValueWithUnnamedAssociatedValues() {
+        let value = AssociatedValuesEnumNoCaseKey.unnamedCase(0, "a")
+
+        let encoded = try! encoder.encode(value)
+        XCTAssertEqual(String(data: encoded, encoding: .utf8), """
+        {
+          "unnamedCase" : [
+            0,
+            "a"
+          ]
+        }
+        """)
+
+        let decoded = try! decoder.decode(AssociatedValuesEnumNoCaseKey.self, from: encoded)
+        XCTAssertEqual(decoded, value)
+    }
+
+    func test_enumWithoutCaseKey_cannotUseValueWithMixedAssociatedValues() {
+        let value = AssociatedValuesEnumNoCaseKey.mixCase(0, name: "a")
+        let encoded = "{\"type\" : \"mixCase\"}".data(using: .utf8)!
+
+        XCTAssertThrowsError(try encoder.encode(value))
+        XCTAssertThrowsError(try decoder.decode(AssociatedValuesEnumNoCaseKey.self, from: encoded))
+    }
+
+    func test_enumWithoutCaseKey_codesValueWithoutAssoicatedValues() {
+        let value = AssociatedValuesEnumNoCaseKey.anotherCase
+
+        let encoded = try! encoder.encode(value)
+        XCTAssertEqual(String(data: encoded, encoding: .utf8), """
+        {
+          "anotherCase" : {
+
+          }
+        }
+        """)
+
+        let decoded = try! decoder.decode(AssociatedValuesEnumNoCaseKey.self, from: encoded)
+        XCTAssertEqual(decoded, value)
     }
 }
