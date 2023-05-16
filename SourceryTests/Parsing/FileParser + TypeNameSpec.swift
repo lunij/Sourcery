@@ -1,10 +1,6 @@
 import Quick
 import Nimble
-#if SWIFT_PACKAGE
 @testable import SourceryLib
-#else
-@testable import Sourcery
-#endif
 import SourceryFramework
 import SourceryRuntime
 

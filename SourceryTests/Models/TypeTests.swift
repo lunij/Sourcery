@@ -1,10 +1,6 @@
 import XCTest
-#if SWIFT_PACKAGE
 import Foundation
 @testable import SourceryLib
-#else
-@testable import Sourcery
-#endif
 @testable import SourceryRuntime
 
 class TypeTests: XCTestCase {

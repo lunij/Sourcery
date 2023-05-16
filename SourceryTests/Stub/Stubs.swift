@@ -7,20 +7,12 @@ import Foundation
 import PathKit
 import Quick
 
-#if SWIFT_PACKAGE
 @testable import SourceryLib
-#else
-@testable import Sourcery
-#endif
 
 private class Reference {}
 
 enum Stubs {
-    #if SWIFT_PACKAGE
     static let bundle = Bundle.module
-    #else
-    static let bundle = Bundle(for: Reference.self)
-    #endif
     private static let basePath = bundle.resourcePath.flatMap { Path($0) }!
     static let swiftTemplates = basePath + Path("SwiftTemplates/")
     static let sourceDirectory = basePath + Path("Source/")

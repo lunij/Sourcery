@@ -2,11 +2,7 @@
 // DO NOT EDIT
 import Quick
 import Nimble
-#if SWIFT_PACKAGE
 import SourceryLib
-#else
-import Sourcery
-#endif
 @testable import SourceryFramework
 @testable import SourceryRuntime
 
