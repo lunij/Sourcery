@@ -1,12 +1,8 @@
 import Foundation
-import Quick
-import Nimble
-#if SWIFT_PACKAGE
 import PathKit
-#endif
+import XCTest
 
-class TemplatesTests: QuickSpec {
-    #if SWIFT_PACKAGE
+class TemplatesTests: XCTestCase {
     override class func setUp() {
         super.setUp()
 
@@ -56,88 +52,66 @@ class TemplatesTests: QuickSpec {
             print("Done!")
         }
     }
-    #endif
 
-    override func spec() {
-        func check(template name: String) {
-            guard let generatedFilePath = path(forResource: "\(name).generated", ofType: "swift", in: "Generated") else {
-                fatalError("Template \(name) can not be checked as the generated file is not presented in the bundle")
-            }
-            guard let expectedFilePath = path(forResource: name, ofType: "expected", in: "Expected") else {
-                fatalError("Template \(name) can not be checked as the expected file is not presented in the bundle")
-            }
-            guard let generatedFileString = try? String(contentsOfFile: generatedFilePath) else {
-                fatalError("Template \(name) can not be checked as the generated file can not be read")
-            }
-            guard let expectedFileString = try? String(contentsOfFile: expectedFilePath) else {
-                fatalError("Template \(name) can not be checked as the expected file can not be read")
-            }
+    func test_autoCasesTemplate() {
+        check(template: "AutoCases")
+    }
 
-            let emptyLinesFilter: (String) -> Bool = { line in return !line.isEmpty }
-            let commentLinesFilter: (String) -> Bool = { line in return !line.hasPrefix("//") }
-            let generatedFileLines = generatedFileString.components(separatedBy: .newlines).filter(emptyLinesFilter)
-            let generatedFileFilteredLines = generatedFileLines.filter(emptyLinesFilter).filter(commentLinesFilter)
-            let expectedFileLines = expectedFileString.components(separatedBy: .newlines)
-            let expectedFileFilteredLines = expectedFileLines.filter(emptyLinesFilter).filter(commentLinesFilter)
-            expect(generatedFileFilteredLines).to(equal(expectedFileFilteredLines))
+    func test_autoEquatableTemplate() {
+        check(template: "AutoEquatable")
+    }
+
+    func test_autoHashableTemplate() {
+        check(template: "AutoHashable")
+    }
+
+    func test_autoLensesTemplate() {
+        check(template: "AutoLenses")
+    }
+
+    func test_autoMockableTemplate() {
+        check(template: "AutoMockable")
+    }
+
+    func test_linuxMainTemplate() {
+        check(template: "LinuxMain")
+    }
+
+    func test_autoCodableTemplate() {
+        check(template: "AutoCodable")
+    }
+
+    private func check(template name: String) {
+        guard let generatedFilePath = path(forResource: "\(name).generated", ofType: "swift", in: "Generated") else {
+            fatalError("Template \(name) can not be checked as the generated file is not presented in the bundle")
+        }
+        guard let expectedFilePath = path(forResource: name, ofType: "expected", in: "Expected") else {
+            fatalError("Template \(name) can not be checked as the expected file is not presented in the bundle")
+        }
+        guard let generatedFileString = try? String(contentsOfFile: generatedFilePath) else {
+            fatalError("Template \(name) can not be checked as the generated file can not be read")
+        }
+        guard let expectedFileString = try? String(contentsOfFile: expectedFilePath) else {
+            fatalError("Template \(name) can not be checked as the expected file can not be read")
         }
 
-        describe("AutoCases template") {
-            it("generates expected code") {
-                check(template: "AutoCases")
-            }
-        }
+        let emptyLinesFilter: (String) -> Bool = { line in return !line.isEmpty }
+        let commentLinesFilter: (String) -> Bool = { line in return !line.hasPrefix("//") }
+        let generatedFileLines = generatedFileString.components(separatedBy: .newlines).filter(emptyLinesFilter)
+        let generatedFileFilteredLines = generatedFileLines.filter(emptyLinesFilter).filter(commentLinesFilter)
+        let expectedFileLines = expectedFileString.components(separatedBy: .newlines)
+        let expectedFileFilteredLines = expectedFileLines.filter(emptyLinesFilter).filter(commentLinesFilter)
 
-        describe("AutoEquatable template") {
-            it("generates expected code") {
-                check(template: "AutoEquatable")
-            }
-        }
-
-        describe("AutoHashable template") {
-            it("generates expected code") {
-                check(template: "AutoHashable")
-            }
-        }
-
-        describe("AutoLenses template") {
-            it("generates expected code") {
-                check(template: "AutoLenses")
-            }
-        }
-
-        describe("AutoMockable template") {
-            it("generates expected code") {
-                check(template: "AutoMockable")
-            }
-        }
-
-        describe("LinuxMain template") {
-            it("generates expected code") {
-                check(template: "LinuxMain")
-            }
-        }
-
-        describe("AutoCodable template") {
-            it("generates expected code") {
-                check(template: "AutoCodable")
-            }
-        }
+        XCTAssertEqual(generatedFileFilteredLines, expectedFileFilteredLines)
     }
 
     private func path(forResource name: String, ofType ext: String, in dirName: String) -> String? {
-        #if SWIFT_PACKAGE
         if let resources = Bundle.module.resourcePath {
             return resources + "/\(dirName)/\(name).\(ext)"
         }
         return nil
-        #else
-        let bundle = Bundle.init(for: type(of: self))
-        return bundle.path(forResource: name, ofType: ext)
-        #endif
     }
 
-    #if SWIFT_PACKAGE
     private static func launch(sourceryPath: Path, args: [String]) -> String? {
         let process = Process()
         let output = Pipe()
@@ -158,5 +132,4 @@ class TemplatesTests: QuickSpec {
             return "error: can't run Sourcery from the \(sourceryPath.parent().string)"
         }
     }
-    #endif
 }
