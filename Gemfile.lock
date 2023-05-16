@@ -184,9 +184,9 @@ GEM
 
 PLATFORMS
   arm64-darwin-21
+  arm64-darwin-22
 
 DEPENDENCIES
-  cocoapods (= 1.11.3)
   danger
   ffi (= 1.15.3)
   jazzy (= 0.14.0)
