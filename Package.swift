@@ -86,9 +86,27 @@ let package = Package(
               "SourceryUtils"
             ]
         ),
+        .testTarget(
+            name: "SourceryLibTests",
+            dependencies: [
+                "SourceryLib",
+                "Quick",
+                "Nimble"
+            ],
+            resources: [
+                .copy("Stub/Configs"),
+                .copy("Stub/Errors"),
+                .copy("Stub/SwiftTemplates"),
+                .copy("Stub/Performance-Code"),
+                .copy("Stub/DryRun-Code"),
+                .copy("Stub/Result"),
+                .copy("Stub/Templates"),
+                .copy("Stub/Source")
+            ]
+        ),
         .target(
             name: "CodableContext",
-            path: "Templates/Tests",
+            path: "Tests/TemplateTests",
             exclude: [
                 "Context/AutoCases.swift",
                 "Context/AutoEquatable.swift",
@@ -111,54 +129,18 @@ let package = Package(
             ]
         ),
         .testTarget(
-            name: "SourceryLibTests",
-            dependencies: [
-                "SourceryLib",
-                "Quick",
-                "Nimble"
-            ],
-            resources: [
-                .copy("Stub/Configs"),
-                .copy("Stub/Errors"),
-                .copy("Stub/SwiftTemplates"),
-                .copy("Stub/Performance-Code"),
-                .copy("Stub/DryRun-Code"),
-                .copy("Stub/Result"),
-                .copy("Stub/Templates"),
-                .copy("Stub/Source")
-            ]
-        ),
-        .testTarget(
-            name: "CodableContextTests",
+            name: "TemplateTests",
             dependencies: [
                 "CodableContext",
-                "Quick",
-                "Nimble"
-            ],
-            path: "Templates/CodableContextTests"
-        ),
-        .testTarget(
-            name: "TemplatesTests",
-            dependencies: [
-                "Quick",
-                "Nimble",
                 "PathKit"
             ],
-            path: "Templates",
             exclude: [
-                "CodableContext",
-                "CodableContextTests",
-                "Tests/Generated"
-            ],
-            sources: [
-                // LinuxMain is not compiled as part of the target
-                // since there is no way to run script before compilation begins.
-                "Tests/TemplatesTests.swift"
+                "Generated"
             ],
             resources: [
                 .copy("Templates"),
-                .copy("Tests/Context"),
-                .copy("Tests/Expected")
+                .copy("Context"),
+                .copy("Expected")
             ]
         ),
         .plugin(
