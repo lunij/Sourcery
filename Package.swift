@@ -32,10 +32,7 @@ let package = Package(
     targets: [
         .executableTarget(
             name: "SourceryExecutable",
-            dependencies: ["SourceryLib"],
-            exclude: [
-                "Info.plist"
-            ]
+            dependencies: ["SourceryLib"]
         ),
         .target(
             // Xcode doesn't like when a target has the same name as a product but in different case.
@@ -56,19 +53,11 @@ let package = Package(
                 "Templates",
             ]
         ),
-        .target(
-            name: "SourceryRuntime",
-            exclude: [
-                "Supporting Files/Info.plist"
-            ]
-        ),
+        .target(name: "SourceryRuntime"),
         .target(
             name: "SourceryUtils",
             dependencies: [
                 "PathKit"
-            ],
-            exclude: [
-                "Supporting Files/Info.plist"
             ]
         ),
         .target(
@@ -79,9 +68,6 @@ let package = Package(
               .product(name: "SwiftParser", package: "swift-syntax"),
               "SourceryUtils",
               "SourceryRuntime"
-            ],
-            exclude: [
-                "Info.plist"
             ]
         ),
         .target(
@@ -90,9 +76,6 @@ let package = Package(
               "PathKit",
               "SourceryRuntime",
               "StencilSwiftKit",
-            ],
-            exclude: [
-                "Info.plist"
             ]
         ),
         .target(
@@ -101,9 +84,6 @@ let package = Package(
               "PathKit",
               "SourceryRuntime",
               "SourceryUtils"
-            ],
-            exclude: [
-                "Info.plist"
             ]
         ),
         .target(
@@ -123,7 +103,6 @@ let package = Package(
                 "Generated/AutoMockable.generated.swift",
                 "Generated/LinuxMain.generated.swift",
                 "Expected",
-                "Info.plist",
                 "TemplatesTests.swift"
             ],
             sources: [
@@ -137,9 +116,6 @@ let package = Package(
                 "SourceryLib",
                 "Quick",
                 "Nimble"
-            ],
-            exclude: [
-                "Info.plist"
             ],
             resources: [
                 .copy("Stub/Configs"),
@@ -159,10 +135,7 @@ let package = Package(
                 "Quick",
                 "Nimble"
             ],
-            path: "Templates/CodableContextTests",
-            exclude: [
-                "Info.plist"
-            ]
+            path: "Templates/CodableContextTests"
         ),
         .testTarget(
             name: "TemplatesTests",
@@ -175,8 +148,7 @@ let package = Package(
             exclude: [
                 "CodableContext",
                 "CodableContextTests",
-                "Tests/Generated",
-                "Tests/Info.plist"
+                "Tests/Generated"
             ],
             sources: [
                 // LinuxMain is not compiled as part of the target
