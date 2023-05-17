@@ -33,7 +33,6 @@ let package = Package(
         .executableTarget(
             name: "SourceryExecutable",
             dependencies: ["SourceryLib"],
-            path: "SourceryExecutable",
             exclude: [
                 "Info.plist"
             ]
@@ -53,14 +52,12 @@ let package = Package(
                 .product(name: "SwiftSyntax", package: "swift-syntax"),
                 "XcodeProj"
             ],
-            path: "Sourcery",
             exclude: [
                 "Templates",
             ]
         ),
         .target(
             name: "SourceryRuntime",
-            path: "SourceryRuntime",
             exclude: [
                 "Supporting Files/Info.plist"
             ]
@@ -70,7 +67,6 @@ let package = Package(
             dependencies: [
                 "PathKit"
             ],
-            path: "SourceryUtils",
             exclude: [
                 "Supporting Files/Info.plist"
             ]
@@ -84,7 +80,6 @@ let package = Package(
               "SourceryUtils",
               "SourceryRuntime"
             ],
-            path: "SourceryFramework",
             exclude: [
                 "Info.plist"
             ]
@@ -96,7 +91,6 @@ let package = Package(
               "SourceryRuntime",
               "StencilSwiftKit",
             ],
-            path: "SourceryStencil",
             exclude: [
                 "Info.plist"
             ]
@@ -108,7 +102,6 @@ let package = Package(
               "SourceryRuntime",
               "SourceryUtils"
             ],
-            path: "SourcerySwift",
             exclude: [
                 "Info.plist"
             ]
