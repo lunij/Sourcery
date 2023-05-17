@@ -17,24 +17,9 @@ def version_select
   %Q(DEVELOPER_DIR="#{latest_xcode_version}" TOOLCHAINS=com.apple.dt.toolchain.XcodeDefault.xctoolchain)
 end
 
-def xcpretty(cmd)
-  if `which xcpretty` && $?.success?
-    sh "set -o pipefail && #{cmd} | xcpretty -c"
-  else
-    sh cmd
-  end
-end
-
 def print_info(str)
   (red,clr) = (`tput colors`.chomp.to_i >= 8) ? %W(\e[33m \e[m) : ["", ""]
   puts red, "== #{str.chomp} ==", clr
-end
-
-## [ Bundler ] ####################################################
-
-desc "Install dependencies"
-task :install_dependencies do
-  sh %Q(bundle install)
 end
 
 ## [ Tests & Clean ] ##########################################################
@@ -86,11 +71,6 @@ end
 
 ## [ Code Generated ] ################################################
 
-task :run_sourcery do
-  print_info "Generating internal boilerplate code"
-  sh "#{CLI_DIR}bin/sourcery"
-end
-
 desc "Update internal boilerplate code"
 task :generate_internal_boilerplate_code => [:fat_build, :run_sourcery, :clean] do
   sh "Scripts/package_content \"SourceryRuntime/Sources\"  > \"SourcerySwift/Sources/SourceryRuntime.content.generated.swift\""
@@ -99,31 +79,6 @@ task :generate_internal_boilerplate_code => [:fat_build, :run_sourcery, :clean] 
                       .select { |item| item.include?('.generated.') }
                       .map { |item| item.split.last }
   manual_commit(generated_files, "update internal boilerplate code.")
-end
-
-## [ Docs ] ##########################################################
-def clean_jazzy
-  # jazzy divs are broken, so we need to fix them
-  sh "find docs -type f -name '*.html' -print0 | xargs -0 -I % sh -c \"tac '%' | sed '2d' | tac > tmp && mv tmp '%';\""
-end
-
-desc "Update docs"
-task :docs do
-  print_info "Updating docs"
-  temp_build_dir = "#{BUILD_DIR}tmp/"
-  # tac Enum.html | sed '2d' | tac > Enum.html
-  sh "sourcekitten doc --spm --module-name SourceryRuntime > docs.json && bundle exec jazzy --clean --skip-undocumented --exclude=/*/*.generated.swift,/*/BytesRange.swift,/*/Typealias.swift,/*/FileParserResult.swift && rm docs.json"
-  clean_jazzy
-  sh "rm -fr #{temp_build_dir}"
-end
-
-desc "Validate docs"
-task :validate_docs do
-  print_info "Checking docs are up to date"
-  temp_build_dir = "#{BUILD_DIR}tmp/"
-  sh "sourcekitten doc --spm --module-name SourceryRuntime > docs.json && bundle exec jazzy --skip-undocumented --exclude=/*/*.generated.swift,/*/BytesRange.swift,/*/Typealias.swift,/*/FileParserResult.swift && rm docs.json"
-  clean_jazzy
-  sh "rm -fr #{temp_build_dir}"
 end
 
 ## [ Release ] ##########################################################
