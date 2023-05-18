@@ -5,7 +5,6 @@
 
 import Foundation
 import PathKit
-import Quick
 
 @testable import SourceryLib
 
