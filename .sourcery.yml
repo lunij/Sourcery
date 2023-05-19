@@ -1,6 +1,6 @@
 sources:
-  - SourceryRuntime/Sources
+  - Sources/SourceryRuntime/Sources
 templates:
-  - Sourcery/Templates
+  - Sources/SourceryLib/Templates
 output:
-  SourceryRuntime/Sources/Generated
+  Sources/SourceryRuntime/Sources/Generated
