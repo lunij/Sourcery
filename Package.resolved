@@ -19,39 +19,12 @@
       }
     },
     {
-      "identity" : "cwlcatchexception",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/mattgallagher/CwlCatchException.git",
-      "state" : {
-        "revision" : "f809deb30dc5c9d9b78c872e553261a61177721a",
-        "version" : "2.0.0"
-      }
-    },
-    {
-      "identity" : "cwlpreconditiontesting",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/mattgallagher/CwlPreconditionTesting.git",
-      "state" : {
-        "revision" : "02b7a39a99c4da27abe03cab2053a9034379639f",
-        "version" : "2.0.0"
-      }
-    },
-    {
       "identity" : "komondor",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/shibapm/Komondor.git",
       "state" : {
         "revision" : "90b087b1e39069684b1ff4bf915c2aae594f2d60",
         "version" : "1.1.3"
-      }
-    },
-    {
-      "identity" : "nimble",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Quick/Nimble.git",
-      "state" : {
-        "revision" : "e491a6731307bb23783bf664d003be9b2fa59ab5",
-        "version" : "9.0.0"
       }
     },
     {
@@ -70,15 +43,6 @@
       "state" : {
         "revision" : "3bfd2737b700b9a36565a8c94f4ad2b050a5e574",
         "version" : "1.0.1"
-      }
-    },
-    {
-      "identity" : "quick",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Quick/Quick.git",
-      "state" : {
-        "revision" : "8cce6acd38f965f5baa3167b939f86500314022b",
-        "version" : "3.1.2"
       }
     },
     {
