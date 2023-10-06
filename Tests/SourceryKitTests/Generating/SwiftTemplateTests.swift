@@ -3,7 +3,6 @@ import PathKit
 import XCTest
 @testable import SourceryKit
 @testable import SourceryRuntime
-@testable import SourcerySwift
 
 class SwiftTemplateTests: XCTestCase {
     let outputDir = Stubs.cleanTemporarySourceryDir()

@@ -7,7 +7,6 @@ import Foundation
 import PathKit
 import SourceryUtils
 import SourceryRuntime
-import SourcerySwift
 import XcodeProj
 
 public class Sourcery {

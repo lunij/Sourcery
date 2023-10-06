@@ -8,7 +8,6 @@
 
 import Foundation
 import SourceryRuntime
-import SourcerySwift
 
 extension SwiftTemplate: Template {
 

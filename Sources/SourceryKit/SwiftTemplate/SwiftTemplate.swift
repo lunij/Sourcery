@@ -366,16 +366,6 @@ private extension Process {
     }
 }
 
-extension String {
-    func bridge() -> NSString {
-        #if os(Linux)
-            return NSString(string: self)
-        #else
-            return self as NSString
-        #endif
-    }
-}
-
 struct FolderSynchronizer {
     struct File {
         let name: String
