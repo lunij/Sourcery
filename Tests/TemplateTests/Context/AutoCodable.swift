@@ -1,10 +1,3 @@
-//
-//  AutoCodable.swift
-//  TemplatesTests
-//
-//  Created by Ilya Puchka on 13/04/2018.
-//  Copyright © 2018 Pixle. All rights reserved.
-//
 
 import Foundation
 
