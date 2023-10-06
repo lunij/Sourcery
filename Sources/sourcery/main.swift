@@ -1,11 +1,3 @@
-//
-//  main.swift
-//  Sourcery
-//
-//  Created by Krzysztof Zablocki on 09/12/2016.
-//  Copyright © 2016 Pixle. All rights reserved.
-//
-
 import Foundation
 import Commander
 import PathKit
@@ -236,32 +228,4 @@ func runCLI() {
         }.run(Sourcery.version)
 }
 
-#if os(macOS)
-import AppKit
-
-if !inUnitTests {
-    runCLI()
-} else {
-    // ! Need to run something for tests to work
-    final class TestApplicationController: NSObject, NSApplicationDelegate {
-        let window =   NSWindow()
-
-        func applicationDidFinishLaunching(aNotification: NSNotification) {
-            window.setFrame(CGRect(x: 0, y: 0, width: 0, height: 0), display: false)
-            window.makeKeyAndOrderFront(self)
-        }
-
-        func applicationWillTerminate(aNotification: NSNotification) {
-        }
-
-    }
-
-    autoreleasepool { () -> Void in
-        let app =   NSApplication.shared
-        let controller =   TestApplicationController()
-
-        app.delegate   = controller
-        app.run()
-    }
-}
-#endif
+runCLI()

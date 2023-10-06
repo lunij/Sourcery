@@ -1,17 +1,14 @@
 // swift-tools-version:5.6
 
 import PackageDescription
-import Foundation
 
 let package = Package(
     name: "Sourcery",
     platforms: [
-       .macOS(.v10_15),
+       .macOS(.v10_15)
     ],
     products: [
-        // SPM won't generate .swiftmodule for a target directly used by a product,
-        // hence it can't be imported by tests. Executable target can't be imported too.
-        .executable(name: "sourcery", targets: ["SourceryExecutable"]),
+        .executable(name: "sourcery", targets: ["sourcery"]),
         .library(name: "SourceryRuntime", targets: ["SourceryRuntime"]),
         .library(name: "SourceryStencil", targets: ["SourceryStencil"]),
         .library(name: "SourcerySwift", targets: ["SourcerySwift"]),
@@ -22,19 +19,14 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-argument-parser", from: "1.2.3"),
         .package(url: "https://github.com/jpsim/Yams.git", from: "5.0.3"),
         .package(url: "https://github.com/kylef/Commander.git", exact: "0.9.1"),
-        // PathKit needs to be exact to avoid a SwiftPM bug where dependency resolution takes a very long time.
         .package(url: "https://github.com/kylef/PathKit.git", exact: "1.0.1"),
         .package(url: "https://github.com/SwiftGen/StencilSwiftKit.git", exact: "2.10.1"),
         .package(url: "https://github.com/tuist/XcodeProj.git", exact: "8.3.1"),
         .package(url: "https://github.com/apple/swift-syntax.git", from: "508.0.0")
     ],
     targets: [
-        .executableTarget(
-            name: "SourceryExecutable",
-            dependencies: ["SourceryLib"]
-        ),
+        .executableTarget(name: "sourcery", dependencies: ["SourceryLib"]),
         .target(
-            // Xcode doesn't like when a target has the same name as a product but in different case.
             name: "SourceryLib",
             dependencies: [
                 "SourceryFramework",
@@ -54,12 +46,7 @@ let package = Package(
             ]
         ),
         .target(name: "SourceryRuntime"),
-        .target(
-            name: "SourceryUtils",
-            dependencies: [
-                "PathKit"
-            ]
-        ),
+        .target(name: "SourceryUtils", dependencies: ["PathKit"]),
         .target(
             name: "SourceryFramework",
             dependencies: [
@@ -152,7 +139,7 @@ let package = Package(
                     .writeToPackageDirectory(reason: "Need permission to write generated files to package directory")
                 ]
             ),
-            dependencies: ["SourceryExecutable"]
+            dependencies: ["sourcery"]
         )
     ]
 )
