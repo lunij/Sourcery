@@ -95,61 +95,7 @@ public struct SourceryCommand: AsyncParsableCommand {
             Log.logBenchmarks = (verbose || logBenchmark) && !quiet
             Log.logAST = (verbose || logAST) && !quiet
 
-            let configurations = configPaths.flatMap { configPath -> [Configuration] in
-                let yamlPath: Path = configPath.isDirectory ? configPath + ".sourcery.yml" : configPath
-
-                if !yamlPath.exists {
-                    Log.info("No config file provided or it does not exist. Using command line arguments.")
-                    let args = args.joined(separator: ",")
-                    let arguments = AnnotationsParser.parse(line: args)
-                    return [
-                        Configuration(
-                            sources: Paths(include: sources, exclude: excludeSources) ,
-                            templates: Paths(include: templates, exclude: excludeTemplates),
-                            output: output.string.isEmpty ? "." : output,
-                            cacheBasePath: cacheBasePath.string.isEmpty ? Path.defaultBaseCachePath : cacheBasePath,
-                            forceParse: forceParse,
-                            parseDocumentation: parseDocumentation,
-                            baseIndentation: baseIndentation,
-                            args: arguments
-                        )
-                    ]
-                } else {
-                    _ = Validators.isFileOrDirectory(path: configPath)
-                    _ = Validators.isReadable(path: yamlPath)
-
-                    do {
-                        let relativePath: Path = configPath.isDirectory ? configPath : configPath.parent()
-
-                        // Check if the user is passing parameters
-                        // that are ignored cause read from the yaml file
-                        let hasAnyYamlDuplicatedParameter = (
-                            !sources.isEmpty ||
-                                !excludeSources.isEmpty ||
-                                !templates.isEmpty ||
-                                !excludeTemplates.isEmpty ||
-                                !forceParse.isEmpty ||
-                                output != "" ||
-                                !args.isEmpty
-                        )
-
-                        if hasAnyYamlDuplicatedParameter {
-                            Log.info("Using configuration file at '\(yamlPath)'. WARNING: Ignoring the parameters passed in the command line.")
-                        } else {
-                            Log.info("Using configuration file at '\(yamlPath)'")
-                        }
-
-                        return try Configurations.make(
-                            path: yamlPath,
-                            relativePath: relativePath,
-                            env: ProcessInfo.processInfo.environment
-                        )
-                    } catch {
-                        Log.error("while reading .yml '\(yamlPath)'. '\(error)'")
-                        exitSourcery(.invalidConfig)
-                    }
-                }
-            }
+            let configurations = readConfigurations()
 
             let start = CFAbsoluteTimeGetCurrent()
 
@@ -200,6 +146,64 @@ public struct SourceryCommand: AsyncParsableCommand {
                 Log.error("\(error)")
             }
             exitSourcery(.other)
+        }
+    }
+
+    private func readConfigurations() -> [Configuration] {
+        configPaths.flatMap { configPath -> [Configuration] in
+            let yamlPath = configPath.isDirectory ? configPath + ".sourcery.yml" : configPath
+
+            if !yamlPath.exists {
+                Log.info("No config file provided or it does not exist. Using command line arguments.")
+                let args = args.joined(separator: ",")
+                let arguments = AnnotationsParser.parse(line: args)
+                return [
+                    Configuration(
+                        sources: Paths(include: sources, exclude: excludeSources) ,
+                        templates: Paths(include: templates, exclude: excludeTemplates),
+                        output: output.string.isEmpty ? "." : output,
+                        cacheBasePath: cacheBasePath.string.isEmpty ? Path.defaultBaseCachePath : cacheBasePath,
+                        forceParse: forceParse,
+                        parseDocumentation: parseDocumentation,
+                        baseIndentation: baseIndentation,
+                        args: arguments
+                    )
+                ]
+            } else {
+                _ = Validators.isFileOrDirectory(path: configPath)
+                _ = Validators.isReadable(path: yamlPath)
+
+                do {
+                    let relativePath: Path = configPath.isDirectory ? configPath : configPath.parent()
+
+                    // Check if the user is passing parameters
+                    // that are ignored cause read from the yaml file
+                    let hasAnyYamlDuplicatedParameter = (
+                        !sources.isEmpty ||
+                            !excludeSources.isEmpty ||
+                            !templates.isEmpty ||
+                            !excludeTemplates.isEmpty ||
+                            !forceParse.isEmpty ||
+                            output != "" ||
+                            !args.isEmpty
+                    )
+
+                    if hasAnyYamlDuplicatedParameter {
+                        Log.info("Using configuration file at '\(yamlPath)'. WARNING: Ignoring the parameters passed in the command line.")
+                    } else {
+                        Log.info("Using configuration file at '\(yamlPath)'")
+                    }
+
+                    return try Configurations.make(
+                        path: yamlPath,
+                        relativePath: relativePath,
+                        env: ProcessInfo.processInfo.environment
+                    )
+                } catch {
+                    Log.error("while reading .yml '\(yamlPath)'. '\(error)'")
+                    exitSourcery(.invalidConfig)
+                }
+            }
         }
     }
 }
