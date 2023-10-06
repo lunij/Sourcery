@@ -99,36 +99,7 @@ public struct SourceryCommand: AsyncParsableCommand {
 
             let start = CFAbsoluteTimeGetCurrent()
 
-            let keepAlive = try configurations.flatMap { configuration -> [FolderWatcher.Local] in
-                configuration.validate()
-
-                let shouldUseCacheBasePathArg = configuration.cacheBasePath == Path.defaultBaseCachePath && !cacheBasePath.string.isEmpty
-
-                let sourcery = Sourcery(
-                    verbose: verbose,
-                    watcherEnabled: watcherEnabled,
-                    cacheDisabled: cacheDisabled,
-                    cacheBasePath: shouldUseCacheBasePathArg ? cacheBasePath : configuration.cacheBasePath,
-                    buildPath: buildPath.string.isEmpty ? nil : buildPath,
-                    prune: prune,
-                    serialParse: serialParse,
-                    arguments: configuration.args
-                )
-
-                if isDryRun, watcherEnabled {
-                    throw "--dry not compatible with --watch"
-                }
-
-                return try sourcery.processFiles(
-                    configuration.source,
-                    usingTemplates: configuration.templates,
-                    output: configuration.output,
-                    isDryRun: isDryRun,
-                    forceParse: configuration.forceParse,
-                    parseDocumentation: configuration.parseDocumentation,
-                    baseIndentation: configuration.baseIndentation
-                ) ?? []
-            }
+            let keepAlive = try processFiles(specifiedIn: configurations)
 
             if keepAlive.isEmpty {
                 Log.info("Processing time \(CFAbsoluteTimeGetCurrent() - start) seconds")
@@ -204,6 +175,39 @@ public struct SourceryCommand: AsyncParsableCommand {
                     exitSourcery(.invalidConfig)
                 }
             }
+        }
+    }
+
+    private func processFiles(specifiedIn configurations: [Configuration]) throws -> [FolderWatcher.Local] {
+        try configurations.flatMap { configuration in
+            configuration.validate()
+
+            let shouldUseCacheBasePathArg = configuration.cacheBasePath == Path.defaultBaseCachePath && !cacheBasePath.string.isEmpty
+
+            let sourcery = Sourcery(
+                verbose: verbose,
+                watcherEnabled: watcherEnabled,
+                cacheDisabled: cacheDisabled,
+                cacheBasePath: shouldUseCacheBasePathArg ? cacheBasePath : configuration.cacheBasePath,
+                buildPath: buildPath.string.isEmpty ? nil : buildPath,
+                prune: prune,
+                serialParse: serialParse,
+                arguments: configuration.args
+            )
+
+            if isDryRun, watcherEnabled {
+                throw "--dry not compatible with --watch"
+            }
+
+            return try sourcery.processFiles(
+                configuration.source,
+                usingTemplates: configuration.templates,
+                output: configuration.output,
+                isDryRun: isDryRun,
+                forceParse: configuration.forceParse,
+                parseDocumentation: configuration.parseDocumentation,
+                baseIndentation: configuration.baseIndentation
+            ) ?? []
         }
     }
 }
