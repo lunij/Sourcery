@@ -104,7 +104,7 @@ let package = Package(
                 "Generated/AutoMockable.generated.swift",
                 "Generated/LinuxMain.generated.swift",
                 "Expected",
-                "TemplatesTests.swift"
+                "SystemTests.swift"
             ],
             sources: [
                 "Context/AutoCodable.swift",
