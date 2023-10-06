@@ -12,7 +12,6 @@ let package = Package(
         .library(name: "SourceryRuntime", targets: ["SourceryRuntime"]),
         .library(name: "SourceryStencil", targets: ["SourceryStencil"]),
         .library(name: "SourcerySwift", targets: ["SourcerySwift"]),
-        .library(name: "SourceryFramework", targets: ["SourceryFramework"]),
         .plugin(name: "SourceryCommandPlugin", targets: ["SourceryCommandPlugin"])
     ],
     dependencies: [
@@ -28,33 +27,24 @@ let package = Package(
         .target(
             name: "SourceryKit",
             dependencies: [
-                "SourceryFramework",
+                .product(name: "ArgumentParser", package: "swift-argument-parser"),
+                .product(name: "SwiftParser", package: "swift-syntax"),
+                .product(name: "SwiftSyntax", package: "swift-syntax"),
+                "PathKit",
                 "SourceryRuntime",
                 "SourceryStencil",
                 "SourcerySwift",
-                "PathKit",
-                "Yams",
+                "SourceryUtils",
                 "StencilSwiftKit",
-                .product(name: "ArgumentParser", package: "swift-argument-parser"),
-                .product(name: "SwiftSyntax", package: "swift-syntax"),
-                "XcodeProj"
+                "XcodeProj",
+                "Yams"
             ],
             exclude: [
-                "Templates",
+                "Templates"
             ]
         ),
         .target(name: "SourceryRuntime"),
         .target(name: "SourceryUtils", dependencies: ["PathKit"]),
-        .target(
-            name: "SourceryFramework",
-            dependencies: [
-              "PathKit",
-              .product(name: "SwiftSyntax", package: "swift-syntax"),
-              .product(name: "SwiftParser", package: "swift-syntax"),
-              "SourceryUtils",
-              "SourceryRuntime"
-            ]
-        ),
         .target(
             name: "SourceryStencil",
             dependencies: [

@@ -2,7 +2,6 @@ import Foundation
 import PathKit
 import XCTest
 @testable import SourceryKit
-@testable import SourceryFramework
 @testable import SourceryRuntime
 
 class ComposerTests: XCTestCase {

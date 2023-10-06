@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import SourceryFramework
 import SourceryRuntime
 import SourcerySwift
 

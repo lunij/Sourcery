@@ -2,7 +2,6 @@
 import ArgumentParser
 import Foundation
 import PathKit
-import SourceryFramework
 import SourceryRuntime
 import SourceryUtils
 

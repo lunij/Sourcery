@@ -1,7 +1,7 @@
+
 import Foundation
 import PathKit
 import XCTest
-@testable import SourceryFramework
 @testable import SourceryKit
 @testable import SourceryRuntime
 

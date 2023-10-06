@@ -5,7 +5,6 @@
 
 import Foundation
 import PathKit
-import SourceryFramework
 import SourceryUtils
 import SourceryRuntime
 import SourcerySwift

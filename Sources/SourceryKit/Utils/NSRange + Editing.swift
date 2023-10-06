@@ -3,8 +3,6 @@
 //
 
 import Foundation
-import struct SourceryFramework.ByteRange
-import struct SourceryFramework.ByteCount
 
 extension NSRange {
     /*

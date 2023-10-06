@@ -2,7 +2,6 @@
 // DO NOT EDIT
 import XCTest
 import SourceryKit
-@testable import SourceryFramework
 @testable import SourceryRuntime
 
 class TypedTests: XCTestCase {

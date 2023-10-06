@@ -1,7 +1,6 @@
 //sourcery:file:../../../../Tests/SourceryLibTests/Models/TypedTests
 import XCTest
 import SourceryKit
-@testable import SourceryFramework
 @testable import SourceryRuntime
 
 class TypedTests: XCTestCase {

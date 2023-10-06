@@ -1,6 +1,5 @@
 import SourceryUtils
 import XCTest
-@testable import SourceryFramework
 @testable import SourceryKit
 @testable import SourceryRuntime
 

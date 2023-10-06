@@ -7,8 +7,6 @@
 //
 
 import class SourceryRuntime.BytesRange
-import struct SourceryFramework.ByteRange
-import struct SourceryFramework.ByteCount
 
 extension BytesRange {
     /*
