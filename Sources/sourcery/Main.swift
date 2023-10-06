@@ -1,5 +1,5 @@
 
-import SourceryLib
+import SourceryKit
 
 @main
 enum Main {

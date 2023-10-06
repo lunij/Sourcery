@@ -1,0 +1,68 @@
+//sourcery:file:../../../../Tests/SourceryLibTests/Models/TypedTests
+import XCTest
+import SourceryKit
+@testable import SourceryFramework
+@testable import SourceryRuntime
+
+class TypedTests: XCTestCase {
+    {% for type in types.implementing.Typed %}
+
+    // MARK: - {{ type.name }}
+
+    func test_{{ type.name }}_canReportOptionalViaKVC() {
+        XCTAssertEqual({{ type.name }}(typeName: "Int?".typeName).value(forKeyPath: "isOptional") as? Bool, true)
+        XCTAssertEqual({{ type.name }}(typeName: "Int!".typeName).value(forKeyPath: "isOptional") as? Bool, true)
+        XCTAssertEqual({{ type.name }}(typeName: "Int?".typeName).value(forKeyPath: "isImplicitlyUnwrappedOptional") as? Bool, false)
+        XCTAssertEqual({{ type.name }}(typeName: "Int!".typeName).value(forKeyPath: "isImplicitlyUnwrappedOptional") as? Bool, true)
+        XCTAssertEqual({{ type.name }}(typeName: "Int?".typeName).value(forKeyPath: "unwrappedTypeName") as? String, "Int")
+    }
+
+    func test_{{ type.name }}_canReportTupleTypeViaKVC() {
+        let sut = {{ type.name }}(typeName: "(Int, Int)".typeName)
+        XCTAssertEqual(sut.value(forKeyPath: "isTuple") as? Bool, true)
+    }
+
+    func test_{{ type.name }}_canReportClosureTypeViaKVC() {
+        let sut = {{ type.name }}(typeName: "(Int) -> (Int)".typeName)
+        XCTAssertEqual(sut.value(forKeyPath: "isClosure") as? Bool, true)
+    }
+
+    func test_{{ type.name }}_canReportArrayTypeViaKVC() {
+        let sut = {{ type.name }}(typeName: "[Int]".typeName)
+        XCTAssertEqual(sut.value(forKeyPath: "isArray") as? Bool, true)
+    }
+
+    func test_{{ type.name }}_canReportDictionaryTypeViaKVC() {
+        let sut = {{ type.name }}(typeName: "[Int: Int]".typeName)
+        XCTAssertEqual(sut.value(forKeyPath: "isDictionary") as? Bool, true)
+    }
+
+    func test_{{ type.name }}_canReportActualTypeNameViaKVC() {
+        let sut = {{ type.name }}(typeName: "Alias".typeName)
+        XCTAssertEqual(sut.value(forKeyPath: "actualTypeName") as? TypeName, "Alias".typeName)
+
+        sut.typeName.actualTypeName = "Int".typeName
+        XCTAssertEqual(sut.value(forKeyPath: "actualTypeName") as? TypeName, "Int".typeName)
+    }
+    {% endfor %}
+}
+
+private extension String {
+    var typeName: TypeName {
+        let wrappedCode = """
+        struct Wrapper {
+            var myFoo: \(self)
+        }
+        """
+        do {
+            let parser = try makeParser(for: wrappedCode)
+            let result = try parser.parse()
+            let variable = result.types.first?.variables.first
+            return variable?.typeName ?? TypeName(name: "")
+        } catch {
+            XCTFail(String(describing: error))
+            return TypeName(name: "")
+        }
+    }
+}
+//sourcery:end

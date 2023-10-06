@@ -24,9 +24,9 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-syntax.git", from: "508.0.0")
     ],
     targets: [
-        .executableTarget(name: "sourcery", dependencies: ["SourceryLib"]),
+        .executableTarget(name: "sourcery", dependencies: ["SourceryKit"]),
         .target(
-            name: "SourceryLib",
+            name: "SourceryKit",
             dependencies: [
                 "SourceryFramework",
                 "SourceryRuntime",
@@ -72,9 +72,9 @@ let package = Package(
             ]
         ),
         .testTarget(
-            name: "SourceryLibTests",
+            name: "SourceryKitTests",
             dependencies: [
-                "SourceryLib"
+                "SourceryKit"
             ],
             resources: [
                 .copy("Stub/Configs"),
