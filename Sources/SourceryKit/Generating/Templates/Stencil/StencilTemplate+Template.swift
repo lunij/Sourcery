@@ -1,6 +1,5 @@
 import Foundation
 import SourceryRuntime
-import SourceryStencil
 
 extension StencilTemplate: Template {
     public func render(_ context: TemplateContext) throws -> String {

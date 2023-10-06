@@ -10,7 +10,6 @@ let package = Package(
     products: [
         .executable(name: "sourcery", targets: ["sourcery"]),
         .library(name: "SourceryRuntime", targets: ["SourceryRuntime"]),
-        .library(name: "SourceryStencil", targets: ["SourceryStencil"]),
         .library(name: "SourcerySwift", targets: ["SourcerySwift"]),
         .plugin(name: "SourceryCommandPlugin", targets: ["SourceryCommandPlugin"])
     ],
@@ -32,7 +31,6 @@ let package = Package(
                 .product(name: "SwiftSyntax", package: "swift-syntax"),
                 "PathKit",
                 "SourceryRuntime",
-                "SourceryStencil",
                 "SourcerySwift",
                 "SourceryUtils",
                 "StencilSwiftKit",
@@ -45,14 +43,6 @@ let package = Package(
         ),
         .target(name: "SourceryRuntime"),
         .target(name: "SourceryUtils", dependencies: ["PathKit"]),
-        .target(
-            name: "SourceryStencil",
-            dependencies: [
-              "PathKit",
-              "SourceryRuntime",
-              "StencilSwiftKit",
-            ]
-        ),
         .target(
             name: "SourcerySwift",
             dependencies: [
