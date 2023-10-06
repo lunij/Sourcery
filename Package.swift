@@ -18,7 +18,6 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/apple/swift-argument-parser", from: "1.2.3"),
         .package(url: "https://github.com/jpsim/Yams.git", from: "5.0.3"),
-        .package(url: "https://github.com/kylef/Commander.git", exact: "0.9.1"),
         .package(url: "https://github.com/kylef/PathKit.git", exact: "1.0.1"),
         .package(url: "https://github.com/SwiftGen/StencilSwiftKit.git", exact: "2.10.1"),
         .package(url: "https://github.com/tuist/XcodeProj.git", exact: "8.3.1"),
@@ -33,7 +32,6 @@ let package = Package(
                 "SourceryRuntime",
                 "SourceryStencil",
                 "SourcerySwift",
-                "Commander",
                 "PathKit",
                 "Yams",
                 "StencilSwiftKit",
