@@ -74,7 +74,7 @@ end
 desc "Update internal boilerplate code"
 task :generate_internal_boilerplate_code do
   sh %Q(swift run sourcery)
-  sh "Scripts/package_content \"Sources/SourceryRuntime/Sources\" > \"Sources/SourceryKit/SwiftTemplate/SourceryRuntime.content.generated.swift\""
+  sh "Scripts/package_content \"Sources/SourceryRuntime\" > \"Sources/SourceryKit/SwiftTemplate/SourceryRuntime.content.generated.swift\""
 end
 
 ## [ Release ] ##########################################################
