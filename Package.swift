@@ -38,7 +38,6 @@ let package = Package(
                 "Templates"
             ]
         ),
-        .target(name: "SourceryRuntime"),
         .testTarget(
             name: "SourceryKitTests",
             dependencies: [
@@ -55,6 +54,8 @@ let package = Package(
                 .copy("Stub/Source")
             ]
         ),
+        .target(name: "SourceryRuntime"),
+        .testTarget(name: "SourceryRuntimeTests", dependencies: ["SourceryRuntime"]),
         .target(
             name: "CodableContext",
             path: "Tests/TemplateTests",

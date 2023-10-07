@@ -1,5 +1,4 @@
 import XCTest
-@testable import SourceryKit
 @testable import SourceryRuntime
 
 class ProtocolTests: XCTestCase {

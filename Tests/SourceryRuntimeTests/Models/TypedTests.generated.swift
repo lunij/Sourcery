@@ -1,7 +1,6 @@
 // Generated using Sourcery 2.0.2 — https://github.com/krzysztofzablocki/Sourcery
 // DO NOT EDIT
 import XCTest
-import SourceryKit
 @testable import SourceryRuntime
 
 class TypedTests: XCTestCase {
@@ -9,11 +8,11 @@ class TypedTests: XCTestCase {
     // MARK: - AssociatedValue
 
     func test_AssociatedValue_canReportOptionalViaKVC() {
-        XCTAssertEqual(AssociatedValue(typeName: "Int?".typeName).value(forKeyPath: "isOptional") as? Bool, true)
-        XCTAssertEqual(AssociatedValue(typeName: "Int!".typeName).value(forKeyPath: "isOptional") as? Bool, true)
-        XCTAssertEqual(AssociatedValue(typeName: "Int?".typeName).value(forKeyPath: "isImplicitlyUnwrappedOptional") as? Bool, false)
-        XCTAssertEqual(AssociatedValue(typeName: "Int!".typeName).value(forKeyPath: "isImplicitlyUnwrappedOptional") as? Bool, true)
-        XCTAssertEqual(AssociatedValue(typeName: "Int?".typeName).value(forKeyPath: "unwrappedTypeName") as? String, "Int")
+        XCTAssertEqual(AssociatedValue(typeName: .optionalInt).value(forKeyPath: "isOptional") as? Bool, true)
+        XCTAssertEqual(AssociatedValue(typeName: .optionalInt).value(forKeyPath: "isImplicitlyUnwrappedOptional") as? Bool, false)
+        XCTAssertEqual(AssociatedValue(typeName: .optionalInt).value(forKeyPath: "unwrappedTypeName") as? String, "Int")
+        XCTAssertEqual(AssociatedValue(typeName: .implicitlyUnwrappedOptionalInt).value(forKeyPath: "isOptional") as? Bool, true)
+        XCTAssertEqual(AssociatedValue(typeName: .implicitlyUnwrappedOptionalInt).value(forKeyPath: "isImplicitlyUnwrappedOptional") as? Bool, true)
     }
 
     func test_AssociatedValue_canReportTupleTypeViaKVC() {
@@ -237,19 +236,22 @@ class TypedTests: XCTestCase {
 
 private extension String {
     var typeName: TypeName {
-        let wrappedCode = """
-        struct Wrapper {
-            var myFoo: \(self)
-        }
-        """
-        do {
-            let parser = try makeParser(for: wrappedCode)
-            let result = try parser.parse()
-            let variable = result.types.first?.variables.first
-            return variable?.typeName ?? TypeName(name: "")
-        } catch {
-            XCTFail(String(describing: error))
-            return TypeName(name: "")
-        }
+        typeName()
     }
+
+    func typeName(
+        isOptional: Bool = false,
+        isImplicitlyUnwrappedOptional: Bool = false
+    ) -> TypeName {
+        TypeName(
+            name: self,
+            isOptional: isOptional,
+            isImplicitlyUnwrappedOptional: isImplicitlyUnwrappedOptional
+        )
+    }
+}
+
+private extension TypeName {
+    static let optionalInt = TypeName(name: "Int?", unwrappedTypeName: "Int", isOptional: true, isImplicitlyUnwrappedOptional: false)
+    static let implicitlyUnwrappedOptionalInt = TypeName(name: "Int!", unwrappedTypeName: "Int", isOptional: true, isImplicitlyUnwrappedOptional: true)
 }

@@ -1,6 +1,5 @@
 import XCTest
 import Foundation
-@testable import SourceryKit
 @testable import SourceryRuntime
 
 class MethodTests: XCTestCase {

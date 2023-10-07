@@ -1,6 +1,5 @@
 import Foundation
 import XCTest
-@testable import SourceryKit
 @testable import SourceryRuntime
 
 class DiffableTests: XCTestCase {
