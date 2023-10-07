@@ -5,7 +5,6 @@
 
 import Foundation
 import PathKit
-import SourceryUtils
 import SourceryRuntime
 import XcodeProj
 

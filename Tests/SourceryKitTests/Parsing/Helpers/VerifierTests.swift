@@ -1,4 +1,4 @@
-import SourceryUtils
+
 import XCTest
 @testable import SourceryKit
 @testable import SourceryRuntime

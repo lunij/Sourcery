@@ -1,6 +1,5 @@
 import SwiftSyntax
 import SourceryRuntime
-import SourceryUtils
 import Foundation
 
 class SyntaxTreeCollector: SyntaxVisitor {

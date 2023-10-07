@@ -30,7 +30,6 @@ let package = Package(
                 .product(name: "SwiftSyntax", package: "swift-syntax"),
                 "PathKit",
                 "SourceryRuntime",
-                "SourceryUtils",
                 "StencilSwiftKit",
                 "XcodeProj",
                 "Yams"
@@ -40,7 +39,6 @@ let package = Package(
             ]
         ),
         .target(name: "SourceryRuntime"),
-        .target(name: "SourceryUtils", dependencies: ["PathKit"]),
         .testTarget(
             name: "SourceryKitTests",
             dependencies: [

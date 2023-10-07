@@ -5,7 +5,6 @@
 
 import Foundation
 import PathKit
-import SourceryUtils
 
 public enum Verifier {
 

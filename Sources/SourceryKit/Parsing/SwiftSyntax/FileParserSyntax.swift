@@ -3,7 +3,6 @@ import SwiftSyntax
 import SwiftParser
 import PathKit
 import SourceryRuntime
-import SourceryUtils
 
 public final class FileParserSyntax: SyntaxVisitor, FileParserType {
 

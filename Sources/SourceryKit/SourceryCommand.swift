@@ -3,7 +3,6 @@ import ArgumentParser
 import Foundation
 import PathKit
 import SourceryRuntime
-import SourceryUtils
 
 public struct SourceryCommand: AsyncParsableCommand {
     public static var configuration = CommandConfiguration(

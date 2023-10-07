@@ -9,7 +9,6 @@
 import Foundation
 import PathKit
 import SourceryRuntime
-import SourceryUtils
 
 private enum Delimiters {
     static let open = "<%"
