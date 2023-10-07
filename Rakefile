@@ -72,13 +72,9 @@ end
 ## [ Code Generated ] ################################################
 
 desc "Update internal boilerplate code"
-task :generate_internal_boilerplate_code => [:fat_build, :run_sourcery, :clean] do
-  sh "Scripts/package_content \"SourceryRuntime/Sources\"  > \"SourcerySwift/Sources/SourceryRuntime.content.generated.swift\""
-  generated_files = `git status --porcelain`
-                      .split("\n")
-                      .select { |item| item.include?('.generated.') }
-                      .map { |item| item.split.last }
-  manual_commit(generated_files, "update internal boilerplate code.")
+task :generate_internal_boilerplate_code do
+  sh %Q(swift run sourcery)
+  sh "Scripts/package_content \"Sources/SourceryRuntime/Sources\" > \"Sources/SourceryKit/SwiftTemplate/SourceryRuntime.content.generated.swift\""
 end
 
 ## [ Release ] ##########################################################

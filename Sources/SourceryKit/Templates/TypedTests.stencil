@@ -1,6 +1,5 @@
-//sourcery:file:../../../../Tests/SourceryLibTests/Models/TypedTests
+//sourcery:file:../../../../Tests/SourceryRuntimeTests/Models/TypedTests
 import XCTest
-import SourceryKit
 @testable import SourceryRuntime
 
 class TypedTests: XCTestCase {
@@ -9,30 +8,30 @@ class TypedTests: XCTestCase {
     // MARK: - {{ type.name }}
 
     func test_{{ type.name }}_canReportOptionalViaKVC() {
-        XCTAssertEqual({{ type.name }}(typeName: "Int?".typeName).value(forKeyPath: "isOptional") as? Bool, true)
-        XCTAssertEqual({{ type.name }}(typeName: "Int!".typeName).value(forKeyPath: "isOptional") as? Bool, true)
-        XCTAssertEqual({{ type.name }}(typeName: "Int?".typeName).value(forKeyPath: "isImplicitlyUnwrappedOptional") as? Bool, false)
-        XCTAssertEqual({{ type.name }}(typeName: "Int!".typeName).value(forKeyPath: "isImplicitlyUnwrappedOptional") as? Bool, true)
-        XCTAssertEqual({{ type.name }}(typeName: "Int?".typeName).value(forKeyPath: "unwrappedTypeName") as? String, "Int")
+        XCTAssertEqual({{ type.name }}(typeName: .optionalInt).value(forKeyPath: "isOptional") as? Bool, true)
+        XCTAssertEqual({{ type.name }}(typeName: .optionalInt).value(forKeyPath: "isImplicitlyUnwrappedOptional") as? Bool, false)
+        XCTAssertEqual({{ type.name }}(typeName: .optionalInt).value(forKeyPath: "unwrappedTypeName") as? String, "Int")
+        XCTAssertEqual({{ type.name }}(typeName: .implicitlyUnwrappedOptionalInt).value(forKeyPath: "isOptional") as? Bool, true)
+        XCTAssertEqual({{ type.name }}(typeName: .implicitlyUnwrappedOptionalInt).value(forKeyPath: "isImplicitlyUnwrappedOptional") as? Bool, true)
     }
 
     func test_{{ type.name }}_canReportTupleTypeViaKVC() {
-        let sut = {{ type.name }}(typeName: "(Int, Int)".typeName)
+        let sut = {{ type.name }}(typeName: .doubleIntTuple)
         XCTAssertEqual(sut.value(forKeyPath: "isTuple") as? Bool, true)
     }
 
     func test_{{ type.name }}_canReportClosureTypeViaKVC() {
-        let sut = {{ type.name }}(typeName: "(Int) -> (Int)".typeName)
+        let sut = {{ type.name }}(typeName: .closure)
         XCTAssertEqual(sut.value(forKeyPath: "isClosure") as? Bool, true)
     }
 
     func test_{{ type.name }}_canReportArrayTypeViaKVC() {
-        let sut = {{ type.name }}(typeName: "[Int]".typeName)
+        let sut = {{ type.name }}(typeName: .intArray)
         XCTAssertEqual(sut.value(forKeyPath: "isArray") as? Bool, true)
     }
 
     func test_{{ type.name }}_canReportDictionaryTypeViaKVC() {
-        let sut = {{ type.name }}(typeName: "[Int: Int]".typeName)
+        let sut = {{ type.name }}(typeName: .intIntDictionary)
         XCTAssertEqual(sut.value(forKeyPath: "isDictionary") as? Bool, true)
     }
 
@@ -48,20 +47,17 @@ class TypedTests: XCTestCase {
 
 private extension String {
     var typeName: TypeName {
-        let wrappedCode = """
-        struct Wrapper {
-            var myFoo: \(self)
-        }
-        """
-        do {
-            let parser = try makeParser(for: wrappedCode)
-            let result = try parser.parse()
-            let variable = result.types.first?.variables.first
-            return variable?.typeName ?? TypeName(name: "")
-        } catch {
-            XCTFail(String(describing: error))
-            return TypeName(name: "")
-        }
+        TypeName(name: self)
     }
+}
+
+private extension TypeName {
+    static let int = TypeName(name: "Int")
+    static let optionalInt = TypeName(name: "Int?", unwrappedTypeName: "Int", isOptional: true, isImplicitlyUnwrappedOptional: false)
+    static let implicitlyUnwrappedOptionalInt = TypeName(name: "Int!", unwrappedTypeName: "Int", isOptional: true, isImplicitlyUnwrappedOptional: true)
+    static let doubleIntTuple = TypeName(name: "(Int, Int)", tuple: .init(elements: [.init(typeName: .int), .init(typeName: .int)]))
+    static let closure = TypeName(name: "(Int) -> Int", closure: .init(name: "(Int) -> Int", parameters: [.init(typeName: .int)], returnTypeName: .int))
+    static let intArray = TypeName(name: "[Int]", array: .init(name: "[Int]", elementTypeName: .int))
+    static let intIntDictionary = TypeName(name: "[Int: Int]", dictionary: .init(name: "[Int: Int]", valueTypeName: .int, keyTypeName: .int))
 }
 //sourcery:end
