@@ -72,6 +72,17 @@ let package = Package(
                 .copy("Expected")
             ]
         ),
+        .testTarget(
+            name: "SystemTests",
+            dependencies: [
+                "PathKit"
+            ],
+            resources: [
+                .copy("Resources/Context"),
+                .copy("Resources/Expected"),
+                .copy("Resources/Templates")
+            ]
+        ),
         .plugin(
             name: "SourceryCommandPlugin",
             capability: .command(
