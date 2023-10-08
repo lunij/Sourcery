@@ -1,30 +1,19 @@
-disabled_rules: # rule identifiers to exclude from running
+disabled_rules:
+  - opening_brace # not compatible to SwiftFormat rule "wrapMultilineStatementBraces"
   - function_parameter_count
   - line_length
-  - variable_name
-  - cyclomatic_complexity
   - nesting
-  - conditional_binding_cascade
   - large_tuple
 
-opt_in_rules: # some rules are only opt-in
+opt_in_rules:
   - force_unwrapping
   - force_https
   - empty_count
-  - conditional_binding_cascade
 
-included:
-  - Sourcery
-  - SourceryRuntime
-  - SourceryTests
-  - Templates/Tests
-
-excluded: # paths to ignore during linting. Takes precedence over `included`.
-  - Carthage
-  - Pods
-  - Packages
+excluded:
+  - .build
+  - .swiftpm
   - SourceryTests/Stub
-  - Templates/Tests/Generated
   - Templates/Tests/Expected
 
 type_body_length:
