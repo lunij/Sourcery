@@ -56,20 +56,11 @@ let package = Package(
         ),
         .target(name: "SourceryRuntime"),
         .testTarget(name: "SourceryRuntimeTests", dependencies: ["SourceryRuntime"]),
-        .target(name: "CodableContext"),
+        .target(name: "ContextExamples"),
         .testTarget(
             name: "TemplateTests",
             dependencies: [
-                "CodableContext",
-                "PathKit"
-            ],
-            exclude: [
-                "Generated"
-            ],
-            resources: [
-                .copy("Templates"),
-                .copy("Context"),
-                .copy("Expected")
+                "ContextExamples"
             ]
         ),
         .testTarget(

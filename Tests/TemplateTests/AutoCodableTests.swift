@@ -1,8 +1,8 @@
 import Foundation
-@testable import CodableContext
 import XCTest
+@testable import ContextExamples
 
-class CodableContextTests: XCTestCase {
+class AutoCodableTests: XCTestCase {
     let encoder: JSONEncoder = {
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
