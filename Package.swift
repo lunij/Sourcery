@@ -33,9 +33,6 @@ let package = Package(
                 "StencilSwiftKit",
                 "XcodeProj",
                 "Yams"
-            ],
-            exclude: [
-                "Templates"
             ]
         ),
         .testTarget(
@@ -54,7 +51,7 @@ let package = Package(
                 .copy("Stub/Source")
             ]
         ),
-        .target(name: "SourceryRuntime"),
+        .target(name: "SourceryRuntime", exclude: ["Templates"]),
         .testTarget(name: "SourceryRuntimeTests", dependencies: ["SourceryRuntime"]),
         .target(name: "ContextExamples"),
         .testTarget(
