@@ -1,0 +1,1 @@
+../../Tests/TemplateTests/Generated/AutoCodable.generated.swift

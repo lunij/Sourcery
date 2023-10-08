@@ -56,30 +56,7 @@ let package = Package(
         ),
         .target(name: "SourceryRuntime"),
         .testTarget(name: "SourceryRuntimeTests", dependencies: ["SourceryRuntime"]),
-        .target(
-            name: "CodableContext",
-            path: "Tests/TemplateTests",
-            exclude: [
-                "Context/AutoCases.swift",
-                "Context/AutoEquatable.swift",
-                "Context/AutoHashable.swift",
-                "Context/AutoLenses.swift",
-                "Context/AutoMockable.swift",
-                "Context/LinuxMain.swift",
-                "Generated/AutoCases.generated.swift",
-                "Generated/AutoEquatable.generated.swift",
-                "Generated/AutoHashable.generated.swift",
-                "Generated/AutoLenses.generated.swift",
-                "Generated/AutoMockable.generated.swift",
-                "Generated/LinuxMain.generated.swift",
-                "Expected",
-                "SystemTests.swift"
-            ],
-            sources: [
-                "Context/AutoCodable.swift",
-                "Generated/AutoCodable.generated.swift"
-            ]
-        ),
+        .target(name: "CodableContext"),
         .testTarget(
             name: "TemplateTests",
             dependencies: [
