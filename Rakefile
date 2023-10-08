@@ -69,15 +69,6 @@ task :fat_build do
   build_framework(true)
 end
 
-## [ Code Generated ] ################################################
-
-desc "Update internal boilerplate code"
-task :generate_internal_boilerplate_code do
-  sh %Q(swift run sourcery --config Sources/ContextExamples/.sourcery.yml)
-  sh %Q(swift run sourcery --config Sources/SourceryRuntime/.sourcery.yml)
-  sh "Scripts/package_content \"Sources/SourceryRuntime\" > \"Sources/SourceryKit/SwiftTemplate/SourceryRuntime.content.generated.swift\""
-end
-
 ## [ Release ] ##########################################################
 
 namespace :release do

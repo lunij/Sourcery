@@ -52,7 +52,7 @@ func package(folder folderPath: String) throws {
     for case let fileURL as URL in enumerator {
         do {
             let fileAttributes = try fileURL.resourceValues(forKeys:[.isRegularFileKey])
-            if fileAttributes.isRegularFile! {
+            if fileAttributes.isRegularFile!, fileURL.pathExtension == "swift" {
                 files.append(fileURL)
             }
         } catch { 
