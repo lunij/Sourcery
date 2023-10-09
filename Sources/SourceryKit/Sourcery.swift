@@ -413,16 +413,11 @@ extension Sourcery {
 
     private func load(artifacts: String, modifiedDate: Date, path: Path) -> FileParserResult? {
         var unarchivedResult: FileParserResult?
-        do {
 
-            // this deprecation can't be removed atm, new API is 10x slower
-            if let unarchived = NSKeyedUnarchiver.unarchiveObject(withFile: artifacts) as? FileParserResult {
-                if unarchived.sourceryVersion == Sourcery.version, unarchived.modifiedDate == modifiedDate {
-                    unarchivedResult = unarchived
-                }
+        if let unarchived = NSKeyedUnarchiver.unarchiveObject(withFile: artifacts) as? FileParserResult {
+            if unarchived.sourceryVersion == Sourcery.version, unarchived.modifiedDate == modifiedDate {
+                unarchivedResult = unarchived
             }
-        } catch {
-            Log.warning("Failed to unarchive cache for \(path.string) due to error, re-parsing file")
         }
 
         return unarchivedResult
@@ -608,16 +603,7 @@ extension Sourcery {
             return try processRanges(in: parsingResult, result: result, outputPath: outputPath, forceParse: forceParse, baseIndentation: baseIndentation)
         }
 
-        var result: String = ""
-        do {
-            do {
-                result = try Generator.generate(parsingResult.parserResult, types: parsingResult.types, functions: parsingResult.functions, template: template, arguments: self.arguments)
-            } catch {
-                Log.error(error)
-            }
-        } catch {
-            result = String(describing: error)
-        }
+        let result = try Generator.generate(parsingResult.parserResult, types: parsingResult.types, functions: parsingResult.functions, template: template, arguments: self.arguments)
 
         return try processRanges(in: parsingResult, result: result, outputPath: outputPath, forceParse: forceParse, baseIndentation: baseIndentation)
     }
