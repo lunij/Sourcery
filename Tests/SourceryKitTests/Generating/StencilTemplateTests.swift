@@ -193,7 +193,7 @@ class StencilTemplateTests: XCTestCase {
 
         """
 
-        _ = try Sourcery(cacheDisabled: true).processFiles(
+        try Sourcery(cacheDisabled: true).processFiles(
             .sources(Paths(include: [Stubs.sourceDirectory])),
             usingTemplates: Paths(include: [templatePath]),
             output: Output(outputDir)

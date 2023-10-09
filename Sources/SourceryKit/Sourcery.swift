@@ -51,6 +51,7 @@ public class Sourcery {
         self.serialParse = serialParse
     }
 
+    @discardableResult
     public func processFiles(
         _ source: Source,
         usingTemplates templatesPaths: Paths,
