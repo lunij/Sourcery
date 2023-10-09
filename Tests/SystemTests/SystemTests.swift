@@ -73,7 +73,7 @@ private func runSourcery(template name: String, extension: String = "stencil", f
 
 private func assert(template name: String, file: StaticString = #filePath, line: UInt = #line) {
     let generatedFilePath = "Generated/\(name).generated.swift".relativeToResourcePath
-    let expectedFilePath = "Expected/\(name).expected".relativeToResourcePath
+    let expectedFilePath = "Expected/\(name).expected.swift".relativeToResourcePath
 
     guard generatedFilePath.exists else {
         return XCTFail("File \(generatedFilePath.lastComponent) not found\n\(generatedFilePath)", file: file, line: line)
