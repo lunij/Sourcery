@@ -19,8 +19,7 @@ class DryOutputStencilTemplateTests: XCTestCase {
                 .sources(Paths(include: [Stubs.sourceDirectory])),
                 usingTemplates: Paths(include: [templatePath]),
                 output: Output(outputDir),
-                isDryRun: false,
-                baseIndentation: 0
+                isDryRun: false
             )
         )
         XCTAssertNil(outputInterceptor.result)
@@ -31,9 +30,12 @@ class DryOutputStencilTemplateTests: XCTestCase {
         outputDir = Stubs.cleanTemporarySourceryDir()
 
         let templatePath = Stubs.templateDirectory + Path("Include.stencil")
-        let expectedResult = "// Generated using Sourcery Major.Minor.Patch — https://github.com/krzysztofzablocki/Sourcery\n" +
-        "// DO NOT EDIT\n" +
-        "partial template content\n"
+        let expectedResult = """
+        // Generated using Sourcery Major.Minor.Patch — https://github.com/lunij/Sourcery
+
+        partial template content
+
+        """
 
         let sourcery = Sourcery(cacheDisabled: true)
         let outputInterceptor = OutputInterceptor()
@@ -44,8 +46,7 @@ class DryOutputStencilTemplateTests: XCTestCase {
                 .sources(Paths(include: [Stubs.sourceDirectory])),
                 usingTemplates: Paths(include: [templatePath]),
                 output: Output(outputDir),
-                isDryRun: true,
-                baseIndentation: 0
+                isDryRun: true
             )
         )
         XCTAssertEqual(outputInterceptor.result, expectedResult)
@@ -63,8 +64,7 @@ class DryOutputStencilTemplateTests: XCTestCase {
                 .sources(Paths(include: [sourcePath])),
                 usingTemplates: Paths(include: [templatePath]),
                 output: Output("."),
-                isDryRun: true,
-                baseIndentation: 0
+                isDryRun: true
             )
         )
         XCTAssertEqual(outputInterceptor.result(byOutputType: .init(id: "\(sourcePath):109", subType: .range)).value, """
@@ -100,8 +100,7 @@ class DryOutputStencilTemplateTests: XCTestCase {
         let templatePathResult = outputInterceptor
             .result(byOutputType: .init(id: "\(templatePath)", subType: .template)).value
         XCTAssertEqual(templatePathResult, """
-        // Generated using Sourcery Major.Minor.Patch — https://github.com/krzysztofzablocki/Sourcery
-        // DO NOT EDIT
+        // Generated using Sourcery Major.Minor.Patch — https://github.com/lunij/Sourcery
 
         // swiftlint:disable file_length
         fileprivate func compareOptionals<T>(lhs: T?, rhs: T?, compare: (_ lhs: T, _ rhs: T) -> Bool) -> Bool {
@@ -146,8 +145,8 @@ class DryOutputStencilTemplateTests: XCTestCase {
 
         """)
         XCTAssertEqual(outputInterceptor.result(byOutputType: .init(id: "Generated/EqEnum+TemplateName.generated.swift", subType: .path)).value, """
-        // Generated using Sourcery Major.Minor.Patch — https://github.com/krzysztofzablocki/Sourcery
-        // DO NOT EDIT
+        // Generated using Sourcery Major.Minor.Patch — https://github.com/lunij/Sourcery
+
         // MARK: - EqEnum AutoEquatable
         extension EqEnum: Equatable {}
         internal func == (lhs: EqEnum, rhs: EqEnum) -> Bool {
@@ -181,8 +180,7 @@ class DryOutputSwiftTemplateTests: XCTestCase {
                 .sources(Paths(include: [Stubs.sourceDirectory])),
                 usingTemplates: Paths(include: [templatePath]),
                 output: output,
-                isDryRun: false,
-                baseIndentation: 0
+                isDryRun: false
             )
         )
         XCTAssertNil(outputInterceptor.result)
@@ -198,8 +196,7 @@ class DryOutputSwiftTemplateTests: XCTestCase {
                 .sources(Paths(include: [Stubs.sourceDirectory])),
                 usingTemplates: Paths(include: [templatePath]),
                 output: output,
-                isDryRun: true,
-                baseIndentation: 0
+                isDryRun: true
             )
         )
         XCTAssertEqual(outputInterceptor.result, expectedResult)
@@ -217,8 +214,7 @@ class DryOutputSwiftTemplateTests: XCTestCase {
                 .sources(Paths(include: [Stubs.sourceDirectory])),
                 usingTemplates: Paths(include: [templatePath]),
                 output: output,
-                isDryRun: true,
-                baseIndentation: 0
+                isDryRun: true
             )
         )
         XCTAssertEqual(outputInterceptor.result, expectedResult)
@@ -236,8 +232,7 @@ class DryOutputSwiftTemplateTests: XCTestCase {
                 .sources(Paths(include: [Stubs.sourceDirectory])),
                 usingTemplates: Paths(include: [templatePath]),
                 output: output,
-                isDryRun: true,
-                baseIndentation: 0
+                isDryRun: true
             )
         )
         XCTAssertEqual(outputInterceptor.result, expectedResult)
@@ -255,8 +250,7 @@ class DryOutputSwiftTemplateTests: XCTestCase {
                 .sources(Paths(include: [Stubs.sourceDirectory])),
                 usingTemplates: Paths(include: [templatePath]),
                 output: output,
-                isDryRun: true,
-                baseIndentation: 0
+                isDryRun: true
             )
         )
         XCTAssertEqual(outputInterceptor.result, expectedResult)
@@ -274,8 +268,7 @@ class DryOutputSwiftTemplateTests: XCTestCase {
                 .sources(Paths(include: [Stubs.sourceDirectory])),
                 usingTemplates: Paths(include: [templatePath]),
                 output: output,
-                isDryRun: true,
-                baseIndentation: 0
+                isDryRun: true
             )
         )
         XCTAssertEqual(outputInterceptor.result, expectedResult)
@@ -293,8 +286,7 @@ class DryOutputSwiftTemplateTests: XCTestCase {
                 .sources(Paths(include: [Stubs.sourceDirectory])),
                 usingTemplates: Paths(include: [templatePath]),
                 output: output,
-                isDryRun: true,
-                baseIndentation: 0
+                isDryRun: true
             )
         )
         XCTAssertEqual(outputInterceptor.result, expectedResult)
@@ -312,8 +304,7 @@ class DryOutputSwiftTemplateTests: XCTestCase {
                 .sources(Paths(include: [Stubs.sourceDirectory])),
                 usingTemplates: Paths(include: [templatePath]),
                 output: output,
-                isDryRun: true,
-                baseIndentation: 0
+                isDryRun: true
             )
         )
         XCTAssertEqual(outputInterceptor.result, expectedResult)
@@ -331,14 +322,11 @@ class DryOutputSwiftTemplateTests: XCTestCase {
                 .sources(Paths(include: [Stubs.sourceDirectory])),
                 usingTemplates: Paths(include: [templatePath]),
                 output: output,
-                isDryRun: true,
-                baseIndentation: 0
+                isDryRun: true
             )
         )
         XCTAssertEqual(outputInterceptor.result, expectedResult)
     }
-
-    // MARK: Multiple files check
 
     func test_returnAllOutputsValues() {
         let templatePaths = [
@@ -369,8 +357,7 @@ class DryOutputSwiftTemplateTests: XCTestCase {
                 .sources(Paths(include: [Stubs.sourceDirectory])),
                 usingTemplates: Paths(include: templatePaths),
                 output: output,
-                isDryRun: true,
-                baseIndentation: 0
+                isDryRun: true
             )
         )
 
@@ -397,8 +384,7 @@ class DryOutputSwiftTemplateTests: XCTestCase {
                 .sources(Paths(include: [Stubs.sourceDirectory])),
                 usingTemplates: Paths(include: templatePaths),
                 output: output,
-                isDryRun: true,
-                baseIndentation: 0
+                isDryRun: true
             )
         )
 
@@ -409,7 +395,6 @@ class DryOutputSwiftTemplateTests: XCTestCase {
     }
 }
 
-// MARK: - Helpers
 private class OutputInterceptor {
     let jsonDecoder = JSONDecoder()
     var outputModel: DryOutputSuccess!

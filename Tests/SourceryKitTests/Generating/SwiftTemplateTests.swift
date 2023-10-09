@@ -40,8 +40,7 @@ class SwiftTemplateTests: XCTestCase {
         _ = try Sourcery(cacheDisabled: true).processFiles(
             .sources(Paths(include: [Stubs.sourceDirectory])),
             usingTemplates: Paths(include: [templatePath]),
-            output: output,
-            baseIndentation: 0
+            output: output
         )
 
         let result = try (outputDir + Sourcery().generatedPath(for: templatePath)).read(.utf8)
@@ -62,8 +61,7 @@ class SwiftTemplateTests: XCTestCase {
         _ = try Sourcery(cacheDisabled: true).processFiles(
             .sources(Paths(include: [Stubs.sourceDirectory])),
             usingTemplates: Paths(include: [templatePath]),
-            output: output,
-            baseIndentation: 0
+            output: output
         )
 
         let result = try (outputDir + Sourcery().generatedPath(for: templatePath)).read(.utf8)
@@ -77,8 +75,7 @@ class SwiftTemplateTests: XCTestCase {
         _ = try Sourcery(cacheDisabled: true).processFiles(
             .sources(Paths(include: [Stubs.sourceDirectory])),
             usingTemplates: Paths(include: [templatePath]),
-            output: output,
-            baseIndentation: 0
+            output: output
         )
 
         let result = try (outputDir + Sourcery().generatedPath(for: templatePath)).read(.utf8)
@@ -92,8 +89,7 @@ class SwiftTemplateTests: XCTestCase {
         _ = try Sourcery(cacheDisabled: true).processFiles(
             .sources(Paths(include: [Stubs.sourceDirectory])),
             usingTemplates: Paths(include: [templatePath]),
-            output: output,
-            baseIndentation: 0
+            output: output
         )
 
         let result = try (outputDir + Sourcery().generatedPath(for: templatePath)).read(.utf8)
@@ -107,8 +103,7 @@ class SwiftTemplateTests: XCTestCase {
         _ = try Sourcery(cacheDisabled: true).processFiles(
             .sources(Paths(include: [Stubs.sourceDirectory])),
             usingTemplates: Paths(include: [templatePath]),
-            output: output,
-            baseIndentation: 0
+            output: output
         )
 
         let result = try (outputDir + Sourcery().generatedPath(for: templatePath)).read(.utf8)
@@ -122,8 +117,7 @@ class SwiftTemplateTests: XCTestCase {
         _ = try Sourcery(cacheDisabled: true).processFiles(
             .sources(Paths(include: [Stubs.sourceDirectory])),
             usingTemplates: Paths(include: [templatePath]),
-            output: output,
-            baseIndentation: 0
+            output: output
         )
 
         let result = try (outputDir + Sourcery().generatedPath(for: templatePath)).read(.utf8)
@@ -137,8 +131,7 @@ class SwiftTemplateTests: XCTestCase {
         _ = try Sourcery(cacheDisabled: true).processFiles(
             .sources(Paths(include: [Stubs.sourceDirectory])),
             usingTemplates: Paths(include: [templatePath]),
-            output: output,
-            baseIndentation: 0
+            output: output
         )
 
         let result = try (outputDir + Sourcery().generatedPath(for: templatePath)).read(.utf8)
@@ -193,8 +186,7 @@ class SwiftTemplateTests: XCTestCase {
         _ = try Sourcery(cacheDisabled: false).processFiles(
             .sources(Paths(include: [Stubs.sourceDirectory])),
             usingTemplates: Paths(include: [templatePath]),
-            output: output,
-            baseIndentation: 0
+            output: output
         )
         XCTAssertEqual(try (outputDir + Sourcery().generatedPath(for: templatePath)).read(.utf8), expectedResult)
 
@@ -209,8 +201,7 @@ class SwiftTemplateTests: XCTestCase {
         _ = try Sourcery(cacheDisabled: false).processFiles(
             .sources(Paths(include: [Stubs.sourceDirectory])),
             usingTemplates: Paths(include: [templatePath]),
-            output: output,
-            baseIndentation: 0
+            output: output
         )
 
         let result = try (outputDir + Sourcery().generatedPath(for: templatePath)).read(.utf8)
@@ -224,8 +215,7 @@ class SwiftTemplateTests: XCTestCase {
         _ = try Sourcery(cacheDisabled: true).processFiles(
             .sources(Paths(include: [Stubs.sourceDirectory])),
             usingTemplates: Paths(include: [templatePath]),
-            output: output,
-            baseIndentation: 0
+            output: output
         )
 
         let result = try (outputDir + Sourcery().generatedPath(for: templatePath)).read(.utf8)

@@ -1,18 +1,12 @@
-//
-// Created by Krzysztof Zablocki on 14/09/2016.
-// Copyright (c) 2016 Pixle. All rights reserved.
-//
-
 import Foundation
 import PathKit
 import SourceryRuntime
 import XcodeProj
 
 public class Sourcery {
-    public static let version: String = SourceryVersion.current.value
-    public static let generationMarker: String = "// Generated using Sourcery"
-    public static let generationHeader = "\(Sourcery.generationMarker) \(Sourcery.version) — https://github.com/krzysztofzablocki/Sourcery\n"
-        + "// DO NOT EDIT\n"
+    public static let version = SourceryVersion.current.value
+    public static let generationMarker = "// Generated using Sourcery"
+    public static let generationHeader = "\(Sourcery.generationMarker) \(Sourcery.version) — https://github.com/lunij/Sourcery\n\n"
 
     enum Error: Swift.Error {
         case containsMergeConflictMarkers
@@ -39,7 +33,16 @@ public class Sourcery {
     fileprivate var fileAnnotatedContent: [Path: [String]] = [:]
 
     /// Creates Sourcery processor
-  public init(verbose: Bool = false, watcherEnabled: Bool = false, cacheDisabled: Bool = false, cacheBasePath: Path? = nil, buildPath: Path? = nil, prune: Bool = false, serialParse: Bool = false, arguments: [String: NSObject] = [:]) {
+    public init(
+        verbose: Bool = false,
+        watcherEnabled: Bool = false,
+        cacheDisabled: Bool = false,
+        cacheBasePath: Path? = nil,
+        buildPath: Path? = nil,
+        prune: Bool = false,
+        serialParse: Bool = false,
+        arguments: [String: NSObject] = [:]
+    ) {
         self.verbose = verbose
         self.arguments = arguments
         self.watcherEnabled = watcherEnabled
@@ -50,16 +53,15 @@ public class Sourcery {
         self.serialParse = serialParse
     }
 
-    /// Processes source files and generates corresponding code.
-    ///
-    /// - Parameters:
-    ///   - files: Path of files to process, can be directory or specific file.
-    ///   - templatePath: Specific Template to use for code generation.
-    ///   - output: Path to output source code to.
-    ///   - forceParse: extensions of generated sourcery file that can be parsed
-    ///   - watcherEnabled: Whether daemon watcher should be enabled.
-    /// - Throws: Potential errors.
-    public func processFiles(_ source: Source, usingTemplates templatesPaths: Paths, output: Output, isDryRun: Bool = false, forceParse: [String] = [], parseDocumentation: Bool = false, baseIndentation: Int) throws -> [FolderWatcher.Local]? {
+    public func processFiles(
+        _ source: Source,
+        usingTemplates templatesPaths: Paths,
+        output: Output,
+        isDryRun: Bool = false,
+        forceParse: [String] = [],
+        parseDocumentation: Bool = false,
+        baseIndentation: Int = 0
+    ) throws -> [FolderWatcher.Local]? {
         self.templatesPaths = templatesPaths
         self.outputPath = output
         self.isDryRun = isDryRun
@@ -251,11 +253,19 @@ extension Sourcery {
         parserResult: FileParserResult?,
         types: Types,
         functions: [SourceryMethod],
-        inlineRanges: [(file: String, ranges: [String: NSRange], indentations: [String: String])])
+        inlineRanges: [(file: String, ranges: [String: NSRange], indentations: [String: String])]
+    )
 
     typealias ParserWrapper = (path: Path, parse: () throws -> FileParserResult?)
 
-  fileprivate func parse(from: [Path], exclude: [Path] = [], forceParse: [String] = [], parseDocumentation: Bool, modules: [String]?, requiresFileParserCopy: Bool) throws -> ParsingResult {
+    fileprivate func parse(
+        from: [Path],
+        exclude: [Path] = [],
+        forceParse: [String] = [],
+        parseDocumentation: Bool,
+        modules: [String]?,
+        requiresFileParserCopy: Bool
+    ) throws -> ParsingResult {
         if let modules = modules {
             precondition(from.count == modules.count, "There should be module for each file to parse")
         }

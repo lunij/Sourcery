@@ -1,5 +1,5 @@
-// Generated using Sourcery 2.0.2 — https://github.com/krzysztofzablocki/Sourcery
-// DO NOT EDIT
+// Generated using Sourcery 2.0.2 — https://github.com/lunij/Sourcery
+
 import Foundation
 
 extension Actor {

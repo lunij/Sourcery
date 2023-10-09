@@ -186,15 +186,17 @@ class StencilTemplateTests: XCTestCase {
         outputDir = Stubs.cleanTemporarySourceryDir()
 
         let templatePath = Stubs.templateDirectory + Path("Include.stencil")
-        let expectedResult = "// Generated using Sourcery Major.Minor.Patch — https://github.com/krzysztofzablocki/Sourcery\n" +
-            "// DO NOT EDIT\n" +
-        "partial template content\n"
+        let expectedResult = """
+        // Generated using Sourcery Major.Minor.Patch — https://github.com/lunij/Sourcery
+
+        partial template content
+
+        """
 
         _ = try Sourcery(cacheDisabled: true).processFiles(
             .sources(Paths(include: [Stubs.sourceDirectory])),
             usingTemplates: Paths(include: [templatePath]),
-            output: Output(outputDir),
-            baseIndentation: 0
+            output: Output(outputDir)
         )
 
         let result = try (outputDir + Sourcery().generatedPath(for: templatePath)).read(.utf8)
