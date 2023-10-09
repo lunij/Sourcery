@@ -637,7 +637,7 @@ import Foundation
 """),
     .init(name: "Coding.generated.swift", content:
 """
-// Generated using Sourcery 2.0.2 — https://github.com/lunij/Sourcery
+// Generated using Sourcery
 
 // swiftlint:disable vertical_whitespace trailing_newline
 
@@ -1009,7 +1009,7 @@ public protocol Definition: AnyObject {
 """),
     .init(name: "Description.generated.swift", content:
 """
-// Generated using Sourcery 2.0.2 — https://github.com/lunij/Sourcery
+// Generated using Sourcery
 
 // swiftlint:disable vertical_whitespace
 
@@ -1457,7 +1457,7 @@ import Foundation
 """),
     .init(name: "Diffable.generated.swift", content:
 """
-// Generated using Sourcery 2.0.2 — https://github.com/lunij/Sourcery
+// Generated using Sourcery
 
 import Foundation
 
@@ -2392,7 +2392,7 @@ import Foundation
 """),
     .init(name: "Equality.generated.swift", content:
 """
-// Generated using Sourcery 2.0.2 — https://github.com/lunij/Sourcery
+// Generated using Sourcery
 
 // swiftlint:disable vertical_whitespace
 
@@ -6380,7 +6380,7 @@ import Foundation
 """),
     .init(name: "Typed.generated.swift", content:
 """
-// Generated using Sourcery 2.0.2 — https://github.com/lunij/Sourcery
+// Generated using Sourcery
 
 // swiftlint:disable vertical_whitespace
 

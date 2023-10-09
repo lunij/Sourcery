@@ -187,7 +187,7 @@ class StencilTemplateTests: XCTestCase {
 
         let templatePath = Stubs.templateDirectory + Path("Include.stencil")
         let expectedResult = """
-        // Generated using Sourcery Major.Minor.Patch — https://github.com/lunij/Sourcery
+        // Generated using Sourcery
 
         partial template content
 

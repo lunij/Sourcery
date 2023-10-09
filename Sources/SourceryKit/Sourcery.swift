@@ -5,8 +5,6 @@ import XcodeProj
 
 public class Sourcery {
     public static let version = SourceryVersion.current.value
-    public static let generationMarker = "// Generated using Sourcery"
-    public static let generationHeader = "\(Sourcery.generationMarker) \(Sourcery.version) — https://github.com/lunij/Sourcery\n\n"
 
     enum Error: Swift.Error {
         case containsMergeConflictMarkers
@@ -135,7 +133,7 @@ public class Sourcery {
                 var pathThatForcedRegeneration: Path?
                 for path in eventPaths {
                     guard let file = try? path.read(.utf8) else { continue }
-                    if !file.hasPrefix(Sourcery.generationMarker) {
+                    if !file.hasPrefix(.generatedHeader) {
                         pathThatForcedRegeneration = path
                         break
                     }
@@ -296,7 +294,7 @@ extension Sourcery {
                         }
 
                         let content = try path.read(.utf8)
-                        let status = Verifier.canParse(content: content, path: path, generationMarker: Sourcery.generationMarker, forceParse: forceParse)
+                        let status = Verifier.canParse(content: content, path: path, forceParse: forceParse)
                         switch status {
                         case .containsConflictMarkers:
                             throw Error.containsMergeConflictMarkers
@@ -563,7 +561,7 @@ extension Sourcery {
         let resultIsEmpty = result.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         var result = result
         if !resultIsEmpty, outputPath.extension == "swift" {
-            result = Sourcery.generationHeader + result
+            result = .generatedHeader + result
         }
 
         if isDryRun {

@@ -31,7 +31,7 @@ class DryOutputStencilTemplateTests: XCTestCase {
 
         let templatePath = Stubs.templateDirectory + Path("Include.stencil")
         let expectedResult = """
-        // Generated using Sourcery Major.Minor.Patch — https://github.com/lunij/Sourcery
+        // Generated using Sourcery
 
         partial template content
 
@@ -100,7 +100,7 @@ class DryOutputStencilTemplateTests: XCTestCase {
         let templatePathResult = outputInterceptor
             .result(byOutputType: .init(id: "\(templatePath)", subType: .template)).value
         XCTAssertEqual(templatePathResult, """
-        // Generated using Sourcery Major.Minor.Patch — https://github.com/lunij/Sourcery
+        // Generated using Sourcery
 
         // swiftlint:disable file_length
         fileprivate func compareOptionals<T>(lhs: T?, rhs: T?, compare: (_ lhs: T, _ rhs: T) -> Bool) -> Bool {
@@ -145,7 +145,7 @@ class DryOutputStencilTemplateTests: XCTestCase {
 
         """)
         XCTAssertEqual(outputInterceptor.result(byOutputType: .init(id: "Generated/EqEnum+TemplateName.generated.swift", subType: .path)).value, """
-        // Generated using Sourcery Major.Minor.Patch — https://github.com/lunij/Sourcery
+        // Generated using Sourcery
 
         // MARK: - EqEnum AutoEquatable
         extension EqEnum: Equatable {}

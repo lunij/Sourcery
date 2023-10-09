@@ -17,17 +17,18 @@ public enum Verifier {
         case approved
     }
 
-    public static func canParse(content: String,
-                                path: Path,
-                                generationMarker: String,
-                                forceParse: [String] = []) -> Result {
+    public static func canParse(
+        content: String,
+        path: Path,
+        forceParse: [String] = []
+    ) -> Result {
         guard !content.isEmpty else { return .approved }
 
         let shouldForceParse = forceParse.contains { name in
             return path.hasExtension(as: name)
         }
 
-        if content.hasPrefix(generationMarker) && shouldForceParse == false {
+        if content.hasPrefix(.generatedHeader) && shouldForceParse == false {
             return .isCodeGenerated
         }
 

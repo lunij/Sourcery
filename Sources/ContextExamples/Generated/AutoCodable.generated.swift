@@ -1,4 +1,4 @@
-// Generated using Sourcery 2.0.2 — https://github.com/lunij/Sourcery
+// Generated using Sourcery
 
 
 

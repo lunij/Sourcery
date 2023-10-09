@@ -120,7 +120,7 @@ class SourceryTests: XCTestCase {
         let (_, templatePath) = try createExistingFilesWithInlineTemplate()
 
         let expectedResult = """
-            // Generated using Sourcery Major.Minor.Patch — https://github.com/lunij/Sourcery
+            // Generated using Sourcery
 
             // Line One
             """
@@ -151,7 +151,7 @@ class SourceryTests: XCTestCase {
         )
 
         let expectedResult = """
-            // Generated using Sourcery Major.Minor.Patch — https://github.com/lunij/Sourcery
+            // Generated using Sourcery
 
             // Line One
             // sourcery:inline:Foo.Inlined
@@ -1041,7 +1041,7 @@ class SourceryTests: XCTestCase {
         _ = try createGivenFiles3()
 
         let expectedResult = """
-            // Generated using Sourcery Major.Minor.Patch — https://github.com/lunij/Sourcery
+            // Generated using Sourcery
 
             extension Foo {
             var property = 2
@@ -1060,7 +1060,7 @@ class SourceryTests: XCTestCase {
         let (_, templatePath) = try createGivenFiles3()
 
         let expectedResult = """
-            // Generated using Sourcery Major.Minor.Patch — https://github.com/lunij/Sourcery
+            // Generated using Sourcery
 
             // Line One
 
@@ -1112,7 +1112,7 @@ class SourceryTests: XCTestCase {
         """.update(in: templatePath)
 
         let expectedResult = """
-            // Generated using Sourcery Major.Minor.Patch — https://github.com/lunij/Sourcery
+            // Generated using Sourcery
 
             extension Foo {
             var property1 = 1
@@ -1242,7 +1242,7 @@ class SourceryTests: XCTestCase {
         assertContinuously {
             try (outputDir + Sourcery().generatedPath(for: templatePath)).read(.utf8)
         } until: {
-            $0.contains("\(Sourcery.generationHeader)Found 3 Types")
+            $0.contains("\(String.generatedHeader)Found 3 Types")
         }
 
         _ = watcher
