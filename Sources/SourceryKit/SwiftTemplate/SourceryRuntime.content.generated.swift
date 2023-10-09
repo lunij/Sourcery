@@ -4261,6 +4261,23 @@ public typealias SourceryModifier = Modifier
 }
 
 """),
+    .init(name: "NSKeyedUnarchiver.swift", content:
+"""
+import Foundation
+
+public extension NSKeyedUnarchiver {
+    static func unarchivedRootObject<DecodedObjectType>(
+        ofClass cls: DecodedObjectType.Type,
+        from data: Data,
+        requiringSecureCoding requiresSecureCoding: Bool = false
+    ) throws -> DecodedObjectType? where DecodedObjectType: NSObject, DecodedObjectType: NSCoding {
+        let unarchiver = try NSKeyedUnarchiver(forReadingFrom: data)
+        unarchiver.requiresSecureCoding = requiresSecureCoding
+        return unarchiver.decodeObject(of: cls, forKey: NSKeyedArchiveRootObjectKey)
+    }
+}
+
+"""),
     .init(name: "ParserResultsComposed.swift", content:
 """
 //
@@ -5257,9 +5274,9 @@ import Foundation
 }
 
 extension ProcessInfo {
-    /// :nodoc:
-    public var context: TemplateContext! {
-        return NSKeyedUnarchiver.unarchiveObject(withFile: arguments[1]) as? TemplateContext
+    public func unarchiveContext() throws -> TemplateContext? {
+        let data = try Data(contentsOf: URL(fileURLWithPath: arguments[1]))
+        return try NSKeyedUnarchiver.unarchivedRootObject(ofClass: TemplateContext.self, from: data)
     }
 }
 

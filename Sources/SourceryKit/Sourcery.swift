@@ -357,7 +357,7 @@ extension Sourcery {
         var parserResultCopy: FileParserResult?
         if requiresFileParserCopy {
             let data = try NSKeyedArchiver.archivedData(withRootObject: parserResult, requiringSecureCoding: false)
-            parserResultCopy = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data) as? FileParserResult
+            parserResultCopy = try NSKeyedUnarchiver.unarchivedRootObject(ofClass: FileParserResult.self, from: data)
         }
 
         let uniqueTypeStart = currentTimestamp()
@@ -392,8 +392,8 @@ extension Sourcery {
         guard
             artifactsPath.exists,
             let modifiedDate = path.modifiedDate,
-            let unarchived = load(artifacts: artifactsPath.string, modifiedDate: modifiedDate, path: path) else {
-
+            let unarchived = loadArtifacts(path: artifactsPath, modifiedDate: modifiedDate)
+        else {
             guard let result = try parser.parse() else {
                 return nil
             }
@@ -411,16 +411,16 @@ extension Sourcery {
         return (changed: false, result: unarchived)
     }
 
-    private func load(artifacts: String, modifiedDate: Date, path: Path) -> FileParserResult? {
-        var unarchivedResult: FileParserResult?
-
-        if let unarchived = NSKeyedUnarchiver.unarchiveObject(withFile: artifacts) as? FileParserResult {
-            if unarchived.sourceryVersion == Sourcery.version, unarchived.modifiedDate == modifiedDate {
-                unarchivedResult = unarchived
-            }
+    private func loadArtifacts(path: Path, modifiedDate: Date) -> FileParserResult? {
+        guard
+            let data = try? path.read(),
+            let result = try? NSKeyedUnarchiver.unarchivedRootObject(ofClass: FileParserResult.self, from: data),
+            result.sourceryVersion == Sourcery.version,
+            result.modifiedDate == modifiedDate
+        else {
+            return nil
         }
-
-        return unarchivedResult
+        return result
     }
 }
 

@@ -81,9 +81,9 @@ import Foundation
 }
 
 extension ProcessInfo {
-    /// :nodoc:
-    public var context: TemplateContext! {
-        return NSKeyedUnarchiver.unarchiveObject(withFile: arguments[1]) as? TemplateContext
+    public func unarchiveContext() throws -> TemplateContext? {
+        let data = try Data(contentsOf: URL(fileURLWithPath: arguments[1]))
+        return try NSKeyedUnarchiver.unarchivedRootObject(ofClass: TemplateContext.self, from: data)
     }
 }
 

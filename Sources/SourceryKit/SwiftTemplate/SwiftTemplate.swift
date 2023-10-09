@@ -82,7 +82,7 @@ open class SwiftTemplate {
         import Foundation
         import SourceryRuntime
 
-        let context = ProcessInfo().context!
+        let context = try ProcessInfo().unarchiveContext()!
         let types = context.types
         let functions = context.functions
         let type = context.types.typesByName

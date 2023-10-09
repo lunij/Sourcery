@@ -12,15 +12,16 @@ class SwiftTemplateTests: XCTestCase {
     let expectedResult = try? (Stubs.resultDirectory + Path("Basic.swift")).read(.utf8)
 
     func test_createsPersistableData() throws {
-        func templateContextData(_ code: String) throws -> TemplateContext? {
+        func templateContextData(_ code: String) throws -> TemplateContext {
             let parserResult = try makeParser(for: code).parse()
-            let data = NSKeyedArchiver.archivedData(withRootObject: parserResult)
+            let data = try NSKeyedArchiver.archivedData(withRootObject: parserResult, requiringSecureCoding: false)
 
             let result = Composer.uniqueTypesAndFunctions(parserResult)
-            return TemplateContext(parserResult: try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data) as? FileParserResult, types: .init(types: result.types, typealiases: result.typealiases), functions: result.functions, arguments: [:])
+            let unarchivedParserResult = try NSKeyedUnarchiver.unarchivedRootObject(ofClass: FileParserResult.self, from: data)
+            return TemplateContext(parserResult: unarchivedParserResult, types: .init(types: result.types, typealiases: result.typealiases), functions: result.functions, arguments: [:])
         }
 
-        let maybeContext = try templateContextData("""
+        let context = try templateContextData("""
         public struct Periodization {
             public typealias Action = Identified<UUID, ActionType>
             public struct ActionType {
@@ -29,9 +30,8 @@ class SwiftTemplateTests: XCTestCase {
         }
         """)
 
-        let context = try XCTUnwrap(maybeContext)
-        let data = NSKeyedArchiver.archivedData(withRootObject: context)
-        let unarchived = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data) as? TemplateContext
+        let data = try NSKeyedArchiver.archivedData(withRootObject: context, requiringSecureCoding: false)
+        let unarchived = try NSKeyedUnarchiver.unarchivedRootObject(ofClass: TemplateContext.self, from: data)
 
         XCTAssertEqual(context.types, unarchived?.types)
     }
