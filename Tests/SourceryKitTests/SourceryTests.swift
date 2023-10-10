@@ -1205,12 +1205,11 @@ class SourceryTests: XCTestCase {
     }
 
     func test_processFiles_whenWatcher_itRegeneratesOnTemplateChange() throws {
-        var watcher: Any?
         let templatePath = outputDir + Path("FakeTemplate.stencil")
 
         "Found {{ types.enums.count }} Enums".update(in: templatePath)
 
-        watcher = try Sourcery(watcherEnabled: true, cacheDisabled: true).processFiles(
+        let eventStreams = try Sourcery(watcherEnabled: true, cacheDisabled: true).processFiles(
             .sources(Paths(include: [Stubs.sourceDirectory])),
             usingTemplates: Paths(include: [templatePath]),
             output: output
@@ -1218,34 +1217,13 @@ class SourceryTests: XCTestCase {
 
         "Found {{ types.all.count }} Types".update(in: templatePath)
 
-        func assertContinuously(
-            repeats: Int = 3,
-            delay: TimeInterval = 1,
-            execute: () throws -> String,
-            until assert: (String) -> Bool,
-            file: StaticString = #filePath,
-            line: UInt = #line
-        ) {
-            do {
-                guard repeats > 0 else {
-                    return XCTFail("No repeats left", file: file, line: line)
-                }
-                let result = try execute()
-                if assert(result) { return }
-                Thread.sleep(forTimeInterval: delay)
-                assertContinuously(repeats: repeats - 1, execute: execute, until: assert, file: file, line: line)
-            } catch {
-                XCTFail(String(describing: error), file: file, line: line)
-            }
-        }
+        XCTAssertEqual(eventStreams.count, 2)
 
         assertContinuously {
             try (outputDir + Sourcery().generatedPath(for: templatePath)).read(.utf8)
         } until: {
             $0.contains("\(String.generatedHeader)Found 3 Types")
         }
-
-        _ = watcher
     }
 
     func test_processFiles_whenTemplateFolder_andSingleFileOutput_itJoinsGeneratedCodeIntoSingleFile() throws {
@@ -1439,5 +1417,26 @@ private struct ProjectScenario {
             ],
             relativePath: projectPath
         )
+    }
+}
+
+private func assertContinuously(
+    repeats: Int = 3,
+    delay: TimeInterval = 1,
+    execute: () throws -> String,
+    until assert: (String) -> Bool,
+    file: StaticString = #filePath,
+    line: UInt = #line
+) {
+    do {
+        guard repeats > 0 else {
+            return XCTFail("No repeats left", file: file, line: line)
+        }
+        let result = try execute()
+        if assert(result) { return }
+        Thread.sleep(forTimeInterval: delay)
+        assertContinuously(repeats: repeats - 1, execute: execute, until: assert, file: file, line: line)
+    } catch {
+        XCTFail(String(describing: error), file: file, line: line)
     }
 }

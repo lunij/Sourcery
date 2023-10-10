@@ -1,5 +1,5 @@
-
 import ArgumentParser
+import FileSystemEvents
 import Foundation
 import PathKit
 import SourceryRuntime
@@ -176,7 +176,7 @@ public struct SourceryCommand: AsyncParsableCommand {
         }
     }
 
-    private func processFiles(specifiedIn configurations: [Configuration]) throws -> [FolderWatcher.Local] {
+    private func processFiles(specifiedIn configurations: [Configuration]) throws -> [FSEventStream] {
         try configurations.flatMap { configuration in
             configuration.validate()
 
@@ -205,7 +205,7 @@ public struct SourceryCommand: AsyncParsableCommand {
                 forceParse: configuration.forceParse,
                 parseDocumentation: configuration.parseDocumentation,
                 baseIndentation: configuration.baseIndentation
-            ) ?? []
+            )
         }
     }
 }

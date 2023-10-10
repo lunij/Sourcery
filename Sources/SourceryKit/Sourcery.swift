@@ -1,3 +1,4 @@
+import FileSystemEvents
 import Foundation
 import PathKit
 import SourceryRuntime
@@ -58,7 +59,7 @@ public class Sourcery {
         forceParse: [String] = [],
         parseDocumentation: Bool = false,
         baseIndentation: Int = 0
-    ) throws -> [FolderWatcher.Local]? {
+    ) throws -> [FSEventStream] {
         self.isDryRun = isDryRun
 
         let hasSwiftTemplates = templatePaths.allPaths.contains(where: { $0.extension == "swifttemplate" })
@@ -99,7 +100,7 @@ public class Sourcery {
             parseDocumentation: parseDocumentation,
             hasSwiftTemplates: hasSwiftTemplates,
             baseIndentation: baseIndentation
-        ) : nil
+        ) : []
     }
 
     private func process(
@@ -171,13 +172,13 @@ public class Sourcery {
         parseDocumentation: Bool,
         hasSwiftTemplates: Bool,
         baseIndentation: Int
-    ) -> [FolderWatcher.Local] {
+    ) -> [FSEventStream] {
         var result = parserResult
 
         Log.info("Starting watching sources.")
 
-        let sourceWatchers = topPaths(from: sourcePaths.allPaths).map { path in
-            FolderWatcher.Local(path: path.string) { events in
+        let sourceWatchers = topPaths(from: sourcePaths.allPaths).compactMap { path in
+            FSEventStream(path: path.string) { events in
                 let eventPaths: [Path] = events
                     .filter { $0.flags.contains(.isFile) }
                     .compactMap {
@@ -215,8 +216,8 @@ public class Sourcery {
 
         Log.info("Starting watching templates.")
 
-        let templateWatchers = topPaths(from: templatePaths.allPaths).map { path in
-            FolderWatcher.Local(path: path.string) { events in
+        let templateWatchers = topPaths(from: templatePaths.allPaths).compactMap { path in
+            FSEventStream(path: path.string) { events in
                 let events = events.filter { $0.flags.contains(.isFile) && Path($0.path).isTemplateFile }
 
                 if events.isEmpty { return }
