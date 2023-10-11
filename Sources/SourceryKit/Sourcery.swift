@@ -20,8 +20,6 @@ public class Sourcery {
     fileprivate let serialParse: Bool
 
     fileprivate var status = ""
-    fileprivate var templatesPaths = Paths(include: [])
-    fileprivate var outputPath = Output("", linkTo: nil)
     fileprivate var isDryRun: Bool = false
     fileprivate lazy var dryOutputBuffer = [DryOutputValue]()
 
@@ -61,8 +59,6 @@ public class Sourcery {
         parseDocumentation: Bool = false,
         baseIndentation: Int = 0
     ) throws -> [FolderWatcher.Local]? {
-        self.templatesPaths = templatesPaths
-        self.outputPath = output
         self.isDryRun = isDryRun
 
         let hasSwiftTemplates = templatesPaths.allPaths.contains(where: { $0.extension == "swifttemplate" })
@@ -76,38 +72,15 @@ public class Sourcery {
                                exclude: projects.flatMap({ $0.exclude }))
         }
 
-        let process: (Source) throws -> ParsingResult = { source in
-            var result: ParsingResult
-            switch source {
-            case let .sources(paths):
-                result = try self.parse(from: paths.include, exclude: paths.exclude, forceParse: forceParse, parseDocumentation: parseDocumentation, modules: nil, requiresFileParserCopy: hasSwiftTemplates)
-            case let .projects(projects):
-                var paths: [Path] = []
-                var modules = [String]()
-                projects.forEach { project in
-                    project.targets.forEach { target in
-                        guard let projectTarget = project.file.target(named: target.name) else { return }
-
-                        let files: [Path] = project.file.sourceFilesPaths(target: projectTarget, sourceRoot: project.root)
-                        files.forEach { file in
-                            guard !project.exclude.contains(file) else { return }
-                            paths.append(file)
-                            modules.append(target.module)
-                        }
-                        for framework in target.xcframeworks {
-                            paths.append(framework.swiftInterfacePath)
-                            modules.append(target.module)
-                        }
-                    }
-                }
-                result = try self.parse(from: paths, forceParse: forceParse, parseDocumentation: parseDocumentation, modules: modules, requiresFileParserCopy: hasSwiftTemplates)
-            }
-
-            try self.generate(source: source, templatePaths: templatesPaths, output: output, parsingResult: &result, forceParse: forceParse, baseIndentation: baseIndentation)
-            return result
-        }
-
-        var result = try process(source)
+        var result = try process(
+            source: source,
+            templatePaths: templatesPaths,
+            output: output,
+            forceParse: forceParse,
+            parseDocumentation: parseDocumentation,
+            hasSwiftTemplates: hasSwiftTemplates,
+            baseIndentation: baseIndentation
+        )
 
         if isDryRun {
             let encoder = JSONEncoder()
@@ -143,7 +116,15 @@ public class Sourcery {
                 if let path = pathThatForcedRegeneration {
                     do {
                         Log.info("Source changed at \(path.string)")
-                        result = try process(source)
+                        result = try self.process(
+                            source: source,
+                            templatePaths: templatesPaths,
+                            output: output,
+                            forceParse: forceParse,
+                            parseDocumentation: parseDocumentation,
+                            hasSwiftTemplates: hasSwiftTemplates,
+                            baseIndentation: baseIndentation
+                        )
                     } catch {
                         Log.error(error)
                     }
@@ -174,6 +155,57 @@ public class Sourcery {
         })
 
         return Array([sourceWatchers, templateWatchers].joined())
+    }
+
+    private func process(source: Source, templatePaths: Paths, output: Output, forceParse: [String], parseDocumentation: Bool, hasSwiftTemplates: Bool, baseIndentation: Int) throws -> ParsingResult {
+        var result: ParsingResult
+        switch source {
+        case let .sources(paths):
+            result = try parse(
+                from: paths.include,
+                exclude: paths.exclude,
+                forceParse: forceParse,
+                parseDocumentation: parseDocumentation,
+                modules: nil,
+                requiresFileParserCopy: hasSwiftTemplates
+            )
+        case let .projects(projects):
+            var paths: [Path] = []
+            var modules = [String]()
+            projects.forEach { project in
+                project.targets.forEach { target in
+                    guard let projectTarget = project.file.target(named: target.name) else { return }
+
+                    let files: [Path] = project.file.sourceFilesPaths(target: projectTarget, sourceRoot: project.root)
+                    files.forEach { file in
+                        guard !project.exclude.contains(file) else { return }
+                        paths.append(file)
+                        modules.append(target.module)
+                    }
+                    for framework in target.xcframeworks {
+                        paths.append(framework.swiftInterfacePath)
+                        modules.append(target.module)
+                    }
+                }
+            }
+            result = try parse(
+                from: paths,
+                forceParse: forceParse,
+                parseDocumentation: parseDocumentation,
+                modules: modules,
+                requiresFileParserCopy: hasSwiftTemplates
+            )
+        }
+
+        try generate(
+            source: source,
+            templatePaths: templatePaths,
+            output: output,
+            parsingResult: &result,
+            forceParse: forceParse,
+            baseIndentation: baseIndentation
+        )
+        return result
     }
 
     private func topPaths(from paths: [Path]) -> [Path] {
