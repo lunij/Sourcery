@@ -52,7 +52,7 @@ public class Sourcery {
     @discardableResult
     public func processFiles(
         _ source: Source,
-        usingTemplates templatesPaths: Paths,
+        usingTemplates templatePaths: Paths,
         output: Output,
         isDryRun: Bool = false,
         forceParse: [String] = [],
@@ -61,7 +61,7 @@ public class Sourcery {
     ) throws -> [FolderWatcher.Local]? {
         self.isDryRun = isDryRun
 
-        let hasSwiftTemplates = templatesPaths.allPaths.contains(where: { $0.extension == "swifttemplate" })
+        let hasSwiftTemplates = templatePaths.allPaths.contains(where: { $0.extension == "swifttemplate" })
 
         let watchPaths: Paths
         switch source {
@@ -72,9 +72,9 @@ public class Sourcery {
                                exclude: projects.flatMap({ $0.exclude }))
         }
 
-        var result = try process(
+        let parserResult = try process(
             source: source,
-            templatePaths: templatesPaths,
+            templatePaths: templatePaths,
             output: output,
             forceParse: forceParse,
             parseDocumentation: parseDocumentation,
@@ -89,75 +89,28 @@ public class Sourcery {
             self.dryOutput(String(data: data, encoding: .utf8) ?? "")
         }
 
-        guard watcherEnabled else {
-            return nil
-        }
-
-        Log.info("Starting watching sources.")
-
-        let sourceWatchers = topPaths(from: watchPaths.allPaths).map({ watchPath in
-            return FolderWatcher.Local(path: watchPath.string) { events in
-                let eventPaths: [Path] = events
-                    .filter { $0.flags.contains(.isFile) }
-                    .compactMap {
-                        let path = Path($0.path)
-                        return path.isSwiftSourceFile ? path : nil
-                    }
-
-                var pathThatForcedRegeneration: Path?
-                for path in eventPaths {
-                    guard let file = try? path.read(.utf8) else { continue }
-                    if !file.hasPrefix(.generatedHeader) {
-                        pathThatForcedRegeneration = path
-                        break
-                    }
-                }
-
-                if let path = pathThatForcedRegeneration {
-                    do {
-                        Log.info("Source changed at \(path.string)")
-                        result = try self.process(
-                            source: source,
-                            templatePaths: templatesPaths,
-                            output: output,
-                            forceParse: forceParse,
-                            parseDocumentation: parseDocumentation,
-                            hasSwiftTemplates: hasSwiftTemplates,
-                            baseIndentation: baseIndentation
-                        )
-                    } catch {
-                        Log.error(error)
-                    }
-                }
-            }
-        })
-
-        Log.info("Starting watching templates.")
-
-        let templateWatchers = topPaths(from: templatesPaths.allPaths).map({ templatesPath in
-            return FolderWatcher.Local(path: templatesPath.string) { events in
-                let events = events
-                    .filter { $0.flags.contains(.isFile) && Path($0.path).isTemplateFile }
-
-                if !events.isEmpty {
-                    do {
-                        if events.count == 1 {
-                            Log.info("Template changed \(events[0].path)")
-                        } else {
-                            Log.info("Templates changed: ")
-                        }
-                        try self.generate(source: source, templatePaths: Paths(include: [templatesPath]), output: output, parsingResult: &result, forceParse: forceParse, baseIndentation: baseIndentation)
-                    } catch {
-                        Log.error(error)
-                    }
-                }
-            }
-        })
-
-        return Array([sourceWatchers, templateWatchers].joined())
+        return watcherEnabled ? createWatchers(
+            parserResult: parserResult,
+            source: source,
+            sourcePaths: watchPaths,
+            templatePaths: templatePaths,
+            output: output,
+            forceParse: forceParse,
+            parseDocumentation: parseDocumentation,
+            hasSwiftTemplates: hasSwiftTemplates,
+            baseIndentation: baseIndentation
+        ) : nil
     }
 
-    private func process(source: Source, templatePaths: Paths, output: Output, forceParse: [String], parseDocumentation: Bool, hasSwiftTemplates: Bool, baseIndentation: Int) throws -> ParsingResult {
+    private func process(
+        source: Source,
+        templatePaths: Paths,
+        output: Output,
+        forceParse: [String],
+        parseDocumentation: Bool,
+        hasSwiftTemplates: Bool,
+        baseIndentation: Int
+    ) throws -> ParsingResult {
         var result: ParsingResult
         switch source {
         case let .sources(paths):
@@ -206,6 +159,89 @@ public class Sourcery {
             baseIndentation: baseIndentation
         )
         return result
+    }
+
+    private func createWatchers(
+        parserResult: ParsingResult,
+        source: Source,
+        sourcePaths: Paths,
+        templatePaths: Paths,
+        output: Output,
+        forceParse: [String],
+        parseDocumentation: Bool,
+        hasSwiftTemplates: Bool,
+        baseIndentation: Int
+    ) -> [FolderWatcher.Local] {
+        var result = parserResult
+
+        Log.info("Starting watching sources.")
+
+        let sourceWatchers = topPaths(from: sourcePaths.allPaths).map { path in
+            FolderWatcher.Local(path: path.string) { events in
+                let eventPaths: [Path] = events
+                    .filter { $0.flags.contains(.isFile) }
+                    .compactMap {
+                        let path = Path($0.path)
+                        return path.isSwiftSourceFile ? path : nil
+                    }
+
+                var pathThatForcedRegeneration: Path?
+                for path in eventPaths {
+                    guard let file = try? path.read(.utf8) else { continue }
+                    if !file.hasPrefix(.generatedHeader) {
+                        pathThatForcedRegeneration = path
+                        break
+                    }
+                }
+
+                if let path = pathThatForcedRegeneration {
+                    do {
+                        Log.info("Source changed at \(path.string)")
+                        result = try self.process(
+                            source: source,
+                            templatePaths: templatePaths,
+                            output: output,
+                            forceParse: forceParse,
+                            parseDocumentation: parseDocumentation,
+                            hasSwiftTemplates: hasSwiftTemplates,
+                            baseIndentation: baseIndentation
+                        )
+                    } catch {
+                        Log.error(error)
+                    }
+                }
+            }
+        }
+
+        Log.info("Starting watching templates.")
+
+        let templateWatchers = topPaths(from: templatePaths.allPaths).map { path in
+            FolderWatcher.Local(path: path.string) { events in
+                let events = events.filter { $0.flags.contains(.isFile) && Path($0.path).isTemplateFile }
+
+                if events.isEmpty { return }
+
+                do {
+                    if events.count == 1 {
+                        Log.info("Template changed \(events[0].path)")
+                    } else {
+                        Log.info("Templates changed: ")
+                    }
+                    try self.generate(
+                        source: source, 
+                        templatePaths: Paths(include: [path]),
+                        output: output,
+                        parsingResult: &result,
+                        forceParse: forceParse,
+                        baseIndentation: baseIndentation
+                    )
+                } catch {
+                    Log.error(error)
+                }
+            }
+        }
+
+        return Array([sourceWatchers, templateWatchers].joined())
     }
 
     private func topPaths(from paths: [Path]) -> [Path] {
