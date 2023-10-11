@@ -53,6 +53,8 @@ let package = Package(
         ),
         .target(name: "SourceryRuntime", exclude: ["Templates"]),
         .testTarget(name: "SourceryRuntimeTests", dependencies: ["SourceryRuntime"]),
+        .target(name: "FileSystemEvents"),
+        .testTarget(name: "FileSystemEventsTests", dependencies: ["FileSystemEvents"]),
         .target(name: "ContextExamples"),
         .testTarget(
             name: "TemplateTests",
