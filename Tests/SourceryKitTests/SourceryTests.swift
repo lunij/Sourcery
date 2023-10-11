@@ -20,7 +20,7 @@ class SourceryTests: XCTestCase {
 
         "class Foo {}".update(in: sourcePath)
 
-        _ = try? Sourcery(watcherEnabled: false, cacheDisabled: true).processFiles(
+        _ = try? Sourcery(cacheDisabled: true).processFiles(
             .sources(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [.otherStencilPath]),
             output: output
@@ -37,7 +37,7 @@ class SourceryTests: XCTestCase {
         let expectation = expectation(description: #function)
 
         DispatchQueue.main.asyncAfter( deadline: DispatchTime.now() + Double(Int64(0.5 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)) { [output] in
-            _ = try? Sourcery(watcherEnabled: false, cacheDisabled: true)
+            _ = try? Sourcery(cacheDisabled: true)
                 .processFiles(.sources(Paths(include: [sourcePath])), usingTemplates: Paths(include: [.otherStencilPath]), output: output, baseIndentation: 0)
             newGeneratedFileModificationDate = generatedFilePath.url.fileModificationDate()
             expectation.fulfill()
@@ -59,7 +59,7 @@ class SourceryTests: XCTestCase {
         let expectation = expectation(description: #function)
 
         DispatchQueue.main.asyncAfter( deadline: DispatchTime.now() + Double(Int64(1 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)) { [output] in
-            _ = try? Sourcery(watcherEnabled: false, cacheDisabled: true)
+            _ = try? Sourcery(cacheDisabled: true)
                 .processFiles(.sources(Paths(include: [sourcePath, anotherSourcePath])), usingTemplates: Paths(include: [.otherStencilPath]), output: output, baseIndentation: 0)
             newGeneratedFileModificationDate = generatedFilePath.url.fileModificationDate()
             expectation.fulfill()
@@ -91,7 +91,7 @@ class SourceryTests: XCTestCase {
         // sourcery:end
         """.update(in: templatePath)
 
-        try Sourcery(watcherEnabled: false, cacheDisabled: true).processFiles(
+        try Sourcery(cacheDisabled: true).processFiles(
             .sources(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [templatePath]),
             output: output
@@ -144,7 +144,7 @@ class SourceryTests: XCTestCase {
         }
         """.update(in: sourcePath)
 
-        try Sourcery(watcherEnabled: false, cacheDisabled: true).processFiles(
+        try Sourcery(cacheDisabled: true).processFiles(
             .sources(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [templatePath]),
             output: output
@@ -176,7 +176,7 @@ class SourceryTests: XCTestCase {
         // sourcery:end
         """.update(in: templatePath)
 
-        try Sourcery(watcherEnabled: false, cacheDisabled: true, prune: true).processFiles(
+        try Sourcery(cacheDisabled: true, prune: true).processFiles(
             .sources(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [templatePath]),
             output: output
@@ -221,7 +221,7 @@ class SourceryTests: XCTestCase {
         // sourcery:end
         """.update(in: templatePath)
 
-        try Sourcery(watcherEnabled: false, cacheDisabled: true).processFiles(
+        try Sourcery(cacheDisabled: true).processFiles(
             .sources(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [templatePath]),
             output: output
@@ -282,7 +282,7 @@ class SourceryTests: XCTestCase {
         // sourcery:end
         """.update(in: templatePath)
 
-        try Sourcery(watcherEnabled: false, cacheDisabled: true).processFiles(
+        try Sourcery(cacheDisabled: true).processFiles(
             .sources(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [templatePath]),
             output: output
@@ -322,7 +322,7 @@ class SourceryTests: XCTestCase {
         // sourcery:end
         """.update(in: templatePath)
 
-        try Sourcery(watcherEnabled: false, cacheDisabled: true).processFiles(
+        try Sourcery(cacheDisabled: true).processFiles(
             .sources(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [templatePath]),
             output: output
@@ -359,7 +359,7 @@ class SourceryTests: XCTestCase {
         // sourcery:end
         """.update(in: templatePath)
 
-        try Sourcery(watcherEnabled: false, cacheDisabled: true).processFiles(
+        try Sourcery(cacheDisabled: true).processFiles(
             .sources(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [templatePath]),
             output: output,
@@ -393,7 +393,7 @@ class SourceryTests: XCTestCase {
         // sourcery:end
         """.update(in: templatePath)
 
-        try Sourcery(watcherEnabled: false, cacheDisabled: true).processFiles(
+        try Sourcery(cacheDisabled: true).processFiles(
             .sources(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [templatePath]),
             output: output
@@ -427,7 +427,7 @@ class SourceryTests: XCTestCase {
         // sourcery:end
         """.update(in: templatePath)
 
-        try Sourcery(watcherEnabled: false, cacheDisabled: true).processFiles(
+        try Sourcery(cacheDisabled: true).processFiles(
             .sources(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [templatePath]),
             output: output
@@ -468,7 +468,7 @@ class SourceryTests: XCTestCase {
         {% endfor %}
         """.update(in: templatePath)
 
-        try Sourcery(watcherEnabled: false, cacheDisabled: true).processFiles(
+        try Sourcery(cacheDisabled: true).processFiles(
             .sources(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [templatePath]),
             output: output
@@ -521,7 +521,7 @@ class SourceryTests: XCTestCase {
         {% endfor %}
         """.update(in: templatePath)
 
-        try Sourcery(watcherEnabled: false, cacheDisabled: true).processFiles(
+        try Sourcery(cacheDisabled: true).processFiles(
             .sources(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [templatePath]),
             output: output
@@ -576,7 +576,7 @@ class SourceryTests: XCTestCase {
         // sourcery:end
         """.update(in: templatePath)
 
-        try Sourcery(watcherEnabled: false, cacheDisabled: true).processFiles(
+        try Sourcery(cacheDisabled: true).processFiles(
             .sources(Paths(include: [sourcePath])), 
             usingTemplates: Paths(include: [templatePath]),
             output: output
@@ -624,7 +624,7 @@ class SourceryTests: XCTestCase {
         {% endfor %}
         """.update(in: templatePath)
 
-        try Sourcery(watcherEnabled: false, cacheDisabled: true).processFiles(
+        try Sourcery(cacheDisabled: true).processFiles(
             .sources(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [templatePath]),
             output: output
@@ -667,7 +667,7 @@ class SourceryTests: XCTestCase {
         // sourcery:end
         """.update(in: templatePath)
 
-        try Sourcery(watcherEnabled: false, cacheDisabled: true).processFiles(
+        try Sourcery(cacheDisabled: true).processFiles(
             .sources(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [templatePath]),
             output: output
@@ -707,7 +707,7 @@ class SourceryTests: XCTestCase {
         // sourcery:end
         """.update(in: templatePath)
 
-        try Sourcery(watcherEnabled: false, cacheDisabled: true).processFiles(
+        try Sourcery(cacheDisabled: true).processFiles(
             .sources(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [templatePath]),
             output: output
@@ -753,7 +753,7 @@ class SourceryTests: XCTestCase {
         // sourcery:end
         """.update(in: templatePath)
 
-        try Sourcery(watcherEnabled: false, cacheDisabled: true).processFiles(
+        try Sourcery(cacheDisabled: true).processFiles(
             .sources(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [templatePath]),
             output: output
@@ -802,7 +802,7 @@ class SourceryTests: XCTestCase {
         // sourcery:end
         """.update(in: secondTemplatePath)
 
-        try Sourcery(watcherEnabled: false, cacheDisabled: true).processFiles(
+        try Sourcery(cacheDisabled: true).processFiles(
             .sources(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [secondTemplatePath, templatePath]),
             output: output, 
@@ -825,7 +825,7 @@ class SourceryTests: XCTestCase {
         let result = try sourcePath.read(.utf8)
         XCTAssertEqual(result, expectedResult)
 
-        try Sourcery(watcherEnabled: false, cacheDisabled: true).processFiles(
+        try Sourcery(cacheDisabled: true).processFiles(
             .sources(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [secondTemplatePath, templatePath]),
             output: output
@@ -872,7 +872,7 @@ class SourceryTests: XCTestCase {
         {% endfor %}
         """.update(in: templatePathB)
 
-        try Sourcery(watcherEnabled: false, cacheDisabled: true).processFiles(
+        try Sourcery(cacheDisabled: true).processFiles(
             .sources(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [templatePathA, templatePathB]),
             output: output
@@ -939,7 +939,7 @@ class SourceryTests: XCTestCase {
         {% endfor %}
         """.update(in: templatePathB)
 
-        try Sourcery(watcherEnabled: false, cacheDisabled: true).processFiles(
+        try Sourcery(cacheDisabled: true).processFiles(
             .sources(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [templatePathA, templatePathB]),
             output: output
@@ -981,7 +981,7 @@ class SourceryTests: XCTestCase {
         // sourcery:end
         """.update(in: templatePath)
 
-        try Sourcery(watcherEnabled: false, cacheDisabled: false).processFiles(
+        try Sourcery(cacheDisabled: false).processFiles(
             .sources(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [templatePath]),
             output: Output(outputDir, linkTo: nil)
@@ -989,7 +989,7 @@ class SourceryTests: XCTestCase {
 
         "class Foo {}".update(in: sourcePath)
 
-        try Sourcery(watcherEnabled: false, cacheDisabled: false).processFiles(
+        try Sourcery(cacheDisabled: false).processFiles(
             .sources(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [templatePath]),
             output: Output(outputDir, linkTo: nil)
@@ -1028,7 +1028,7 @@ class SourceryTests: XCTestCase {
         {% endfor %}
         """.update(in: templatePath)
 
-        try Sourcery(watcherEnabled: false, cacheDisabled: true).processFiles(
+        try Sourcery(cacheDisabled: true).processFiles(
             .sources(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [templatePath]),
             output: output
@@ -1082,7 +1082,7 @@ class SourceryTests: XCTestCase {
         {% endfor %}
         """.update(in: templatePath)
 
-        try Sourcery(watcherEnabled: false, cacheDisabled: true, prune: true).processFiles(
+        try Sourcery(cacheDisabled: true, prune: true).processFiles(
             .sources(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [templatePath]),
             output: output
@@ -1124,7 +1124,7 @@ class SourceryTests: XCTestCase {
 
             """
 
-        try Sourcery(watcherEnabled: false, cacheDisabled: true, prune: true).processFiles(
+        try Sourcery(cacheDisabled: true, prune: true).processFiles(
             .sources(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [templatePath]),
             output: output
