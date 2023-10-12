@@ -1,11 +1,6 @@
 let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
     .init(name: "AccessLevel.swift", content:
 """
-//
-// Created by Krzysztof Zablocki on 13/09/2016.
-// Copyright (c) 2016 Pixle. All rights reserved.
-//
-
 import Foundation
 
 /// :nodoc:
@@ -116,11 +111,6 @@ public protocol Annotated {
 """),
     .init(name: "Array+Parallel.swift", content:
 """
-//
-// Created by Krzysztof Zablocki on 06/01/2017.
-// Copyright (c) 2017 Pixle. All rights reserved.
-//
-
 import Foundation
 
 public extension Array {
@@ -431,11 +421,6 @@ import Foundation
 """),
     .init(name: "BytesRange.swift", content:
 """
-//
-//  Created by Sébastien Duperron on 03/01/2018.
-//  Copyright © 2018 Pixle. All rights reserved.
-//
-
 import Foundation
 
 /// :nodoc:
@@ -739,11 +724,6 @@ extension Variable: NSCoding {}
 """),
     .init(name: "Composer.swift", content:
 """
-//
-// Created by Krzysztof Zablocki on 31/12/2016.
-// Copyright (c) 2016 Pixle. All rights reserved.
-//
-
 import Foundation
 
 private func currentTimestamp() -> TimeInterval {
@@ -1926,14 +1906,6 @@ extension Variable: Diffable {
 """),
     .init(name: "Diffable.swift", content:
 """
-//
-//  Diffable.swift
-//  Sourcery
-//
-//  Created by Krzysztof Zabłocki on 22/12/2016.
-//  Copyright © 2016 Pixle. All rights reserved.
-//
-
 import Foundation
 
 public protocol Diffable {
@@ -2149,11 +2121,6 @@ public protocol Documented {
 """),
     .init(name: "Enum.swift", content:
 """
-//
-// Created by Krzysztof Zablocki on 13/09/2016.
-// Copyright (c) 2016 Pixle. All rights reserved.
-//
-
 import Foundation
 
 /// Defines enum case associated value
@@ -3407,14 +3374,6 @@ public extension NSString {
 """),
     .init(name: "FileParserResult.swift", content:
 """
-//
-//  FileParserResult.swift
-//  Sourcery
-//
-//  Created by Krzysztof Zablocki on 11/01/2017.
-//  Copyright © 2017 Pixle. All rights reserved.
-//
-
 import Foundation
 
 // sourcery: skipJSExport
@@ -4280,11 +4239,6 @@ public extension NSKeyedUnarchiver {
 """),
     .init(name: "ParserResultsComposed.swift", content:
 """
-//
-// Created by Krzysztof Zablocki on 31/12/2016.
-// Copyright (c) 2016 Pixle. All rights reserved.
-//
-
 import Foundation
 
 internal struct ParserResultsComposed {
@@ -4782,11 +4736,6 @@ internal struct ParserResultsComposed {
 """),
     .init(name: "PhantomProtocols.swift", content:
 """
-//
-// Created by Krzysztof Zablocki on 23/01/2017.
-// Copyright (c) 2017 Pixle. All rights reserved.
-//
-
 import Foundation
 
 /// Phantom protocol for diffing
@@ -4811,14 +4760,6 @@ protocol SourceryModel: SourceryModelWithoutDescription, AutoDescription {}
 """),
     .init(name: "Protocol.swift", content:
 """
-//
-//  Protocol.swift
-//  Sourcery
-//
-//  Created by Krzysztof Zablocki on 09/12/2016.
-//  Copyright © 2016 Pixle. All rights reserved.
-//
-
 import Foundation
 
 /// :nodoc:
@@ -4903,9 +4844,6 @@ public typealias SourceryProtocol = Protocol
 """),
     .init(name: "ProtocolComposition.swift", content:
 """
-// Created by eric_horacek on 2/12/20.
-// Copyright © 2020 Airbnb Inc. All rights reserved.
-
 import Foundation
 
 // sourcery: skipJSExport
@@ -4978,14 +4916,6 @@ import Foundation
 """),
     .init(name: "Struct.swift", content:
 """
-//
-//  Struct.swift
-//  Sourcery
-//
-//  Created by Krzysztof Zablocki on 13/09/2016.
-//  Copyright © 2016 Pixle. All rights reserved.
-//
-
 import Foundation
 
 // sourcery: skipDescription
@@ -5191,11 +5121,6 @@ import Foundation
 """),
     .init(name: "TemplateContext.swift", content:
 """
-//
-// Created by Krzysztof Zablocki on 31/12/2016.
-// Copyright (c) 2016 Pixle. All rights reserved.
-//
-
 import Foundation
 
 /// :nodoc:
@@ -5583,11 +5508,6 @@ extension Array where Element == TupleElement {
 """),
     .init(name: "Type.swift", content:
 """
-//
-// Created by Krzysztof Zablocki on 11/09/2016.
-// Copyright (c) 2016 Pixle. All rights reserved.
-//
-
 import Foundation
 
 /// :nodoc:
@@ -6092,11 +6012,6 @@ extension Type {
 """),
     .init(name: "TypeName.swift", content:
 """
-//
-// Created by Krzysztof Zabłocki on 25/12/2016.
-// Copyright (c) 2016 Pixle. All rights reserved.
-//
-
 import Foundation
 
 /// Describes name of the type used in typed declaration (variable, method parameter or return value etc.)
@@ -6543,11 +6458,6 @@ public protocol Typed {
 """),
     .init(name: "Variable.swift", content:
 """
-//
-// Created by Krzysztof Zablocki on 13/09/2016.
-// Copyright (c) 2016 Pixle. All rights reserved.
-//
-
 import Foundation
 
 /// :nodoc:

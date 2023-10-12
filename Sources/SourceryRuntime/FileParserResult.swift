@@ -1,11 +1,3 @@
-//
-//  FileParserResult.swift
-//  Sourcery
-//
-//  Created by Krzysztof Zablocki on 11/01/2017.
-//  Copyright © 2017 Pixle. All rights reserved.
-//
-
 import Foundation
 
 // sourcery: skipJSExport

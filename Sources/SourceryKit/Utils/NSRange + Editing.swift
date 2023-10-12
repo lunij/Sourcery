@@ -1,7 +1,3 @@
-//
-// Created by hemet_000 on 14.04.2021.
-//
-
 import Foundation
 
 extension NSRange {

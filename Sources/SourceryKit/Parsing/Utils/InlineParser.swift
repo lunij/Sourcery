@@ -1,8 +1,3 @@
-//
-// Created by Krzysztof Zablocki on 16/01/2017.
-// Copyright (c) 2017 Pixle. All rights reserved.
-//
-
 import Foundation
 
 public enum TemplateAnnotationsParser {

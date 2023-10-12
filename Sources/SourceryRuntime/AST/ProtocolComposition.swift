@@ -1,6 +1,3 @@
-// Created by eric_horacek on 2/12/20.
-// Copyright © 2020 Airbnb Inc. All rights reserved.
-
 import Foundation
 
 // sourcery: skipJSExport

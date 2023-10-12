@@ -1,8 +1,3 @@
-//
-// Created by Krzysztof Zabłocki on 25/12/2016.
-// Copyright (c) 2016 Pixle. All rights reserved.
-//
-
 import Foundation
 
 /// Describes name of the type used in typed declaration (variable, method parameter or return value etc.)

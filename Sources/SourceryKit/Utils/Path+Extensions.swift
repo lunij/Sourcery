@@ -1,11 +1,3 @@
-//
-//  Path+Extensions.swift
-//  Sourcery
-//
-//  Created by Krunoslav Zaher on 1/6/17.
-//  Copyright © 2017 Pixle. All rights reserved.
-//
-
 import Foundation
 import PathKit
 

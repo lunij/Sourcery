@@ -1,11 +1,3 @@
-//
-//  ByteRangeConversion.swift
-//  Sourcery
-//
-//  Created by Evgeniy Gubin on 16.04.2021.
-//  Copyright © 2021 Pixle. All rights reserved.
-//
-
 import class SourceryRuntime.BytesRange
 
 extension ByteRange {

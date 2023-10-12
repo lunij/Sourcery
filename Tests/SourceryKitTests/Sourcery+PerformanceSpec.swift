@@ -1,12 +1,4 @@
 /*
-//
-//  Sourcery+PerformanceSpec.swift
-//  Sourcery
-//
-//  Created by Krzysztof Zabłocki on 26/12/2016.
-//  Copyright © 2016 Pixle. All rights reserved.
-//
-
 import XCTest
 import PathKit
 

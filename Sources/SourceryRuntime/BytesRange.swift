@@ -1,8 +1,3 @@
-//
-//  Created by Sébastien Duperron on 03/01/2018.
-//  Copyright © 2018 Pixle. All rights reserved.
-//
-
 import Foundation
 
 /// :nodoc:

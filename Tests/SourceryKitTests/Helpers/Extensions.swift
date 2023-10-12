@@ -1,8 +1,3 @@
-//
-// Created by Krzysztof Zablocki on 31/12/2016.
-// Copyright (c) 2016 Pixle. All rights reserved.
-//
-
 import Foundation
 @testable import SourceryKit
 @testable import SourceryRuntime
