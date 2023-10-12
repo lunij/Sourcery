@@ -1,5 +1,5 @@
-// Generated using Sourcery 1.9.2 — https://github.com/krzysztofzablocki/Sourcery
-// DO NOT EDIT
+// Generated using Sourcery
+
 // swiftlint:disable line_length
 // swiftlint:disable variable_name
 
