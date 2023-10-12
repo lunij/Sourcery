@@ -14,7 +14,6 @@ private struct ProcessResult {
 }
 
 open class SwiftTemplate {
-
     public let sourcePath: Path
     let buildPath: Path?
     let cachePath: Path?
@@ -33,12 +32,12 @@ open class SwiftTemplate {
         return Path(tempDirURL.path)
     }()
 
-  public init(path: Path, cachePath: Path? = nil, version: String? = nil, buildPath: Path? = nil) throws {
-        self.sourcePath = path
+    public init(path: Path, cachePath: Path? = nil, version: String? = nil, buildPath: Path? = nil) throws {
+        sourcePath = path
         self.buildPath = buildPath
         self.cachePath = cachePath
         self.version = version
-        (self.code, self.includedFiles) = try SwiftTemplate.parse(sourcePath: path)
+        (code, includedFiles) = try SwiftTemplate.parse(sourcePath: path)
     }
 
     private enum Command {
@@ -49,7 +48,6 @@ open class SwiftTemplate {
     }
 
     static func parse(sourcePath: Path) throws -> (String, [Path]) {
-
         let commands = try SwiftTemplate.parseCommands(in: sourcePath)
 
         var includedFiles: [Path] = []
@@ -64,7 +62,7 @@ open class SwiftTemplate {
                 outputFile.append("\(code)")
             case let .outputEncoded(code):
                 if !code.isEmpty {
-                    outputFile.append(("print(\"") + code.stringEncoded + "\", terminator: \"\");")
+                    outputFile.append("print(\"" + code.stringEncoded + "\", terminator: \"\");")
                 }
             }
         }
@@ -96,7 +94,7 @@ open class SwiftTemplate {
 
         let currentLineNumber = {
             // the following +1 is to transform a line count (starting from 0) to a line number (starting from 1)
-            return processedComponents.joined(separator: "").numberOfLineSeparators + 1
+            processedComponents.joined(separator: "").numberOfLineSeparators + 1
         }
 
         for component in components.suffix(from: 1) {
@@ -120,7 +118,7 @@ open class SwiftTemplate {
                 encodedPart = encodedPart.replacingOccurrences(of: "^[\\h\\t]*", with: "", options: .regularExpression, range: nil)
             }
             if shouldTrimLeadingWhitespaces {
-                if case .outputEncoded(let code)? = commands.last {
+                if case let .outputEncoded(code)? = commands.last {
                     // trim all trailing white spaces in previously enqued code string
                     let trimmed = code.replacingOccurrences(of: "[\\h\\t]*$", with: "", options: .regularExpression, range: nil)
                     _ = commands.popLast()
@@ -159,7 +157,7 @@ open class SwiftTemplate {
             } else if code.trimPrefix("=") {
                 commands.append(.output(code))
             } else {
-                if !code.hasPrefix("#") && !code.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                if !code.hasPrefix("#"), !code.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                     commands.append(.controlFlow(code))
                 }
             }
@@ -177,9 +175,9 @@ open class SwiftTemplate {
         let binaryPath: Path
 
         if let cachePath = cachePath,
-            let hash = cacheKey,
-            let hashPath = hash.addingPercentEncoding(withAllowedCharacters: CharacterSet.alphanumerics) {
-
+           let hash = cacheKey,
+           let hashPath = hash.addingPercentEncoding(withAllowedCharacters: CharacterSet.alphanumerics)
+        {
             binaryPath = cachePath + hashPath
             if !binaryPath.exists {
                 try? cachePath.delete() // clear old cache
@@ -234,7 +232,7 @@ open class SwiftTemplate {
             "build",
             "-c", "release",
             "-Xswiftc", "-suppress-warnings",
-            "--disable-sandbox"
+            "--disable-sandbox",
         ]
         let compilationResult = try Process.runCommand(path: "/usr/bin/env",
                                                        arguments: arguments,
@@ -250,7 +248,7 @@ open class SwiftTemplate {
     }
 
     private var manifestCode: String {
-        return """
+        """
         // swift-tools-version:5.7
         // The swift-tools-version declares the minimum version of Swift required to build this package.
 
@@ -273,7 +271,7 @@ open class SwiftTemplate {
         var contents = code
 
         // For every included file, make sure that the path and modification date are included in the key
-        let files = (includedFiles + buildDir.allPaths).map({ $0.absolute() }).sorted(by: { $0.string < $1.string })
+        let files = (includedFiles + buildDir.allPaths).map { $0.absolute() }.sorted(by: { $0.string < $1.string })
         for file in files {
             let hash = (try? file.read().sha256().base64EncodedString()) ?? ""
             contents += "\n// \(file.string)-\(hash)"
@@ -285,15 +283,12 @@ open class SwiftTemplate {
     private func copyRuntimePackage(to path: Path) throws {
         try FolderSynchronizer().sync(files: sourceryRuntimeFiles, to: path + Path("SourceryRuntime"))
     }
-
 }
 
-fileprivate extension SwiftTemplate {
-
+private extension SwiftTemplate {
     static var frameworksPath: Path {
-        return Path(Bundle(for: SwiftTemplate.self).bundlePath +  "/Versions/Current/Frameworks")
+        Path(Bundle(for: SwiftTemplate.self).bundlePath + "/Versions/Current/Frameworks")
     }
-
 }
 
 // swiftlint:disable:next force_try
@@ -301,13 +296,13 @@ private let newlines = try! NSRegularExpression(pattern: "\\n\\r|\\r\\n|\\r|\\n"
 
 private extension String {
     var numberOfLineSeparators: Int {
-        return newlines.matches(in: self, options: [], range: NSRange(location: 0, length: self.count)).count
+        newlines.matches(in: self, options: [], range: NSRange(location: 0, length: count)).count
     }
 
     var stringEncoded: String {
-        return self.unicodeScalars.map { x -> String in
-            return x.escaped(asASCII: true)
-            }.joined(separator: "")
+        unicodeScalars.map { x -> String in
+            x.escaped(asASCII: true)
+        }.joined(separator: "")
     }
 }
 
@@ -366,12 +361,12 @@ struct FolderSynchronizer {
     func sync(files: [File], to dir: Path) throws {
         if dir.exists {
             let synchronizedPaths = files.map { dir + Path($0.name) }
-            try dir.children().forEach({ path in
+            try dir.children().forEach { path in
                 if synchronizedPaths.contains(path) {
                     return
                 }
                 try path.delete()
-            })
+            }
         } else {
             try dir.mkpath()
         }
