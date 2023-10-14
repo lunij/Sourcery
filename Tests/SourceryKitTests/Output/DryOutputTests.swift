@@ -238,42 +238,6 @@ class DryOutputSwiftTemplateTests: XCTestCase {
         XCTAssertEqual(outputInterceptor.result, expectedResult)
     }
 
-    func test_handlesIncludesWithoutSwifttemplateExtension() {
-        let templatePath = Stubs.swiftTemplates + Path("IncludesNoExtension.swifttemplate")
-        let expectedResult = try? (Stubs.resultDirectory + Path("Basic+Other.swift")).read(.utf8)
-        let sourcery = Sourcery(cacheDisabled: true)
-        let outputInterceptor = OutputInterceptor()
-        sourcery.dryOutput = outputInterceptor.handleOutput(_:)
-
-        XCTAssertNoThrow(
-            try sourcery.processFiles(
-                .sources(Paths(include: [Stubs.sourceDirectory])),
-                usingTemplates: Paths(include: [templatePath]),
-                output: output,
-                isDryRun: true
-            )
-        )
-        XCTAssertEqual(outputInterceptor.result, expectedResult)
-    }
-
-    func test_handlesFileIncludesWithoutSwiftExtension() {
-        let templatePath = Stubs.swiftTemplates + Path("IncludeFileNoExtension.swifttemplate")
-        let expectedResult = try? (Stubs.resultDirectory + Path("Basic.swift")).read(.utf8)
-        let sourcery = Sourcery(cacheDisabled: true)
-        let outputInterceptor = OutputInterceptor()
-        sourcery.dryOutput = outputInterceptor.handleOutput(_:)
-
-        XCTAssertNoThrow(
-            try sourcery.processFiles(
-                .sources(Paths(include: [Stubs.sourceDirectory])),
-                usingTemplates: Paths(include: [templatePath]),
-                output: output,
-                isDryRun: true
-            )
-        )
-        XCTAssertEqual(outputInterceptor.result, expectedResult)
-    }
-
     func test_handlesIncludesFromIncludedFilesRelatively() {
         let templatePath = Stubs.swiftTemplates + Path("SubfolderIncludes.swifttemplate")
         let expectedResult = try? (Stubs.resultDirectory + Path("Basic.swift")).read(.utf8)
@@ -332,8 +296,6 @@ class DryOutputSwiftTemplateTests: XCTestCase {
         let templatePaths = [
             "Includes.swifttemplate",
             "IncludeFile.swifttemplate",
-            "IncludesNoExtension.swifttemplate",
-            "IncludeFileNoExtension.swifttemplate",
             "SubfolderIncludes.swifttemplate",
             "SubfolderFileIncludes.swifttemplate",
             "Function.swifttemplate"
@@ -343,8 +305,6 @@ class DryOutputSwiftTemplateTests: XCTestCase {
         sourcery.dryOutput = outputInterceptor.handleOutput(_:)
 
         let expectedResults = [
-            "Basic+Other.swift",
-            "Basic.swift",
             "Basic+Other.swift",
             "Basic.swift",
             "Basic.swift",
@@ -361,16 +321,14 @@ class DryOutputSwiftTemplateTests: XCTestCase {
             )
         )
 
-        XCTAssertEqual(outputInterceptor.outputModel.outputs.count, expectedResults.count)
-        XCTAssertEqual(outputInterceptor.outputModel.outputs.map { $0.value }.sorted(), expectedResults.sorted())
+        XCTAssertEqual(outputInterceptor.outputModel?.outputs.count, expectedResults.count)
+        XCTAssertEqual(outputInterceptor.outputModel?.outputs.map { $0.value }.sorted(), expectedResults.sorted())
     }
 
     func test_hasSameTemplatesInOutputsAsInInputs() {
         let templatePaths = [
             "Includes.swifttemplate",
             "IncludeFile.swifttemplate",
-            "IncludesNoExtension.swifttemplate",
-            "IncludeFileNoExtension.swifttemplate",
             "SubfolderIncludes.swifttemplate",
             "SubfolderFileIncludes.swifttemplate",
             "Function.swifttemplate"
@@ -389,7 +347,7 @@ class DryOutputSwiftTemplateTests: XCTestCase {
         )
 
         XCTAssertEqual(
-            outputInterceptor.outputModel.outputs.compactMap { $0.type.id }.map { Path($0) }.sorted(),
+            outputInterceptor.outputModel?.outputs.compactMap { $0.type.id }.map { Path($0) }.sorted(),
             templatePaths.sorted()
         )
     }
@@ -397,7 +355,7 @@ class DryOutputSwiftTemplateTests: XCTestCase {
 
 private class OutputInterceptor {
     let jsonDecoder = JSONDecoder()
-    var outputModel: DryOutputSuccess!
+    var outputModel: DryOutputSuccess?
     var result: String? { outputModel?.outputs.first?.value }
 
     func result(byOutputType outputType: DryOutputType) -> DryOutputValue! {

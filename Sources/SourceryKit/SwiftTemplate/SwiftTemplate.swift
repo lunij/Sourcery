@@ -2,11 +2,6 @@ import Foundation
 import PathKit
 import SourceryRuntime
 
-private enum Delimiters {
-    static let open = "<%"
-    static let close = "%>"
-}
-
 private struct ProcessResult {
     let output: String
     let error: String
@@ -22,14 +17,13 @@ open class SwiftTemplate {
     let includedFiles: [Path]
 
     private lazy var buildDir: Path = {
-        let pathComponent = "SwiftTemplate" + (version.map { "/\($0)" } ?? "")
+        let path = "SwiftTemplate" + (version.map { "/\($0)" } ?? "")
 
         if let buildPath {
-            return (buildPath + pathComponent).absolute()
+            return (buildPath + path).absolute()
         }
 
-        guard let tempDirURL = NSURL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(pathComponent) else { fatalError("Unable to get temporary path") }
-        return Path(tempDirURL.path)
+        return Path(FileManager.default.temporaryDirectory.appendingPathComponent(path).path)
     }()
 
     public init(path: Path, cachePath: Path? = nil, version: String? = nil, buildPath: Path? = nil) throws {
@@ -37,32 +31,32 @@ open class SwiftTemplate {
         self.buildPath = buildPath
         self.cachePath = cachePath
         self.version = version
-        (code, includedFiles) = try SwiftTemplate.parse(sourcePath: path)
+        (code, includedFiles) = try SwiftTemplate.renderGeneratorCode(sourcePath: path)
     }
 
-    private enum Command {
-        case includeFile(Path)
+    enum Command: Equatable {
+        case include(Path, line: Int) // TODO: line should not be here
         case output(String)
         case controlFlow(String)
         case outputEncoded(String)
     }
 
-    static func parse(sourcePath: Path) throws -> (String, [Path]) {
-        let commands = try SwiftTemplate.parseCommands(in: sourcePath)
+    static func renderGeneratorCode(sourcePath: Path) throws -> (String, [Path]) {
+        let commands = try SwiftTemplateParser().parse(file: sourcePath)
 
         var includedFiles: [Path] = []
-        var outputFile = [String]()
+        var outputFile: [String] = []
         for command in commands {
             switch command {
-            case let .includeFile(path):
+            case let .include(path, _):
                 includedFiles.append(path)
             case let .output(code):
-                outputFile.append("print(\"\\(" + code + ")\", terminator: \"\");")
+                outputFile.append("print(\"\\(" + code + ")\", terminator: \"\")")
             case let .controlFlow(code):
                 outputFile.append("\(code)")
             case let .outputEncoded(code):
                 if !code.isEmpty {
-                    outputFile.append("print(\"" + code.stringEncoded + "\", terminator: \"\");")
+                    outputFile.append("print(\"" + code.stringEncoded + "\", terminator: \"\")")
                 }
             }
         }
@@ -82,93 +76,6 @@ open class SwiftTemplate {
         """
 
         return (code, includedFiles)
-    }
-
-    private static func parseCommands(in sourcePath: Path, includeStack: [Path] = []) throws -> [Command] {
-        let templateContent = try "<%%>" + sourcePath.read()
-
-        let components = templateContent.components(separatedBy: Delimiters.open)
-
-        var processedComponents = [String]()
-        var commands = [Command]()
-
-        let currentLineNumber = {
-            // the following +1 is to transform a line count (starting from 0) to a line number (starting from 1)
-            processedComponents.joined(separator: "").numberOfLineSeparators + 1
-        }
-
-        for component in components.suffix(from: 1) {
-            guard let endIndex = component.range(of: Delimiters.close) else {
-                throw "\(sourcePath):\(currentLineNumber()) Error while parsing template. Unmatched <%"
-            }
-
-            var code = String(component[..<endIndex.lowerBound])
-            let shouldTrimTrailingNewLines = code.trimSuffix("-")
-            let shouldTrimLeadingWhitespaces = code.trimPrefix("_")
-            let shouldTrimTrailingWhitespaces = code.trimSuffix("_")
-
-            // string after closing tag
-            var encodedPart = String(component[endIndex.upperBound...])
-            if shouldTrimTrailingNewLines {
-                // we trim only new line caused by script tag, not all of leading new lines in string after tag
-                encodedPart = encodedPart.replacingOccurrences(of: "^\\n{1}", with: "", options: .regularExpression, range: nil)
-            }
-            if shouldTrimTrailingWhitespaces {
-                // trim all leading whitespaces in string after tag
-                encodedPart = encodedPart.replacingOccurrences(of: "^[\\h\\t]*", with: "", options: .regularExpression, range: nil)
-            }
-            if shouldTrimLeadingWhitespaces {
-                if case let .outputEncoded(code)? = commands.last {
-                    // trim all trailing white spaces in previously enqued code string
-                    let trimmed = code.replacingOccurrences(of: "[\\h\\t]*$", with: "", options: .regularExpression, range: nil)
-                    _ = commands.popLast()
-                    commands.append(.outputEncoded(trimmed))
-                }
-            }
-
-            func parseInclude(command: String, defaultExtension: String) -> Path? {
-                let regex = try? NSRegularExpression(pattern: "\(command)\\(\"([^\"]*)\"\\)", options: [])
-                let match = regex?.firstMatch(in: code, options: [], range: code.bridge().entireRange)
-                guard let includedFile = match.map({ code.bridge().substring(with: $0.range(at: 1)) }) else {
-                    return nil
-                }
-                let includePath = Path(components: [sourcePath.parent().string, includedFile])
-                // The template extension may be omitted, so try to read again by adding it if a template was not found
-                if !includePath.exists, includePath.extension != "\(defaultExtension)" {
-                    return Path(includePath.string + ".\(defaultExtension)")
-                } else {
-                    return includePath
-                }
-            }
-
-            if code.trimPrefix("-") {
-                if let includePath = parseInclude(command: "includeFile", defaultExtension: "swift") {
-                    commands.append(.includeFile(includePath))
-                } else if let includePath = parseInclude(command: "include", defaultExtension: "swifttemplate") {
-                    // Check for include cycles to prevent stack overflow and show a more user friendly error
-                    if includeStack.contains(includePath) {
-                        throw "\(sourcePath):\(currentLineNumber()) Error: Include cycle detected for \(includePath). Check your include statements so that templates do not include each other."
-                    }
-                    let includedCommands = try SwiftTemplate.parseCommands(in: includePath, includeStack: includeStack + [includePath])
-                    commands.append(contentsOf: includedCommands)
-                } else {
-                    throw "\(sourcePath):\(currentLineNumber()) Error while parsing template. Invalid include tag format '\(code)'"
-                }
-            } else if code.trimPrefix("=") {
-                commands.append(.output(code))
-            } else {
-                if !code.hasPrefix("#"), !code.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                    commands.append(.controlFlow(code))
-                }
-            }
-
-            if !encodedPart.isEmpty {
-                commands.append(.outputEncoded(encodedPart))
-            }
-            processedComponents.append(component)
-        }
-
-        return commands
     }
 
     public func render(_ context: Any) throws -> String {
@@ -291,14 +198,7 @@ private extension SwiftTemplate {
     }
 }
 
-// swiftlint:disable:next force_try
-private let newlines = try! NSRegularExpression(pattern: "\\n\\r|\\r\\n|\\r|\\n", options: [])
-
 private extension String {
-    var numberOfLineSeparators: Int {
-        newlines.matches(in: self, options: [], range: NSRange(location: 0, length: count)).count
-    }
-
     var stringEncoded: String {
         unicodeScalars.map { x -> String in
             x.escaped(asASCII: true)

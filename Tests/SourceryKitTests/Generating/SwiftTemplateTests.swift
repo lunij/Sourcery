@@ -50,7 +50,7 @@ class SwiftTemplateTests: XCTestCase {
     func test_throwsAnErrorShowingTheInvolvedLineForUnmatchedDelimiterInTheTemplate() {
         let templatePath = Stubs.swiftTemplates + Path("InvalidTag.swifttemplate")
         XCTAssertThrowsError(try SwiftTemplate(path: templatePath)) { error in
-            XCTAssertEqual("\(error)", "\(templatePath):2 Error while parsing template. Unmatched <%")
+            XCTAssertEqual("\(error)", "Missing closing tag '%>' in \(templatePath):2")
         }
     }
 
@@ -70,34 +70,6 @@ class SwiftTemplateTests: XCTestCase {
 
     func test_handlesFileIncludes() throws {
         let templatePath = Stubs.swiftTemplates + Path("IncludeFile.swifttemplate")
-        let expectedResult = try (Stubs.resultDirectory + Path("Basic.swift")).read(.utf8)
-
-        try Sourcery(cacheDisabled: true).processFiles(
-            .sources(Paths(include: [Stubs.sourceDirectory])),
-            usingTemplates: Paths(include: [templatePath]),
-            output: output
-        )
-
-        let result = try (outputDir + Sourcery().generatedPath(for: templatePath)).read(.utf8)
-        XCTAssertEqual(result, expectedResult)
-    }
-
-    func test_handlesIncludesWithoutSwifttemplateExtension() throws {
-        let templatePath = Stubs.swiftTemplates + Path("IncludesNoExtension.swifttemplate")
-        let expectedResult = try (Stubs.resultDirectory + Path("Basic+Other.swift")).read(.utf8)
-
-        try Sourcery(cacheDisabled: true).processFiles(
-            .sources(Paths(include: [Stubs.sourceDirectory])),
-            usingTemplates: Paths(include: [templatePath]),
-            output: output
-        )
-
-        let result = try (outputDir + Sourcery().generatedPath(for: templatePath)).read(.utf8)
-        XCTAssertEqual(result, expectedResult)
-    }
-
-    func test_handlesFileIncludesWithoutSwiftExtension() throws {
-        let templatePath = Stubs.swiftTemplates + Path("IncludeFileNoExtension.swifttemplate")
         let expectedResult = try (Stubs.resultDirectory + Path("Basic.swift")).read(.utf8)
 
         try Sourcery(cacheDisabled: true).processFiles(
@@ -138,19 +110,18 @@ class SwiftTemplateTests: XCTestCase {
         XCTAssertEqual(result, expectedResult)
     }
 
-    func test_throwsAnErrorWhenAnIncludeCycleIsDetected() {
+    func test_detectsIncludeCycles() {
         let templatePath = Stubs.swiftTemplates + Path("IncludeCycle.swifttemplate")
-        let templateCycleDetectionLocationPath = Stubs.swiftTemplates + Path("includeCycle/Two.swifttemplate")
-        let templateInvolvedInCyclePath = Stubs.swiftTemplates + Path("includeCycle/One.swifttemplate")
+        let includeCycleTemplatePath = Stubs.swiftTemplates + Path("includeCycle/Two.swifttemplate")
         XCTAssertThrowsError(try SwiftTemplate(path: templatePath)) { error in
-            XCTAssertEqual("\(error)", "\(templateCycleDetectionLocationPath):1 Error: Include cycle detected for \(templateInvolvedInCyclePath). Check your include statements so that templates do not include each other.")
+            XCTAssertEqual("\(error)", "Include cycle detected for One.swifttemplate in \(includeCycleTemplatePath):1")
         }
     }
 
-    func test_throwsAnErrorWhenAnIncludeCycleInvolvingTheRootTemplateIsDetected() {
+    func test_detectsIncludeCycles_whenReferencingRootTemplate() {
         let templatePath = Stubs.swiftTemplates + Path("SelfIncludeCycle.swifttemplate")
         XCTAssertThrowsError(try SwiftTemplate(path: templatePath)) { error in
-            XCTAssertEqual("\(error)", "\(templatePath):1 Error: Include cycle detected for \(templatePath). Check your include statements so that templates do not include each other.")
+            XCTAssertEqual("\(error)", "Include cycle detected for SelfIncludeCycle.swifttemplate in \(templatePath):1")
         }
     }
 
@@ -160,7 +131,7 @@ class SwiftTemplateTests: XCTestCase {
             try Generator.generate(.init(path: nil, module: nil, types: [], functions: []), types: Types(types: []), functions: [], template: SwiftTemplate(path: templatePath, version: "version"))
         ) { error in
             let path = Path.cleanTemporaryDir(name: "build").parent() + "SwiftTemplate/version/Sources/SwiftTemplate/main.swift"
-            XCTAssertTrue("\(error)".contains("\(path):10:11: error: missing argument for parameter #1 in call\nprint(\"\\( )\", terminator: \"\");\n          ^\n"))
+            XCTAssertTrue("\(error)".contains("\(path):10:10: error: missing argument for parameter #1 in call\nprint(\"\\()\", terminator: \"\")\n         ^\n"))
         }
     }
 
@@ -224,7 +195,7 @@ class SwiftTemplateTests: XCTestCase {
 
     func test_shouldChangeCacheKeyBasedOnIncludeFileModifications() throws {
         let templatePath = outputDir + "Template.swifttemplate"
-        try templatePath.write(#"<%- includeFile("Utils.swift") -%>"#)
+        try templatePath.write(#"<%- include("Utils.swift") -%>"#)
 
         let utilsPath = outputDir + "Utils.swift"
         try utilsPath.write(#"let foo = "bar""#)

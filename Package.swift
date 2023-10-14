@@ -34,6 +34,9 @@ let package = Package(
                 "StencilSwiftKit",
                 "XcodeProj",
                 "Yams"
+            ],
+            swiftSettings: [
+                .enableUpcomingFeature("BareSlashRegexLiterals")
             ]
         ),
         .testTarget(
