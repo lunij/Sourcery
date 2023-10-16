@@ -128,7 +128,12 @@ class SwiftTemplateTests: XCTestCase {
     func test_rethrowsTemplateParsingErrors() {
         let templatePath = Stubs.swiftTemplates + Path("Invalid.swifttemplate")
         XCTAssertThrowsError(
-            try Generator.generate(.init(path: nil, module: nil, types: [], functions: []), types: Types(types: []), functions: [], template: SwiftTemplate(path: templatePath, version: "version"))
+            try SwiftTemplate(path: templatePath, version: "version").render(.init(
+                parserResult: .init(path: nil, module: nil, types: [], functions: []),
+                types: Types(types: []),
+                functions: [],
+                arguments: [:]
+            ))
         ) { error in
             let path = Path.cleanTemporaryDir(name: "build").parent() + "SwiftTemplate/version/Sources/SwiftTemplate/main.swift"
             XCTAssertTrue("\(error)".contains("\(path):10:10: error: missing argument for parameter #1 in call\nprint(\"\\()\", terminator: \"\")\n         ^\n"))
@@ -138,7 +143,12 @@ class SwiftTemplateTests: XCTestCase {
     func test_rethrowsTemplateRuntimeErrors() {
         let templatePath = Stubs.swiftTemplates + Path("Runtime.swifttemplate")
         XCTAssertThrowsError(
-            try Generator.generate(.init(path: nil, module: nil, types: [], functions: []), types: Types(types: []), functions: [], template: SwiftTemplate(path: templatePath))
+            try SwiftTemplate(path: templatePath).render(TemplateContext(
+                parserResult: .init(path: nil, module: nil, types: [], functions: []),
+                types: Types(types: []),
+                functions: [],
+                arguments: [:]
+            ))
         ) { error in
             XCTAssertEqual("\(error)", "\(templatePath): Unknown type Some, should be used with `based`")
         }
@@ -147,7 +157,12 @@ class SwiftTemplateTests: XCTestCase {
     func test_rethrowsErrorsThrownInTemplate() {
         let templatePath = Stubs.swiftTemplates + Path("Throws.swifttemplate")
         XCTAssertThrowsError(
-            try Generator.generate(.init(path: nil, module: nil, types: [], functions: []), types: Types(types: []), functions: [], template: SwiftTemplate(path: templatePath))
+            try SwiftTemplate(path: templatePath).render(TemplateContext(
+                parserResult: .init(path: nil, module: nil, types: [], functions: []),
+                types: Types(types: []),
+                functions: [],
+                arguments: [:]
+            ))
         ) { error in
             XCTAssertTrue("\(error)".contains("\(templatePath): SwiftTemplate/main.swift:10: Fatal error: Template not implemented"))
         }

@@ -175,7 +175,7 @@ class StencilTemplateTests: XCTestCase {
 
     func test_rethrowsTemplateParsingErrors() {
         XCTAssertThrowsError(
-            try Generator.generate(nil, types: Types(types: []), functions: [], template: StencilTemplate(templateString: "{% tag %}"))
+            try StencilTemplate(templateString: "{% tag %}").render(.init(parserResult: nil, types: Types(types: []), functions: [], arguments: [:]))
         ) { error in
             XCTAssertEqual("\(error)", ": Unknown template tag 'tag'")
         }
@@ -225,12 +225,18 @@ private func generate(_ template: String) -> String {
     arrayAnnotations.annotations = ["Foo": ["Hello", "beautiful", "World"] as NSArray]
     let singleAnnotation = Variable(name: "annotated2", typeName: TypeName(name: "MyClass"))
     singleAnnotation.annotations = ["Foo": "HelloWorld" as NSString]
-    return (try? Generator.generate(nil, types: Types(types: [
-        Class(name: "MyClass", variables: [
-            Variable(name: "lowerFirstLetter", typeName: TypeName(name: "myClass")),
-            Variable(name: "upperFirstLetter", typeName: TypeName(name: "MyClass")),
-            arrayAnnotations,
-            singleAnnotation
+    let result = try? StencilTemplate(templateString: template).render(TemplateContext(
+        parserResult: nil,
+        types: Types(types: [
+            Class(name: "MyClass", variables: [
+                Variable(name: "lowerFirstLetter", typeName: TypeName(name: "myClass")),
+                Variable(name: "upperFirstLetter", typeName: TypeName(name: "MyClass")),
+                arrayAnnotations,
+                singleAnnotation
             ])
-    ]), functions: [], template: StencilTemplate(templateString: template))) ?? ""
+        ]),
+        functions: [],
+        arguments: [:]
+    ))
+    return result ?? ""
 }

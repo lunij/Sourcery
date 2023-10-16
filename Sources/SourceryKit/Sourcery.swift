@@ -666,13 +666,23 @@ extension Sourcery {
     private func generate(_ template: Template, forParsingResult parsingResult: ParsingResult, outputPath: Path, forceParse: [String], baseIndentation: Int) throws -> GenerationResult {
         guard watcherEnabled else {
             let generationStart = currentTimestamp()
-            let result = try Generator.generate(parsingResult.parserResult, types: parsingResult.types, functions: parsingResult.functions, template: template, arguments: self.arguments)
+            let result = try template.render(.init(
+                parserResult: parsingResult.parserResult,
+                types: parsingResult.types,
+                functions: parsingResult.functions,
+                arguments: arguments
+            ))
             Log.benchmark("\tGenerating \(template.sourcePath.lastComponent) took \(currentTimestamp() - generationStart)")
 
             return try processRanges(in: parsingResult, result: result, outputPath: outputPath, forceParse: forceParse, baseIndentation: baseIndentation)
         }
 
-        let result = try Generator.generate(parsingResult.parserResult, types: parsingResult.types, functions: parsingResult.functions, template: template, arguments: self.arguments)
+        let result = try template.render(.init(
+            parserResult: parsingResult.parserResult,
+            types: parsingResult.types,
+            functions: parsingResult.functions,
+            arguments: arguments
+        ))
 
         return try processRanges(in: parsingResult, result: result, outputPath: outputPath, forceParse: forceParse, baseIndentation: baseIndentation)
     }
