@@ -93,11 +93,11 @@ public struct SourceryCommand: AsyncParsableCommand {
             Log.logBenchmarks = (verbose || logBenchmark) && !quiet
             Log.logAST = (verbose || logAST) && !quiet
 
-            let configurations = readConfigurations()
-
             let start = CFAbsoluteTimeGetCurrent()
 
-            try processFiles(specifiedIn: configurations)
+            for configuration in readConfigurations() {
+                try processFiles(specifiedIn: configuration)
+            }
 
             Log.info("Processing time \(CFAbsoluteTimeGetCurrent() - start) seconds")
         } catch {
@@ -171,37 +171,35 @@ public struct SourceryCommand: AsyncParsableCommand {
         }
     }
 
-    private func processFiles(specifiedIn configurations: [Configuration]) throws {
-        for configuration in configurations {
-            configuration.validate()
+    private func processFiles(specifiedIn configuration: Configuration) throws {
+        configuration.validate()
 
-            let shouldUseCacheBasePathArg = configuration.cacheBasePath == Path.defaultBaseCachePath && !cacheBasePath.string.isEmpty
+        let shouldUseCacheBasePathArg = configuration.cacheBasePath == Path.defaultBaseCachePath && !cacheBasePath.string.isEmpty
 
-            let sourcery = Sourcery(
-                verbose: verbose,
-                watcherEnabled: watcherEnabled,
-                cacheDisabled: cacheDisabled,
-                cacheBasePath: shouldUseCacheBasePathArg ? cacheBasePath : configuration.cacheBasePath,
-                buildPath: buildPath.string.isEmpty ? nil : buildPath,
-                prune: prune,
-                serialParse: serialParse,
-                arguments: configuration.args
-            )
+        let sourcery = Sourcery(
+            verbose: verbose,
+            watcherEnabled: watcherEnabled,
+            cacheDisabled: cacheDisabled,
+            cacheBasePath: shouldUseCacheBasePathArg ? cacheBasePath : configuration.cacheBasePath,
+            buildPath: buildPath.string.isEmpty ? nil : buildPath,
+            prune: prune,
+            serialParse: serialParse,
+            arguments: configuration.args
+        )
 
-            if isDryRun, watcherEnabled {
-                throw "--dry not compatible with --watch"
-            }
-
-            try sourcery.processFiles(
-                configuration.source,
-                usingTemplates: configuration.templates,
-                output: configuration.output,
-                isDryRun: isDryRun,
-                forceParse: configuration.forceParse,
-                parseDocumentation: configuration.parseDocumentation,
-                baseIndentation: configuration.baseIndentation
-            )
+        if isDryRun, watcherEnabled {
+            throw "--dry not compatible with --watch"
         }
+
+        try sourcery.processFiles(
+            configuration.source,
+            usingTemplates: configuration.templates,
+            output: configuration.output,
+            isDryRun: isDryRun,
+            forceParse: configuration.forceParse,
+            parseDocumentation: configuration.parseDocumentation,
+            baseIndentation: configuration.baseIndentation
+        )
     }
 }
 
