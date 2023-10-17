@@ -97,14 +97,9 @@ public struct SourceryCommand: AsyncParsableCommand {
 
             let start = CFAbsoluteTimeGetCurrent()
 
-            let keepAlive = try processFiles(specifiedIn: configurations)
+            try processFiles(specifiedIn: configurations)
 
-            if keepAlive.isEmpty {
-                Log.info("Processing time \(CFAbsoluteTimeGetCurrent() - start) seconds")
-            } else {
-                RunLoop.current.run()
-                _ = keepAlive
-            }
+            Log.info("Processing time \(CFAbsoluteTimeGetCurrent() - start) seconds")
         } catch {
             if isDryRun {
                 let encoder = JSONEncoder()
@@ -176,8 +171,8 @@ public struct SourceryCommand: AsyncParsableCommand {
         }
     }
 
-    private func processFiles(specifiedIn configurations: [Configuration]) throws -> [FSEventStream] {
-        try configurations.flatMap { configuration in
+    private func processFiles(specifiedIn configurations: [Configuration]) throws {
+        for configuration in configurations {
             configuration.validate()
 
             let shouldUseCacheBasePathArg = configuration.cacheBasePath == Path.defaultBaseCachePath && !cacheBasePath.string.isEmpty
@@ -197,7 +192,7 @@ public struct SourceryCommand: AsyncParsableCommand {
                 throw "--dry not compatible with --watch"
             }
 
-            return try sourcery.processFiles(
+            try sourcery.processFiles(
                 configuration.source,
                 usingTemplates: configuration.templates,
                 output: configuration.output,
