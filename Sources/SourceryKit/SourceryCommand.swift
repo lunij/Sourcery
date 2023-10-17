@@ -83,15 +83,7 @@ public struct SourceryCommand: AsyncParsableCommand {
 
     public func run() async throws {
         do {
-            Log.stackMessages = isDryRun
-            switch (quiet, verbose) {
-            case (true, _):
-                Log.level = .errors
-            case (false, let isVerbose):
-                Log.level = isVerbose ? .verbose : .info
-            }
-            Log.logBenchmarks = (verbose || logBenchmark) && !quiet
-            Log.logAST = (verbose || logAST) && !quiet
+            setupLogger(isDryRun, quiet, verbose, logBenchmark, logAST)
 
             let start = CFAbsoluteTimeGetCurrent()
 
@@ -266,4 +258,23 @@ extension Configuration {
         _ = templates.allPaths.map(Validators.isReadable(path:))
         _ = output.path.map(Validators.isWritable(path:))
     }
+}
+
+private func setupLogger(
+    _ isDryRun: Bool,
+    _ quiet: Bool,
+    _ verbose: Bool,
+    _ logBenchmark: Bool,
+    _ logAST: Bool
+) {
+    Log.stackMessages = isDryRun
+
+    if quiet {
+        Log.level = .errors
+    } else {
+        Log.level = verbose ? .verbose : .info
+    }
+
+    Log.logBenchmarks = (verbose || logBenchmark) && !quiet
+    Log.logAST = (verbose || logAST) && !quiet
 }
