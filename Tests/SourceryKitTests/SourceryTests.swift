@@ -20,8 +20,8 @@ class SourceryTests: XCTestCase {
 
         "class Foo {}".update(in: sourcePath)
 
-        _ = try? Sourcery(cacheDisabled: true).processFiles(
-            .sources(Paths(include: [sourcePath])),
+        _ = try? Sourcery(cacheDisabled: true).processSources(
+            .paths(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [.otherStencilPath]),
             output: output
         )
@@ -38,7 +38,7 @@ class SourceryTests: XCTestCase {
 
         DispatchQueue.main.asyncAfter( deadline: DispatchTime.now() + Double(Int64(0.5 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)) { [output] in
             _ = try? Sourcery(cacheDisabled: true)
-                .processFiles(.sources(Paths(include: [sourcePath])), usingTemplates: Paths(include: [.otherStencilPath]), output: output, baseIndentation: 0)
+                .processSources(.paths(Paths(include: [sourcePath])), usingTemplates: Paths(include: [.otherStencilPath]), output: output, baseIndentation: 0)
             newGeneratedFileModificationDate = generatedFilePath.url.fileModificationDate()
             expectation.fulfill()
         }
@@ -60,7 +60,7 @@ class SourceryTests: XCTestCase {
 
         DispatchQueue.main.asyncAfter( deadline: DispatchTime.now() + Double(Int64(1 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)) { [output] in
             _ = try? Sourcery(cacheDisabled: true)
-                .processFiles(.sources(Paths(include: [sourcePath, anotherSourcePath])), usingTemplates: Paths(include: [.otherStencilPath]), output: output, baseIndentation: 0)
+                .processSources(.paths(Paths(include: [sourcePath, anotherSourcePath])), usingTemplates: Paths(include: [.otherStencilPath]), output: output, baseIndentation: 0)
             newGeneratedFileModificationDate = generatedFilePath.url.fileModificationDate()
             expectation.fulfill()
         }
@@ -91,8 +91,8 @@ class SourceryTests: XCTestCase {
         // sourcery:end
         """.update(in: templatePath)
 
-        try Sourcery(cacheDisabled: true).processFiles(
-            .sources(Paths(include: [sourcePath])),
+        try Sourcery(cacheDisabled: true).processSources(
+            .paths(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [templatePath]),
             output: output
         )
@@ -144,8 +144,8 @@ class SourceryTests: XCTestCase {
         }
         """.update(in: sourcePath)
 
-        try Sourcery(cacheDisabled: true).processFiles(
-            .sources(Paths(include: [sourcePath])),
+        try Sourcery(cacheDisabled: true).processSources(
+            .paths(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [templatePath]),
             output: output
         )
@@ -176,8 +176,8 @@ class SourceryTests: XCTestCase {
         // sourcery:end
         """.update(in: templatePath)
 
-        try Sourcery(cacheDisabled: true, prune: true).processFiles(
-            .sources(Paths(include: [sourcePath])),
+        try Sourcery(cacheDisabled: true, prune: true).processSources(
+            .paths(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [templatePath]),
             output: output
         )
@@ -221,8 +221,8 @@ class SourceryTests: XCTestCase {
         // sourcery:end
         """.update(in: templatePath)
 
-        try Sourcery(cacheDisabled: true).processFiles(
-            .sources(Paths(include: [sourcePath])),
+        try Sourcery(cacheDisabled: true).processSources(
+            .paths(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [templatePath]),
             output: output
         )
@@ -282,8 +282,8 @@ class SourceryTests: XCTestCase {
         // sourcery:end
         """.update(in: templatePath)
 
-        try Sourcery(cacheDisabled: true).processFiles(
-            .sources(Paths(include: [sourcePath])),
+        try Sourcery(cacheDisabled: true).processSources(
+            .paths(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [templatePath]),
             output: output
         )
@@ -322,8 +322,8 @@ class SourceryTests: XCTestCase {
         // sourcery:end
         """.update(in: templatePath)
 
-        try Sourcery(cacheDisabled: true).processFiles(
-            .sources(Paths(include: [sourcePath])),
+        try Sourcery(cacheDisabled: true).processSources(
+            .paths(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [templatePath]),
             output: output
         )
@@ -359,8 +359,8 @@ class SourceryTests: XCTestCase {
         // sourcery:end
         """.update(in: templatePath)
 
-        try Sourcery(cacheDisabled: true).processFiles(
-            .sources(Paths(include: [sourcePath])),
+        try Sourcery(cacheDisabled: true).processSources(
+            .paths(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [templatePath]),
             output: output,
             baseIndentation: 4
@@ -393,8 +393,8 @@ class SourceryTests: XCTestCase {
         // sourcery:end
         """.update(in: templatePath)
 
-        try Sourcery(cacheDisabled: true).processFiles(
-            .sources(Paths(include: [sourcePath])),
+        try Sourcery(cacheDisabled: true).processSources(
+            .paths(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [templatePath]),
             output: output
         )
@@ -427,8 +427,8 @@ class SourceryTests: XCTestCase {
         // sourcery:end
         """.update(in: templatePath)
 
-        try Sourcery(cacheDisabled: true).processFiles(
-            .sources(Paths(include: [sourcePath])),
+        try Sourcery(cacheDisabled: true).processSources(
+            .paths(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [templatePath]),
             output: output
         )
@@ -468,8 +468,8 @@ class SourceryTests: XCTestCase {
         {% endfor %}
         """.update(in: templatePath)
 
-        try Sourcery(cacheDisabled: true).processFiles(
-            .sources(Paths(include: [sourcePath])),
+        try Sourcery(cacheDisabled: true).processSources(
+            .paths(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [templatePath]),
             output: output
         )
@@ -521,8 +521,8 @@ class SourceryTests: XCTestCase {
         {% endfor %}
         """.update(in: templatePath)
 
-        try Sourcery(cacheDisabled: true).processFiles(
-            .sources(Paths(include: [sourcePath])),
+        try Sourcery(cacheDisabled: true).processSources(
+            .paths(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [templatePath]),
             output: output
         )
@@ -576,8 +576,8 @@ class SourceryTests: XCTestCase {
         // sourcery:end
         """.update(in: templatePath)
 
-        try Sourcery(cacheDisabled: true).processFiles(
-            .sources(Paths(include: [sourcePath])), 
+        try Sourcery(cacheDisabled: true).processSources(
+            .paths(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [templatePath]),
             output: output
         )
@@ -624,8 +624,8 @@ class SourceryTests: XCTestCase {
         {% endfor %}
         """.update(in: templatePath)
 
-        try Sourcery(cacheDisabled: true).processFiles(
-            .sources(Paths(include: [sourcePath])),
+        try Sourcery(cacheDisabled: true).processSources(
+            .paths(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [templatePath]),
             output: output
         )
@@ -667,8 +667,8 @@ class SourceryTests: XCTestCase {
         // sourcery:end
         """.update(in: templatePath)
 
-        try Sourcery(cacheDisabled: true).processFiles(
-            .sources(Paths(include: [sourcePath])),
+        try Sourcery(cacheDisabled: true).processSources(
+            .paths(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [templatePath]),
             output: output
         )
@@ -707,8 +707,8 @@ class SourceryTests: XCTestCase {
         // sourcery:end
         """.update(in: templatePath)
 
-        try Sourcery(cacheDisabled: true).processFiles(
-            .sources(Paths(include: [sourcePath])),
+        try Sourcery(cacheDisabled: true).processSources(
+            .paths(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [templatePath]),
             output: output
         )
@@ -753,8 +753,8 @@ class SourceryTests: XCTestCase {
         // sourcery:end
         """.update(in: templatePath)
 
-        try Sourcery(cacheDisabled: true).processFiles(
-            .sources(Paths(include: [sourcePath])),
+        try Sourcery(cacheDisabled: true).processSources(
+            .paths(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [templatePath]),
             output: output
         )
@@ -802,8 +802,8 @@ class SourceryTests: XCTestCase {
         // sourcery:end
         """.update(in: secondTemplatePath)
 
-        try Sourcery(cacheDisabled: true).processFiles(
-            .sources(Paths(include: [sourcePath])),
+        try Sourcery(cacheDisabled: true).processSources(
+            .paths(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [secondTemplatePath, templatePath]),
             output: output, 
             baseIndentation: 0
@@ -825,8 +825,8 @@ class SourceryTests: XCTestCase {
         let result = try sourcePath.read(.utf8)
         XCTAssertEqual(result, expectedResult)
 
-        try Sourcery(cacheDisabled: true).processFiles(
-            .sources(Paths(include: [sourcePath])),
+        try Sourcery(cacheDisabled: true).processSources(
+            .paths(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [secondTemplatePath, templatePath]),
             output: output
         )
@@ -872,8 +872,8 @@ class SourceryTests: XCTestCase {
         {% endfor %}
         """.update(in: templatePathB)
 
-        try Sourcery(cacheDisabled: true).processFiles(
-            .sources(Paths(include: [sourcePath])),
+        try Sourcery(cacheDisabled: true).processSources(
+            .paths(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [templatePathA, templatePathB]),
             output: output
         )
@@ -939,8 +939,8 @@ class SourceryTests: XCTestCase {
         {% endfor %}
         """.update(in: templatePathB)
 
-        try Sourcery(cacheDisabled: true).processFiles(
-            .sources(Paths(include: [sourcePath])),
+        try Sourcery(cacheDisabled: true).processSources(
+            .paths(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [templatePathA, templatePathB]),
             output: output
         )
@@ -981,16 +981,16 @@ class SourceryTests: XCTestCase {
         // sourcery:end
         """.update(in: templatePath)
 
-        try Sourcery(cacheDisabled: false).processFiles(
-            .sources(Paths(include: [sourcePath])),
+        try Sourcery(cacheDisabled: false).processSources(
+            .paths(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [templatePath]),
             output: Output(outputDir, linkTo: nil)
         )
 
         "class Foo {}".update(in: sourcePath)
 
-        try Sourcery(cacheDisabled: false).processFiles(
-            .sources(Paths(include: [sourcePath])),
+        try Sourcery(cacheDisabled: false).processSources(
+            .paths(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [templatePath]),
             output: Output(outputDir, linkTo: nil)
         )
@@ -1028,8 +1028,8 @@ class SourceryTests: XCTestCase {
         {% endfor %}
         """.update(in: templatePath)
 
-        try Sourcery(cacheDisabled: true).processFiles(
-            .sources(Paths(include: [sourcePath])),
+        try Sourcery(cacheDisabled: true).processSources(
+            .paths(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [templatePath]),
             output: output
         )
@@ -1082,8 +1082,8 @@ class SourceryTests: XCTestCase {
         {% endfor %}
         """.update(in: templatePath)
 
-        try Sourcery(cacheDisabled: true, prune: true).processFiles(
-            .sources(Paths(include: [sourcePath])),
+        try Sourcery(cacheDisabled: true, prune: true).processSources(
+            .paths(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [templatePath]),
             output: output
         )
@@ -1124,8 +1124,8 @@ class SourceryTests: XCTestCase {
 
             """
 
-        try Sourcery(cacheDisabled: true, prune: true).processFiles(
-            .sources(Paths(include: [sourcePath])),
+        try Sourcery(cacheDisabled: true, prune: true).processSources(
+            .paths(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [templatePath]),
             output: output
         )
@@ -1141,8 +1141,8 @@ class SourceryTests: XCTestCase {
 
         _ = try? targetPath.delete()
 
-        try Sourcery(cacheDisabled: true).processFiles(
-            .sources(Paths(include: [Stubs.resultDirectory] + Path("Basic.swift"))),
+        try Sourcery(cacheDisabled: true).processSources(
+            .paths(Paths(include: [Stubs.resultDirectory] + Path("Basic.swift"))),
             usingTemplates: Paths(include: [.basicStencilPath]),
             output: output, baseIndentation: 0
         )
@@ -1160,8 +1160,8 @@ class SourceryTests: XCTestCase {
 
         """.update(in: sourcePath)
 
-        XCTAssertThrowsError(try Sourcery(cacheDisabled: true).processFiles(
-            .sources(Paths(include: [sourcePath])),
+        XCTAssertThrowsError(try Sourcery(cacheDisabled: true).processSources(
+            .paths(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [.basicStencilPath]),
             output: output
         )) {
@@ -1173,16 +1173,16 @@ class SourceryTests: XCTestCase {
     func test_processFiles_andRestrictedFile_itDoesNotThrowWhenSourceFileDoesNotExist() {
         let sourcePath = outputDir + Path("Missing.swift")
 
-        XCTAssertNoThrow(try Sourcery(cacheDisabled: true).processFiles(
-            .sources(Paths(include: [sourcePath])),
+        XCTAssertNoThrow(try Sourcery(cacheDisabled: true).processSources(
+            .paths(Paths(include: [sourcePath])),
             usingTemplates: Paths(include: [.basicStencilPath]),
             output: Output(outputDir, linkTo: nil)
         ))
     }
 
     func test_processFiles_ignoresExcludedSourcePaths() throws {
-        try Sourcery(cacheDisabled: true).processFiles(
-            .sources(Paths(include: [Stubs.sourceDirectory], exclude: [Stubs.sourceDirectory + "Foo.swift"])),
+        try Sourcery(cacheDisabled: true).processSources(
+            .paths(Paths(include: [Stubs.sourceDirectory], exclude: [Stubs.sourceDirectory + "Foo.swift"])),
             usingTemplates: Paths(include: [.basicStencilPath]),
             output: output
         )
@@ -1193,8 +1193,8 @@ class SourceryTests: XCTestCase {
     }
 
     func test_processFiles_whenNoWatcher_itCreatesExpectedOutputFile() throws {
-        try Sourcery(cacheDisabled: true).processFiles(
-            .sources(Paths(include: [Stubs.sourceDirectory])),
+        try Sourcery(cacheDisabled: true).processSources(
+            .paths(Paths(include: [Stubs.sourceDirectory])),
             usingTemplates: Paths(include: [.basicStencilPath]),
             output: output
         )
@@ -1209,8 +1209,8 @@ class SourceryTests: XCTestCase {
 
         "Found {{ types.enums.count }} Enums".update(in: templatePath)
 
-        let eventStreams = try Sourcery(watcherEnabled: true, cacheDisabled: true).processFiles(
-            .sources(Paths(include: [Stubs.sourceDirectory])),
+        let eventStreams = try Sourcery(watcherEnabled: true, cacheDisabled: true).processSources(
+            .paths(Paths(include: [Stubs.sourceDirectory])),
             usingTemplates: Paths(include: [templatePath]),
             output: output
         )
@@ -1230,8 +1230,8 @@ class SourceryTests: XCTestCase {
         let outputFile = outputDir + "Composed.swift"
         let expectedResult = try? (Stubs.resultDirectory + Path("Basic+Other+SourceryTemplates.swift")).read(.utf8).withoutWhitespaces
 
-        try Sourcery(cacheDisabled: true).processFiles(
-            .sources(Paths(include: [Stubs.sourceDirectory])),
+        try Sourcery(cacheDisabled: true).processSources(
+            .paths(Paths(include: [Stubs.sourceDirectory])),
             usingTemplates: Paths(include: [
                 Stubs.templateDirectory + "Basic.stencil",
                 Stubs.templateDirectory + "Other.stencil",
@@ -1249,8 +1249,8 @@ class SourceryTests: XCTestCase {
         let templatePath = Stubs.templateDirectory + Path("Empty.stencil")
         "".update(in: templatePath)
 
-        try Sourcery(cacheDisabled: true, prune: true).processFiles(
-            .sources(Paths(include: [Stubs.sourceDirectory])),
+        try Sourcery(cacheDisabled: true, prune: true).processSources(
+            .paths(Paths(include: [Stubs.sourceDirectory])),
             usingTemplates: Paths(include: [templatePath]),
             output: Output(outputFile)
         )
@@ -1264,8 +1264,8 @@ class SourceryTests: XCTestCase {
         let generated = templateNames.map { outputDir + Sourcery().generatedPath(for: Stubs.templateDirectory + "\($0).stencil") }
         let expected = templateNames.map { Stubs.resultDirectory + Path("\($0).swift") }
 
-        try Sourcery(cacheDisabled: true).processFiles(
-            .sources(Paths(include: [Stubs.sourceDirectory])),
+        try Sourcery(cacheDisabled: true).processSources(
+            .paths(Paths(include: [Stubs.sourceDirectory])),
             usingTemplates: Paths(include: [Stubs.templateDirectory]),
             output: output
         )
@@ -1282,8 +1282,8 @@ class SourceryTests: XCTestCase {
         let outputFile = outputDir + "Composed.swift"
         let expectedResult = try (Stubs.resultDirectory + Path("Basic+Other.swift")).read(.utf8).withoutWhitespaces
 
-        try Sourcery(cacheDisabled: true).processFiles(
-            .sources(Paths(include: [Stubs.sourceDirectory])),
+        try Sourcery(cacheDisabled: true).processSources(
+            .paths(Paths(include: [Stubs.sourceDirectory])),
             usingTemplates: Paths(
                 include: [Stubs.templateDirectory],
                 exclude: [
@@ -1304,7 +1304,7 @@ class SourceryTests: XCTestCase {
     private func createProjectScenario(templatePath: Path) throws -> ProjectScenario {
         let projectPath = Stubs.sourceDirectory + "TestProject"
         let projectFilePath = Stubs.sourceDirectory + "TestProject/TestProject.xcodeproj"
-        let sources = try Source(
+        let sources = try Sources(
             dict: [
                 "project": [
                     "file": "TestProject.xcodeproj",
@@ -1327,7 +1327,7 @@ class SourceryTests: XCTestCase {
     func test_processFiles_whenProject_itLinksGeneratedFiles() throws {
         let scenario = try createProjectScenario(templatePath: .otherStencilPath)
 
-        try Sourcery(cacheDisabled: true, prune: true).processFiles(
+        try Sourcery(cacheDisabled: true, prune: true).processSources(
             scenario.sources,
             usingTemplates: scenario.templates,
             output: scenario.createOutput(at: outputDir)
@@ -1353,7 +1353,7 @@ class SourceryTests: XCTestCase {
         {% endfor %}
         """.update(in: templatePath)
 
-        try Sourcery(cacheDisabled: true, prune: true).processFiles(
+        try Sourcery(cacheDisabled: true, prune: true).processSources(
             scenario.sources,
             usingTemplates: scenario.templates,
             output: scenario.createOutput(at: outputDir)
@@ -1393,7 +1393,7 @@ private extension URL {
 }
 
 private struct ProjectScenario {
-    let sources: Source
+    let sources: Sources
     let templates: Paths
     let originalProject: XcodeProj
     let projectPath: Path

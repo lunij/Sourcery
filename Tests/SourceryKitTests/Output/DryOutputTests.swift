@@ -15,8 +15,8 @@ class DryOutputStencilTemplateTests: XCTestCase {
         sourcery.dryOutput = outputInterceptor.handleOutput(_:)
 
         XCTAssertNoThrow(
-            try sourcery.processFiles(
-                .sources(Paths(include: [Stubs.sourceDirectory])),
+            try sourcery.processSources(
+                .paths(Paths(include: [Stubs.sourceDirectory])),
                 usingTemplates: Paths(include: [templatePath]),
                 output: Output(outputDir),
                 isDryRun: false
@@ -42,8 +42,8 @@ class DryOutputStencilTemplateTests: XCTestCase {
         sourcery.dryOutput = outputInterceptor.handleOutput(_:)
 
         XCTAssertNoThrow(
-            try sourcery.processFiles(
-                .sources(Paths(include: [Stubs.sourceDirectory])),
+            try sourcery.processSources(
+                .paths(Paths(include: [Stubs.sourceDirectory])),
                 usingTemplates: Paths(include: [templatePath]),
                 output: Output(outputDir),
                 isDryRun: true
@@ -60,8 +60,8 @@ class DryOutputStencilTemplateTests: XCTestCase {
         sourcery.dryOutput = outputInterceptor.handleOutput(_:)
 
         XCTAssertNoThrow(
-            try sourcery.processFiles(
-                .sources(Paths(include: [sourcePath])),
+            try sourcery.processSources(
+                .paths(Paths(include: [sourcePath])),
                 usingTemplates: Paths(include: [templatePath]),
                 output: Output("."),
                 isDryRun: true
@@ -176,8 +176,8 @@ class DryOutputSwiftTemplateTests: XCTestCase {
         sourcery.dryOutput = outputInterceptor.handleOutput(_:)
 
         XCTAssertNoThrow(
-            try sourcery.processFiles(
-                .sources(Paths(include: [Stubs.sourceDirectory])),
+            try sourcery.processSources(
+                .paths(Paths(include: [Stubs.sourceDirectory])),
                 usingTemplates: Paths(include: [templatePath]),
                 output: output,
                 isDryRun: false
@@ -192,8 +192,8 @@ class DryOutputSwiftTemplateTests: XCTestCase {
         sourcery.dryOutput = outputInterceptor.handleOutput(_:)
 
         XCTAssertNoThrow(
-            try sourcery.processFiles(
-                .sources(Paths(include: [Stubs.sourceDirectory])),
+            try sourcery.processSources(
+                .paths(Paths(include: [Stubs.sourceDirectory])),
                 usingTemplates: Paths(include: [templatePath]),
                 output: output,
                 isDryRun: true
@@ -210,8 +210,8 @@ class DryOutputSwiftTemplateTests: XCTestCase {
         sourcery.dryOutput = outputInterceptor.handleOutput(_:)
 
         XCTAssertNoThrow(
-            try sourcery.processFiles(
-                .sources(Paths(include: [Stubs.sourceDirectory])),
+            try sourcery.processSources(
+                .paths(Paths(include: [Stubs.sourceDirectory])),
                 usingTemplates: Paths(include: [templatePath]),
                 output: output,
                 isDryRun: true
@@ -228,8 +228,8 @@ class DryOutputSwiftTemplateTests: XCTestCase {
         sourcery.dryOutput = outputInterceptor.handleOutput(_:)
 
         XCTAssertNoThrow(
-            try sourcery.processFiles(
-                .sources(Paths(include: [Stubs.sourceDirectory])),
+            try sourcery.processSources(
+                .paths(Paths(include: [Stubs.sourceDirectory])),
                 usingTemplates: Paths(include: [templatePath]),
                 output: output,
                 isDryRun: true
@@ -246,8 +246,8 @@ class DryOutputSwiftTemplateTests: XCTestCase {
         sourcery.dryOutput = outputInterceptor.handleOutput(_:)
 
         XCTAssertNoThrow(
-            try sourcery.processFiles(
-                .sources(Paths(include: [Stubs.sourceDirectory])),
+            try sourcery.processSources(
+                .paths(Paths(include: [Stubs.sourceDirectory])),
                 usingTemplates: Paths(include: [templatePath]),
                 output: output,
                 isDryRun: true
@@ -264,8 +264,8 @@ class DryOutputSwiftTemplateTests: XCTestCase {
         sourcery.dryOutput = outputInterceptor.handleOutput(_:)
 
         XCTAssertNoThrow(
-            try sourcery.processFiles(
-                .sources(Paths(include: [Stubs.sourceDirectory])),
+            try sourcery.processSources(
+                .paths(Paths(include: [Stubs.sourceDirectory])),
                 usingTemplates: Paths(include: [templatePath]),
                 output: output,
                 isDryRun: true
@@ -282,8 +282,8 @@ class DryOutputSwiftTemplateTests: XCTestCase {
         sourcery.dryOutput = outputInterceptor.handleOutput(_:)
 
         XCTAssertNoThrow(
-            try sourcery.processFiles(
-                .sources(Paths(include: [Stubs.sourceDirectory])),
+            try sourcery.processSources(
+                .paths(Paths(include: [Stubs.sourceDirectory])),
                 usingTemplates: Paths(include: [templatePath]),
                 output: output,
                 isDryRun: true
@@ -313,8 +313,8 @@ class DryOutputSwiftTemplateTests: XCTestCase {
         ].compactMap { try? (Stubs.resultDirectory + Path($0)).read(.utf8) }
 
         XCTAssertNoThrow(
-            try sourcery.processFiles(
-                .sources(Paths(include: [Stubs.sourceDirectory])),
+            try sourcery.processSources(
+                .paths(Paths(include: [Stubs.sourceDirectory])),
                 usingTemplates: Paths(include: templatePaths),
                 output: output,
                 isDryRun: true
@@ -338,8 +338,8 @@ class DryOutputSwiftTemplateTests: XCTestCase {
         sourcery.dryOutput = outputInterceptor.handleOutput(_:)
 
         XCTAssertNoThrow(
-            try sourcery.processFiles(
-                .sources(Paths(include: [Stubs.sourceDirectory])),
+            try sourcery.processSources(
+                .paths(Paths(include: [Stubs.sourceDirectory])),
                 usingTemplates: Paths(include: templatePaths),
                 output: output,
                 isDryRun: true

@@ -51,8 +51,8 @@ public class Sourcery {
     }
 
     @discardableResult
-    public func processFiles(
-        _ source: Source,
+    public func processSources(
+        _ sources: Sources,
         usingTemplates templatePaths: Paths,
         output: Output,
         isDryRun: Bool = false,
@@ -65,8 +65,8 @@ public class Sourcery {
         let hasSwiftTemplates = templatePaths.allPaths.contains(where: { $0.extension == "swifttemplate" })
 
         let watchPaths: Paths
-        switch source {
-        case let .sources(paths):
+        switch sources {
+        case let .paths(paths):
             watchPaths = paths
         case let .projects(projects):
             watchPaths = Paths(include: projects.map({ $0.root }),
@@ -74,7 +74,7 @@ public class Sourcery {
         }
 
         let parserResult = try process(
-            source: source,
+            sources: sources,
             templatePaths: templatePaths,
             output: output,
             forceParse: forceParse,
@@ -92,7 +92,7 @@ public class Sourcery {
 
         return watcherEnabled ? createWatchers(
             parserResult: parserResult,
-            source: source,
+            sources: sources,
             sourcePaths: watchPaths,
             templatePaths: templatePaths,
             output: output,
@@ -104,7 +104,7 @@ public class Sourcery {
     }
 
     private func process(
-        source: Source,
+        sources: Sources,
         templatePaths: Paths,
         output: Output,
         forceParse: [String],
@@ -113,8 +113,8 @@ public class Sourcery {
         baseIndentation: Int
     ) throws -> ParsingResult {
         var result: ParsingResult
-        switch source {
-        case let .sources(paths):
+        switch sources {
+        case let .paths(paths):
             result = try parse(
                 from: paths.include,
                 exclude: paths.exclude,
@@ -152,7 +152,7 @@ public class Sourcery {
         }
 
         try generate(
-            source: source,
+            source: sources,
             templatePaths: templatePaths,
             output: output,
             parsingResult: &result,
@@ -164,7 +164,7 @@ public class Sourcery {
 
     private func createWatchers(
         parserResult: ParsingResult,
-        source: Source,
+        sources: Sources,
         sourcePaths: Paths,
         templatePaths: Paths,
         output: Output,
@@ -199,7 +199,7 @@ public class Sourcery {
                     do {
                         Log.info("Source changed at \(path.string)")
                         result = try self.process(
-                            source: source,
+                            sources: sources,
                             templatePaths: templatePaths,
                             output: output,
                             forceParse: forceParse,
@@ -229,7 +229,7 @@ public class Sourcery {
                         Log.info("Templates changed: ")
                     }
                     try self.generate(
-                        source: source, 
+                        source: sources, 
                         templatePaths: Paths(include: [path]),
                         output: output,
                         parsingResult: &result,
@@ -498,7 +498,7 @@ extension Sourcery {
     private typealias SourceChange = (path: String, rangeInFile: NSRange, newRangeInFile: NSRange)
     private typealias GenerationResult = (String, [SourceChange])
 
-    fileprivate func generate(source: Source, templatePaths: Paths, output: Output, parsingResult: inout ParsingResult, forceParse: [String], baseIndentation: Int) throws {
+    fileprivate func generate(source: Sources, templatePaths: Paths, output: Output, parsingResult: inout ParsingResult, forceParse: [String], baseIndentation: Int) throws {
         let generationStart = currentTimestamp()
 
         Log.info("Loading templates...")

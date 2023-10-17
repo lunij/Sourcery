@@ -12,8 +12,8 @@ class SourceryPerformanceTests: XCTestCase {
         _ = try? Path.cachesDir(sourcePath: Stubs.sourceForPerformance, basePath: nil).delete()
 
         measure {
-            _ = try? Sourcery(cacheDisabled: true).processFiles(
-                .sources(Paths(include: [Stubs.sourceForPerformance])),
+            _ = try? Sourcery(cacheDisabled: true).processSources(
+                .paths(Paths(include: [Stubs.sourceForPerformance])),
                 usingTemplates: Paths(include: [Stubs.templateDirectory + Path("Basic.stencil")]),
                 output: output
             )
@@ -22,15 +22,15 @@ class SourceryPerformanceTests: XCTestCase {
 
     func testParsingPerformanceOnSubsequentRun() {
         _ = try? Path.cachesDir(sourcePath: Stubs.sourceForPerformance, basePath: nil).delete()
-        _ = try? Sourcery().processFiles(
-            .sources(Paths(include: [Stubs.sourceForPerformance])),
+        _ = try? Sourcery().processSources(
+            .paths(Paths(include: [Stubs.sourceForPerformance])),
             usingTemplates: Paths(include: [Stubs.templateDirectory + Path("Basic.stencil")]),
             output: output
         )
 
         measure {
-            _ = try? Sourcery().processFiles(
-                .sources(Paths(include: [Stubs.sourceForPerformance])),
+            _ = try? Sourcery().processSources(
+                .paths(Paths(include: [Stubs.sourceForPerformance])),
                 usingTemplates: Paths(include: [Stubs.templateDirectory + Path("Basic.stencil")]),
                 output: output
             )

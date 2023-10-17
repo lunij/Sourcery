@@ -11,6 +11,9 @@ public struct SourceryCommand: AsyncParsableCommand {
         version: Sourcery.version
     )
 
+    @OptionGroup
+    var options: ConfigurationOptions
+
     @Flag(name: [.customLong("watch"), .short], help: "Watch template for changes and regenerate as needed")
     var watcherEnabled = false
 
@@ -26,9 +29,6 @@ public struct SourceryCommand: AsyncParsableCommand {
     @Flag(help: "Log time benchmark info")
     var logBenchmark = false
 
-    @Flag(help: "Include documentation comments for all declarations")
-    var parseDocumentation = false
-
     @Flag(name: .shortAndLong, help: "Turn off any logging, only emmit errors")
     var quiet = false
 
@@ -38,43 +38,8 @@ public struct SourceryCommand: AsyncParsableCommand {
     @Flag(help: "Parse the specified sources in serial, rather than in parallel (the default), which can address stability issues in SwiftSyntax")
     var serialParse = false
 
-    @Option(help: "Path to one or more Swift files or directories containing such")
-    var sources: [Path] = []
-
-    @Option(help: "Path to one or more Swift files or directories containing such to exclude them")
-    var excludeSources: [Path] = []
-
-    @Option(help: "Path to templates")
-    var templates: [Path] = []
-
-    @Option(help: "Path to templates to exclude them")
-    var excludeTemplates: [Path] = []
-
-    @Option(help: "Path to output. File or Directory. Default is current path")
-    var output: Path = ""
-
     @Flag(name: .customLong("dry"), help: "Dry run, without file system modifications, will output result and errors in JSON format")
     var isDryRun = false
-
-    @Option(name: .customLong("config"), help: "Path to config file. File or Directory. Default is current path")
-    var configPaths: [Path] = ["."]
-
-    @Option(help: "File extensions that will be forced to parse, even if they were generated")
-    var forceParse: [String] = []
-
-    @Option(help: "Base indendation to add to sourcery:auto fragments")
-    var baseIndentation = 0
-
-    @Option(help: """
-        Additional arguments to pass to templates. Each argument can have an explicit value or will have \
-        an implicit `true` value. Arguments should be comma-separated without spaces (e.g. --args arg1=value,arg2) \
-        or should be passed one by one (e.g. --args arg1=value --args arg2). Arguments are accessible in templates \
-        via `argument.<name>`. To pass in string you should use escaped quotes (\\").
-        """)
-    var args: [String] = []
-
-    @Option(help: "Base path to Sourcery's cache directory")
-    var cacheBasePath: Path = ""
 
     @Option(help: "Set a custom build path")
     var buildPath: Path = ""
@@ -87,7 +52,9 @@ public struct SourceryCommand: AsyncParsableCommand {
 
             let start = CFAbsoluteTimeGetCurrent()
 
-            for configuration in readConfigurations() {
+            let configReader = ConfigurationReader()
+
+            for configuration in try configReader.readConfigurations(options: options) {
                 try processFiles(specifiedIn: configuration)
             }
 
@@ -105,74 +72,16 @@ public struct SourceryCommand: AsyncParsableCommand {
         }
     }
 
-    private func readConfigurations() -> [Configuration] {
-        configPaths.flatMap { configPath -> [Configuration] in
-            let yamlPath = configPath.isDirectory ? configPath + ".sourcery.yml" : configPath
-
-            if !yamlPath.exists {
-                Log.info("No config file provided or it does not exist. Using command line arguments.")
-                let args = args.joined(separator: ",")
-                let arguments = AnnotationsParser.parse(line: args)
-                return [
-                    Configuration(
-                        sources: Paths(include: sources, exclude: excludeSources) ,
-                        templates: Paths(include: templates, exclude: excludeTemplates),
-                        output: output.string.isEmpty ? "." : output,
-                        cacheBasePath: cacheBasePath.string.isEmpty ? Path.defaultBaseCachePath : cacheBasePath,
-                        forceParse: forceParse,
-                        parseDocumentation: parseDocumentation,
-                        baseIndentation: baseIndentation,
-                        args: arguments
-                    )
-                ]
-            } else {
-                _ = Validators.isFileOrDirectory(path: configPath)
-                _ = Validators.isReadable(path: yamlPath)
-
-                do {
-                    let relativePath: Path = configPath.isDirectory ? configPath : configPath.parent()
-
-                    // Check if the user is passing parameters
-                    // that are ignored cause read from the yaml file
-                    let hasAnyYamlDuplicatedParameter = (
-                        !sources.isEmpty ||
-                            !excludeSources.isEmpty ||
-                            !templates.isEmpty ||
-                            !excludeTemplates.isEmpty ||
-                            !forceParse.isEmpty ||
-                            output != "" ||
-                            !args.isEmpty
-                    )
-
-                    if hasAnyYamlDuplicatedParameter {
-                        Log.info("Using configuration file at '\(yamlPath)'. WARNING: Ignoring the parameters passed in the command line.")
-                    } else {
-                        Log.info("Using configuration file at '\(yamlPath)'")
-                    }
-
-                    return try Configurations.make(
-                        path: yamlPath,
-                        relativePath: relativePath,
-                        env: ProcessInfo.processInfo.environment
-                    )
-                } catch {
-                    Log.error("while reading .yml '\(yamlPath)'. '\(error)'")
-                    exitSourcery(.invalidConfig)
-                }
-            }
-        }
-    }
-
     private func processFiles(specifiedIn configuration: Configuration) throws {
         configuration.validate()
 
-        let shouldUseCacheBasePathArg = configuration.cacheBasePath == Path.defaultBaseCachePath && !cacheBasePath.string.isEmpty
+        let shouldUseCacheBasePathArg = configuration.cacheBasePath == Path.defaultBaseCachePath && !options.cacheBasePath.string.isEmpty
 
         let sourcery = Sourcery(
             verbose: verbose,
             watcherEnabled: watcherEnabled,
             cacheDisabled: cacheDisabled,
-            cacheBasePath: shouldUseCacheBasePathArg ? cacheBasePath : configuration.cacheBasePath,
+            cacheBasePath: shouldUseCacheBasePathArg ? options.cacheBasePath : configuration.cacheBasePath,
             buildPath: buildPath.string.isEmpty ? nil : buildPath,
             prune: prune,
             serialParse: serialParse,
@@ -183,8 +92,8 @@ public struct SourceryCommand: AsyncParsableCommand {
             throw "--dry not compatible with --watch"
         }
 
-        try sourcery.processFiles(
-            configuration.source,
+        try sourcery.processSources(
+            configuration.sources,
             usingTemplates: configuration.templates,
             output: configuration.output,
             isDryRun: isDryRun,
@@ -207,25 +116,14 @@ enum ExitCode: Int32 {
     case other
 }
 
-private func exitSourcery(_ code: ExitCode) -> Never {
+func exitSourcery(_ code: ExitCode) -> Never {
     exit(code.rawValue)
 }
 
-private enum Validators {
+enum Validators {
     static func isReadable(path: Path) -> Path {
         if !path.isReadable {
             Log.error("'\(path)' does not exist or is not readable.")
-            exitSourcery(.invalidPath)
-        }
-
-        return path
-    }
-
-    static func isFileOrDirectory(path: Path) -> Path {
-        _ = isReadable(path: path)
-
-        if !(path.isDirectory || path.isFile) {
-            Log.error("'\(path)' isn't a directory or proper file.")
             exitSourcery(.invalidPath)
         }
 
@@ -243,12 +141,12 @@ private enum Validators {
 
 extension Configuration {
     func validate() {
-        guard !source.isEmpty else {
+        guard !sources.isEmpty else {
             Log.error("No sources provided.")
             exitSourcery(.invalidConfig)
         }
-        if case let .sources(sources) = source {
-            _ = sources.allPaths.map(Validators.isReadable(path:))
+        if case let .paths(paths) = sources {
+            _ = paths.allPaths.map(Validators.isReadable(path:))
         }
 
         guard !templates.isEmpty else {

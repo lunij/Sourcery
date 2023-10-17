@@ -14,7 +14,7 @@ class ConfigurationTests: XCTestCase {
             relativePath: relativePath,
             env: env
         )
-        guard case let Source.sources(paths) = config.source,
+        guard case let .paths(paths) = config.sources,
             let path = paths.include.first else {
             XCTFail("Config has no Source Paths")
             return
@@ -48,7 +48,7 @@ class ConfigurationTests: XCTestCase {
         XCTAssertEqual(configs.count, 2)
 
         configs.enumerated().forEach { offset, config in
-            guard case let Source.sources(paths) = config.source,
+            guard case let .paths(paths) = config.sources,
                   let path = paths.include.first else {
                 XCTFail("Config has no Source Paths")
                 return
@@ -170,23 +170,20 @@ class ConfigurationTests: XCTestCase {
 
     func test_source_providesSourcesPathsAsArray() {
         let config: [String: Any] = ["sources": ["."], "templates": ["."], "output": "."]
-        let source = try? Configuration(dict: config, relativePath: relativePath).source
-        let expected = Source.sources(Paths(include: [relativePath]))
-        XCTAssertEqual(source, expected)
+        let sources = try? Configuration(dict: config, relativePath: relativePath).sources
+        XCTAssertEqual(sources, .paths(Paths(include: [relativePath])))
     }
 
     func test_source_includePathsProvidedWithIncludeKey() {
         let config: [String: Any] = ["sources": ["include": ["."]], "templates": ["."], "output": "."]
-        let source = try? Configuration(dict: config, relativePath: relativePath).source
-        let expected = Source.sources(Paths(include: [relativePath]))
-        XCTAssertEqual(source, expected)
+        let sources = try? Configuration(dict: config, relativePath: relativePath).sources
+        XCTAssertEqual(sources, .paths(Paths(include: [relativePath])))
     }
 
     func test_source_excludePathsProvidedWithTheExcludeKey() {
         let config: [String: Any] = ["sources": ["include": ["."], "exclude": ["excludedPath"]], "templates": ["."], "output": "."]
-        let source = try? Configuration(dict: config, relativePath: relativePath).source
-        let expected = Source.sources(Paths(include: [relativePath], exclude: [relativePath + "excludedPath"]))
-        XCTAssertEqual(source, expected)
+        let sources = try? Configuration(dict: config, relativePath: relativePath).sources
+        XCTAssertEqual(sources, .paths(Paths(include: [relativePath], exclude: [relativePath + "excludedPath"])))
     }
 
     func test_templates_includePathsProvidedAsArray() {
@@ -229,32 +226,5 @@ class ConfigurationTests: XCTestCase {
         let parseDocumentation = try? Configuration(dict: config, relativePath: relativePath).parseDocumentation
         let expected = false
         XCTAssertEqual(parseDocumentation, expected)
-    }
-}
-
-extension Source: Equatable {
-    public static func == (lhs: Source, rhs: Source) -> Bool {
-        switch (lhs, rhs) {
-        case let (.projects(lProjects), .projects(rProjects)):
-            return lProjects == rProjects
-        case let (.sources(lPaths), .sources(rPaths)):
-            return lPaths == rPaths
-        default:
-            return false
-        }
-    }
-}
-
-extension Project: Equatable {
-    public static func == (lhs: Project, rhs: Project) -> Bool {
-        return lhs.root == rhs.root
-    }
-}
-
-extension Paths: Equatable {
-    public static func == (lhs: Paths, rhs: Paths) -> Bool {
-        return lhs.include == rhs.include
-            && lhs.exclude == rhs.exclude
-            && lhs.allPaths == rhs.allPaths
     }
 }
