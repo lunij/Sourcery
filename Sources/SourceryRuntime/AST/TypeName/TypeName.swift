@@ -212,9 +212,9 @@ import Foundation
 extension TypeName {
     public static func unknown(description: String?, attributes: AttributeList = [:]) -> TypeName {
         if let description = description {
-            Log.astWarning("Unknown type, please add type attribution to \(description)")
+            logger.astWarning("Unknown type, please add type attribution to \(description)")
         } else {
-            Log.astWarning("Unknown type, please add type attribution")
+            logger.astWarning("Unknown type, please add type attribution")
         }
         return TypeName(name: "UnknownTypeSoAddTypeAttributionToVariable", attributes: attributes)
     }

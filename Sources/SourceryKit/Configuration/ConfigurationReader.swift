@@ -21,9 +21,9 @@ struct ConfigurationReader {
                 )
 
                 if hasAnyYamlDuplicatedParameter {
-                    Log.info("Using configuration file at '\(configPath)'. WARNING: Ignoring the parameters passed in the command line.")
+                    logger.info("Using configuration file at '\(configPath)'. WARNING: Ignoring the parameters passed in the command line.")
                 } else {
-                    Log.info("Using configuration file at '\(configPath)'")
+                    logger.info("Using configuration file at '\(configPath)'")
                 }
 
                 return try Configurations.make(
@@ -32,7 +32,7 @@ struct ConfigurationReader {
                     env: ProcessInfo.processInfo.environment
                 )
             } catch Error.configMissing {
-                Log.info("No config file provided or it does not exist. Using command line arguments.")
+                logger.info("No config file provided or it does not exist. Using command line arguments.")
                 let args = options.args.joined(separator: ",")
                 let arguments = AnnotationsParser.parse(line: args)
                 return [

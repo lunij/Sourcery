@@ -136,7 +136,7 @@ public enum Configurations {
 
         let start = CFAbsoluteTimeGetCurrent()
         defer {
-            Log.benchmark("Resolving configurations took \(CFAbsoluteTimeGetCurrent() - start)")
+            logger.benchmark("Resolving configurations took \(CFAbsoluteTimeGetCurrent() - start)")
         }
 
         if let configurations = dict["configurations"] as? [[String: Any]] {

@@ -16,7 +16,7 @@ extension Attribute {
               case 1:
                   arguments["\(idx)"] = components[0].replacingOccurrences(of: "\"", with: "").trimmed as NSString
               default:
-                  Log.astError("Unrecognized attribute format \(attribute.argument?.description ?? "")")
+                  logger.astError("Unrecognized attribute format \(attribute.argument?.description ?? "")")
                   return
               }
           }

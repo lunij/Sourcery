@@ -28,7 +28,7 @@ extension XcodeProj {
         do {
             return try pbxproj.rootGroup()
         } catch {
-            Log.error("Can't find root group for pbxproj")
+            logger.error("Can't find root group for pbxproj")
             return nil
         }
     }
@@ -37,7 +37,7 @@ extension XcodeProj {
         do {
             return try toGroup.addGroup(named: groupName, options: options).last
         } catch {
-            Log.error("Can't add group \(groupName) to group (uuid: \(toGroup.uuid), name: \(String(describing: toGroup.name))")
+            logger.error("Can't add group \(groupName) to group (uuid: \(toGroup.uuid), name: \(String(describing: toGroup.name))")
             return nil
         }
     }
@@ -56,7 +56,7 @@ extension XcodeProj {
     func createGroupIfNeeded(named group: String? = nil, sourceRoot: Path) -> PBXGroup? {
 
         guard let rootGroup = rootGroup else {
-            Log.warning("Unable to find rootGroup for the project")
+            logger.warning("Unable to find rootGroup for the project")
             return nil
         }
 
@@ -98,7 +98,7 @@ extension XcodeProj {
                     try groupPath.mkpath()
                 }
             } catch {
-                Log.warning("Failed to create a folder for group '\(fileGroup.name ?? "")'. \(error)")
+                logger.warning("Failed to create a folder for group '\(fileGroup.name ?? "")'. \(error)")
             }
         }
         return fileGroup

@@ -48,7 +48,7 @@ public struct Output: Equatable {
                 self.linkTo = try LinkTo(dict: linkToDict, relativePath: relativePath)
             } catch {
                 self.linkTo = nil
-                Log.warning(error)
+                logger.warning(error)
             }
         } else {
             self.linkTo = nil

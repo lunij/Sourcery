@@ -267,7 +267,7 @@ extension ProcessInfo {
         do {
             return try types(forKey: key)
         } catch {
-            Log.error(error)
+            logger.error(error)
             return nil
         }
     }
@@ -277,7 +277,7 @@ extension ProcessInfo {
         do {
             return try types(forKey: key)
         } catch {
-            Log.error(error)
+            logger.error(error)
             return []
         }
     }

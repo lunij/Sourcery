@@ -24,7 +24,7 @@ public class Sourcery {
     fileprivate var isDryRun: Bool = false
     fileprivate lazy var dryOutputBuffer = [DryOutputValue]()
 
-    internal var dryOutput: (String) -> Void = Log.output(_:)
+    internal var dryOutput: (String) -> Void = { print($0) }
 
     // content annotated with file annotations per file path to write it to
     fileprivate var fileAnnotatedContent: [Path: [String]] = [:]
@@ -175,7 +175,7 @@ public class Sourcery {
     ) -> [FSEventStream] {
         var result = parserResult
 
-        Log.info("Starting watching sources.")
+        logger.info("Starting watching sources.")
 
         let sourceWatchers = topPaths(from: sourcePaths.allPaths).compactMap { path in
             FSEventStream(path: path.string) { events in
@@ -197,7 +197,7 @@ public class Sourcery {
 
                 if let path = pathThatForcedRegeneration {
                     do {
-                        Log.info("Source changed at \(path.string)")
+                        logger.info("Source changed at \(path.string)")
                         result = try self.process(
                             sources: sources,
                             templatePaths: templatePaths,
@@ -208,13 +208,13 @@ public class Sourcery {
                             baseIndentation: baseIndentation
                         )
                     } catch {
-                        Log.error(error)
+                        logger.error(error)
                     }
                 }
             }
         }
 
-        Log.info("Starting watching templates.")
+        logger.info("Starting watching templates.")
 
         let templateWatchers = topPaths(from: templatePaths.allPaths).compactMap { path in
             FSEventStream(path: path.string) { events in
@@ -224,9 +224,9 @@ public class Sourcery {
 
                 do {
                     if events.count == 1 {
-                        Log.info("Template changed \(events[0].path)")
+                        logger.info("Template changed \(events[0].path)")
                     } else {
-                        Log.info("Templates changed: ")
+                        logger.info("Templates changed: ")
                     }
                     try self.generate(
                         source: sources, 
@@ -237,7 +237,7 @@ public class Sourcery {
                         baseIndentation: baseIndentation
                     )
                 } catch {
-                    Log.error(error)
+                    logger.error(error)
                 }
             }
         }
@@ -339,7 +339,7 @@ extension Sourcery {
         }
 
         let startScan = currentTimestamp()
-        Log.info("Scanning sources...")
+        logger.info("Scanning sources...")
 
         var inlineRanges = [(file: String, ranges: [String: NSRange], indentations: [String: String])]()
         var allResults = [(changed: Bool, result: FileParserResult)]()
@@ -383,7 +383,7 @@ extension Sourcery {
                     return try self.loadOrParse(parser: parser, cachesPath: self.cachesDir(sourcePath: from))
                 } catch {
                     lastError = error
-                    Log.error("Unable to parse \(parser.path), error \(error)")
+                    logger.error("Unable to parse \(parser.path), error \(error)")
                     return nil
                 }
             }
@@ -404,7 +404,7 @@ extension Sourcery {
             }
         }
 
-        Log.benchmark("\tloadOrParse: \(currentTimestamp() - startScan)")
+        logger.benchmark("\tloadOrParse: \(currentTimestamp() - startScan)")
         let reduceStart = currentTimestamp()
 
         var allTypealiases = [Typealias]()
@@ -439,13 +439,13 @@ extension Sourcery {
             .filter { $0.changed }
             .compactMap { $0.result.path }
 
-        Log.benchmark("\treduce: \(uniqueTypeStart - reduceStart)\n\tcomposer: \(currentTimestamp() - uniqueTypeStart)\n\ttotal: \(currentTimestamp() - startScan)")
-        Log.info("Found \(types.count) types in \(allResults.count) files, \(filesThatHadToBeParsed.count) changed from last run.")
+        logger.benchmark("\treduce: \(uniqueTypeStart - reduceStart)\n\tcomposer: \(currentTimestamp() - uniqueTypeStart)\n\ttotal: \(currentTimestamp() - startScan)")
+        logger.info("Found \(types.count) types in \(allResults.count) files, \(filesThatHadToBeParsed.count) changed from last run.")
 
-        if !filesThatHadToBeParsed.isEmpty, (filesThatHadToBeParsed.count < 50 || Log.level == .verbose) {
+        if !filesThatHadToBeParsed.isEmpty, (filesThatHadToBeParsed.count < 50 || logger.level == .verbose) {
             let files = filesThatHadToBeParsed
                 .joined(separator: "\n")
-            Log.info("Files changed:\n\(files)")
+            logger.info("Files changed:\n\(files)")
         }
         return (parserResultCopy, Types(types: types, typealiases: typealiases), functions, inlineRanges)
     }
@@ -501,12 +501,12 @@ extension Sourcery {
     fileprivate func generate(source: Sources, templatePaths: Paths, output: Output, parsingResult: inout ParsingResult, forceParse: [String], baseIndentation: Int) throws {
         let generationStart = currentTimestamp()
 
-        Log.info("Loading templates...")
+        logger.info("Loading templates...")
         let allTemplates = try templates(from: templatePaths)
-        Log.info("Loaded \(allTemplates.count) templates.")
-        Log.benchmark("\tLoading took \(currentTimestamp() - generationStart)")
+        logger.info("Loaded \(allTemplates.count) templates.")
+        logger.benchmark("\tLoading took \(currentTimestamp() - generationStart)")
 
-        Log.info("Generating code...")
+        logger.info("Generating code...")
         status = ""
 
         if output.isDirectory {
@@ -554,8 +554,8 @@ extension Sourcery {
             try linkTo.project.writePBXProj(path: linkTo.projectPath, outputSettings: .init())
         }
 
-        Log.benchmark("\tGeneration took \(currentTimestamp() - generationStart)")
-        Log.info("Finished.")
+        logger.benchmark("\tGeneration took \(currentTimestamp() - generationStart)")
+        logger.info("Finished.")
     }
 
     private func updateRanges(in parsingResult: inout ParsingResult, sourceChanges: [SourceChange]) {
@@ -604,21 +604,21 @@ extension Sourcery {
 
     private func link(_ output: Path, to linkTo: Output.LinkTo, target targetName: String) {
         guard let target = linkTo.project.target(named: targetName) else {
-            Log.warning("Unable to find target \(targetName)")
+            logger.warning("Unable to find target \(targetName)")
             return
         }
 
         let sourceRoot = linkTo.projectPath.parent()
 
         guard let fileGroup = linkTo.project.createGroupIfNeeded(named: linkTo.group, sourceRoot: sourceRoot) else {
-            Log.warning("Unable to create group \(String(describing: linkTo.group))")
+            logger.warning("Unable to create group \(String(describing: linkTo.group))")
             return
         }
 
         do {
             try linkTo.project.addSourceFile(at: output, toGroup: fileGroup, target: target, sourceRoot: sourceRoot)
         } catch {
-            Log.warning("Failed to link file at \(output) to \(linkTo.projectPath). \(error)")
+            logger.warning("Failed to link file at \(output) to \(linkTo.projectPath). \(error)")
         }
     }
 
@@ -643,10 +643,10 @@ extension Sourcery {
             try writeIfChanged(result, to: outputPath)
         } else {
             if prune && outputPath.exists {
-                Log.verbose("Removing \(outputPath) as it is empty.")
-                do { try outputPath.delete() } catch { Log.error("\(error)") }
+                logger.verbose("Removing \(outputPath) as it is empty.")
+                do { try outputPath.delete() } catch { logger.error("\(error)") }
             } else {
-                Log.verbose("Skipping \(outputPath) as it is empty.")
+                logger.verbose("Skipping \(outputPath) as it is empty.")
             }
         }
     }
@@ -672,7 +672,7 @@ extension Sourcery {
                 functions: parsingResult.functions,
                 arguments: arguments
             ))
-            Log.benchmark("\tGenerating \(template.sourcePath.lastComponent) took \(currentTimestamp() - generationStart)")
+            logger.benchmark("\tGenerating \(template.sourcePath.lastComponent) took \(currentTimestamp() - generationStart)")
 
             return try processRanges(in: parsingResult, result: result, outputPath: outputPath, forceParse: forceParse, baseIndentation: baseIndentation)
         }
@@ -690,7 +690,7 @@ extension Sourcery {
     private func processRanges(in parsingResult: ParsingResult, result: String, outputPath: Path, forceParse: [String], baseIndentation: Int) throws -> GenerationResult {
         let start = currentTimestamp()
         defer {
-            Log.benchmark("\t\tProcessing Ranges took \(currentTimestamp() - start)")
+            logger.benchmark("\t\tProcessing Ranges took \(currentTimestamp() - start)")
         }
         var result = result
         result = processFileRanges(for: parsingResult, in: result, outputPath: outputPath, forceParse: forceParse)

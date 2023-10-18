@@ -128,7 +128,7 @@ internal struct ParserResultsComposed {
                 let inheritanceClause = type.inheritedTypes.isEmpty ? "" :
                     ": \(type.inheritedTypes.joined(separator: ", "))"
 
-                Log.astWarning("Found \"extension \(type.name)\(inheritanceClause)\" of type for which there is no original type declaration information.")
+                logger.astWarning("Found \"extension \(type.name)\(inheritanceClause)\" of type for which there is no original type declaration information.")
                 return
             }
 
@@ -239,7 +239,7 @@ internal struct ParserResultsComposed {
         }
 
         func ambiguousErrorMessage(from types: [Type]) -> String? {
-            Log.astWarning("Ambiguous type \(typeIdentifier), found \(types.map { $0.globalName }.joined(separator: ", ")). Specify module name at declaration site to disambiguate.")
+            logger.astWarning("Ambiguous type \(typeIdentifier), found \(types.map { $0.globalName }.joined(separator: ", ")). Specify module name at declaration site to disambiguate.")
             return nil
         }
 

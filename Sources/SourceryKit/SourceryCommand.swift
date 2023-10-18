@@ -48,7 +48,12 @@ public struct SourceryCommand: AsyncParsableCommand {
 
     public func run() async throws {
         do {
-            setupLogger(isDryRun, quiet, verbose, logBenchmark, logAST)
+            logger = Logger(
+                level: quiet ? .error : verbose ? .verbose : .info,
+                logAST: (logAST || verbose) && !quiet,
+                logBenchmarks: (logBenchmark || verbose) && !quiet,
+                stackMessages: isDryRun
+            )
 
             let start = CFAbsoluteTimeGetCurrent()
 
@@ -58,15 +63,15 @@ public struct SourceryCommand: AsyncParsableCommand {
                 try processFiles(specifiedIn: configuration)
             }
 
-            Log.info("Processing time \(CFAbsoluteTimeGetCurrent() - start) seconds")
+            logger.info("Processing time \(CFAbsoluteTimeGetCurrent() - start) seconds")
         } catch {
             if isDryRun {
                 let encoder = JSONEncoder()
                 encoder.outputFormatting = .prettyPrinted
-                let data = try? encoder.encode(DryOutputFailure(error: "\(error)", log: Log.messagesStack))
-                data.flatMap { Log.output(String(data: $0, encoding: .utf8) ?? "") }
+                let data = try? encoder.encode(DryOutputFailure(error: "\(error)", log: logger.messages))
+                data.flatMap { logger.output(String(data: $0, encoding: .utf8) ?? "") }
             } else {
-                Log.error("\(error)")
+                logger.error("\(error)")
             }
             exitSourcery(.other)
         }
@@ -123,7 +128,7 @@ func exitSourcery(_ code: ExitCode) -> Never {
 enum Validators {
     static func isReadable(path: Path) -> Path {
         if !path.isReadable {
-            Log.error("'\(path)' does not exist or is not readable.")
+            logger.error("'\(path)' does not exist or is not readable.")
             exitSourcery(.invalidPath)
         }
 
@@ -132,7 +137,7 @@ enum Validators {
 
     static func isWritable(path: Path) -> Path {
         if path.exists && !path.isWritable {
-            Log.error("'\(path)' isn't writable.")
+            logger.error("'\(path)' isn't writable.")
             exitSourcery(.invalidPath)
         }
         return path
@@ -142,7 +147,7 @@ enum Validators {
 extension Configuration {
     func validate() {
         guard !sources.isEmpty else {
-            Log.error("No sources provided.")
+            logger.error("No sources provided.")
             exitSourcery(.invalidConfig)
         }
         if case let .paths(paths) = sources {
@@ -150,29 +155,10 @@ extension Configuration {
         }
 
         guard !templates.isEmpty else {
-            Log.error("No templates provided.")
+            logger.error("No templates provided.")
             exitSourcery(.invalidConfig)
         }
         _ = templates.allPaths.map(Validators.isReadable(path:))
         _ = output.path.map(Validators.isWritable(path:))
     }
-}
-
-private func setupLogger(
-    _ isDryRun: Bool,
-    _ quiet: Bool,
-    _ verbose: Bool,
-    _ logBenchmark: Bool,
-    _ logAST: Bool
-) {
-    Log.stackMessages = isDryRun
-
-    if quiet {
-        Log.level = .errors
-    } else {
-        Log.level = verbose ? .verbose : .info
-    }
-
-    Log.logBenchmarks = (verbose || logBenchmark) && !quiet
-    Log.logAST = (verbose || logAST) && !quiet
 }

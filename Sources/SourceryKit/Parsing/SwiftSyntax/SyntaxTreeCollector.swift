@@ -303,9 +303,9 @@ class SyntaxTreeCollector: SyntaxVisitor {
     private func logError(_ message: Any) {
         let prefix = file + ": "
         if let module = module {
-            Log.astError("\(prefix) \(message) in module \(module)")
+            logger.astError("\(prefix) \(message) in module \(module)")
         } else {
-            Log.astError("\(prefix) \(message)")
+            logger.astError("\(prefix) \(message)")
         }
     }
 }

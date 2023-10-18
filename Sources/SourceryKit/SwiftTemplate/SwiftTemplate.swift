@@ -235,7 +235,7 @@ private extension Process {
         let outHandle = outputPipe.fileHandleForReading
         let errorHandle = errorPipe.fileHandleForReading
 
-        Log.verbose(path + " " + arguments.map { "\"\($0)\"" }.joined(separator: " "))
+        logger.verbose(path + " " + arguments.map { "\"\($0)\"" }.joined(separator: " "))
         task.launch()
 
         let outputData = outHandle.readDataToEndOfFile()

@@ -55,7 +55,7 @@ public struct Project {
                 self.xcframeworks = try (dict["xcframeworks"] as? [String])?
                     .map { try XCFramework(rawPath: $0, relativePath: relativePath) } ?? []
             } catch let error as Configuration.Error {
-                Log.warning(error.description)
+                logger.warning(error.description)
                 self.xcframeworks = []
             }
         }
