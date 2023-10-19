@@ -47,16 +47,20 @@ public struct SourceryCommand: AsyncParsableCommand {
     public init() {}
 
     public func run() async throws {
+        if isDryRun, watcherEnabled {
+            throw Error.dryWatchIncompatibility
+        }
+
+        if quiet, verbose {
+            throw Error.quietVerboseIncompatibility
+        }
+
         logger = Logger(
             level: quiet ? .error : verbose ? .verbose : .info,
             logAST: (logAST || verbose) && !quiet,
             logBenchmarks: (logBenchmark || verbose) && !quiet,
             stackMessages: isDryRun
         )
-
-        if isDryRun, watcherEnabled {
-            throw Error.dryWatchIncompatibility
-        }
 
         do {
             let start = CFAbsoluteTimeGetCurrent()
@@ -110,6 +114,7 @@ public struct SourceryCommand: AsyncParsableCommand {
 
     enum Error: Swift.Error, Equatable {
         case dryWatchIncompatibility
+        case quietVerboseIncompatibility
     }
 }
 
@@ -118,6 +123,8 @@ extension SourceryCommand.Error: CustomStringConvertible {
         switch self {
         case .dryWatchIncompatibility:
             "--dry not compatible with --watch"
+        case .quietVerboseIncompatibility:
+            "--quiet not compatible with --verbose"
         }
     }
 }
