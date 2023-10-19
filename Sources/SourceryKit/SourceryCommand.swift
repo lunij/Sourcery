@@ -47,14 +47,18 @@ public struct SourceryCommand: AsyncParsableCommand {
     public init() {}
 
     public func run() async throws {
-        do {
-            logger = Logger(
-                level: quiet ? .error : verbose ? .verbose : .info,
-                logAST: (logAST || verbose) && !quiet,
-                logBenchmarks: (logBenchmark || verbose) && !quiet,
-                stackMessages: isDryRun
-            )
+        logger = Logger(
+            level: quiet ? .error : verbose ? .verbose : .info,
+            logAST: (logAST || verbose) && !quiet,
+            logBenchmarks: (logBenchmark || verbose) && !quiet,
+            stackMessages: isDryRun
+        )
 
+        if isDryRun, watcherEnabled {
+            throw Error.dryWatchIncompatibility
+        }
+
+        do {
             let start = CFAbsoluteTimeGetCurrent()
 
             let configReader = ConfigurationReader()
@@ -93,10 +97,6 @@ public struct SourceryCommand: AsyncParsableCommand {
             arguments: configuration.args
         )
 
-        if isDryRun, watcherEnabled {
-            throw "--dry not compatible with --watch"
-        }
-
         try sourcery.processSources(
             configuration.sources,
             usingTemplates: configuration.templates,
@@ -106,6 +106,19 @@ public struct SourceryCommand: AsyncParsableCommand {
             parseDocumentation: configuration.parseDocumentation,
             baseIndentation: configuration.baseIndentation
         )
+    }
+
+    enum Error: Swift.Error, Equatable {
+        case dryWatchIncompatibility
+    }
+}
+
+extension SourceryCommand.Error: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .dryWatchIncompatibility:
+            "--dry not compatible with --watch"
+        }
     }
 }
 
