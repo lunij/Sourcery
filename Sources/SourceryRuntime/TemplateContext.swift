@@ -53,26 +53,24 @@ import Foundation
         ]
     }
 
-    // sourcery: skipDescription, skipEquality
-    public var jsContext: [String: Any] {
-        return [
-            "types": [
-                "all": types.all,
-                "protocols": types.protocols,
-                "classes": types.classes,
-                "structs": types.structs,
-                "enums": types.enums,
-                "extensions": types.extensions,
-                "based": types.based,
-                "inheriting": types.inheriting,
-                "implementing": types.implementing
-            ],
-            "functions": functions,
-            "type": types.typesByName,
-            "argument": argument
-        ]
+    enum Error: Swift.Error, Equatable {
+        case notAClass(String)
+        case notAProtocol(String)
+        case unknownType(String)
     }
+}
 
+extension TemplateContext.Error: CustomStringConvertible {
+    var description: String {
+        switch self {
+        case let .notAClass(typeName):
+            "\(typeName) is not a class and should be used with `implementing` or `based`"
+        case let .notAProtocol(typeName):
+            "\(typeName) is a class and should be used with `inheriting` or `based`"
+        case let .unknownType(typeName):
+            "Unknown type \(typeName), should be used with `based`"
+        }
+    }
 }
 
 extension ProcessInfo {
@@ -190,7 +188,7 @@ extension ProcessInfo {
             collection: { Array($0.inherits.keys) },
             validate: { type in
                 guard type is Class else {
-                    throw "\(type.name) is not a class and should be used with `implementing` or `based`"
+                    throw TemplateContext.Error.notAClass(type.name)
                 }
             })
     }()
@@ -204,9 +202,10 @@ extension ProcessInfo {
             collection: { Array($0.implements.keys) },
             validate: { type in
                 guard type is Protocol else {
-                    throw "\(type.name) is a class and should be used with `inheriting` or `based`"
+                    throw TemplateContext.Error.notAProtocol(type.name)
                 }
-        })
+            }
+        )
     }()
 }
 
@@ -239,7 +238,7 @@ extension ProcessInfo {
 
         if let validate = validate {
             guard let type = all.first(where: { $0.name == key }) else {
-                throw "Unknown type \(key), should be used with `based`"
+                throw TemplateContext.Error.unknownType(key)
             }
 
             try validate(type)

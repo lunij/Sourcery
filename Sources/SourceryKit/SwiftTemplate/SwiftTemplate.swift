@@ -105,7 +105,7 @@ open class SwiftTemplate {
         let result = try Process.runCommand(path: binaryPath.description,
                                             arguments: [serializedContextPath.description])
         if !result.error.isEmpty {
-            throw "\(sourcePath): \(result.error)"
+            throw Error.renderingFailed(sourcePath: sourcePath, error: result.error)
         }
         return result.output
     }
@@ -146,9 +146,7 @@ open class SwiftTemplate {
                                                        currentDirectoryPath: buildDir)
 
         if compilationResult.exitCode != EXIT_SUCCESS {
-            throw [compilationResult.output, compilationResult.error]
-                .filter { !$0.isEmpty }
-                .joined(separator: "\n")
+            throw Error.compilationFailed(output: compilationResult.output, error: compilationResult.error)
         }
 
         return binaryFile
@@ -189,6 +187,22 @@ open class SwiftTemplate {
 
     private func copyRuntimePackage(to path: Path) throws {
         try FolderSynchronizer().sync(files: sourceryRuntimeFiles, to: path + Path("SourceryRuntime"))
+    }
+
+    enum Error: Swift.Error, Equatable {
+        case compilationFailed(output: String, error: String)
+        case renderingFailed(sourcePath: Path, error: String)
+    }
+}
+
+extension SwiftTemplate.Error: CustomStringConvertible {
+    var description: String {
+        switch self {
+        case let .compilationFailed(output, error):
+            [output, error].filter { !$0.isEmpty }.joined(separator: "\n")
+        case let .renderingFailed(sourcePath, error):
+            "\(sourcePath): \(error)"
+        }
     }
 }
 

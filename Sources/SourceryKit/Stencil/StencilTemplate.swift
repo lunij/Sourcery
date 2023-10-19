@@ -127,6 +127,19 @@ public final class StencilTemplate: StencilSwiftKit.StencilSwiftTemplate {
         let loader = templatePath.map({ FileSystemLoader(paths: [$0.parent()]) })
         return Environment(loader: loader, extensions: extensions, templateClass: StencilTemplate.self)
     }
+
+    enum Error: Swift.Error, Equatable {
+        case renderingFailed(sourcePath: Path, error: String)
+    }
+}
+
+extension StencilTemplate.Error: CustomStringConvertible {
+    var description: String {
+        switch self {
+        case let .renderingFailed(sourcePath, error):
+            "\(sourcePath): \(error)"
+        }
+    }
 }
 
 public extension Annotated {

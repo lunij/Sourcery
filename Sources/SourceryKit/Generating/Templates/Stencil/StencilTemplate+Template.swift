@@ -6,7 +6,7 @@ extension StencilTemplate: Template {
         do {
             return try self.render(context.stencilContext)
         } catch {
-            throw "\(sourcePath): \(error)"
+            throw Error.renderingFailed(sourcePath: sourcePath, error: String(describing: error))
         }
     }
 }
