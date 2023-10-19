@@ -10,17 +10,7 @@ struct ConfigurationReader {
             do {
                 try configPath.checkConfigFile()
 
-                let hasAnyYamlDuplicatedParameter = (
-                    !options.sources.isEmpty ||
-                    !options.excludeSources.isEmpty ||
-                    !options.templates.isEmpty ||
-                    !options.excludeTemplates.isEmpty ||
-                    !options.forceParse.isEmpty ||
-                    options.output != "" ||
-                    !options.args.isEmpty
-                )
-
-                if hasAnyYamlDuplicatedParameter {
+                if options.hasRedundantArguments {
                     logger.info("Using configuration file at '\(configPath)'. WARNING: Ignoring the parameters passed in the command line.")
                 } else {
                     logger.info("Using configuration file at '\(configPath)'")
@@ -69,5 +59,17 @@ private extension Path {
         guard isReadable else {
             throw ConfigurationReader.Error.configNotReadable
         }
+    }
+}
+
+private extension ConfigurationOptions {
+    var hasRedundantArguments: Bool {
+        !sources.isEmpty ||
+        !excludeSources.isEmpty ||
+        !templates.isEmpty ||
+        !excludeTemplates.isEmpty ||
+        !forceParse.isEmpty ||
+        output != "" ||
+        !args.isEmpty
     }
 }
