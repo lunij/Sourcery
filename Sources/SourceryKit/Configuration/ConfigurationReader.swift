@@ -3,6 +3,12 @@ import PathKit
 import SourceryRuntime
 
 struct ConfigurationReader {
+    let parser: ConfigurationParsing
+
+    init(parser: ConfigurationParsing = ConfigurationParser()) {
+        self.parser = parser
+    }
+
     func readConfigurations(options: ConfigurationOptions) throws -> [Configuration] {
         try options.configPaths.flatMap { configPath -> [Configuration] in
             let configPath = configPath.isDirectory ? configPath + ".sourcery.yml" : configPath
@@ -16,7 +22,7 @@ struct ConfigurationReader {
                     logger.info("Using configuration file at '\(configPath)'")
                 }
 
-                return try Configurations.make(
+                return try parser.parseConfigurations(
                     path: configPath,
                     relativePath: configPath.parent(),
                     env: ProcessInfo.processInfo.environment

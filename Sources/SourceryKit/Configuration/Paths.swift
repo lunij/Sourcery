@@ -20,11 +20,11 @@ public struct Paths: Equatable {
 
             let sources = sources.map({ Path($0, relativeTo: relativePath) })
             guard !sources.isEmpty else {
-                throw Configuration.Error.invalidPaths(message: "No paths provided.")
+                throw ConfigurationParser.Error.invalidPaths(message: "No paths provided.")
             }
             self.init(include: sources)
         } else {
-            throw Configuration.Error.invalidPaths(message: "No paths provided. Expected list of strings or object with 'include' and optional 'exclude' keys.")
+            throw ConfigurationParser.Error.invalidPaths(message: "No paths provided. Expected list of strings or object with 'include' and optional 'exclude' keys.")
         }
     }
 

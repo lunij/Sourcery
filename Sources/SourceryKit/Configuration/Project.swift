@@ -18,23 +18,23 @@ public struct Project {
             public init(rawPath: String, relativePath: Path) throws {
                 let frameworkRelativePath = Path(rawPath, relativeTo: relativePath)
                 guard let framework = frameworkRelativePath.components.last else {
-                    throw Configuration.Error.invalidXCFramework(message: "Framework path invalid. Expected String.")
+                    throw ConfigurationParser.Error.invalidXCFramework(message: "Framework path invalid. Expected String.")
                 }
                 let `extension` = Path(framework).`extension`
                 guard `extension` == "xcframework" else {
-                    throw Configuration.Error.invalidXCFramework(message: "Framework path invalid. Expected path to xcframework file.")
+                    throw ConfigurationParser.Error.invalidXCFramework(message: "Framework path invalid. Expected path to xcframework file.")
                 }
                 let moduleName = Path(framework).lastComponentWithoutExtension
                 guard
                     let simulatorSlicePath = frameworkRelativePath.glob("*")
                         .first(where: { $0.lastComponent.contains("simulator") })
                 else {
-                    throw Configuration.Error.invalidXCFramework(path: frameworkRelativePath, message: "Framework path invalid. Expected to find simulator slice.")
+                    throw ConfigurationParser.Error.invalidXCFramework(path: frameworkRelativePath, message: "Framework path invalid. Expected to find simulator slice.")
                 }
                 let modulePath = simulatorSlicePath + Path("\(moduleName).framework/Modules/\(moduleName).swiftmodule/")
                 guard let interfacePath = modulePath.glob("*.swiftinterface").first(where: { $0.lastComponent.contains("simulator") })
                 else {
-                    throw Configuration.Error.invalidXCFramework(path: frameworkRelativePath, message: "Framework path invalid. Expected to find .swiftinterface.")
+                    throw ConfigurationParser.Error.invalidXCFramework(path: frameworkRelativePath, message: "Framework path invalid. Expected to find .swiftinterface.")
                 }
                 self.path = frameworkRelativePath
                 self.swiftInterfacePath = interfacePath
@@ -47,14 +47,14 @@ public struct Project {
 
         public init(dict: [String: Any], relativePath: Path) throws {
             guard let name = dict["name"] as? String else {
-                throw Configuration.Error.invalidSources(message: "Target name is not provided. Expected string.")
+                throw ConfigurationParser.Error.invalidSources(message: "Target name is not provided. Expected string.")
             }
             self.name = name
             self.module = (dict["module"] as? String) ?? name
             do {
                 self.xcframeworks = try (dict["xcframeworks"] as? [String])?
                     .map { try XCFramework(rawPath: $0, relativePath: relativePath) } ?? []
-            } catch let error as Configuration.Error {
+            } catch let error as ConfigurationParser.Error {
                 logger.warning(error.description)
                 self.xcframeworks = []
             }
@@ -63,7 +63,7 @@ public struct Project {
 
     public init(dict: [String: Any], relativePath: Path) throws {
         guard let file = dict["file"] as? String else {
-            throw Configuration.Error.invalidSources(message: "Project file path is not provided. Expected string.")
+            throw ConfigurationParser.Error.invalidSources(message: "Project file path is not provided. Expected string.")
         }
 
         let targetsArray: [Target]
@@ -72,10 +72,10 @@ public struct Project {
         } else if let target = dict["target"] as? [String: Any] {
             targetsArray = try [Target(dict: target, relativePath: relativePath)]
         } else {
-            throw Configuration.Error.invalidSources(message: "'target' key is missing. Expected object or array of objects.")
+            throw ConfigurationParser.Error.invalidSources(message: "'target' key is missing. Expected object or array of objects.")
         }
         guard !targetsArray.isEmpty else {
-            throw Configuration.Error.invalidSources(message: "No targets provided.")
+            throw ConfigurationParser.Error.invalidSources(message: "No targets provided.")
         }
         self.targets = targetsArray
 

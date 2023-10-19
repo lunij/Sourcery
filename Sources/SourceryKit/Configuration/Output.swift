@@ -10,14 +10,14 @@ public struct Output: Equatable {
 
         public init(dict: [String: Any], relativePath: Path) throws {
             guard let project = dict["project"] as? String else {
-                throw Configuration.Error.invalidOutput(message: "No project file path provided.")
+                throw ConfigurationParser.Error.invalidOutput(message: "No project file path provided.")
             }
             if let target = dict["target"] as? String {
                 self.targets = [target]
             } else if let targets = dict["targets"] as? [String] {
                 self.targets = targets
             } else {
-                throw Configuration.Error.invalidOutput(message: "No target(s) provided.")
+                throw ConfigurationParser.Error.invalidOutput(message: "No target(s) provided.")
             }
             let projectPath = Path(project, relativeTo: relativePath)
             self.projectPath = projectPath
@@ -38,7 +38,7 @@ public struct Output: Equatable {
 
     public init(dict: [String: Any], relativePath: Path) throws {
         guard let path = dict["path"] as? String else {
-            throw Configuration.Error.invalidOutput(message: "No path provided.")
+            throw ConfigurationParser.Error.invalidOutput(message: "No path provided.")
         }
 
         self.path = Path(path, relativeTo: relativePath)

@@ -2,14 +2,21 @@ import PathKit
 import XCTest
 @testable import SourceryKit
 
-class ConfigurationTests: XCTestCase {
+class ConfigurationParserTests: XCTestCase {
+    var sut: ConfigurationParser!
+
     let relativePath = Path("/some/path")
     let serverUrlArg = "serverUrl"
     let serverUrl: String = "www.example.com"
     lazy var env = ["SOURCE_PATH": "Sources", serverUrlArg: serverUrl]
 
+    override func setUp() {
+        super.setUp()
+        sut = .init()
+    }
+
     func test_givenValidConfigFileWithEnvPlaceholders_replacesEnvPlaceholders() throws {
-        let config = try Configuration(
+        let config = try sut.parse(
             path: Stubs.configs + "valid.yml",
             relativePath: relativePath,
             env: env
@@ -27,7 +34,7 @@ class ConfigurationTests: XCTestCase {
     }
 
     func test_givenValidConfigFileWithEnvPlaceholders_removesArgsEntriesWithMissingEnvVariables() throws {
-        let config = try Configuration(
+        let config = try sut.parse(
             path: Stubs.configs + "valid.yml",
             relativePath: relativePath,
             env: env
@@ -39,7 +46,7 @@ class ConfigurationTests: XCTestCase {
     }
 
     func test_multipleConfigurations() throws {
-        let configs = try Configurations.make(
+        let configs = try sut.parseConfigurations(
             path: Stubs.configs + "multi.yml",
             relativePath: relativePath,
             env: env
@@ -63,7 +70,7 @@ class ConfigurationTests: XCTestCase {
 
     func configError(_ config: [String: Any]) -> String {
         do {
-            _ = try Configuration(dict: config, relativePath: relativePath)
+            _ = try sut.parse(dict: config, relativePath: relativePath)
             return "No error"
         } catch {
             return "\(error)"
@@ -72,7 +79,7 @@ class ConfigurationTests: XCTestCase {
 
     func test_invalidConfig_throwsOnInvalidFileFormat() {
         do {
-            _ = try Configuration(
+            _ = try sut.parse(
                 path: Stubs.configs + "invalid.yml",
                 relativePath: relativePath,
                 env: [:]
@@ -170,60 +177,60 @@ class ConfigurationTests: XCTestCase {
 
     func test_source_providesSourcesPathsAsArray() {
         let config: [String: Any] = ["sources": ["."], "templates": ["."], "output": "."]
-        let sources = try? Configuration(dict: config, relativePath: relativePath).sources
+        let sources = try? sut.parse(dict: config, relativePath: relativePath).sources
         XCTAssertEqual(sources, .paths(Paths(include: [relativePath])))
     }
 
     func test_source_includePathsProvidedWithIncludeKey() {
         let config: [String: Any] = ["sources": ["include": ["."]], "templates": ["."], "output": "."]
-        let sources = try? Configuration(dict: config, relativePath: relativePath).sources
+        let sources = try? sut.parse(dict: config, relativePath: relativePath).sources
         XCTAssertEqual(sources, .paths(Paths(include: [relativePath])))
     }
 
     func test_source_excludePathsProvidedWithTheExcludeKey() {
         let config: [String: Any] = ["sources": ["include": ["."], "exclude": ["excludedPath"]], "templates": ["."], "output": "."]
-        let sources = try? Configuration(dict: config, relativePath: relativePath).sources
+        let sources = try? sut.parse(dict: config, relativePath: relativePath).sources
         XCTAssertEqual(sources, .paths(Paths(include: [relativePath], exclude: [relativePath + "excludedPath"])))
     }
 
     func test_templates_includePathsProvidedAsArray() {
         let config: [String: Any] = ["sources": ["."], "templates": ["."], "output": "."]
-        let templates = try? Configuration(dict: config, relativePath: relativePath).templates
+        let templates = try? sut.parse(dict: config, relativePath: relativePath).templates
         let expected = Paths(include: [relativePath])
         XCTAssertEqual(templates, expected)
     }
 
     func test_templates_includePathsProvidedWithIncludeKey() {
         let config: [String: Any] = ["sources": ["."], "templates": ["include": ["."]], "output": "."]
-        let templates = try? Configuration(dict: config, relativePath: relativePath).templates
+        let templates = try? sut.parse(dict: config, relativePath: relativePath).templates
         let expected = Paths(include: [relativePath])
         XCTAssertEqual(templates, expected)
     }
 
     func test_templates_excludePathsProvidedWithTheExcludeKey() {
         let config: [String: Any] = ["sources": ["."], "templates": ["include": ["."], "exclude": ["excludedPath"]], "output": "."]
-        let templates = try? Configuration(dict: config, relativePath: relativePath).templates
+        let templates = try? sut.parse(dict: config, relativePath: relativePath).templates
         let expected = Paths(include: [relativePath], exclude: [relativePath + "excludedPath"])
         XCTAssertEqual(templates, expected)
     }
 
     func test_cacheBasePath() {
         let config: [String: Any] = ["sources": ["."], "templates": ["."], "output": ".", "cacheBasePath": "test-base-path"]
-        let cacheBasePath = try? Configuration(dict: config, relativePath: relativePath).cacheBasePath
+        let cacheBasePath = try? sut.parse(dict: config, relativePath: relativePath).cacheBasePath
         let expected = Path("test-base-path", relativeTo: relativePath)
         XCTAssertEqual(cacheBasePath, expected)
     }
 
     func test_parseDocumentation_whenTrue() {
         let config: [String: Any] = ["sources": ["."], "templates": ["."], "output": ".", "parseDocumentation": true]
-        let parseDocumentation = try? Configuration(dict: config, relativePath: relativePath).parseDocumentation
+        let parseDocumentation = try? sut.parse(dict: config, relativePath: relativePath).parseDocumentation
         let expected = true
         XCTAssertEqual(parseDocumentation, expected)
     }
 
     func test_parseDocumentation_whenFalse_orUnset() {
         let config: [String: Any] = ["sources": ["."], "templates": ["."], "output": "."]
-        let parseDocumentation = try? Configuration(dict: config, relativePath: relativePath).parseDocumentation
+        let parseDocumentation = try? sut.parse(dict: config, relativePath: relativePath).parseDocumentation
         let expected = false
         XCTAssertEqual(parseDocumentation, expected)
     }

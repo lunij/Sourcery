@@ -4,16 +4,16 @@ public enum Sources {
 
     public init(dict: [String: Any], relativePath: Path) throws {
         if let projects = (dict["project"] as? [[String: Any]]) ?? (dict["project"] as? [String: Any]).map({ [$0] }) {
-            guard !projects.isEmpty else { throw Configuration.Error.invalidSources(message: "No projects provided.") }
+            guard !projects.isEmpty else { throw ConfigurationParser.Error.invalidSources(message: "No projects provided.") }
             self = try .projects(projects.map({ try Project(dict: $0, relativePath: relativePath) }))
         } else if let sources = dict["sources"] {
             do {
                 self = try .paths(Paths(dict: sources, relativePath: relativePath))
             } catch {
-                throw Configuration.Error.invalidSources(message: "\(error)")
+                throw ConfigurationParser.Error.invalidSources(message: "\(error)")
             }
         } else {
-            throw Configuration.Error.invalidSources(message: "'sources' or 'project' key are missing.")
+            throw ConfigurationParser.Error.invalidSources(message: "'sources' or 'project' key are missing.")
         }
     }
 
