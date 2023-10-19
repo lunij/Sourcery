@@ -79,14 +79,13 @@ public struct SourceryCommand: AsyncParsableCommand {
                 let data = try? encoder.encode(DryOutputFailure(error: "\(error)", log: logger.messages))
                 data.flatMap { logger.output(String(data: $0, encoding: .utf8) ?? "") }
             } else {
-                logger.error("\(error)")
+                throw error
             }
-            exitSourcery(.other)
         }
     }
 
     private func processFiles(specifiedIn configuration: Configuration) throws {
-        configuration.validate()
+        try configuration.validate()
 
         let shouldUseCacheBasePathArg = configuration.cacheBasePath == Path.defaultBaseCachePath && !options.cacheBasePath.string.isEmpty
 
@@ -135,50 +134,69 @@ extension Path: ExpressibleByArgument {
     }
 }
 
-enum ExitCode: Int32 {
-    case invalidPath = 1
-    case invalidConfig
-    case other
+enum ConfigurationValidationError: Error, Equatable {
+    case fileNotReadable(Path)
+    case missingSources
+    case missingTemplates
+    case outputNotWritable(Path)
 }
 
-func exitSourcery(_ code: ExitCode) -> Never {
-    exit(code.rawValue)
-}
-
-enum Validators {
-    static func isReadable(path: Path) -> Path {
-        if !path.isReadable {
-            logger.error("'\(path)' does not exist or is not readable.")
-            exitSourcery(.invalidPath)
+extension ConfigurationValidationError: CustomStringConvertible {
+    var description: String {
+        switch self {
+        case let .fileNotReadable(path):
+            "'\(path)' does not exist or is not readable."
+        case .missingSources:
+            "No sources provided."
+        case .missingTemplates:
+            "No templates provided."
+        case let .outputNotWritable(path):
+            "'\(path)' isn't writable."
         }
-
-        return path
-    }
-
-    static func isWritable(path: Path) -> Path {
-        if path.exists && !path.isWritable {
-            logger.error("'\(path)' isn't writable.")
-            exitSourcery(.invalidPath)
-        }
-        return path
     }
 }
 
-extension Configuration {
-    func validate() {
-        guard !sources.isEmpty else {
-            logger.error("No sources provided.")
-            exitSourcery(.invalidConfig)
+private extension Configuration {
+    func validate() throws {
+        try validateSources()
+        try validateTemplates()
+        try validateOutput()
+    }
+
+    private func validateSources() throws {
+        if sources.isEmpty {
+            throw ConfigurationValidationError.missingSources
         }
         if case let .paths(paths) = sources {
-            _ = paths.allPaths.map(Validators.isReadable(path:))
+            for path in paths.allPaths {
+                try path.validateReadability()
+            }
         }
+    }
 
-        guard !templates.isEmpty else {
-            logger.error("No templates provided.")
-            exitSourcery(.invalidConfig)
+    private func validateTemplates() throws {
+        if templates.isEmpty {
+            throw ConfigurationValidationError.missingTemplates
         }
-        _ = templates.allPaths.map(Validators.isReadable(path:))
-        _ = output.path.map(Validators.isWritable(path:))
+        for path in templates.allPaths {
+            try path.validateReadability()
+        }
+    }
+
+    private func validateOutput() throws {
+        try output.path.validateWritablity()
+    }
+}
+
+private extension Path {
+    func validateReadability() throws {
+        if isReadable { return }
+        throw ConfigurationValidationError.fileNotReadable(self)
+    }
+
+    func validateWritablity() throws {
+        if exists && !isWritable {
+            throw ConfigurationValidationError.outputNotWritable(self)
+        }
     }
 }
