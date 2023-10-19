@@ -13,75 +13,43 @@ public class Sourcery {
 
     fileprivate let verbose: Bool
     fileprivate let watcherEnabled: Bool
-    fileprivate let arguments: [String: NSObject]
     fileprivate let cacheDisabled: Bool
-    fileprivate let cacheBasePath: Path?
     fileprivate let buildPath: Path?
     fileprivate let prune: Bool
     fileprivate let serialParse: Bool
+    fileprivate var isDryRun: Bool
 
     fileprivate var status = ""
-    fileprivate var isDryRun: Bool = false
-    fileprivate lazy var dryOutputBuffer = [DryOutputValue]()
+    fileprivate lazy var dryOutputBuffer: [DryOutputValue] = []
 
     internal var dryOutput: (String) -> Void = { print($0) }
 
     // content annotated with file annotations per file path to write it to
     fileprivate var fileAnnotatedContent: [Path: [String]] = [:]
 
-    /// Creates Sourcery processor
     public init(
         verbose: Bool = false,
         watcherEnabled: Bool = false,
         cacheDisabled: Bool = false,
-        cacheBasePath: Path? = nil,
         buildPath: Path? = nil,
         prune: Bool = false,
         serialParse: Bool = false,
-        arguments: [String: NSObject] = [:]
+        isDryRun: Bool = false
     ) {
         self.verbose = verbose
-        self.arguments = arguments
         self.watcherEnabled = watcherEnabled
         self.cacheDisabled = cacheDisabled
-        self.cacheBasePath = cacheBasePath
         self.buildPath = buildPath
         self.prune = prune
         self.serialParse = serialParse
+        self.isDryRun = isDryRun
     }
 
     @discardableResult
-    public func processSources(
-        _ sources: Sources,
-        usingTemplates templatePaths: Paths,
-        output: Output,
-        isDryRun: Bool = false,
-        forceParse: [String] = [],
-        parseDocumentation: Bool = false,
-        baseIndentation: Int = 0
-    ) throws -> [FSEventStream] {
-        self.isDryRun = isDryRun
+    public func processConfiguration(_ config: Configuration) throws -> [FSEventStream] {
+        let hasSwiftTemplates = config.templates.allPaths.contains { $0.extension == "swifttemplate" }
 
-        let hasSwiftTemplates = templatePaths.allPaths.contains(where: { $0.extension == "swifttemplate" })
-
-        let watchPaths: Paths
-        switch sources {
-        case let .paths(paths):
-            watchPaths = paths
-        case let .projects(projects):
-            watchPaths = Paths(include: projects.map({ $0.root }),
-                               exclude: projects.flatMap({ $0.exclude }))
-        }
-
-        let parserResult = try process(
-            sources: sources,
-            templatePaths: templatePaths,
-            output: output,
-            forceParse: forceParse,
-            parseDocumentation: parseDocumentation,
-            hasSwiftTemplates: hasSwiftTemplates,
-            baseIndentation: baseIndentation
-        )
+        let parserResult = try process(config, hasSwiftTemplates)
 
         if isDryRun {
             let encoder = JSONEncoder()
@@ -91,35 +59,20 @@ public class Sourcery {
         }
 
         return watcherEnabled ? createWatchers(
+            config: config,
             parserResult: parserResult,
-            sources: sources,
-            sourcePaths: watchPaths,
-            templatePaths: templatePaths,
-            output: output,
-            forceParse: forceParse,
-            parseDocumentation: parseDocumentation,
-            hasSwiftTemplates: hasSwiftTemplates,
-            baseIndentation: baseIndentation
+            hasSwiftTemplates: hasSwiftTemplates
         ) : []
     }
 
-    private func process(
-        sources: Sources,
-        templatePaths: Paths,
-        output: Output,
-        forceParse: [String],
-        parseDocumentation: Bool,
-        hasSwiftTemplates: Bool,
-        baseIndentation: Int
-    ) throws -> ParsingResult {
+    private func process(_ config: Configuration, _ hasSwiftTemplates: Bool) throws -> ParsingResult {
         var result: ParsingResult
-        switch sources {
+        switch config.sources {
         case let .paths(paths):
             result = try parse(
-                from: paths.include,
-                exclude: paths.exclude,
-                forceParse: forceParse,
-                parseDocumentation: parseDocumentation,
+                sources: paths.include,
+                excludes: paths.exclude,
+                config: config,
                 modules: nil,
                 requiresFileParserCopy: hasSwiftTemplates
             )
@@ -143,37 +96,30 @@ public class Sourcery {
                 }
             }
             result = try parse(
-                from: paths,
-                forceParse: forceParse,
-                parseDocumentation: parseDocumentation,
+                sources: paths,
+                config: config,
                 modules: modules,
                 requiresFileParserCopy: hasSwiftTemplates
             )
         }
 
-        try generate(
-            source: sources,
-            templatePaths: templatePaths,
-            output: output,
-            parsingResult: &result,
-            forceParse: forceParse,
-            baseIndentation: baseIndentation
-        )
+        try generate(from: &result, config: config)
         return result
     }
 
     private func createWatchers(
+        config: Configuration,
         parserResult: ParsingResult,
-        sources: Sources,
-        sourcePaths: Paths,
-        templatePaths: Paths,
-        output: Output,
-        forceParse: [String],
-        parseDocumentation: Bool,
-        hasSwiftTemplates: Bool,
-        baseIndentation: Int
+        hasSwiftTemplates: Bool
     ) -> [FSEventStream] {
         var result = parserResult
+
+        let sourcePaths = switch config.sources {
+        case let .paths(paths):
+            paths
+        case let .projects(projects):
+            Paths(include: projects.map(\.root), exclude: projects.flatMap(\.exclude))
+        }
 
         logger.info("Starting watching sources.")
 
@@ -198,15 +144,7 @@ public class Sourcery {
                 if let path = pathThatForcedRegeneration {
                     do {
                         logger.info("Source changed at \(path.string)")
-                        result = try self.process(
-                            sources: sources,
-                            templatePaths: templatePaths,
-                            output: output,
-                            forceParse: forceParse,
-                            parseDocumentation: parseDocumentation,
-                            hasSwiftTemplates: hasSwiftTemplates,
-                            baseIndentation: baseIndentation
-                        )
+                        result = try self.process(config, hasSwiftTemplates)
                     } catch {
                         logger.error(error)
                     }
@@ -216,7 +154,7 @@ public class Sourcery {
 
         logger.info("Starting watching templates.")
 
-        let templateWatchers = topPaths(from: templatePaths.allPaths).compactMap { path in
+        let templateWatchers = topPaths(from: config.templates.allPaths).compactMap { path in
             FSEventStream(path: path.string) { events in
                 let events = events.filter { $0.flags.contains(.isFile) && Path($0.path).isTemplateFile }
 
@@ -228,14 +166,7 @@ public class Sourcery {
                     } else {
                         logger.info("Templates changed: ")
                     }
-                    try self.generate(
-                        source: sources, 
-                        templatePaths: Paths(include: [path]),
-                        output: output,
-                        parsingResult: &result,
-                        forceParse: forceParse,
-                        baseIndentation: baseIndentation
-                    )
+                    try self.generate(from: &result, config: config, overridingTemplatePaths: Paths(include: [path]))
                 } catch {
                     logger.error(error)
                 }
@@ -271,10 +202,8 @@ public class Sourcery {
 
     /// This function should be used to retrieve the path to the cache instead of `Path.cachesDir`,
     /// as it considers the `--cacheDisabled` and `--cacheBasePath` command line parameters.
-    fileprivate func cachesDir(sourcePath: Path, createIfMissing: Bool = true) -> Path? {
-        return cacheDisabled
-            ? nil
-            : Path.cachesDir(sourcePath: sourcePath, basePath: cacheBasePath, createIfMissing: createIfMissing)
+    fileprivate func cachesDir(sourcePath: Path, basePath: Path, createIfMissing: Bool = true) -> Path? {
+        cacheDisabled ? nil : .cachesDir(sourcePath: sourcePath, basePath: basePath, createIfMissing: createIfMissing)
     }
 
     /// Remove the existing cache artifacts if it exists.
@@ -291,8 +220,8 @@ public class Sourcery {
         }
     }
 
-    fileprivate func templates(from: Paths) throws -> [Template] {
-        return try templatePaths(from: from).compactMap {
+    fileprivate func templates(from config: Configuration) throws -> [Template] {
+        return try templatePaths(from: config.templates).compactMap {
             if $0.extension == "sourcerytemplate" {
                 let template = try JSONDecoder().decode(SourceryTemplate.self, from: $0.read())
                 switch template.instance.kind {
@@ -300,7 +229,7 @@ public class Sourcery {
                     return try StencilTemplate(path: $0, templateString: template.instance.content)
                 }
             } else if $0.extension == "swifttemplate" {
-                let cachePath = cachesDir(sourcePath: $0)
+                let cachePath = cachesDir(sourcePath: $0, basePath: config.cacheBasePath)
                 return try SwiftTemplate(path: $0, cachePath: cachePath, version: type(of: self).version, buildPath: buildPath)
             } else {
                 return try StencilTemplate(path: $0)
@@ -327,15 +256,14 @@ extension Sourcery {
     typealias ParserWrapper = (path: Path, parse: () throws -> FileParserResult?)
 
     fileprivate func parse(
-        from: [Path],
-        exclude: [Path] = [],
-        forceParse: [String] = [],
-        parseDocumentation: Bool,
+        sources: [Path],
+        excludes: [Path] = [],
+        config: Configuration,
         modules: [String]?,
         requiresFileParserCopy: Bool
     ) throws -> ParsingResult {
         if let modules = modules {
-            precondition(from.count == modules.count, "There should be module for each file to parse")
+            precondition(sources.count == modules.count, "There should be module for each file to parse")
         }
 
         let startScan = currentTimestamp()
@@ -344,12 +272,15 @@ extension Sourcery {
         var inlineRanges = [(file: String, ranges: [String: NSRange], indentations: [String: String])]()
         var allResults = [(changed: Bool, result: FileParserResult)]()
 
-        let excludeSet = Set(exclude
-            .map { $0.isDirectory ? try? $0.recursiveChildren() : [$0] }
-            .compactMap({ $0 }).flatMap({ $0 }))
+        let excludeSet = Set(
+            excludes
+                .map { $0.isDirectory ? try? $0.recursiveChildren() : [$0] }
+                .compactMap { $0 }
+                .flatMap { $0 }
+        )
 
-        try from.enumerated().forEach { index, from in
-            let fileList = from.isDirectory ? try from.recursiveChildren() : [from]
+        try sources.enumerated().forEach { index, sourcePath in
+            let fileList = sourcePath.isDirectory ? try sourcePath.recursiveChildren() : [sourcePath]
             let parserGenerator: [ParserWrapper] = fileList
                 .filter { $0.isSwiftSourceFile }
                 .filter {
@@ -364,14 +295,20 @@ extension Sourcery {
                         }
 
                         let content = try path.read(.utf8)
-                        let status = Verifier.canParse(content: content, path: path, forceParse: forceParse)
+                        let status = Verifier.canParse(content: content, path: path, forceParse: config.forceParse)
                         switch status {
                         case .containsConflictMarkers:
                             throw Error.containsMergeConflictMarkers
                         case .isCodeGenerated:
                             return nil
                         case .approved:
-                            return try makeParser(for: content, forceParse: forceParse, parseDocumentation: parseDocumentation, path: path, module: module).parse()
+                            return try makeParser(
+                                for: content,
+                                forceParse: config.forceParse,
+                                parseDocumentation: config.parseDocumentation,
+                                path: path,
+                                module: module
+                            ).parse()
                         }
                     })
                 }
@@ -380,7 +317,7 @@ extension Sourcery {
 
             let transform: (ParserWrapper) -> (changed: Bool, result: FileParserResult)? = { parser in
                 do {
-                    return try self.loadOrParse(parser: parser, cachesPath: self.cachesDir(sourcePath: from))
+                    return try self.loadOrParse(parser: parser, cachesPath: self.cachesDir(sourcePath: sourcePath, basePath: config.cacheBasePath))
                 } catch {
                     lastError = error
                     logger.error("Unable to parse \(parser.path), error \(error)")
@@ -498,25 +435,25 @@ extension Sourcery {
     private typealias SourceChange = (path: String, rangeInFile: NSRange, newRangeInFile: NSRange)
     private typealias GenerationResult = (String, [SourceChange])
 
-    fileprivate func generate(source: Sources, templatePaths: Paths, output: Output, parsingResult: inout ParsingResult, forceParse: [String], baseIndentation: Int) throws {
+    fileprivate func generate(from parsingResult: inout ParsingResult, config: Configuration, overridingTemplatePaths: Paths? = nil) throws {
         let generationStart = currentTimestamp()
 
         logger.info("Loading templates...")
-        let allTemplates = try templates(from: templatePaths)
+        let allTemplates = try templates(from: config)
         logger.info("Loaded \(allTemplates.count) templates.")
         logger.benchmark("\tLoading took \(currentTimestamp() - generationStart)")
 
         logger.info("Generating code...")
         status = ""
 
-        if output.isDirectory {
+        if config.output.isDirectory {
             try allTemplates.forEach { template in
-                let (result, sourceChanges) = try generate(template, forParsingResult: parsingResult, outputPath: output.path, forceParse: forceParse, baseIndentation: baseIndentation)
+                let (result, sourceChanges) = try generate(template, forParsingResult: parsingResult, config: config)
                 updateRanges(in: &parsingResult, sourceChanges: sourceChanges)
-                let outputPath = output.path + generatedPath(for: template.sourcePath)
+                let outputPath = config.output.path + generatedPath(for: template.sourcePath)
                 try self.output(type: .template(template.sourcePath.string), result: result, to: outputPath)
 
-                if !isDryRun, let linkTo = output.linkTo {
+                if !isDryRun, let linkTo = config.output.linkTo {
                     linkTo.targets.forEach { target in
                         link(outputPath, to: linkTo, target: target)
                     }
@@ -525,32 +462,32 @@ extension Sourcery {
         } else {
             let result = try allTemplates.reduce((contents: "", parsingResult: parsingResult)) { state, template in
                 var (result, parsingResult) = state
-                let (generatedCode, sourceChanges) = try generate(template, forParsingResult: parsingResult, outputPath: output.path, forceParse: forceParse, baseIndentation: baseIndentation)
+                let (generatedCode, sourceChanges) = try generate(template, forParsingResult: parsingResult, config: config)
                 result += "\n" + generatedCode
                 updateRanges(in: &parsingResult, sourceChanges: sourceChanges)
                 return (result, parsingResult)
             }
             parsingResult = result.parsingResult
-            try self.output(type: .allTemplates, result: result.contents, to: output.path)
+            try self.output(type: .allTemplates, result: result.contents, to: config.output.path)
 
-            if !isDryRun, let linkTo = output.linkTo {
+            if !isDryRun, let linkTo = config.output.linkTo {
                 linkTo.targets.forEach { target in
-                    link(output.path, to: linkTo, target: target)
+                    link(config.output.path, to: linkTo, target: target)
                 }
             }
         }
 
-        try fileAnnotatedContent.forEach { (path, contents) in
+        try fileAnnotatedContent.forEach { path, contents in
             try self.output(type: .path(path.string), result: contents.joined(separator: "\n"), to: path)
 
-            if !isDryRun, let linkTo = output.linkTo {
+            if !isDryRun, let linkTo = config.output.linkTo {
                 linkTo.targets.forEach { target in
                     link(path, to: linkTo, target: target)
                 }
             }
         }
 
-        if !isDryRun, let linkTo = output.linkTo {
+        if !isDryRun, let linkTo = config.output.linkTo {
             try linkTo.project.writePBXProj(path: linkTo.projectPath, outputSettings: .init())
         }
 
@@ -663,44 +600,44 @@ extension Sourcery {
         try writeIfChanged(updatedContent(), to: path)
     }
 
-    private func generate(_ template: Template, forParsingResult parsingResult: ParsingResult, outputPath: Path, forceParse: [String], baseIndentation: Int) throws -> GenerationResult {
+    private func generate(_ template: Template, forParsingResult parsingResult: ParsingResult, config: Configuration) throws -> GenerationResult {
         guard watcherEnabled else {
             let generationStart = currentTimestamp()
             let result = try template.render(.init(
                 parserResult: parsingResult.parserResult,
                 types: parsingResult.types,
                 functions: parsingResult.functions,
-                arguments: arguments
+                arguments: config.arguments
             ))
             logger.benchmark("\tGenerating \(template.sourcePath.lastComponent) took \(currentTimestamp() - generationStart)")
 
-            return try processRanges(in: parsingResult, result: result, outputPath: outputPath, forceParse: forceParse, baseIndentation: baseIndentation)
+            return try processRanges(in: parsingResult, result: result, config: config)
         }
 
         let result = try template.render(.init(
             parserResult: parsingResult.parserResult,
             types: parsingResult.types,
             functions: parsingResult.functions,
-            arguments: arguments
+            arguments: config.arguments
         ))
 
-        return try processRanges(in: parsingResult, result: result, outputPath: outputPath, forceParse: forceParse, baseIndentation: baseIndentation)
+        return try processRanges(in: parsingResult, result: result, config: config)
     }
 
-    private func processRanges(in parsingResult: ParsingResult, result: String, outputPath: Path, forceParse: [String], baseIndentation: Int) throws -> GenerationResult {
+    private func processRanges(in parsingResult: ParsingResult, result: String, config: Configuration) throws -> GenerationResult {
         let start = currentTimestamp()
         defer {
             logger.benchmark("\t\tProcessing Ranges took \(currentTimestamp() - start)")
         }
         var result = result
-        result = processFileRanges(for: parsingResult, in: result, outputPath: outputPath, forceParse: forceParse)
+        result = processFileRanges(for: parsingResult, in: result, config: config)
         let sourceChanges: [SourceChange]
-        (result, sourceChanges) = try processInlineRanges(for: parsingResult, in: result, forceParse: forceParse, baseIndentation: baseIndentation)
+        (result, sourceChanges) = try processInlineRanges(for: parsingResult, in: result, config: config)
         return (TemplateAnnotationsParser.removingEmptyAnnotations(from: result), sourceChanges)
     }
 
-    private func processInlineRanges(`for` parsingResult: ParsingResult, in contents: String, forceParse: [String], baseIndentation: Int) throws -> GenerationResult {
-        var (annotatedRanges, rangesToReplace) = TemplateAnnotationsParser.annotationRanges("inline", contents: contents, forceParse: forceParse)
+    private func processInlineRanges(for parsingResult: ParsingResult, in contents: String, config: Configuration) throws -> GenerationResult {
+        var (annotatedRanges, rangesToReplace) = TemplateAnnotationsParser.annotationRanges("inline", contents: contents, forceParse: config.forceParse)
 
         typealias MappedInlineAnnotations = (
             range: NSRange,
@@ -766,7 +703,7 @@ extension Sourcery {
                     toInsert += "\n"
                 }
 
-                let indent = String(repeating: " ", count: (indentRange?.location ?? 0) + baseIndentation)
+                let indent = String(repeating: " ", count: (indentRange?.location ?? 0) + config.baseIndentation)
                 return MappedInlineAnnotations(range, filePath, rangeInFile, toInsert, indent)
             }
             .sorted { lhs, rhs in
@@ -814,19 +751,19 @@ extension Sourcery {
         return contentsView.byteRangeToNSRange(ByteRange(location: ByteCount(bytesRange.offset), length: ByteCount(bytesRange.length)))
     }
 
-    private func processFileRanges(`for` parsingResult: ParsingResult, in contents: String, outputPath: Path, forceParse: [String]) -> String {
-        let files = TemplateAnnotationsParser.parseAnnotations("file", contents: contents, aggregate: true, forceParse: forceParse)
+    private func processFileRanges(for parsingResult: ParsingResult, in contents: String, config: Configuration) -> String {
+        let files = TemplateAnnotationsParser.parseAnnotations("file", contents: contents, aggregate: true, forceParse: config.forceParse)
 
         files
             .annotatedRanges
             .map { ($0, $1) }
-            .forEach({ (filePath, ranges) in
+            .forEach { filePath, ranges in
                 let generatedBody = ranges.map { contents.bridge().substring(with: $0.range) }.joined(separator: "\n")
-                let path = outputPath + (Path(filePath).extension == nil ? "\(filePath).generated.swift" : filePath)
+                let path = config.output.path + (Path(filePath).extension == nil ? "\(filePath).generated.swift" : filePath)
                 var fileContents = fileAnnotatedContent[path] ?? []
                 fileContents.append(generatedBody)
                 fileAnnotatedContent[path] = fileContents
-            })
+            }
         return files.contents
     }
 

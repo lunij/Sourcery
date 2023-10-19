@@ -12,28 +12,28 @@ class SourceryPerformanceTests: XCTestCase {
         _ = try? Path.cachesDir(sourcePath: Stubs.sourceForPerformance, basePath: nil).delete()
 
         measure {
-            _ = try? Sourcery(cacheDisabled: true).processSources(
-                .paths(Paths(include: [Stubs.sourceForPerformance])),
-                usingTemplates: Paths(include: [Stubs.templateDirectory + Path("Basic.stencil")]),
+            _ = try? Sourcery(cacheDisabled: true).processConfiguration(.stub(
+                sources: .paths(Paths(include: [Stubs.sourceForPerformance])),
+                templates: Paths(include: [Stubs.templateDirectory + Path("Basic.stencil")]),
                 output: output
-            )
+            ))
         }
     }
 
     func testParsingPerformanceOnSubsequentRun() {
         _ = try? Path.cachesDir(sourcePath: Stubs.sourceForPerformance, basePath: nil).delete()
-        _ = try? Sourcery().processSources(
-            .paths(Paths(include: [Stubs.sourceForPerformance])),
-            usingTemplates: Paths(include: [Stubs.templateDirectory + Path("Basic.stencil")]),
+        _ = try? Sourcery().processConfiguration(.stub(
+            sources: .paths(Paths(include: [Stubs.sourceForPerformance])),
+            templates: Paths(include: [Stubs.templateDirectory + Path("Basic.stencil")]),
             output: output
-        )
+        ))
 
         measure {
-            _ = try? Sourcery().processSources(
-                .paths(Paths(include: [Stubs.sourceForPerformance])),
-                usingTemplates: Paths(include: [Stubs.templateDirectory + Path("Basic.stencil")]),
+            _ = try? Sourcery().processConfiguration(.stub(
+                sources: .paths(Paths(include: [Stubs.sourceForPerformance])),
+                templates: Paths(include: [Stubs.templateDirectory + Path("Basic.stencil")]),
                 output: output
-            )
+            ))
         }
     }
 }

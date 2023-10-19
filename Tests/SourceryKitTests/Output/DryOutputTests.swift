@@ -10,17 +10,16 @@ class DryOutputStencilTemplateTests: XCTestCase {
         outputDir = Stubs.cleanTemporarySourceryDir()
 
         let templatePath = Stubs.templateDirectory + Path("Include.stencil")
-        let sourcery = Sourcery(cacheDisabled: true)
+        let sourcery = Sourcery(cacheDisabled: true, isDryRun: false)
         let outputInterceptor = OutputInterceptor()
         sourcery.dryOutput = outputInterceptor.handleOutput(_:)
 
         XCTAssertNoThrow(
-            try sourcery.processSources(
-                .paths(Paths(include: [Stubs.sourceDirectory])),
-                usingTemplates: Paths(include: [templatePath]),
-                output: Output(outputDir),
-                isDryRun: false
-            )
+            try sourcery.processConfiguration(.stub(
+                sources: .paths(Paths(include: [Stubs.sourceDirectory])),
+                templates: Paths(include: [templatePath]),
+                output: Output(outputDir)
+            ))
         )
         XCTAssertNil(outputInterceptor.result)
     }
@@ -37,17 +36,16 @@ class DryOutputStencilTemplateTests: XCTestCase {
 
         """
 
-        let sourcery = Sourcery(cacheDisabled: true)
+        let sourcery = Sourcery(cacheDisabled: true, isDryRun: true)
         let outputInterceptor = OutputInterceptor()
         sourcery.dryOutput = outputInterceptor.handleOutput(_:)
 
         XCTAssertNoThrow(
-            try sourcery.processSources(
-                .paths(Paths(include: [Stubs.sourceDirectory])),
-                usingTemplates: Paths(include: [templatePath]),
-                output: Output(outputDir),
-                isDryRun: true
-            )
+            try sourcery.processConfiguration(.stub(
+                sources: .paths(Paths(include: [Stubs.sourceDirectory])),
+                templates: Paths(include: [templatePath]),
+                output: Output(outputDir)
+            ))
         )
         XCTAssertEqual(outputInterceptor.result, expectedResult)
     }
@@ -55,17 +53,16 @@ class DryOutputStencilTemplateTests: XCTestCase {
     func test_supportsDifferentWaysForCodeGeneration() {
         let templatePath = Stubs.templateDirectory + Path("GenerationWays.stencil")
         let sourcePath = Stubs.sourceForDryRun + Path("Base.swift")
-        let sourcery = Sourcery(cacheDisabled: true)
+        let sourcery = Sourcery(cacheDisabled: true, isDryRun: true)
         let outputInterceptor = OutputInterceptor()
         sourcery.dryOutput = outputInterceptor.handleOutput(_:)
 
         XCTAssertNoThrow(
-            try sourcery.processSources(
-                .paths(Paths(include: [sourcePath])),
-                usingTemplates: Paths(include: [templatePath]),
-                output: Output("."),
-                isDryRun: true
-            )
+            try sourcery.processConfiguration(.stub(
+                sources: .paths(Paths(include: [sourcePath])),
+                templates: Paths(include: [templatePath]),
+                output: Output(".")
+            ))
         )
         XCTAssertEqual(outputInterceptor.result(byOutputType: .init(id: "\(sourcePath):109", subType: .range)).value, """
         // MARK: - Eq AutoEquatable
@@ -171,33 +168,31 @@ class DryOutputSwiftTemplateTests: XCTestCase {
     let expectedResult = try? (Stubs.resultDirectory + Path("Basic.swift")).read(.utf8)
 
     func test_hasNoStdoutJsonOutputIfIsDryRunEqualFalse() {
-        let sourcery = Sourcery(cacheDisabled: true)
+        let sourcery = Sourcery(cacheDisabled: true, isDryRun: false)
         let outputInterceptor = OutputInterceptor()
         sourcery.dryOutput = outputInterceptor.handleOutput(_:)
 
         XCTAssertNoThrow(
-            try sourcery.processSources(
-                .paths(Paths(include: [Stubs.sourceDirectory])),
-                usingTemplates: Paths(include: [templatePath]),
-                output: output,
-                isDryRun: false
-            )
+            try sourcery.processConfiguration(.stub(
+                sources: .paths(Paths(include: [Stubs.sourceDirectory])),
+                templates: Paths(include: [templatePath]),
+                output: output
+            ))
         )
         XCTAssertNil(outputInterceptor.result)
     }
 
     func test_generatesCorrectOutputIfIsDryRunEqualTrue() {
-        let sourcery = Sourcery(cacheDisabled: true)
+        let sourcery = Sourcery(cacheDisabled: true, isDryRun: true)
         let outputInterceptor = OutputInterceptor()
         sourcery.dryOutput = outputInterceptor.handleOutput(_:)
 
         XCTAssertNoThrow(
-            try sourcery.processSources(
-                .paths(Paths(include: [Stubs.sourceDirectory])),
-                usingTemplates: Paths(include: [templatePath]),
-                output: output,
-                isDryRun: true
-            )
+            try sourcery.processConfiguration(.stub(
+                sources: .paths(Paths(include: [Stubs.sourceDirectory])),
+                templates: Paths(include: [templatePath]),
+                output: output
+            ))
         )
         XCTAssertEqual(outputInterceptor.result, expectedResult)
     }
@@ -205,17 +200,16 @@ class DryOutputSwiftTemplateTests: XCTestCase {
     func test_handlesIncludes() {
         let templatePath = Stubs.swiftTemplates + Path("Includes.swifttemplate")
         let expectedResult = try? (Stubs.resultDirectory + Path("Basic+Other.swift")).read(.utf8)
-        let sourcery = Sourcery(cacheDisabled: true)
+        let sourcery = Sourcery(cacheDisabled: true, isDryRun: true)
         let outputInterceptor = OutputInterceptor()
         sourcery.dryOutput = outputInterceptor.handleOutput(_:)
 
         XCTAssertNoThrow(
-            try sourcery.processSources(
-                .paths(Paths(include: [Stubs.sourceDirectory])),
-                usingTemplates: Paths(include: [templatePath]),
-                output: output,
-                isDryRun: true
-            )
+            try sourcery.processConfiguration(.stub(
+                sources: .paths(Paths(include: [Stubs.sourceDirectory])),
+                templates: Paths(include: [templatePath]),
+                output: output
+            ))
         )
         XCTAssertEqual(outputInterceptor.result, expectedResult)
     }
@@ -223,17 +217,16 @@ class DryOutputSwiftTemplateTests: XCTestCase {
     func test_handlesFileIncludes() {
         let templatePath = Stubs.swiftTemplates + Path("IncludeFile.swifttemplate")
         let expectedResult = try? (Stubs.resultDirectory + Path("Basic.swift")).read(.utf8)
-        let sourcery = Sourcery(cacheDisabled: true)
+        let sourcery = Sourcery(cacheDisabled: true, isDryRun: true)
         let outputInterceptor = OutputInterceptor()
         sourcery.dryOutput = outputInterceptor.handleOutput(_:)
 
         XCTAssertNoThrow(
-            try sourcery.processSources(
-                .paths(Paths(include: [Stubs.sourceDirectory])),
-                usingTemplates: Paths(include: [templatePath]),
-                output: output,
-                isDryRun: true
-            )
+            try sourcery.processConfiguration(.stub(
+                sources: .paths(Paths(include: [Stubs.sourceDirectory])),
+                templates: Paths(include: [templatePath]),
+                output: output
+            ))
         )
         XCTAssertEqual(outputInterceptor.result, expectedResult)
     }
@@ -241,17 +234,16 @@ class DryOutputSwiftTemplateTests: XCTestCase {
     func test_handlesIncludesFromIncludedFilesRelatively() {
         let templatePath = Stubs.swiftTemplates + Path("SubfolderIncludes.swifttemplate")
         let expectedResult = try? (Stubs.resultDirectory + Path("Basic.swift")).read(.utf8)
-        let sourcery = Sourcery(cacheDisabled: true)
+        let sourcery = Sourcery(cacheDisabled: true, isDryRun: true)
         let outputInterceptor = OutputInterceptor()
         sourcery.dryOutput = outputInterceptor.handleOutput(_:)
 
         XCTAssertNoThrow(
-            try sourcery.processSources(
-                .paths(Paths(include: [Stubs.sourceDirectory])),
-                usingTemplates: Paths(include: [templatePath]),
-                output: output,
-                isDryRun: true
-            )
+            try sourcery.processConfiguration(.stub(
+                sources: .paths(Paths(include: [Stubs.sourceDirectory])),
+                templates: Paths(include: [templatePath]),
+                output: output
+            ))
         )
         XCTAssertEqual(outputInterceptor.result, expectedResult)
     }
@@ -259,17 +251,16 @@ class DryOutputSwiftTemplateTests: XCTestCase {
     func test_handlesFileIncludesFromIncludedFilesRelatively() {
         let templatePath = Stubs.swiftTemplates + Path("SubfolderFileIncludes.swifttemplate")
         let expectedResult = try? (Stubs.resultDirectory + Path("Basic.swift")).read(.utf8)
-        let sourcery = Sourcery(cacheDisabled: true)
+        let sourcery = Sourcery(cacheDisabled: true, isDryRun: true)
         let outputInterceptor = OutputInterceptor()
         sourcery.dryOutput = outputInterceptor.handleOutput(_:)
 
         XCTAssertNoThrow(
-            try sourcery.processSources(
-                .paths(Paths(include: [Stubs.sourceDirectory])),
-                usingTemplates: Paths(include: [templatePath]),
-                output: output,
-                isDryRun: true
-            )
+            try sourcery.processConfiguration(.stub(
+                sources: .paths(Paths(include: [Stubs.sourceDirectory])),
+                templates: Paths(include: [templatePath]),
+                output: output
+            ))
         )
         XCTAssertEqual(outputInterceptor.result, expectedResult)
     }
@@ -277,17 +268,16 @@ class DryOutputSwiftTemplateTests: XCTestCase {
     func test_handlesFreeFunctions() {
         let templatePath = Stubs.swiftTemplates + Path("Function.swifttemplate")
         let expectedResult = try? (Stubs.resultDirectory + Path("Function.swift")).read(.utf8)
-        let sourcery = Sourcery(cacheDisabled: true)
+        let sourcery = Sourcery(cacheDisabled: true, isDryRun: true)
         let outputInterceptor = OutputInterceptor()
         sourcery.dryOutput = outputInterceptor.handleOutput(_:)
 
         XCTAssertNoThrow(
-            try sourcery.processSources(
-                .paths(Paths(include: [Stubs.sourceDirectory])),
-                usingTemplates: Paths(include: [templatePath]),
-                output: output,
-                isDryRun: true
-            )
+            try sourcery.processConfiguration(.stub(
+                sources: .paths(Paths(include: [Stubs.sourceDirectory])),
+                templates: Paths(include: [templatePath]),
+                output: output
+            ))
         )
         XCTAssertEqual(outputInterceptor.result, expectedResult)
     }
@@ -300,7 +290,7 @@ class DryOutputSwiftTemplateTests: XCTestCase {
             "SubfolderFileIncludes.swifttemplate",
             "Function.swifttemplate"
         ].map { Stubs.swiftTemplates + Path($0) }
-        let sourcery = Sourcery(cacheDisabled: true)
+        let sourcery = Sourcery(cacheDisabled: true, isDryRun: true)
         let outputInterceptor = OutputInterceptor()
         sourcery.dryOutput = outputInterceptor.handleOutput(_:)
 
@@ -313,12 +303,11 @@ class DryOutputSwiftTemplateTests: XCTestCase {
         ].compactMap { try? (Stubs.resultDirectory + Path($0)).read(.utf8) }
 
         XCTAssertNoThrow(
-            try sourcery.processSources(
-                .paths(Paths(include: [Stubs.sourceDirectory])),
-                usingTemplates: Paths(include: templatePaths),
-                output: output,
-                isDryRun: true
-            )
+            try sourcery.processConfiguration(.stub(
+                sources: .paths(Paths(include: [Stubs.sourceDirectory])),
+                templates: Paths(include: templatePaths),
+                output: output
+            ))
         )
 
         XCTAssertEqual(outputInterceptor.outputModel?.outputs.count, expectedResults.count)
@@ -333,17 +322,16 @@ class DryOutputSwiftTemplateTests: XCTestCase {
             "SubfolderFileIncludes.swifttemplate",
             "Function.swifttemplate"
         ].map { Stubs.swiftTemplates + Path($0) }
-        let sourcery = Sourcery(cacheDisabled: true)
+        let sourcery = Sourcery(cacheDisabled: true, isDryRun: true)
         let outputInterceptor = OutputInterceptor()
         sourcery.dryOutput = outputInterceptor.handleOutput(_:)
 
         XCTAssertNoThrow(
-            try sourcery.processSources(
-                .paths(Paths(include: [Stubs.sourceDirectory])),
-                usingTemplates: Paths(include: templatePaths),
-                output: output,
-                isDryRun: true
-            )
+            try sourcery.processConfiguration(.stub(
+                sources: .paths(Paths(include: [Stubs.sourceDirectory])),
+                templates: Paths(include: templatePaths),
+                output: output
+            ))
         )
 
         XCTAssertEqual(

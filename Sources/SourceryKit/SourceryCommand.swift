@@ -87,28 +87,16 @@ public struct SourceryCommand: AsyncParsableCommand {
     private func processFiles(specifiedIn configuration: Configuration) throws {
         try configuration.validate()
 
-        let shouldUseCacheBasePathArg = configuration.cacheBasePath == Path.defaultBaseCachePath && !options.cacheBasePath.string.isEmpty
-
         let sourcery = Sourcery(
             verbose: verbose,
             watcherEnabled: watcherEnabled,
             cacheDisabled: cacheDisabled,
-            cacheBasePath: shouldUseCacheBasePathArg ? options.cacheBasePath : configuration.cacheBasePath,
             buildPath: buildPath.string.isEmpty ? nil : buildPath,
             prune: prune,
-            serialParse: serialParse,
-            arguments: configuration.args
+            serialParse: serialParse
         )
 
-        try sourcery.processSources(
-            configuration.sources,
-            usingTemplates: configuration.templates,
-            output: configuration.output,
-            isDryRun: isDryRun,
-            forceParse: configuration.forceParse,
-            parseDocumentation: configuration.parseDocumentation,
-            baseIndentation: configuration.baseIndentation
-        )
+        try sourcery.processConfiguration(configuration)
     }
 
     enum Error: Swift.Error, Equatable {

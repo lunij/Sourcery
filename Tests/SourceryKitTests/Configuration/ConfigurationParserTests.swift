@@ -27,7 +27,7 @@ class ConfigurationParserTests: XCTestCase {
             return
         }
 
-        let configServerUrl = config.args[serverUrlArg] as? String
+        let configServerUrl = config.arguments[serverUrlArg] as? String
 
         XCTAssertEqual(configServerUrl, serverUrl)
         XCTAssertEqual(path, "/some/path/Sources")
@@ -40,7 +40,7 @@ class ConfigurationParserTests: XCTestCase {
             env: env
         )
 
-        let serverPort = config.args["serverPort"] as? String
+        let serverPort = config.arguments["serverPort"] as? String
 
         XCTAssertEqual(serverPort, "")
     }
@@ -61,7 +61,7 @@ class ConfigurationParserTests: XCTestCase {
                 return
             }
 
-            let configServerUrl = config.args[serverUrlArg] as? String
+            let configServerUrl = config.arguments[serverUrlArg] as? String
 
             XCTAssertEqual(configServerUrl, "\(serverUrl)/\(offset)")
             XCTAssertEqual(path, Path("/some/path/Sources/\(offset)"))

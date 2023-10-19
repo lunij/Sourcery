@@ -9,7 +9,7 @@ public struct Configuration: Equatable {
     public let forceParse: [String]
     public let parseDocumentation: Bool
     public let baseIndentation: Int
-    public let args: [String: NSObject]
+    public let arguments: [String: NSObject]
 
     public init(
         sources: Sources,
@@ -19,7 +19,7 @@ public struct Configuration: Equatable {
         forceParse: [String],
         parseDocumentation: Bool,
         baseIndentation: Int,
-        args: [String: NSObject]
+        arguments: [String: NSObject]
     ) {
         self.sources = sources
         self.templates = templates
@@ -28,6 +28,6 @@ public struct Configuration: Equatable {
         self.forceParse = forceParse
         self.parseDocumentation = parseDocumentation
         self.baseIndentation = baseIndentation
-        self.args = args
+        self.arguments = arguments
     }
 }

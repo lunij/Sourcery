@@ -29,7 +29,7 @@ class ConfigurationReaderTests: XCTestCase {
             forceParse: [],
             parseDocumentation: false,
             baseIndentation: 0,
-            args: [:])
+            arguments: [:])
         ])
         XCTAssertEqual(loggerMock.calls, [.info("No config file provided or it does not exist. Using command line arguments.")])
         XCTAssertEqual(parserMock.calls, [])

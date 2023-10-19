@@ -16,7 +16,7 @@ struct ConfigurationReader {
             do {
                 try configPath.checkConfigFile()
 
-                if options.hasRedundantArguments {
+                if options.hasRedundantArguments { // TODO: do not ignore arguments, but override config setting
                     logger.info("Using configuration file at '\(configPath)'. WARNING: Ignoring the parameters passed in the command line.")
                 } else {
                     logger.info("Using configuration file at '\(configPath)'")
@@ -40,7 +40,7 @@ struct ConfigurationReader {
                         forceParse: options.forceParse,
                         parseDocumentation: options.parseDocumentation,
                         baseIndentation: options.baseIndentation,
-                        args: arguments
+                        arguments: arguments
                     )
                 ]
             }

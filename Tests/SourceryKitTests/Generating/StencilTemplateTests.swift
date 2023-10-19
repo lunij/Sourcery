@@ -193,11 +193,11 @@ class StencilTemplateTests: XCTestCase {
 
         """
 
-        try Sourcery(cacheDisabled: true).processSources(
-            .paths(Paths(include: [Stubs.sourceDirectory])),
-            usingTemplates: Paths(include: [templatePath]),
+        try Sourcery(cacheDisabled: true).processConfiguration(.stub(
+            sources: .paths(Paths(include: [Stubs.sourceDirectory])),
+            templates: Paths(include: [templatePath]),
             output: Output(outputDir)
-        )
+        ))
 
         let result = try (outputDir + Sourcery().generatedPath(for: templatePath)).read(.utf8)
         XCTAssertEqual(result, expectedResult)
