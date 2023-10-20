@@ -5,17 +5,17 @@ import XcodeProj
 import Yams
 
 public protocol ConfigurationParsing {
-    func parseConfigurations(path: Path, relativePath: Path, env: [String: String]) throws -> [Configuration]
-    func parse(path: Path, relativePath: Path, env: [String: String]) throws -> Configuration
+    func parseConfigurations(from string: String, relativePath: Path, env: [String: String]) throws -> [Configuration]
+    func parse(from string: String, relativePath: Path, env: [String: String]) throws -> Configuration
 }
 
 class ConfigurationParser: ConfigurationParsing {
     func parseConfigurations(
-        path: Path,
+        from yaml: String,
         relativePath: Path,
         env: [String: String] = [:]
     ) throws -> [Configuration] {
-        guard let dict = try Yams.load(yaml: path.read(), .default, Constructor(.customScalarMap(env: env))) as? [String: Any] else {
+        guard let dict = try Yams.load(yaml: yaml, .default, Constructor(.customScalarMap(env: env))) as? [String: Any] else {
             throw ConfigurationParser.Error.invalidFormat(message: "Expected dictionary.")
         }
 
@@ -34,11 +34,11 @@ class ConfigurationParser: ConfigurationParsing {
     }
 
     func parse(
-        path: Path,
+        from yaml: String,
         relativePath: Path,
         env: [String: String] = [:]
     ) throws -> Configuration {
-        guard let dict = try Yams.load(yaml: path.read(), .default, Constructor(.customScalarMap(env: env))) as? [String: Any] else {
+        guard let dict = try Yams.load(yaml: yaml, .default, Constructor(.customScalarMap(env: env))) as? [String: Any] else {
             throw Error.invalidFormat(message: "Expected dictionary.")
         }
         return try parse(dict: dict, relativePath: relativePath)

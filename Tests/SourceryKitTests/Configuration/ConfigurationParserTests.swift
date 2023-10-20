@@ -6,51 +6,55 @@ class ConfigurationParserTests: XCTestCase {
     var sut: ConfigurationParser!
 
     let relativePath = Path("/some/path")
-    let serverUrlArg = "serverUrl"
-    let serverUrl: String = "www.example.com"
-    lazy var env = ["SOURCE_PATH": "Sources", serverUrlArg: serverUrl]
+    let env = ["SOURCE_PATH": "Sources", "serverUrl": "www.example.com"]
 
     override func setUp() {
         super.setUp()
         sut = .init()
     }
 
-    func test_givenValidConfigFileWithEnvPlaceholders_replacesEnvPlaceholders() throws {
-        let config = try sut.parse(
-            path: Stubs.configs + "valid.yml",
-            relativePath: relativePath,
-            env: env
-        )
-        guard case let .paths(paths) = config.sources,
-            let path = paths.include.first else {
-            XCTFail("Config has no Source Paths")
-            return
+    func test_replacesEnvPlaceholders() throws {
+        let yaml = """
+            sources:
+              - "${SOURCE_PATH}"
+            templates:
+              - "Templates"
+            output: "Output"
+            args:
+              serverUrl: ${serverUrl}
+              serverPort: ${serverPort}
+            """
+        let config = try sut.parse(from: yaml, relativePath: relativePath, env: env)
+        guard case let .paths(paths) = config.sources else {
+            return XCTFail("Config has no source paths")
         }
 
-        let configServerUrl = config.arguments[serverUrlArg] as? String
-
-        XCTAssertEqual(configServerUrl, serverUrl)
-        XCTAssertEqual(path, "/some/path/Sources")
-    }
-
-    func test_givenValidConfigFileWithEnvPlaceholders_removesArgsEntriesWithMissingEnvVariables() throws {
-        let config = try sut.parse(
-            path: Stubs.configs + "valid.yml",
-            relativePath: relativePath,
-            env: env
-        )
-
-        let serverPort = config.arguments["serverPort"] as? String
-
-        XCTAssertEqual(serverPort, "")
+        XCTAssertEqual(paths.include, ["/some/path/Sources"])
+        XCTAssertEqual(config.arguments["serverUrl"] as? String, "www.example.com")
+        XCTAssertEqual(config.arguments["serverPort"] as? String, "")
     }
 
     func test_multipleConfigurations() throws {
-        let configs = try sut.parseConfigurations(
-            path: Stubs.configs + "multi.yml",
-            relativePath: relativePath,
-            env: env
-        )
+        let yaml = """
+            configurations:
+              - sources:
+                  - "${SOURCE_PATH}/0"
+                templates:
+                  - "Templates/0"
+                output: "Output/0"
+                args:
+                  serverUrl: "${serverUrl}/0"
+                  serverPort: "${serverPort}/0"
+              - sources:
+                  - "${SOURCE_PATH}/1"
+                templates:
+                  - "Templates/1"
+                output: "Output/1"
+                args:
+                  serverUrl: "${serverUrl}/1"
+                  serverPort: "${serverPort}1"
+            """
+        let configs = try sut.parseConfigurations(from: yaml, relativePath: relativePath, env: env)
 
         XCTAssertEqual(configs.count, 2)
 
@@ -61,9 +65,9 @@ class ConfigurationParserTests: XCTestCase {
                 return
             }
 
-            let configServerUrl = config.arguments[serverUrlArg] as? String
+            let configServerUrl = config.arguments["serverUrl"] as? String
 
-            XCTAssertEqual(configServerUrl, "\(serverUrl)/\(offset)")
+            XCTAssertEqual(configServerUrl, "www.example.com/\(offset)")
             XCTAssertEqual(path, Path("/some/path/Sources/\(offset)"))
         }
     }
@@ -79,11 +83,7 @@ class ConfigurationParserTests: XCTestCase {
 
     func test_invalidConfig_throwsOnInvalidFileFormat() {
         do {
-            _ = try sut.parse(
-                path: Stubs.configs + "invalid.yml",
-                relativePath: relativePath,
-                env: [:]
-            )
+            _ = try sut.parse(from: "invalid configuration", relativePath: relativePath, env: [:])
             XCTFail("expected to throw error")
         } catch {
             XCTAssertEqual("\(error)", "Invalid config file format. Expected dictionary.")

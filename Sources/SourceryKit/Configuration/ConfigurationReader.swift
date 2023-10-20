@@ -23,7 +23,7 @@ struct ConfigurationReader {
                 }
 
                 return try parser.parseConfigurations(
-                    path: configPath,
+                    from: configPath.read(),
                     relativePath: configPath.parent(),
                     env: ProcessInfo.processInfo.environment
                 )

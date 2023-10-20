@@ -45,7 +45,6 @@ let package = Package(
                 "SourceryKit"
             ],
             resources: [
-                .copy("Stub/Configs"),
                 .copy("Stub/Errors"),
                 .copy("Stub/SwiftTemplates"),
                 .copy("Stub/Performance-Code"),
