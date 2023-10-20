@@ -50,18 +50,18 @@ import Foundation
 
     // sourcery:inline:ProtocolComposition.AutoCoding
 
-        /// :nodoc:
-        required public init?(coder aDecoder: NSCoder) {
-            guard let composedTypeNames: [TypeName] = aDecoder.decode(forKey: "composedTypeNames") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["composedTypeNames"])); fatalError() }; self.composedTypeNames = composedTypeNames
-            self.composedTypes = aDecoder.decode(forKey: "composedTypes")
-            super.init(coder: aDecoder)
-        }
+    /// :nodoc:
+    public required init?(coder aDecoder: NSCoder) {
+        guard let composedTypeNames: [TypeName] = aDecoder.decode(forKey: "composedTypeNames") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["composedTypeNames"])); fatalError() }; self.composedTypeNames = composedTypeNames
+        composedTypes = aDecoder.decode(forKey: "composedTypes")
+        super.init(coder: aDecoder)
+    }
 
-        /// :nodoc:
-        override public func encode(with aCoder: NSCoder) {
-            super.encode(with: aCoder)
-            aCoder.encode(self.composedTypeNames, forKey: "composedTypeNames")
-            aCoder.encode(self.composedTypes, forKey: "composedTypes")
-        }
+    /// :nodoc:
+    override public func encode(with aCoder: NSCoder) {
+        super.encode(with: aCoder)
+        aCoder.encode(composedTypeNames, forKey: "composedTypeNames")
+        aCoder.encode(composedTypes, forKey: "composedTypes")
+    }
     // sourcery:end
 }

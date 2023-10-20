@@ -38,17 +38,17 @@ import Foundation
 
     // sourcery:inline:Import.AutoCoding
 
-        /// :nodoc:
-        required public init?(coder aDecoder: NSCoder) {
-            self.kind = aDecoder.decode(forKey: "kind")
-            guard let path: String = aDecoder.decode(forKey: "path") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["path"])); fatalError() }; self.path = path
-        }
+    /// :nodoc:
+    public required init?(coder aDecoder: NSCoder) {
+        kind = aDecoder.decode(forKey: "kind")
+        guard let path: String = aDecoder.decode(forKey: "path") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["path"])); fatalError() }; self.path = path
+    }
 
-        /// :nodoc:
-        public func encode(with aCoder: NSCoder) {
-            aCoder.encode(self.kind, forKey: "kind")
-            aCoder.encode(self.path, forKey: "path")
-        }
+    /// :nodoc:
+    public func encode(with aCoder: NSCoder) {
+        aCoder.encode(kind, forKey: "kind")
+        aCoder.encode(path, forKey: "path")
+    }
 
     // sourcery:end
 }

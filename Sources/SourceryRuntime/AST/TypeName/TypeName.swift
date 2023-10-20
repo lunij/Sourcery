@@ -163,39 +163,39 @@ import Foundation
 
     // sourcery:inline:TypeName.AutoCoding
 
-        /// :nodoc:
-        required public init?(coder aDecoder: NSCoder) {
-            guard let name: String = aDecoder.decode(forKey: "name") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["name"])); fatalError() }; self.name = name
-            self.generic = aDecoder.decode(forKey: "generic")
-            self.isProtocolComposition = aDecoder.decode(forKey: "isProtocolComposition")
-            self.actualTypeName = aDecoder.decode(forKey: "actualTypeName")
-            guard let attributes: AttributeList = aDecoder.decode(forKey: "attributes") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["attributes"])); fatalError() }; self.attributes = attributes
-            guard let modifiers: [SourceryModifier] = aDecoder.decode(forKey: "modifiers") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["modifiers"])); fatalError() }; self.modifiers = modifiers
-            self.isOptional = aDecoder.decode(forKey: "isOptional")
-            self.isImplicitlyUnwrappedOptional = aDecoder.decode(forKey: "isImplicitlyUnwrappedOptional")
-            guard let unwrappedTypeName: String = aDecoder.decode(forKey: "unwrappedTypeName") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["unwrappedTypeName"])); fatalError() }; self.unwrappedTypeName = unwrappedTypeName
-            self.tuple = aDecoder.decode(forKey: "tuple")
-            self.array = aDecoder.decode(forKey: "array")
-            self.dictionary = aDecoder.decode(forKey: "dictionary")
-            self.closure = aDecoder.decode(forKey: "closure")
-        }
+    /// :nodoc:
+    public required init?(coder aDecoder: NSCoder) {
+        guard let name: String = aDecoder.decode(forKey: "name") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["name"])); fatalError() }; self.name = name
+        generic = aDecoder.decode(forKey: "generic")
+        isProtocolComposition = aDecoder.decode(forKey: "isProtocolComposition")
+        actualTypeName = aDecoder.decode(forKey: "actualTypeName")
+        guard let attributes: AttributeList = aDecoder.decode(forKey: "attributes") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["attributes"])); fatalError() }; self.attributes = attributes
+        guard let modifiers: [SourceryModifier] = aDecoder.decode(forKey: "modifiers") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["modifiers"])); fatalError() }; self.modifiers = modifiers
+        isOptional = aDecoder.decode(forKey: "isOptional")
+        isImplicitlyUnwrappedOptional = aDecoder.decode(forKey: "isImplicitlyUnwrappedOptional")
+        guard let unwrappedTypeName: String = aDecoder.decode(forKey: "unwrappedTypeName") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["unwrappedTypeName"])); fatalError() }; self.unwrappedTypeName = unwrappedTypeName
+        tuple = aDecoder.decode(forKey: "tuple")
+        array = aDecoder.decode(forKey: "array")
+        dictionary = aDecoder.decode(forKey: "dictionary")
+        closure = aDecoder.decode(forKey: "closure")
+    }
 
-        /// :nodoc:
-        public func encode(with aCoder: NSCoder) {
-            aCoder.encode(self.name, forKey: "name")
-            aCoder.encode(self.generic, forKey: "generic")
-            aCoder.encode(self.isProtocolComposition, forKey: "isProtocolComposition")
-            aCoder.encode(self.actualTypeName, forKey: "actualTypeName")
-            aCoder.encode(self.attributes, forKey: "attributes")
-            aCoder.encode(self.modifiers, forKey: "modifiers")
-            aCoder.encode(self.isOptional, forKey: "isOptional")
-            aCoder.encode(self.isImplicitlyUnwrappedOptional, forKey: "isImplicitlyUnwrappedOptional")
-            aCoder.encode(self.unwrappedTypeName, forKey: "unwrappedTypeName")
-            aCoder.encode(self.tuple, forKey: "tuple")
-            aCoder.encode(self.array, forKey: "array")
-            aCoder.encode(self.dictionary, forKey: "dictionary")
-            aCoder.encode(self.closure, forKey: "closure")
-        }
+    /// :nodoc:
+    public func encode(with aCoder: NSCoder) {
+        aCoder.encode(name, forKey: "name")
+        aCoder.encode(generic, forKey: "generic")
+        aCoder.encode(isProtocolComposition, forKey: "isProtocolComposition")
+        aCoder.encode(actualTypeName, forKey: "actualTypeName")
+        aCoder.encode(attributes, forKey: "attributes")
+        aCoder.encode(modifiers, forKey: "modifiers")
+        aCoder.encode(isOptional, forKey: "isOptional")
+        aCoder.encode(isImplicitlyUnwrappedOptional, forKey: "isImplicitlyUnwrappedOptional")
+        aCoder.encode(unwrappedTypeName, forKey: "unwrappedTypeName")
+        aCoder.encode(tuple, forKey: "tuple")
+        aCoder.encode(array, forKey: "array")
+        aCoder.encode(dictionary, forKey: "dictionary")
+        aCoder.encode(closure, forKey: "closure")
+    }
     // sourcery:end
 
     // sourcery: skipEquality, skipDescription

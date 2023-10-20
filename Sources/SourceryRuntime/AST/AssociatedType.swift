@@ -21,18 +21,18 @@ import Foundation
 
     // sourcery:inline:AssociatedType.AutoCoding
 
-        /// :nodoc:
-        required public init?(coder aDecoder: NSCoder) {
-            guard let name: String = aDecoder.decode(forKey: "name") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["name"])); fatalError() }; self.name = name
-            self.typeName = aDecoder.decode(forKey: "typeName")
-            self.type = aDecoder.decode(forKey: "type")
-        }
+    /// :nodoc:
+    public required init?(coder aDecoder: NSCoder) {
+        guard let name: String = aDecoder.decode(forKey: "name") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["name"])); fatalError() }; self.name = name
+        typeName = aDecoder.decode(forKey: "typeName")
+        type = aDecoder.decode(forKey: "type")
+    }
 
-        /// :nodoc:
-        public func encode(with aCoder: NSCoder) {
-            aCoder.encode(self.name, forKey: "name")
-            aCoder.encode(self.typeName, forKey: "typeName")
-            aCoder.encode(self.type, forKey: "type")
-        }
+    /// :nodoc:
+    public func encode(with aCoder: NSCoder) {
+        aCoder.encode(name, forKey: "name")
+        aCoder.encode(typeName, forKey: "typeName")
+        aCoder.encode(type, forKey: "type")
+    }
     // sourcery:end
 }

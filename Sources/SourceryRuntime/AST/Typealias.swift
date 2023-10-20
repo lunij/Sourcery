@@ -46,26 +46,26 @@ import Foundation
 
     // sourcery:inline:Typealias.AutoCoding
 
-        /// :nodoc:
-        required public init?(coder aDecoder: NSCoder) {
-            guard let aliasName: String = aDecoder.decode(forKey: "aliasName") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["aliasName"])); fatalError() }; self.aliasName = aliasName
-            guard let typeName: TypeName = aDecoder.decode(forKey: "typeName") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["typeName"])); fatalError() }; self.typeName = typeName
-            self.type = aDecoder.decode(forKey: "type")
-            self.module = aDecoder.decode(forKey: "module")
-            self.parent = aDecoder.decode(forKey: "parent")
-            guard let accessLevel: String = aDecoder.decode(forKey: "accessLevel") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["accessLevel"])); fatalError() }; self.accessLevel = accessLevel
-            self.parentName = aDecoder.decode(forKey: "parentName")
-        }
+    /// :nodoc:
+    public required init?(coder aDecoder: NSCoder) {
+        guard let aliasName: String = aDecoder.decode(forKey: "aliasName") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["aliasName"])); fatalError() }; self.aliasName = aliasName
+        guard let typeName: TypeName = aDecoder.decode(forKey: "typeName") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["typeName"])); fatalError() }; self.typeName = typeName
+        type = aDecoder.decode(forKey: "type")
+        module = aDecoder.decode(forKey: "module")
+        parent = aDecoder.decode(forKey: "parent")
+        guard let accessLevel: String = aDecoder.decode(forKey: "accessLevel") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["accessLevel"])); fatalError() }; self.accessLevel = accessLevel
+        parentName = aDecoder.decode(forKey: "parentName")
+    }
 
-        /// :nodoc:
-        public func encode(with aCoder: NSCoder) {
-            aCoder.encode(self.aliasName, forKey: "aliasName")
-            aCoder.encode(self.typeName, forKey: "typeName")
-            aCoder.encode(self.type, forKey: "type")
-            aCoder.encode(self.module, forKey: "module")
-            aCoder.encode(self.parent, forKey: "parent")
-            aCoder.encode(self.accessLevel, forKey: "accessLevel")
-            aCoder.encode(self.parentName, forKey: "parentName")
-        }
+    /// :nodoc:
+    public func encode(with aCoder: NSCoder) {
+        aCoder.encode(aliasName, forKey: "aliasName")
+        aCoder.encode(typeName, forKey: "typeName")
+        aCoder.encode(type, forKey: "type")
+        aCoder.encode(module, forKey: "module")
+        aCoder.encode(parent, forKey: "parent")
+        aCoder.encode(accessLevel, forKey: "accessLevel")
+        aCoder.encode(parentName, forKey: "parentName")
+    }
     // sourcery:end
 }

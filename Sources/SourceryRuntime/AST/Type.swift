@@ -411,69 +411,69 @@ public typealias AttributeList = [String: [Attribute]]
 
     // sourcery:inline:Type.AutoCoding
 
-        /// :nodoc:
-        required public init?(coder aDecoder: NSCoder) {
-            self.module = aDecoder.decode(forKey: "module")
-            guard let imports: [Import] = aDecoder.decode(forKey: "imports") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["imports"])); fatalError() }; self.imports = imports
-            guard let typealiases: [String: Typealias] = aDecoder.decode(forKey: "typealiases") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["typealiases"])); fatalError() }; self.typealiases = typealiases
-            self.isExtension = aDecoder.decode(forKey: "isExtension")
-            guard let accessLevel: String = aDecoder.decode(forKey: "accessLevel") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["accessLevel"])); fatalError() }; self.accessLevel = accessLevel
-            self.isGeneric = aDecoder.decode(forKey: "isGeneric")
-            guard let localName: String = aDecoder.decode(forKey: "localName") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["localName"])); fatalError() }; self.localName = localName
-            guard let rawVariables: [Variable] = aDecoder.decode(forKey: "rawVariables") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["rawVariables"])); fatalError() }; self.rawVariables = rawVariables
-            guard let rawMethods: [Method] = aDecoder.decode(forKey: "rawMethods") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["rawMethods"])); fatalError() }; self.rawMethods = rawMethods
-            guard let rawSubscripts: [Subscript] = aDecoder.decode(forKey: "rawSubscripts") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["rawSubscripts"])); fatalError() }; self.rawSubscripts = rawSubscripts
-            self.bodyBytesRange = aDecoder.decode(forKey: "bodyBytesRange")
-            self.completeDeclarationRange = aDecoder.decode(forKey: "completeDeclarationRange")
-            guard let annotations: Annotations = aDecoder.decode(forKey: "annotations") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["annotations"])); fatalError() }; self.annotations = annotations
-            guard let documentation: Documentation = aDecoder.decode(forKey: "documentation") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["documentation"])); fatalError() }; self.documentation = documentation
-            guard let inheritedTypes: [String] = aDecoder.decode(forKey: "inheritedTypes") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["inheritedTypes"])); fatalError() }; self.inheritedTypes = inheritedTypes
-            guard let based: [String: String] = aDecoder.decode(forKey: "based") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["based"])); fatalError() }; self.based = based
-            guard let basedTypes: [String: Type] = aDecoder.decode(forKey: "basedTypes") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["basedTypes"])); fatalError() }; self.basedTypes = basedTypes
-            guard let inherits: [String: Type] = aDecoder.decode(forKey: "inherits") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["inherits"])); fatalError() }; self.inherits = inherits
-            guard let implements: [String: Type] = aDecoder.decode(forKey: "implements") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["implements"])); fatalError() }; self.implements = implements
-            guard let containedTypes: [Type] = aDecoder.decode(forKey: "containedTypes") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["containedTypes"])); fatalError() }; self.containedTypes = containedTypes
-            guard let containedType: [String: Type] = aDecoder.decode(forKey: "containedType") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["containedType"])); fatalError() }; self.containedType = containedType
-            self.parentName = aDecoder.decode(forKey: "parentName")
-            self.parent = aDecoder.decode(forKey: "parent")
-            self.supertype = aDecoder.decode(forKey: "supertype")
-            guard let attributes: AttributeList = aDecoder.decode(forKey: "attributes") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["attributes"])); fatalError() }; self.attributes = attributes
-            guard let modifiers: [SourceryModifier] = aDecoder.decode(forKey: "modifiers") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["modifiers"])); fatalError() }; self.modifiers = modifiers
-            self.path = aDecoder.decode(forKey: "path")
-            self.fileName = aDecoder.decode(forKey: "fileName")
-        }
+    /// :nodoc:
+    public required init?(coder aDecoder: NSCoder) {
+        module = aDecoder.decode(forKey: "module")
+        guard let imports: [Import] = aDecoder.decode(forKey: "imports") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["imports"])); fatalError() }; self.imports = imports
+        guard let typealiases: [String: Typealias] = aDecoder.decode(forKey: "typealiases") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["typealiases"])); fatalError() }; self.typealiases = typealiases
+        isExtension = aDecoder.decode(forKey: "isExtension")
+        guard let accessLevel: String = aDecoder.decode(forKey: "accessLevel") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["accessLevel"])); fatalError() }; self.accessLevel = accessLevel
+        isGeneric = aDecoder.decode(forKey: "isGeneric")
+        guard let localName: String = aDecoder.decode(forKey: "localName") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["localName"])); fatalError() }; self.localName = localName
+        guard let rawVariables: [Variable] = aDecoder.decode(forKey: "rawVariables") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["rawVariables"])); fatalError() }; self.rawVariables = rawVariables
+        guard let rawMethods: [Method] = aDecoder.decode(forKey: "rawMethods") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["rawMethods"])); fatalError() }; self.rawMethods = rawMethods
+        guard let rawSubscripts: [Subscript] = aDecoder.decode(forKey: "rawSubscripts") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["rawSubscripts"])); fatalError() }; self.rawSubscripts = rawSubscripts
+        bodyBytesRange = aDecoder.decode(forKey: "bodyBytesRange")
+        completeDeclarationRange = aDecoder.decode(forKey: "completeDeclarationRange")
+        guard let annotations: Annotations = aDecoder.decode(forKey: "annotations") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["annotations"])); fatalError() }; self.annotations = annotations
+        guard let documentation: Documentation = aDecoder.decode(forKey: "documentation") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["documentation"])); fatalError() }; self.documentation = documentation
+        guard let inheritedTypes: [String] = aDecoder.decode(forKey: "inheritedTypes") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["inheritedTypes"])); fatalError() }; self.inheritedTypes = inheritedTypes
+        guard let based: [String: String] = aDecoder.decode(forKey: "based") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["based"])); fatalError() }; self.based = based
+        guard let basedTypes: [String: Type] = aDecoder.decode(forKey: "basedTypes") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["basedTypes"])); fatalError() }; self.basedTypes = basedTypes
+        guard let inherits: [String: Type] = aDecoder.decode(forKey: "inherits") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["inherits"])); fatalError() }; self.inherits = inherits
+        guard let implements: [String: Type] = aDecoder.decode(forKey: "implements") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["implements"])); fatalError() }; self.implements = implements
+        guard let containedTypes: [Type] = aDecoder.decode(forKey: "containedTypes") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["containedTypes"])); fatalError() }; self.containedTypes = containedTypes
+        guard let containedType: [String: Type] = aDecoder.decode(forKey: "containedType") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["containedType"])); fatalError() }; self.containedType = containedType
+        parentName = aDecoder.decode(forKey: "parentName")
+        parent = aDecoder.decode(forKey: "parent")
+        supertype = aDecoder.decode(forKey: "supertype")
+        guard let attributes: AttributeList = aDecoder.decode(forKey: "attributes") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["attributes"])); fatalError() }; self.attributes = attributes
+        guard let modifiers: [SourceryModifier] = aDecoder.decode(forKey: "modifiers") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["modifiers"])); fatalError() }; self.modifiers = modifiers
+        path = aDecoder.decode(forKey: "path")
+        fileName = aDecoder.decode(forKey: "fileName")
+    }
 
-        /// :nodoc:
-        public func encode(with aCoder: NSCoder) {
-            aCoder.encode(self.module, forKey: "module")
-            aCoder.encode(self.imports, forKey: "imports")
-            aCoder.encode(self.typealiases, forKey: "typealiases")
-            aCoder.encode(self.isExtension, forKey: "isExtension")
-            aCoder.encode(self.accessLevel, forKey: "accessLevel")
-            aCoder.encode(self.isGeneric, forKey: "isGeneric")
-            aCoder.encode(self.localName, forKey: "localName")
-            aCoder.encode(self.rawVariables, forKey: "rawVariables")
-            aCoder.encode(self.rawMethods, forKey: "rawMethods")
-            aCoder.encode(self.rawSubscripts, forKey: "rawSubscripts")
-            aCoder.encode(self.bodyBytesRange, forKey: "bodyBytesRange")
-            aCoder.encode(self.completeDeclarationRange, forKey: "completeDeclarationRange")
-            aCoder.encode(self.annotations, forKey: "annotations")
-            aCoder.encode(self.documentation, forKey: "documentation")
-            aCoder.encode(self.inheritedTypes, forKey: "inheritedTypes")
-            aCoder.encode(self.based, forKey: "based")
-            aCoder.encode(self.basedTypes, forKey: "basedTypes")
-            aCoder.encode(self.inherits, forKey: "inherits")
-            aCoder.encode(self.implements, forKey: "implements")
-            aCoder.encode(self.containedTypes, forKey: "containedTypes")
-            aCoder.encode(self.containedType, forKey: "containedType")
-            aCoder.encode(self.parentName, forKey: "parentName")
-            aCoder.encode(self.parent, forKey: "parent")
-            aCoder.encode(self.supertype, forKey: "supertype")
-            aCoder.encode(self.attributes, forKey: "attributes")
-            aCoder.encode(self.modifiers, forKey: "modifiers")
-            aCoder.encode(self.path, forKey: "path")
-            aCoder.encode(self.fileName, forKey: "fileName")
-        }
+    /// :nodoc:
+    public func encode(with aCoder: NSCoder) {
+        aCoder.encode(module, forKey: "module")
+        aCoder.encode(imports, forKey: "imports")
+        aCoder.encode(typealiases, forKey: "typealiases")
+        aCoder.encode(isExtension, forKey: "isExtension")
+        aCoder.encode(accessLevel, forKey: "accessLevel")
+        aCoder.encode(isGeneric, forKey: "isGeneric")
+        aCoder.encode(localName, forKey: "localName")
+        aCoder.encode(rawVariables, forKey: "rawVariables")
+        aCoder.encode(rawMethods, forKey: "rawMethods")
+        aCoder.encode(rawSubscripts, forKey: "rawSubscripts")
+        aCoder.encode(bodyBytesRange, forKey: "bodyBytesRange")
+        aCoder.encode(completeDeclarationRange, forKey: "completeDeclarationRange")
+        aCoder.encode(annotations, forKey: "annotations")
+        aCoder.encode(documentation, forKey: "documentation")
+        aCoder.encode(inheritedTypes, forKey: "inheritedTypes")
+        aCoder.encode(based, forKey: "based")
+        aCoder.encode(basedTypes, forKey: "basedTypes")
+        aCoder.encode(inherits, forKey: "inherits")
+        aCoder.encode(implements, forKey: "implements")
+        aCoder.encode(containedTypes, forKey: "containedTypes")
+        aCoder.encode(containedType, forKey: "containedType")
+        aCoder.encode(parentName, forKey: "parentName")
+        aCoder.encode(parent, forKey: "parent")
+        aCoder.encode(supertype, forKey: "supertype")
+        aCoder.encode(attributes, forKey: "attributes")
+        aCoder.encode(modifiers, forKey: "modifiers")
+        aCoder.encode(path, forKey: "path")
+        aCoder.encode(fileName, forKey: "fileName")
+    }
     // sourcery:end
 }
 

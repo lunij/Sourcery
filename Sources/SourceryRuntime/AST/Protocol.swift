@@ -63,18 +63,18 @@ public typealias SourceryProtocol = Protocol
 
     // sourcery:inline:Protocol.AutoCoding
 
-        /// :nodoc:
-        required public init?(coder aDecoder: NSCoder) {
-            guard let associatedTypes: [String: AssociatedType] = aDecoder.decode(forKey: "associatedTypes") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["associatedTypes"])); fatalError() }; self.associatedTypes = associatedTypes
-            guard let genericRequirements: [GenericRequirement] = aDecoder.decode(forKey: "genericRequirements") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["genericRequirements"])); fatalError() }; self.genericRequirements = genericRequirements
-            super.init(coder: aDecoder)
-        }
+    /// :nodoc:
+    public required init?(coder aDecoder: NSCoder) {
+        guard let associatedTypes: [String: AssociatedType] = aDecoder.decode(forKey: "associatedTypes") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["associatedTypes"])); fatalError() }; self.associatedTypes = associatedTypes
+        guard let genericRequirements: [GenericRequirement] = aDecoder.decode(forKey: "genericRequirements") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["genericRequirements"])); fatalError() }; self.genericRequirements = genericRequirements
+        super.init(coder: aDecoder)
+    }
 
-        /// :nodoc:
-        override public func encode(with aCoder: NSCoder) {
-            super.encode(with: aCoder)
-            aCoder.encode(self.associatedTypes, forKey: "associatedTypes")
-            aCoder.encode(self.genericRequirements, forKey: "genericRequirements")
-        }
+    /// :nodoc:
+    override public func encode(with aCoder: NSCoder) {
+        super.encode(with: aCoder)
+        aCoder.encode(associatedTypes, forKey: "associatedTypes")
+        aCoder.encode(genericRequirements, forKey: "genericRequirements")
+    }
     // sourcery:end
 }

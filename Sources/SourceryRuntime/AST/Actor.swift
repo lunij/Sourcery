@@ -48,14 +48,14 @@ import Foundation
 
     // sourcery:inline:Actor.AutoCoding
 
-        /// :nodoc:
-        required public init?(coder aDecoder: NSCoder) {
-            super.init(coder: aDecoder)
-        }
+    /// :nodoc:
+    public required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
 
-        /// :nodoc:
-        override public func encode(with aCoder: NSCoder) {
-            super.encode(with: aCoder)
-        }
+    /// :nodoc:
+    override public func encode(with aCoder: NSCoder) {
+        super.encode(with: aCoder)
+    }
     // sourcery:end
 }

@@ -69,28 +69,28 @@ import Foundation
 
     // sourcery:inline:ClosureType.AutoCoding
 
-        /// :nodoc:
-        required public init?(coder aDecoder: NSCoder) {
-            guard let name: String = aDecoder.decode(forKey: "name") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["name"])); fatalError() }; self.name = name
-            guard let parameters: [ClosureParameter] = aDecoder.decode(forKey: "parameters") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["parameters"])); fatalError() }; self.parameters = parameters
-            guard let returnTypeName: TypeName = aDecoder.decode(forKey: "returnTypeName") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["returnTypeName"])); fatalError() }; self.returnTypeName = returnTypeName
-            self.returnType = aDecoder.decode(forKey: "returnType")
-            self.isAsync = aDecoder.decode(forKey: "isAsync")
-            self.asyncKeyword = aDecoder.decode(forKey: "asyncKeyword")
-            self.`throws` = aDecoder.decode(forKey: "`throws`")
-            self.throwsOrRethrowsKeyword = aDecoder.decode(forKey: "throwsOrRethrowsKeyword")
-        }
+    /// :nodoc:
+    public required init?(coder aDecoder: NSCoder) {
+        guard let name: String = aDecoder.decode(forKey: "name") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["name"])); fatalError() }; self.name = name
+        guard let parameters: [ClosureParameter] = aDecoder.decode(forKey: "parameters") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["parameters"])); fatalError() }; self.parameters = parameters
+        guard let returnTypeName: TypeName = aDecoder.decode(forKey: "returnTypeName") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["returnTypeName"])); fatalError() }; self.returnTypeName = returnTypeName
+        returnType = aDecoder.decode(forKey: "returnType")
+        isAsync = aDecoder.decode(forKey: "isAsync")
+        asyncKeyword = aDecoder.decode(forKey: "asyncKeyword")
+        `throws` = aDecoder.decode(forKey: "`throws`")
+        throwsOrRethrowsKeyword = aDecoder.decode(forKey: "throwsOrRethrowsKeyword")
+    }
 
-        /// :nodoc:
-        public func encode(with aCoder: NSCoder) {
-            aCoder.encode(self.name, forKey: "name")
-            aCoder.encode(self.parameters, forKey: "parameters")
-            aCoder.encode(self.returnTypeName, forKey: "returnTypeName")
-            aCoder.encode(self.returnType, forKey: "returnType")
-            aCoder.encode(self.isAsync, forKey: "isAsync")
-            aCoder.encode(self.asyncKeyword, forKey: "asyncKeyword")
-            aCoder.encode(self.`throws`, forKey: "`throws`")
-            aCoder.encode(self.throwsOrRethrowsKeyword, forKey: "throwsOrRethrowsKeyword")
-        }
+    /// :nodoc:
+    public func encode(with aCoder: NSCoder) {
+        aCoder.encode(name, forKey: "name")
+        aCoder.encode(parameters, forKey: "parameters")
+        aCoder.encode(returnTypeName, forKey: "returnTypeName")
+        aCoder.encode(returnType, forKey: "returnType")
+        aCoder.encode(isAsync, forKey: "isAsync")
+        aCoder.encode(asyncKeyword, forKey: "asyncKeyword")
+        aCoder.encode(`throws`, forKey: "`throws`")
+        aCoder.encode(throwsOrRethrowsKeyword, forKey: "throwsOrRethrowsKeyword")
+    }
     // sourcery:end
 }

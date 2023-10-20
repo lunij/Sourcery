@@ -36,20 +36,20 @@ import Foundation
 
     // sourcery:inline:GenericRequirement.AutoCoding
 
-            /// :nodoc:
-            required public init?(coder aDecoder: NSCoder) {
-                guard let leftType: AssociatedType = aDecoder.decode(forKey: "leftType") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["leftType"])); fatalError() }; self.leftType = leftType
-                guard let rightType: GenericTypeParameter = aDecoder.decode(forKey: "rightType") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["rightType"])); fatalError() }; self.rightType = rightType
-                guard let relationship: String = aDecoder.decode(forKey: "relationship") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["relationship"])); fatalError() }; self.relationship = relationship
-                guard let relationshipSyntax: String = aDecoder.decode(forKey: "relationshipSyntax") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["relationshipSyntax"])); fatalError() }; self.relationshipSyntax = relationshipSyntax
-            }
+    /// :nodoc:
+    public required init?(coder aDecoder: NSCoder) {
+        guard let leftType: AssociatedType = aDecoder.decode(forKey: "leftType") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["leftType"])); fatalError() }; self.leftType = leftType
+        guard let rightType: GenericTypeParameter = aDecoder.decode(forKey: "rightType") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["rightType"])); fatalError() }; self.rightType = rightType
+        guard let relationship: String = aDecoder.decode(forKey: "relationship") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["relationship"])); fatalError() }; self.relationship = relationship
+        guard let relationshipSyntax: String = aDecoder.decode(forKey: "relationshipSyntax") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["relationshipSyntax"])); fatalError() }; self.relationshipSyntax = relationshipSyntax
+    }
 
-            /// :nodoc:
-            public func encode(with aCoder: NSCoder) {
-                aCoder.encode(self.leftType, forKey: "leftType")
-                aCoder.encode(self.rightType, forKey: "rightType")
-                aCoder.encode(self.relationship, forKey: "relationship")
-                aCoder.encode(self.relationshipSyntax, forKey: "relationshipSyntax")
-            }
+    /// :nodoc:
+    public func encode(with aCoder: NSCoder) {
+        aCoder.encode(leftType, forKey: "leftType")
+        aCoder.encode(rightType, forKey: "rightType")
+        aCoder.encode(relationship, forKey: "relationship")
+        aCoder.encode(relationshipSyntax, forKey: "relationshipSyntax")
+    }
     // sourcery:end
 }
