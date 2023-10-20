@@ -24,22 +24,6 @@ func printUsage() {
       .forEach { print("\($0)") }
 }
 
-extension String {
-    func escapedSwiftTokens() -> String {
-        // return self
-        let replacements = [
-          "\\(": "\\\\(",
-          "\\\"": "\\\\\"",
-          "\\n": "\\\\n",
-        ]
-        var escapedString = self
-        replacements.forEach {
-            escapedString = escapedString.replacingOccurrences(of: $0, with: $1)
-        }
-        return escapedString
-    }
-}
-
 func package(folder folderPath: String) throws {
     print("let sourceryRuntimeFiles: [FolderSynchronizer.File] = [")
     let folderURL = URL(fileURLWithPath: folderPath)
@@ -59,18 +43,48 @@ func package(folder folderPath: String) throws {
             print(error, fileURL) 
         }
     }
-    
-    try files
-      .sorted(by: { $0.lastPathComponent < $1.lastPathComponent })
-      .forEach { sourceFileURL in
-          print("    .init(name: \"\(sourceFileURL.lastPathComponent)\", content:")
-          print("\"\"\"")
-          let content = try String(contentsOf: sourceFileURL, encoding: .utf8)
-            .escapedSwiftTokens()
-          print(content)
-          print("\"\"\"),")
-      }
+
+    let content = try files
+        .sorted { $0.lastPathComponent < $1.lastPathComponent }
+        .map { sourceFileURL in
+            let sourceFileContent = try String(contentsOf: sourceFileURL, encoding: .utf8)
+            return """
+                .init(
+                    name: \"\(sourceFileURL.lastPathComponent)\",
+                    content:
+                    #\"\"\"
+            \(sourceFileContent.indentated(by: .spaces(8)))
+                    \"\"\"#
+                )
+            """
+        }
+        .joined(separator: ",\n")
+
+    print(content)
     print("]")
+}
+
+enum Indentation: CustomStringConvertible {
+    case spaces(Int)
+    case tabs(Int)
+
+    var description: String {
+        switch self {
+        case let .spaces(count):
+            String(repeating: " ", count: count)
+        case let .tabs(count):
+            String(repeating: "\t", count: count)
+        }
+    }
+}
+
+extension String {
+    func indentated(by indentation: Indentation) -> String {
+        components(separatedBy: .newlines).map {
+            if $0.isEmpty { return "" }
+            return "\(indentation)\($0)"
+        }.joined(separator: "\n")
+    }
 }
 
 func main() {
