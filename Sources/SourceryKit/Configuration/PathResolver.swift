@@ -1,6 +1,7 @@
 import Foundation
 import PathKit
 
+// sourcery: AutoMockable
 protocol PathResolving {
     func resolve(includes: [Path], excludes: [Path]) -> [Path]
 }

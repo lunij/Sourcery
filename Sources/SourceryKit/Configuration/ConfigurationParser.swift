@@ -4,6 +4,7 @@ import PathKit
 import XcodeProj
 import Yams
 
+// sourcery: AutoMockable
 public protocol ConfigurationParsing {
     func parse(from string: String, basePath: Path, env: [String: String]) throws -> [Configuration]
 }

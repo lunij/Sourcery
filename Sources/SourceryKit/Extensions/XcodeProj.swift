@@ -1,5 +1,6 @@
 import XcodeProj
 
+// sourcery: AutoMockable
 protocol XcodeProjProtocol {
     func addGroupIfNeeded(named group: String, to parentGroup: PBXGroup, sourceRoot: Path) -> PBXGroup
     func addSourceFile(with filePath: Path, to group: PBXGroup, target: PBXTarget, sourceRoot: Path) throws

@@ -1,10 +1,7 @@
-// swiftlint:disable line_length
-// swiftlint:disable variable_name
-
 import Foundation
 #if os(iOS) || os(tvOS) || os(watchOS)
 import UIKit
-#elseif os(OSX)
+#elseif os(macOS)
 import AppKit
 #endif
 
@@ -60,7 +57,7 @@ import {{ import }}
 {% macro methodClosureCallParameters method %}{% for param in method.parameters %}{{ param.name }}{% if not forloop.last %}, {% endif %}{% endfor %}{% endmacro %}
 
 {% macro mockMethod method %}
-    //MARK: - {{ method.shortName }}
+    // MARK: - {{ method.shortName }}
 
     {% if method.throws %}
         {% call methodThrowableErrorDeclaration method %}
@@ -136,7 +133,7 @@ import {{ import }}
         {% if method.throws %}
         {% call swiftifyMethodName method.selectorName %}ThrowableError = nil
         {% endif %}
-        
+
         {% endif %}
 
 {% endmacro %}
@@ -203,7 +200,9 @@ import {{ import }}
 {% macro underlyingMockedVariableName variable %}underlying{{ variable.name|upperFirstLetter }}{% endmacro %}
 {% macro mockedVariableName variable %}{{ variable.name }}{% endmacro %}
 
-{% for type in types.protocols where type.based.AutoMockable or type|annotated:"AutoMockable" %}{% if type.name != "AutoMockable" %}
+{% for type in types.protocols where type.based.AutoMockable or type|annotated:"AutoMockable" %}
+
+// sourcery:file:{{ type.name }}Mock.swift
 {% call accessLevel type.accessLevel %}class {{ type.name }}Mock: {{ type.name }} {
 
     {% if type.accessLevel == "public" %}public init() {}{% endif %}
@@ -225,4 +224,5 @@ import {{ import }}
     {% call mockMethod method %}
 {% endfor %}
 }
-{% endif %}{% endfor %}
+// sourcery:end
+{% endfor %}

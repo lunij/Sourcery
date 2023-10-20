@@ -3,6 +3,7 @@ import Foundation
 
 public var logger: Logging = Logger()
 
+// sourcery: AutoMockable
 public protocol Logging {
     var level: LogLevel { get }
 

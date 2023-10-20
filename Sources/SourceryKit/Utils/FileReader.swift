@@ -1,5 +1,6 @@
 import Foundation
 
+// sourcery: AutoMockable
 protocol FileReading {
     func read(from path: Path, encoding: String.Encoding) throws -> String
 }

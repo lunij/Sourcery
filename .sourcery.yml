@@ -1,3 +1,7 @@
-sources: Sources/SourceryKit
-templates: Sources/SourceryKit/Templates
-output: Sources/SourceryKit/Generated
+configurations:
+  - sources: Sources/SourceryKit
+    templates: Sources/SourceryKit/Templates
+    output: Sources/SourceryKit/Generated
+  - sources: Sources/SourceryKit
+    templates: Templates/AutoMockable.stencil
+    output: Tests/SourceryKitTests/Mocks

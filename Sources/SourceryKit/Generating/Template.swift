@@ -1,6 +1,7 @@
 import Foundation
 import PathKit
 
+// sourcery: AutoMockable
 /// Generic template that can be used for any of the Sourcery output variants
 public protocol Template {
     /// Path to template
