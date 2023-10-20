@@ -1,6 +1,0 @@
-sources:
-  - .
-templates:
-  - ../../Templates/AutoCodable.swifttemplate
-output:
-  Generated
