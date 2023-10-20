@@ -31,7 +31,7 @@ class SourceryTests: XCTestCase {
 
     func test_processFiles_whenExistingFiles_andNoChanges() {
         let sourcePath = createExistingFiles()
-        let generatedFilePath = outputDir + Sourcery().generatedPath(for: .otherStencilPath)
+        let generatedFilePath = outputDir + .otherStencilPath.generatedPath
         let generatedFileModificationDate = generatedFilePath.url.fileModificationDate()
         var newGeneratedFileModificationDate: Date?
         let expectation = expectation(description: #function)
@@ -56,7 +56,7 @@ class SourceryTests: XCTestCase {
 
         "class Bar {}".update(in: anotherSourcePath)
 
-        let generatedFilePath = outputDir + Sourcery().generatedPath(for: .otherStencilPath)
+        let generatedFilePath = outputDir + .otherStencilPath.generatedPath
         let generatedFileModificationDate = generatedFilePath.url.fileModificationDate()
         var newGeneratedFileModificationDate: Date?
         let expectation = expectation(description: #function)
@@ -131,7 +131,7 @@ class SourceryTests: XCTestCase {
             // Line One
             """
 
-        let generatedPath = outputDir + Sourcery().generatedPath(for: templatePath)
+        let generatedPath = outputDir + templatePath.generatedPath
 
         let result = try generatedPath.read(.utf8)
         XCTAssertEqual(result.withoutWhitespaces, expectedResult.withoutWhitespaces)
@@ -166,7 +166,7 @@ class SourceryTests: XCTestCase {
             // sourcery:end
             """
 
-        let generatedPath = outputDir + Sourcery().generatedPath(for: templatePath)
+        let generatedPath = outputDir + templatePath.generatedPath
 
         let result = try generatedPath.read(.utf8)
         XCTAssertEqual(result.withoutWhitespaces, expectedResult.withoutWhitespaces)
@@ -182,13 +182,13 @@ class SourceryTests: XCTestCase {
         // sourcery:end
         """.update(in: templatePath)
 
-        try Sourcery(cacheDisabled: true, prune: true).processConfiguration(.stub(
+        try Sourcery(cacheDisabled: true).processConfiguration(.stub(
             sources: .paths(Paths(include: [sourcePath])),
             templates: Paths(include: [templatePath]),
             output: output
         ))
 
-        let generatedPath = outputDir + Sourcery().generatedPath(for: templatePath)
+        let generatedPath = outputDir + templatePath.generatedPath
 
         XCTAssertThrowsError(try generatedPath.read(.utf8))
     }
@@ -1072,7 +1072,7 @@ class SourceryTests: XCTestCase {
 
             """
 
-        let generatedPath = outputDir + Sourcery().generatedPath(for: templatePath)
+        let generatedPath = outputDir + templatePath.generatedPath
 
         let result = try generatedPath.read(.utf8)
         XCTAssertEqual(result.withoutWhitespaces, expectedResult.withoutWhitespaces)
@@ -1088,7 +1088,7 @@ class SourceryTests: XCTestCase {
         {% endfor %}
         """.update(in: templatePath)
 
-        try Sourcery(cacheDisabled: true, prune: true).processConfiguration(.stub(
+        try Sourcery(cacheDisabled: true).processConfiguration(.stub(
             sources: .paths(Paths(include: [sourcePath])),
             templates: Paths(include: [templatePath]),
             output: output
@@ -1130,7 +1130,7 @@ class SourceryTests: XCTestCase {
 
             """
 
-        try Sourcery(cacheDisabled: true, prune: true).processConfiguration(.stub(
+        try Sourcery(cacheDisabled: true).processConfiguration(.stub(
             sources: .paths(Paths(include: [sourcePath])),
             templates: Paths(include: [templatePath]),
             output: output
@@ -1143,7 +1143,7 @@ class SourceryTests: XCTestCase {
     }
 
     func test_processFiles_andRestrictedFile_itIgnoresSourceryGeneratedFiles() throws {
-        let targetPath = outputDir + Sourcery().generatedPath(for: .basicStencilPath)
+        let targetPath = outputDir + .basicStencilPath.generatedPath
 
         _ = try? targetPath.delete()
 
@@ -1193,7 +1193,7 @@ class SourceryTests: XCTestCase {
             output: output
         ))
 
-        let result = try (outputDir + Sourcery().generatedPath(for: .basicStencilPath)).read(.utf8)
+        let result = try (outputDir + .basicStencilPath.generatedPath).read(.utf8)
         let expectedResult = try (Stubs.resultDirectory + Path("BasicFooExcluded.swift")).read(.utf8).withoutWhitespaces
         XCTAssertEqual(result.withoutWhitespaces, expectedResult.withoutWhitespaces)
     }
@@ -1205,7 +1205,7 @@ class SourceryTests: XCTestCase {
             output: output
         ))
 
-        let result = try (outputDir + Sourcery().generatedPath(for: .basicStencilPath)).read(.utf8)
+        let result = try (outputDir + .basicStencilPath.generatedPath).read(.utf8)
         let expectedResult = try (Stubs.resultDirectory + Path("Basic.swift")).read(.utf8).withoutWhitespaces
         XCTAssertEqual(result.withoutWhitespaces, expectedResult.withoutWhitespaces)
     }
@@ -1226,7 +1226,7 @@ class SourceryTests: XCTestCase {
         XCTAssertEqual(eventStreams.count, 2)
 
         assertContinuously {
-            try (outputDir + Sourcery().generatedPath(for: templatePath)).read(.utf8)
+            try (outputDir + templatePath.generatedPath).read(.utf8)
         } until: {
             $0.contains("\(String.generatedHeader)Found 3 Types")
         }
@@ -1254,7 +1254,7 @@ class SourceryTests: XCTestCase {
         let templatePath = Stubs.templateDirectory + Path("Empty.stencil")
         "".update(in: templatePath)
 
-        try Sourcery(cacheDisabled: true, prune: true).processConfiguration(.stub(
+        try Sourcery(cacheDisabled: true).processConfiguration(.stub(
             sources: .paths(Paths(include: [Stubs.sourceDirectory])),
             templates: Paths(include: [templatePath]),
             output: Output(outputFile)
@@ -1266,7 +1266,7 @@ class SourceryTests: XCTestCase {
 
     func test_processFiles_whenTemplateFolder_andOutputDirectory_itCreatesCorrespondingOutputFileForEachTemplate() throws {
         let templateNames = ["Basic", "Other"]
-        let generated = templateNames.map { outputDir + Sourcery().generatedPath(for: Stubs.templateDirectory + "\($0).stencil") }
+        let generated = templateNames.map { outputDir + (Stubs.templateDirectory + "\($0).stencil").generatedPath }
         let expected = templateNames.map { Stubs.resultDirectory + Path("\($0).swift") }
 
         try Sourcery(cacheDisabled: true).processConfiguration(.stub(
@@ -1329,7 +1329,7 @@ class SourceryTests: XCTestCase {
     func test_processFiles_whenProject_itLinksGeneratedFiles() throws {
         let scenario = try createProjectScenario(templatePath: .otherStencilPath)
 
-        try Sourcery(cacheDisabled: true, prune: true).processConfiguration(.stub(
+        try Sourcery(cacheDisabled: true).processConfiguration(.stub(
             sources: scenario.sources,
             templates: scenario.templates,
             output: scenario.createOutput(at: outputDir)
@@ -1355,7 +1355,7 @@ class SourceryTests: XCTestCase {
         {% endfor %}
         """.update(in: templatePath)
 
-        try Sourcery(cacheDisabled: true, prune: true).processConfiguration(.stub(
+        try Sourcery(cacheDisabled: true).processConfiguration(.stub(
             sources: scenario.sources,
             templates: scenario.templates,
             output: scenario.createOutput(at: outputDir)

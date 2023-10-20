@@ -43,7 +43,7 @@ class SwiftTemplateTests: XCTestCase {
             output: output
         ))
 
-        let result = try (outputDir + Sourcery().generatedPath(for: templatePath)).read(.utf8)
+        let result = try (outputDir + templatePath.generatedPath).read(.utf8)
         XCTAssertEqual(result, expectedResult)
     }
 
@@ -64,7 +64,7 @@ class SwiftTemplateTests: XCTestCase {
             output: output
         ))
 
-        let result = try (outputDir + Sourcery().generatedPath(for: templatePath)).read(.utf8)
+        let result = try (outputDir + templatePath.generatedPath).read(.utf8)
         XCTAssertEqual(result, expectedResult)
     }
 
@@ -78,7 +78,7 @@ class SwiftTemplateTests: XCTestCase {
             output: output
         ))
 
-        let result = try (outputDir + Sourcery().generatedPath(for: templatePath)).read(.utf8)
+        let result = try (outputDir + templatePath.generatedPath).read(.utf8)
         XCTAssertEqual(result, expectedResult)
     }
 
@@ -92,7 +92,7 @@ class SwiftTemplateTests: XCTestCase {
             output: output
         ))
 
-        let result = try (outputDir + Sourcery().generatedPath(for: templatePath)).read(.utf8)
+        let result = try (outputDir + templatePath.generatedPath).read(.utf8)
         XCTAssertEqual(result, expectedResult)
     }
 
@@ -106,7 +106,7 @@ class SwiftTemplateTests: XCTestCase {
             output: output
         ))
 
-        let result = try (outputDir + Sourcery().generatedPath(for: templatePath)).read(.utf8)
+        let result = try (outputDir + templatePath.generatedPath).read(.utf8)
         XCTAssertEqual(result, expectedResult)
     }
 
@@ -174,7 +174,7 @@ class SwiftTemplateTests: XCTestCase {
             templates: Paths(include: [templatePath]),
             output: output
         ))
-        XCTAssertEqual(try (outputDir + Sourcery().generatedPath(for: templatePath)).read(.utf8), expectedResult)
+        XCTAssertEqual(try (outputDir + templatePath.generatedPath).read(.utf8), expectedResult)
 
         guard let buildDir = NSURL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("SwiftTemplate").map({ Path($0.path) }) else {
             XCTFail("Could not create buildDir path")
@@ -190,7 +190,7 @@ class SwiftTemplateTests: XCTestCase {
             output: output
         ))
 
-        let result = try (outputDir + Sourcery().generatedPath(for: templatePath)).read(.utf8)
+        let result = try (outputDir + templatePath.generatedPath).read(.utf8)
         XCTAssertEqual(result, expectedResult)
     }
 
@@ -204,7 +204,7 @@ class SwiftTemplateTests: XCTestCase {
             output: output
         ))
 
-        let result = try (outputDir + Sourcery().generatedPath(for: templatePath)).read(.utf8)
+        let result = try (outputDir + templatePath.generatedPath).read(.utf8)
         XCTAssertEqual(result, expectedResult)
     }
 

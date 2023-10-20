@@ -199,7 +199,7 @@ class StencilTemplateTests: XCTestCase {
             output: Output(outputDir)
         ))
 
-        let result = try (outputDir + Sourcery().generatedPath(for: templatePath)).read(.utf8)
+        let result = try (outputDir + templatePath.generatedPath).read(.utf8)
         XCTAssertEqual(result, expectedResult)
     }
 }
