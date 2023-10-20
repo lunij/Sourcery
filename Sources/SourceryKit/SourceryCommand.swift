@@ -38,19 +38,12 @@ public struct SourceryCommand: AsyncParsableCommand {
     @Flag(help: "Parse the specified sources in serial, rather than in parallel (the default), which can address stability issues in SwiftSyntax")
     var serialParse = false
 
-    @Flag(name: .customLong("dry"), help: "Dry run, without file system modifications, will output result and errors in JSON format")
-    var isDryRun = false
-
     @Option(help: "Set a custom build path")
     var buildPath: Path = ""
 
     public init() {}
 
     public func run() async throws {
-        if isDryRun, watcherEnabled {
-            throw Error.dryWatchIncompatibility
-        }
-
         if quiet, verbose {
             throw Error.quietVerboseIncompatibility
         }
@@ -58,30 +51,18 @@ public struct SourceryCommand: AsyncParsableCommand {
         logger = Logger(
             level: quiet ? .error : verbose ? .verbose : .info,
             logAST: (logAST || verbose) && !quiet,
-            logBenchmarks: (logBenchmark || verbose) && !quiet,
-            stackMessages: isDryRun
+            logBenchmarks: (logBenchmark || verbose) && !quiet
         )
 
-        do {
-            let start = CFAbsoluteTimeGetCurrent()
+        let start = CFAbsoluteTimeGetCurrent()
 
-            let configReader = ConfigurationReader()
+        let configReader = ConfigurationReader()
 
-            for configuration in try configReader.readConfigurations(options: options) {
-                try processFiles(specifiedIn: configuration)
-            }
-
-            logger.info("Processing time \(CFAbsoluteTimeGetCurrent() - start) seconds")
-        } catch {
-            if isDryRun {
-                let encoder = JSONEncoder()
-                encoder.outputFormatting = .prettyPrinted
-                let data = try? encoder.encode(DryOutputFailure(error: "\(error)", log: logger.messages))
-                data.flatMap { logger.output(String(data: $0, encoding: .utf8) ?? "") }
-            } else {
-                throw error
-            }
+        for configuration in try configReader.readConfigurations(options: options) {
+            try processFiles(specifiedIn: configuration)
         }
+
+        logger.info("Processing time \(CFAbsoluteTimeGetCurrent() - start) seconds")
     }
 
     private func processFiles(specifiedIn configuration: Configuration) throws {
@@ -100,7 +81,6 @@ public struct SourceryCommand: AsyncParsableCommand {
     }
 
     enum Error: Swift.Error, Equatable {
-        case dryWatchIncompatibility
         case quietVerboseIncompatibility
     }
 }
@@ -108,8 +88,6 @@ public struct SourceryCommand: AsyncParsableCommand {
 extension SourceryCommand.Error: CustomStringConvertible {
     public var description: String {
         switch self {
-        case .dryWatchIncompatibility:
-            "--dry not compatible with --watch"
         case .quietVerboseIncompatibility:
             "--quiet not compatible with --verbose"
         }

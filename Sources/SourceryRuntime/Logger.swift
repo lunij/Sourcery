@@ -5,7 +5,6 @@ public var logger: Logging = Logger()
 
 public protocol Logging {
     var level: LogLevel { get }
-    var messages: [String] { get }
 
     func astError(_ message: String)
     func astWarning(_ message: String)
@@ -40,19 +39,14 @@ public class Logger: Logging {
     public let logAST: Bool
     public let logBenchmarks: Bool
 
-    public let collectMessages: Bool
-    public private(set) var messages: [String] = []
-
     public init(
         level: LogLevel = .warning,
         logAST: Bool = false,
-        logBenchmarks: Bool = false,
-        stackMessages: Bool = false
+        logBenchmarks: Bool = false
     ) {
         self.level = level
         self.logAST = logAST
         self.logBenchmarks = logBenchmarks
-        self.collectMessages = stackMessages
     }
 
     public func output(_ message: String) {
@@ -91,19 +85,11 @@ public class Logger: Logging {
 
     public func benchmark(_ message: String) {
         guard logBenchmarks else { return }
-        if collectMessages {
-            messages.append("\(message)")
-        } else {
-            print(message)
-        }
+        print(message)
     }
 
     func log(level: LogLevel, _ message: String) {
         guard level.rawValue <= self.level.rawValue else { return }
-        if collectMessages {
-            messages.append("\(message)")
-        } else {
-            print(message)
-        }
+        print(message)
     }
 }
