@@ -66,45 +66,9 @@ public class Sourcery {
     }
 
     private func process(_ config: Configuration, _ hasSwiftTemplates: Bool) throws -> ParsingResult {
-        var result: ParsingResult
-        switch config.sources {
-        case let .paths(paths):
-            result = try parse(
-                sources: paths.include,
-                excludes: paths.exclude,
-                config: config,
-                modules: nil,
-                requiresFileParserCopy: hasSwiftTemplates
-            )
-        case let .projects(projects):
-            var paths: [Path] = []
-            var modules = [String]()
-            projects.forEach { project in
-                project.targets.forEach { target in
-                    guard let projectTarget = project.file.target(named: target.name) else { return }
-
-                    let files: [Path] = project.file.sourceFilesPaths(target: projectTarget, sourceRoot: project.root)
-                    files.forEach { file in
-                        guard !project.exclude.contains(file) else { return }
-                        paths.append(file)
-                        modules.append(target.module)
-                    }
-                    for framework in target.xcframeworks {
-                        paths.append(framework.swiftInterfacePath)
-                        modules.append(target.module)
-                    }
-                }
-            }
-            result = try parse(
-                sources: paths,
-                config: config,
-                modules: modules,
-                requiresFileParserCopy: hasSwiftTemplates
-            )
-        }
-
-        try generate(from: &result, config: config)
-        return result
+        var parsingResult = try parseSources(from: config, requiresFileParserCopy: hasSwiftTemplates)
+        try generate(from: &parsingResult, config: config)
+        return parsingResult
     }
 
     private func createWatchers(
@@ -249,14 +213,52 @@ extension Sourcery {
 
     typealias ParserWrapper = (path: Path, parse: () throws -> FileParserResult?)
 
-    fileprivate func parse(
+    private func parseSources(from config: Configuration, requiresFileParserCopy: Bool) throws -> ParsingResult {
+        switch config.sources {
+        case let .paths(paths):
+            return try parse(
+                sources: paths.include,
+                excludes: paths.exclude,
+                config: config,
+                modules: nil,
+                requiresFileParserCopy: requiresFileParserCopy
+            )
+        case let .projects(projects):
+            var paths: [Path] = []
+            var modules: [String] = []
+            projects.forEach { project in
+                project.targets.forEach { target in
+                    guard let projectTarget = project.file.target(named: target.name) else { return }
+
+                    let files = project.file.sourceFilesPaths(target: projectTarget, sourceRoot: project.root)
+                    files.forEach { file in
+                        guard !project.exclude.contains(file) else { return }
+                        paths.append(file)
+                        modules.append(target.module)
+                    }
+                    for framework in target.xcframeworks {
+                        paths.append(framework.swiftInterfacePath)
+                        modules.append(target.module)
+                    }
+                }
+            }
+            return try parse(
+                sources: paths,
+                config: config,
+                modules: modules,
+                requiresFileParserCopy: requiresFileParserCopy
+            )
+        }
+    }
+
+    private func parse(
         sources: [Path],
         excludes: [Path] = [],
         config: Configuration,
         modules: [String]?,
         requiresFileParserCopy: Bool
     ) throws -> ParsingResult {
-        if let modules = modules {
+        if let modules {
             precondition(sources.count == modules.count, "There should be module for each file to parse")
         }
 
