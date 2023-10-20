@@ -117,7 +117,7 @@ public typealias SourceryVariable = Variable
         self.definedInTypeName = definedInTypeName
     }
 
-// sourcery:inline:Variable.AutoCoding
+    // sourcery:inline:Variable.AutoCoding
 
         /// :nodoc:
         required public init?(coder aDecoder: NSCoder) {
@@ -158,5 +158,5 @@ public typealias SourceryVariable = Variable
             aCoder.encode(self.definedInTypeName, forKey: "definedInTypeName")
             aCoder.encode(self.definedInType, forKey: "definedInType")
         }
-// sourcery:end
+    // sourcery:end
 }

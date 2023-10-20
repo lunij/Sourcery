@@ -161,7 +161,7 @@ import Foundation
         ).joined(separator: " ")
     }
 
-// sourcery:inline:TypeName.AutoCoding
+    // sourcery:inline:TypeName.AutoCoding
 
         /// :nodoc:
         required public init?(coder aDecoder: NSCoder) {
@@ -196,7 +196,7 @@ import Foundation
             aCoder.encode(self.dictionary, forKey: "dictionary")
             aCoder.encode(self.closure, forKey: "closure")
         }
-// sourcery:end
+    // sourcery:end
 
     // sourcery: skipEquality, skipDescription
     /// :nodoc:

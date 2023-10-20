@@ -48,7 +48,7 @@ import Foundation
         )
     }
 
-// sourcery:inline:ProtocolComposition.AutoCoding
+    // sourcery:inline:ProtocolComposition.AutoCoding
 
         /// :nodoc:
         required public init?(coder aDecoder: NSCoder) {
@@ -63,6 +63,5 @@ import Foundation
             aCoder.encode(self.composedTypeNames, forKey: "composedTypeNames")
             aCoder.encode(self.composedTypes, forKey: "composedTypes")
         }
-// sourcery:end
-
+    // sourcery:end
 }

@@ -147,7 +147,7 @@ import Foundation
         }
     }
 
-// sourcery:inline:Attribute.AutoCoding
+    // sourcery:inline:Attribute.AutoCoding
 
         /// :nodoc:
         required public init?(coder aDecoder: NSCoder) {
@@ -162,6 +162,5 @@ import Foundation
             aCoder.encode(self.arguments, forKey: "arguments")
             aCoder.encode(self._description, forKey: "_description")
         }
-// sourcery:end
-
+    // sourcery:end
 }

@@ -409,7 +409,7 @@ public typealias AttributeList = [String: [Attribute]]
         self.rawSubscripts += type.rawSubscripts
     }
 
-// sourcery:inline:Type.AutoCoding
+    // sourcery:inline:Type.AutoCoding
 
         /// :nodoc:
         required public init?(coder aDecoder: NSCoder) {
@@ -474,7 +474,7 @@ public typealias AttributeList = [String: [Attribute]]
             aCoder.encode(self.path, forKey: "path")
             aCoder.encode(self.fileName, forKey: "fileName")
         }
-// sourcery:end
+    // sourcery:end
 }
 
 extension Type {

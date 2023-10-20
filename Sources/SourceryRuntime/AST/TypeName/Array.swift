@@ -31,7 +31,7 @@ import Foundation
         "[\(elementTypeName.asSource)]"
     }
 
-// sourcery:inline:ArrayType.AutoCoding
+    // sourcery:inline:ArrayType.AutoCoding
 
         /// :nodoc:
         required public init?(coder aDecoder: NSCoder) {
@@ -46,5 +46,5 @@ import Foundation
             aCoder.encode(self.elementTypeName, forKey: "elementTypeName")
             aCoder.encode(self.elementType, forKey: "elementType")
         }
-// sourcery:end
+    // sourcery:end
 }

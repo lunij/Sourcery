@@ -40,7 +40,7 @@ import Foundation
         "[\(keyTypeName.asSource): \(valueTypeName.asSource)]"
     }
 
-// sourcery:inline:DictionaryType.AutoCoding
+    // sourcery:inline:DictionaryType.AutoCoding
 
         /// :nodoc:
         required public init?(coder aDecoder: NSCoder) {
@@ -59,5 +59,5 @@ import Foundation
             aCoder.encode(self.keyTypeName, forKey: "keyTypeName")
             aCoder.encode(self.keyType, forKey: "keyType")
         }
-// sourcery:end
+    // sourcery:end
 }

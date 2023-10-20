@@ -45,7 +45,7 @@ import Foundation
         )
     }
 
-// sourcery:inline:Class.AutoCoding
+    // sourcery:inline:Class.AutoCoding
 
         /// :nodoc:
         required public init?(coder aDecoder: NSCoder) {
@@ -56,5 +56,5 @@ import Foundation
         override public func encode(with aCoder: NSCoder) {
             super.encode(with: aCoder)
         }
-// sourcery:end
+    // sourcery:end
 }

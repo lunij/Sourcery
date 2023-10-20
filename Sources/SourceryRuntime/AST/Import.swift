@@ -36,7 +36,7 @@ import Foundation
         }
     }
 
-// sourcery:inline:Import.AutoCoding
+    // sourcery:inline:Import.AutoCoding
 
         /// :nodoc:
         required public init?(coder aDecoder: NSCoder) {
@@ -50,5 +50,5 @@ import Foundation
             aCoder.encode(self.path, forKey: "path")
         }
 
-// sourcery:end
+    // sourcery:end
 }

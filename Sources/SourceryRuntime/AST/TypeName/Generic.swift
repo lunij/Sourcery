@@ -25,7 +25,7 @@ import Foundation
         asSource
     }
 
-// sourcery:inline:GenericType.AutoCoding
+    // sourcery:inline:GenericType.AutoCoding
 
         /// :nodoc:
         required public init?(coder aDecoder: NSCoder) {
@@ -39,7 +39,7 @@ import Foundation
             aCoder.encode(self.typeParameters, forKey: "typeParameters")
         }
 
-// sourcery:end
+    // sourcery:end
 }
 
 /// Descibes Swift generic type parameter
@@ -58,7 +58,7 @@ import Foundation
         self.type = type
     }
 
-// sourcery:inline:GenericTypeParameter.AutoCoding
+    // sourcery:inline:GenericTypeParameter.AutoCoding
 
         /// :nodoc:
         required public init?(coder aDecoder: NSCoder) {
@@ -72,5 +72,5 @@ import Foundation
             aCoder.encode(self.type, forKey: "type")
         }
 
-// sourcery:end
+    // sourcery:end
 }

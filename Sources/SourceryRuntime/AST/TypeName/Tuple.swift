@@ -21,7 +21,7 @@ import Foundation
         self.elements = elements
     }
 
-// sourcery:inline:TupleType.AutoCoding
+    // sourcery:inline:TupleType.AutoCoding
 
         /// :nodoc:
         required public init?(coder aDecoder: NSCoder) {
@@ -34,7 +34,7 @@ import Foundation
             aCoder.encode(self.name, forKey: "name")
             aCoder.encode(self.elements, forKey: "elements")
         }
-// sourcery:end
+    // sourcery:end
 }
 
 /// Describes tuple type element
@@ -62,7 +62,7 @@ import Foundation
         "\(name != nil ? "\(name!): " : "")\(typeName.asSource)"
     }
 
-// sourcery:inline:TupleElement.AutoCoding
+    // sourcery:inline:TupleElement.AutoCoding
 
         /// :nodoc:
         required public init?(coder aDecoder: NSCoder) {
@@ -77,7 +77,7 @@ import Foundation
             aCoder.encode(self.typeName, forKey: "typeName")
             aCoder.encode(self.type, forKey: "type")
         }
-// sourcery:end
+    // sourcery:end
 }
 
 extension Array where Element == TupleElement {

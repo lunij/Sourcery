@@ -74,7 +74,7 @@ public typealias SourceryMethod = Method
         return (labels.nilIfEmpty ?? "_") + typeSuffix
     }
 
-// sourcery:inline:MethodParameter.AutoCoding
+    // sourcery:inline:MethodParameter.AutoCoding
 
         /// :nodoc:
         required public init?(coder aDecoder: NSCoder) {
@@ -99,7 +99,7 @@ public typealias SourceryMethod = Method
             aCoder.encode(self.defaultValue, forKey: "defaultValue")
             aCoder.encode(self.annotations, forKey: "annotations")
         }
-// sourcery:end
+    // sourcery:end
 }
 
 extension Array where Element == MethodParameter {
@@ -397,7 +397,7 @@ extension Array where Element == ClosureParameter {
         self.definedInTypeName = definedInTypeName
     }
 
-// sourcery:inline:Method.AutoCoding
+    // sourcery:inline:Method.AutoCoding
 
         /// :nodoc:
         required public init?(coder aDecoder: NSCoder) {
@@ -442,5 +442,5 @@ extension Array where Element == ClosureParameter {
             aCoder.encode(self.attributes, forKey: "attributes")
             aCoder.encode(self.modifiers, forKey: "modifiers")
         }
-// sourcery:end
+    // sourcery:end
 }

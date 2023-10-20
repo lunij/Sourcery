@@ -61,7 +61,7 @@ public typealias SourceryProtocol = Protocol
         )
     }
 
-// sourcery:inline:Protocol.AutoCoding
+    // sourcery:inline:Protocol.AutoCoding
 
         /// :nodoc:
         required public init?(coder aDecoder: NSCoder) {
@@ -76,5 +76,5 @@ public typealias SourceryProtocol = Protocol
             aCoder.encode(self.associatedTypes, forKey: "associatedTypes")
             aCoder.encode(self.genericRequirements, forKey: "genericRequirements")
         }
-// sourcery:end
+    // sourcery:end
 }

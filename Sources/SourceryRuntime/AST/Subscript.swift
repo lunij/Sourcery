@@ -104,7 +104,7 @@ import Foundation
         self.definedInTypeName = definedInTypeName
     }
 
-// sourcery:inline:Subscript.AutoCoding
+    // sourcery:inline:Subscript.AutoCoding
 
         /// :nodoc:
         required public init?(coder aDecoder: NSCoder) {
@@ -135,6 +135,5 @@ import Foundation
             aCoder.encode(self.attributes, forKey: "attributes")
             aCoder.encode(self.modifiers, forKey: "modifiers")
         }
-// sourcery:end
-
+    // sourcery:end
 }

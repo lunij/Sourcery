@@ -67,7 +67,7 @@ import Foundation
         "\(parameters.asSource)\(asyncKeyword != nil ? " \(asyncKeyword!)" : "")\(throwsOrRethrowsKeyword != nil ? " \(throwsOrRethrowsKeyword!)" : "") -> \(returnTypeName.asSource)"
     }
 
-// sourcery:inline:ClosureType.AutoCoding
+    // sourcery:inline:ClosureType.AutoCoding
 
         /// :nodoc:
         required public init?(coder aDecoder: NSCoder) {
@@ -92,6 +92,5 @@ import Foundation
             aCoder.encode(self.`throws`, forKey: "`throws`")
             aCoder.encode(self.throwsOrRethrowsKeyword, forKey: "throwsOrRethrowsKeyword")
         }
-// sourcery:end
-
+    // sourcery:end
 }

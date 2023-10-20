@@ -38,7 +38,7 @@ import Foundation
         self.init(localName: name, externalName: name, typeName: typeName, type: type, defaultValue: defaultValue, annotations: annotations)
     }
 
-// sourcery:inline:AssociatedValue.AutoCoding
+    // sourcery:inline:AssociatedValue.AutoCoding
 
         /// :nodoc:
         required public init?(coder aDecoder: NSCoder) {
@@ -59,8 +59,7 @@ import Foundation
             aCoder.encode(self.defaultValue, forKey: "defaultValue")
             aCoder.encode(self.annotations, forKey: "annotations")
         }
-// sourcery:end
-
+    // sourcery:end
 }
 
 /// Defines enum case
@@ -103,7 +102,7 @@ import Foundation
         self.indirect = indirect
     }
 
-// sourcery:inline:EnumCase.AutoCoding
+    // sourcery:inline:EnumCase.AutoCoding
 
         /// :nodoc:
         required public init?(coder aDecoder: NSCoder) {
@@ -124,7 +123,7 @@ import Foundation
             aCoder.encode(self.documentation, forKey: "documentation")
             aCoder.encode(self.indirect, forKey: "indirect")
         }
-// sourcery:end
+    // sourcery:end
 }
 
 /// Defines Swift enum
@@ -211,7 +210,7 @@ import Foundation
         }
     }
 
-// sourcery:inline:Enum.AutoCoding
+    // sourcery:inline:Enum.AutoCoding
 
         /// :nodoc:
         required public init?(coder aDecoder: NSCoder) {
@@ -230,5 +229,5 @@ import Foundation
             aCoder.encode(self.hasRawType, forKey: "hasRawType")
             aCoder.encode(self.rawType, forKey: "rawType")
         }
-// sourcery:end
+    // sourcery:end
 }

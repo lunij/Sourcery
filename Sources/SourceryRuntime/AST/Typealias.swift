@@ -44,7 +44,7 @@ import Foundation
         self.module = module
     }
 
-// sourcery:inline:Typealias.AutoCoding
+    // sourcery:inline:Typealias.AutoCoding
 
         /// :nodoc:
         required public init?(coder aDecoder: NSCoder) {
@@ -67,5 +67,5 @@ import Foundation
             aCoder.encode(self.accessLevel, forKey: "accessLevel")
             aCoder.encode(self.parentName, forKey: "parentName")
         }
-// sourcery:end
+    // sourcery:end
 }

@@ -19,7 +19,7 @@ import Foundation
         self.type = type
     }
 
-// sourcery:inline:AssociatedType.AutoCoding
+    // sourcery:inline:AssociatedType.AutoCoding
 
         /// :nodoc:
         required public init?(coder aDecoder: NSCoder) {
@@ -34,5 +34,5 @@ import Foundation
             aCoder.encode(self.typeName, forKey: "typeName")
             aCoder.encode(self.type, forKey: "type")
         }
-// sourcery:end
+    // sourcery:end
 }
