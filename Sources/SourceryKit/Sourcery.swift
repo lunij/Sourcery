@@ -222,13 +222,7 @@ public class Sourcery {
 
     fileprivate func templates(from config: Configuration) throws -> [Template] {
         return try templatePaths(from: config.templates).compactMap {
-            if $0.extension == "sourcerytemplate" {
-                let template = try JSONDecoder().decode(SourceryTemplate.self, from: $0.read())
-                switch template.instance.kind {
-                case .stencil:
-                    return try StencilTemplate(path: $0, templateString: template.instance.content)
-                }
-            } else if $0.extension == "swifttemplate" {
+            if $0.extension == "swifttemplate" {
                 let cachePath = cachesDir(sourcePath: $0, basePath: config.cacheBasePath)
                 return try SwiftTemplate(path: $0, cachePath: cachePath, version: type(of: self).version, buildPath: buildPath)
             } else {

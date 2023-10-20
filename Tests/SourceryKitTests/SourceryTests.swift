@@ -1234,14 +1234,13 @@ class SourceryTests: XCTestCase {
 
     func test_processFiles_whenTemplateFolder_andSingleFileOutput_itJoinsGeneratedCodeIntoSingleFile() throws {
         let outputFile = outputDir + "Composed.swift"
-        let expectedResult = try? (Stubs.resultDirectory + Path("Basic+Other+SourceryTemplates.swift")).read(.utf8).withoutWhitespaces
+        let expectedResult = try? (Stubs.resultDirectory + Path("Basic+Other.swift")).read(.utf8).withoutWhitespaces
 
         try Sourcery(cacheDisabled: true).processConfiguration(.stub(
             sources: .paths(Paths(include: [Stubs.sourceDirectory])),
             templates: Paths(include: [
                 Stubs.templateDirectory + "Basic.stencil",
-                Stubs.templateDirectory + "Other.stencil",
-                Stubs.templateDirectory + "SourceryTemplateStencil.sourcerytemplate"
+                Stubs.templateDirectory + "Other.stencil"
             ]),
             output: Output(outputFile)
         ))
@@ -1295,8 +1294,7 @@ class SourceryTests: XCTestCase {
                 exclude: [
                     Stubs.templateDirectory + "GenerationWays.stencil",
                     Stubs.templateDirectory + "Include.stencil",
-                    Stubs.templateDirectory + "Partial.stencil",
-                    Stubs.templateDirectory + "SourceryTemplateStencil.sourcerytemplate"
+                    Stubs.templateDirectory + "Partial.stencil"
                 ]
             ),
             output: Output(outputFile)
