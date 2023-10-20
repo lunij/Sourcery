@@ -67,8 +67,28 @@ public class Sourcery {
 
     private func process(_ config: Configuration, _ hasSwiftTemplates: Bool) throws -> ParsingResult {
         var parsingResult = try parseSources(from: config, requiresFileParserCopy: hasSwiftTemplates)
-        try generate(from: &parsingResult, config: config)
+        let templates = try loadTemplates(from: config)
+        try generate(from: &parsingResult, using: templates, config: config)
         return parsingResult
+    }
+
+    private func loadTemplates(from config: Configuration) throws -> [Template] {
+        let start = currentTimestamp()
+        logger.info("Loading templates...")
+
+        let templates: [Template] = try config.templates.allPaths.filter(\.isTemplateFile).map {
+            if $0.extension == "swifttemplate" {
+                let cachePath = cachesDir(sourcePath: $0, basePath: config.cacheBasePath)
+                return try SwiftTemplate(path: $0, cachePath: cachePath, version: type(of: self).version, buildPath: buildPath)
+            } else {
+                return try StencilTemplate(path: $0)
+            }
+        }
+
+        logger.info("Loaded \(templates.count) templates.")
+        logger.benchmark("\tLoading took \(currentTimestamp() - start)")
+
+        return templates
     }
 
     private func createWatchers(
@@ -130,7 +150,8 @@ public class Sourcery {
                     } else {
                         logger.info("Templates changed: ")
                     }
-                    try self.generate(from: &result, config: config, overridingTemplatePaths: Paths(include: [path]))
+                    let templates = try self.loadTemplates(from: config)
+                    try self.generate(from: &result, using: templates, config: config, overridingTemplatePaths: Paths(include: [path]))
                 } catch {
                     logger.error(error)
                 }
@@ -183,22 +204,6 @@ public class Sourcery {
             _ = try? cacheDir.delete()
         }
     }
-
-    fileprivate func templates(from config: Configuration) throws -> [Template] {
-        return try templatePaths(from: config.templates).compactMap {
-            if $0.extension == "swifttemplate" {
-                let cachePath = cachesDir(sourcePath: $0, basePath: config.cacheBasePath)
-                return try SwiftTemplate(path: $0, cachePath: cachePath, version: type(of: self).version, buildPath: buildPath)
-            } else {
-                return try StencilTemplate(path: $0)
-            }
-        }
-    }
-
-    private func templatePaths(from: Paths) -> [Path] {
-        return from.allPaths.filter { $0.isTemplateFile }
-    }
-
 }
 
 // MARK: - Parsing
@@ -431,19 +436,19 @@ extension Sourcery {
     private typealias SourceChange = (path: String, rangeInFile: NSRange, newRangeInFile: NSRange)
     private typealias GenerationResult = (String, [SourceChange])
 
-    fileprivate func generate(from parsingResult: inout ParsingResult, config: Configuration, overridingTemplatePaths: Paths? = nil) throws {
+    fileprivate func generate(
+        from parsingResult: inout ParsingResult,
+        using templates: [Template],
+        config: Configuration,
+        overridingTemplatePaths: Paths? = nil
+    ) throws {
         let generationStart = currentTimestamp()
-
-        logger.info("Loading templates...")
-        let allTemplates = try templates(from: config)
-        logger.info("Loaded \(allTemplates.count) templates.")
-        logger.benchmark("\tLoading took \(currentTimestamp() - generationStart)")
 
         logger.info("Generating code...")
         status = ""
 
         if config.output.isDirectory {
-            try allTemplates.forEach { template in
+            try templates.forEach { template in
                 let (result, sourceChanges) = try generate(template, forParsingResult: parsingResult, config: config)
                 updateRanges(in: &parsingResult, sourceChanges: sourceChanges)
                 let outputPath = config.output.path + generatedPath(for: template.sourcePath)
@@ -456,7 +461,7 @@ extension Sourcery {
                 }
             }
         } else {
-            let result = try allTemplates.reduce((contents: "", parsingResult: parsingResult)) { state, template in
+            let result = try templates.reduce((contents: "", parsingResult: parsingResult)) { state, template in
                 var (result, parsingResult) = state
                 let (generatedCode, sourceChanges) = try generate(template, forParsingResult: parsingResult, config: config)
                 result += "\n" + generatedCode
