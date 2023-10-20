@@ -1,6 +1,7 @@
 import Foundation
 import QuartzCore
 import SourceryRuntime
+import XcodeProj
 import Yams
 
 public protocol ConfigurationParsing {
@@ -166,5 +167,125 @@ private extension StringProtocol {
         let start = index(startIndex, offsetBy: bounds.lowerBound)
         let end = index(start, offsetBy: bounds.count)
         return self[start ..< end]
+    }
+}
+
+private extension Sources {
+    init(dict: [String: Any], relativePath: Path) throws {
+        if let projects = (dict["project"] as? [[String: Any]]) ?? (dict["project"] as? [String: Any]).map({ [$0] }) {
+            guard !projects.isEmpty else { throw ConfigurationParser.Error.invalidSources(message: "No projects provided.") }
+            self = try .projects(projects.map({ try Project(dict: $0, relativePath: relativePath) }))
+        } else if let sources = dict["sources"] {
+            do {
+                self = try .paths(Paths(dict: sources, relativePath: relativePath))
+            } catch {
+                throw ConfigurationParser.Error.invalidSources(message: "\(error)")
+            }
+        } else {
+            throw ConfigurationParser.Error.invalidSources(message: "'sources' or 'project' key are missing.")
+        }
+    }
+}
+
+private extension Paths {
+    init(dict: Any, relativePath: Path) throws {
+        if let sources = dict as? [String: [String]],
+            let include = sources["include"]?.map({ Path($0, relativeTo: relativePath) }) {
+            let exclude = sources["exclude"]?.map({ Path($0, relativeTo: relativePath) }) ?? []
+            self.init(include: include, exclude: exclude)
+        } else if let sources = dict as? [String] {
+            let sources = sources.map({ Path($0, relativeTo: relativePath) })
+            guard !sources.isEmpty else {
+                throw ConfigurationParser.Error.invalidPaths(message: "No paths provided.")
+            }
+            self.init(include: sources)
+        } else {
+            throw ConfigurationParser.Error.invalidPaths(message: "No paths provided. Expected list of strings or object with 'include' and optional 'exclude' keys.")
+        }
+    }
+}
+
+private extension Project {
+    init(dict: [String: Any], relativePath: Path) throws {
+        guard let file = dict["file"] as? String else {
+            throw ConfigurationParser.Error.invalidSources(message: "Project file path is not provided. Expected string.")
+        }
+
+        let targetsArray: [Target]
+        if let targets = dict["target"] as? [[String: Any]] {
+            targetsArray = try targets.map { try Target(dict: $0, relativePath: relativePath) }
+        } else if let target = dict["target"] as? [String: Any] {
+            targetsArray = try [Target(dict: target, relativePath: relativePath)]
+        } else {
+            throw ConfigurationParser.Error.invalidSources(message: "'target' key is missing. Expected object or array of objects.")
+        }
+        if targetsArray.isEmpty {
+            throw ConfigurationParser.Error.invalidSources(message: "No targets provided.")
+        }
+        self.targets = targetsArray
+
+        let exclude = (dict["exclude"] as? [String])?.map { Path($0, relativeTo: relativePath) } ?? []
+        self.exclude = exclude.flatMap(\.allPaths)
+
+        let path = Path(file, relativeTo: relativePath)
+        self.file = try XcodeProj(path: path)
+        self.root = path.parent()
+    }
+}
+
+private extension Project.Target {
+    init(dict: [String: Any], relativePath: Path) throws {
+        guard let name = dict["name"] as? String else {
+            throw ConfigurationParser.Error.invalidSources(message: "Target name is not provided. Expected string.")
+        }
+        self.name = name
+        self.module = (dict["module"] as? String) ?? name
+        do {
+            self.xcframeworks = try (dict["xcframeworks"] as? [String])?
+                .map { try XCFramework(rawPath: $0, relativePath: relativePath) } ?? []
+        } catch let error as ConfigurationParser.Error {
+            logger.warning(error.description)
+            self.xcframeworks = []
+        }
+    }
+}
+
+private extension Output {
+    init(dict: [String: Any], relativePath: Path) throws {
+        guard let path = dict["path"] as? String else {
+            throw ConfigurationParser.Error.invalidOutput(message: "No path provided.")
+        }
+
+        self.path = Path(path, relativeTo: relativePath)
+
+        if let linkToDict = dict["link"] as? [String: Any] {
+            do {
+                self.linkTo = try LinkTo(dict: linkToDict, relativePath: relativePath)
+            } catch {
+                self.linkTo = nil
+                logger.warning(error)
+            }
+        } else {
+            self.linkTo = nil
+        }
+    }
+}
+
+private extension Output.LinkTo {
+    init(dict: [String: Any], relativePath: Path) throws {
+        guard let project = dict["project"] as? String else {
+            throw ConfigurationParser.Error.invalidOutput(message: "No project file path provided.")
+        }
+        if let target = dict["target"] as? String {
+            self.targets = [target]
+        } else if let targets = dict["targets"] as? [String] {
+            self.targets = targets
+        } else {
+            throw ConfigurationParser.Error.invalidOutput(message: "No target(s) provided.")
+        }
+        let projectPath = Path(project, relativeTo: relativePath)
+        self.projectPath = projectPath
+        self.project = try XcodeProj(path: projectPath)
+        self.group = dict["group"] as? String
     }
 }

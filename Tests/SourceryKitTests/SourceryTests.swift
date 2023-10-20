@@ -1309,17 +1309,16 @@ class SourceryTests: XCTestCase {
     private func createProjectScenario(templatePath: Path) throws -> ProjectScenario {
         let projectPath = Stubs.sourceDirectory + "TestProject"
         let projectFilePath = Stubs.sourceDirectory + "TestProject/TestProject.xcodeproj"
-        let sources = try Sources(
-            dict: [
-                "project": [
-                    "file": "TestProject.xcodeproj",
-                    "target": ["name": "TestProject"]
-                ]
-            ],
-            relativePath: projectPath
-        )
-        let templates = Paths(include: [templatePath])
         let project = try XcodeProj(path: projectFilePath)
+        let sources = Sources.projects([
+            Project(
+                file: project,
+                root: projectPath,
+                targets: [.init(name: "TestProject", module: "TestProject", xcframeworks: [])],
+                exclude: []
+            )
+        ])
+        let templates = Paths(include: [templatePath])
         return .init(
             sources: sources,
             templates: templates,
@@ -1415,13 +1414,13 @@ private struct ProjectScenario {
     }
 
     func createOutput(at path: Path) throws -> Output {
-        try Output(
-            dict: [
-                "path": path.string,
-                "link": ["project": "TestProject.xcodeproj", "target": "TestProject"]
-            ],
-            relativePath: projectPath
-        )
+        let projectPath = projectPath + "TestProject.xcodeproj"
+        return Output(path, linkTo: .init(
+            project: try XcodeProj(path: projectPath), 
+            projectPath: projectPath,
+            targets: ["TestProject"],
+            group: nil
+        ))
     }
 }
 
