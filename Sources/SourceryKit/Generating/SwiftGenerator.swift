@@ -26,7 +26,7 @@ public class SwiftGenerator {
                 let (result, sourceChanges) = try generate(template, forParsingResult: parsingResult, config: config)
                 updateRanges(in: &parsingResult, sourceChanges: sourceChanges)
                 let outputPath = config.output.path + template.sourcePath.generatedPath
-                try self.output(result: result, to: outputPath)
+                try self.output(result, to: outputPath)
 
                 if let linkTo = config.output.linkTo {
                     linkTo.targets.forEach { target in
@@ -43,7 +43,7 @@ public class SwiftGenerator {
                 return (result, parsingResult)
             }
             parsingResult = result.parsingResult
-            try self.output(result: result.contents, to: config.output.path)
+            try self.output(result.contents, to: config.output.path)
 
             if let linkTo = config.output.linkTo {
                 linkTo.targets.forEach { target in
@@ -53,7 +53,7 @@ public class SwiftGenerator {
         }
 
         try fileAnnotatedContent.forEach { path, contents in
-            try self.output(result: contents.joined(separator: "\n"), to: path)
+            try self.output(contents.joined(separator: "\n"), to: path)
 
             if let linkTo = config.output.linkTo {
                 linkTo.targets.forEach { target in
@@ -133,7 +133,6 @@ public class SwiftGenerator {
                     return MappedInlineAnnotations(range, filePath, inlineRanges[key]!, generatedBody, inlineIndentations[key] ?? "")
                 }
 
-
                 guard let autoRange = key.range(of: "auto:") else {
                     rangesToReplace.remove(range)
                     return nil
@@ -181,20 +180,14 @@ public class SwiftGenerator {
                 return MappedInlineAnnotations(range, filePath, rangeInFile, toInsert, indent)
             }
             .sorted { lhs, rhs in
-                return lhs.rangeInFile.location > rhs.rangeInFile.location
-            }.forEach { (arg) in
-                let (_, filePath, rangeInFile, toInsert, indentation) = arg
+                lhs.rangeInFile.location > rhs.rangeInFile.location
+            }
+            .forEach { _, filePath, rangeInFile, toInsert, indentation in
                 let path = Path(filePath)
                 let content = try path.read(.utf8)
                 let newContent = indent(toInsert: toInsert, indentation: indentation)
 
-                try output(
-                    range: rangeInFile,
-                    in: filePath,
-                    insertedContent: newContent,
-                    updatedContent: content.bridge().replacingCharacters(in: rangeInFile, with: newContent),
-                    to: path
-                )
+                try path.write(content.bridge().replacingCharacters(in: rangeInFile, with: newContent))
 
                 let newLength = newContent.bridge().length
 
@@ -203,13 +196,12 @@ public class SwiftGenerator {
                     rangeInFile: rangeInFile,
                     newRangeInFile: NSRange(location: rangeInFile.location, length: newLength)
                 ))
-        }
-
+            }
 
         var bridged = contents.bridge()
 
         rangesToReplace
-            .sorted(by: { $0.location > $1.location })
+            .sorted { $0.location > $1.location }
             .forEach {
                 bridged = bridged.replacingCharacters(in: $0, with: "") as NSString
             }
@@ -275,7 +267,6 @@ public class SwiftGenerator {
                 guard !line.isEmpty else {
                     return line
                 }
-
                 return index == lines.count - 1 ? line : indentation + line
             }
             .joined(separator: "\n")
@@ -301,11 +292,11 @@ public class SwiftGenerator {
         }
     }
 
-    private func output(result: String, to outputPath: Path) throws {
-        let resultIsEmpty = result.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-        var result = result
+    private func output(_ content: String, to outputPath: Path) throws {
+        let resultIsEmpty = content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        var content = content
         if !resultIsEmpty, outputPath.extension == "swift" {
-            result = .generatedHeader + result
+            content = .generatedHeader + content
         }
 
         if resultIsEmpty {
@@ -319,28 +310,7 @@ public class SwiftGenerator {
             if !outputPath.parent().exists {
                 try outputPath.parent().mkpath()
             }
-            try writeIfChanged(result, to: outputPath)
-        }
-    }
-
-    private func output(
-        range: NSRange,
-        in file: String,
-        insertedContent: String,
-        updatedContent: @autoclosure () -> String,
-        to path: Path
-    ) throws {
-        try writeIfChanged(updatedContent(), to: path)
-    }
-
-    fileprivate func writeIfChanged(_ content: String, to path: Path) throws {
-        guard path.exists else {
-            return try path.write(content)
-        }
-
-        let existing = try path.read(.utf8)
-        if existing != content {
-            try path.write(content)
+            try outputPath.writeIfChanged(content)
         }
     }
 }
