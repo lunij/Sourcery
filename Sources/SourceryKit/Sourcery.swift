@@ -195,13 +195,6 @@ public class Sourcery {
 
 // MARK: - Parsing
 
-typealias ParsingResult = (
-    parserResult: FileParserResult?,
-    types: Types,
-    functions: [SourceryMethod],
-    inlineRanges: [(file: String, ranges: [String: NSRange], indentations: [String: String])]
-)
-
 extension Sourcery {
     typealias ParserWrapper = (path: Path, parse: () throws -> FileParserResult?)
 
@@ -372,7 +365,12 @@ extension Sourcery {
                 .joined(separator: "\n")
             logger.info("Files changed:\n\(files)")
         }
-        return (parserResultCopy, Types(types: types, typealiases: typealiases), functions, inlineRanges)
+        return .init(
+            parserResult: parserResultCopy,
+            types: Types(types: types, typealiases: typealiases),
+            functions: functions,
+            inlineRanges: inlineRanges
+        )
     }
 
     private func loadOrParse(parser: ParserWrapper, cachesPath: @autoclosure () -> Path?) throws -> (changed: Bool, result: FileParserResult)? {

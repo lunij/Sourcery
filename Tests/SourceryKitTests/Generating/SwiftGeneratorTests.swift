@@ -15,11 +15,11 @@ class SwiftGeneratorTests: XCTestCase {
     }
 
     func test_foobar() throws {
-        var parsingResult: ParsingResult = (
-            .stub(),
-            Types(types: [], typealiases: []),
-            [],
-            []
+        var parsingResult = ParsingResult(
+            parserResult: .stub(),
+            types: Types(types: [], typealiases: []),
+            functions: [],
+            inlineRanges: []
         )
         try sut.generate(
             from: &parsingResult,
