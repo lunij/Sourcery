@@ -3,9 +3,9 @@ import SourceryKit
 
 extension Configuration {
     static func stub(
-        sources: Sources,
-        templates: Paths,
-        output: Output,
+        sources: Sources = .paths(.init(include: [])),
+        templates: Paths = .init(include: []),
+        output: Output = .init(""),
         cacheBasePath: Path = "",
         forceParse: [String] = [],
         parseDocumentation: Bool = false,
