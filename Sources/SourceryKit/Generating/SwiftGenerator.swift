@@ -9,7 +9,15 @@ public class SwiftGenerator {
     // content annotated with file annotations per file path to write it to
     private var fileAnnotatedContent: [Path: [String]] = [:]
 
-    public init() {}
+    private let clock: TimeMeasuring
+
+    public convenience init() {
+        self.init(clock: ContinuousClock())
+    }
+
+    init(clock: TimeMeasuring) {
+        self.clock = clock
+    }
 
     func generate(
         from parsingResult: inout ParsingResult,
@@ -17,57 +25,56 @@ public class SwiftGenerator {
         config: Configuration,
         overridingTemplatePaths: Paths? = nil
     ) throws {
-        let generationStart = currentTimestamp()
-
         logger.info("Generating code...")
 
-        if config.output.isDirectory {
-            try templates.forEach { template in
-                let (result, sourceChanges) = try generate(template, forParsingResult: parsingResult, config: config)
-                updateRanges(in: &parsingResult, sourceChanges: sourceChanges)
-                let outputPath = config.output.path + template.sourcePath.generatedPath
-                try self.output(result, to: outputPath)
+        let elapsedTime = try clock.measure {
+            if config.output.isDirectory {
+                try templates.forEach { template in
+                    let (result, sourceChanges) = try generate(template, forParsingResult: parsingResult, config: config)
+                    updateRanges(in: &parsingResult, sourceChanges: sourceChanges)
+                    let outputPath = config.output.path + template.sourcePath.generatedPath
+                    try self.output(result, to: outputPath)
+
+                    if let linkTo = config.output.linkTo {
+                        linkTo.targets.forEach { target in
+                            link(outputPath, to: linkTo, target: target)
+                        }
+                    }
+                }
+            } else {
+                let result = try templates.reduce((contents: "", parsingResult: parsingResult)) { state, template in
+                    var (result, parsingResult) = state
+                    let (generatedCode, sourceChanges) = try generate(template, forParsingResult: parsingResult, config: config)
+                    result += "\n" + generatedCode
+                    updateRanges(in: &parsingResult, sourceChanges: sourceChanges)
+                    return (result, parsingResult)
+                }
+                parsingResult = result.parsingResult
+                try self.output(result.contents, to: config.output.path)
 
                 if let linkTo = config.output.linkTo {
                     linkTo.targets.forEach { target in
-                        link(outputPath, to: linkTo, target: target)
+                        link(config.output.path, to: linkTo, target: target)
                     }
                 }
             }
-        } else {
-            let result = try templates.reduce((contents: "", parsingResult: parsingResult)) { state, template in
-                var (result, parsingResult) = state
-                let (generatedCode, sourceChanges) = try generate(template, forParsingResult: parsingResult, config: config)
-                result += "\n" + generatedCode
-                updateRanges(in: &parsingResult, sourceChanges: sourceChanges)
-                return (result, parsingResult)
-            }
-            parsingResult = result.parsingResult
-            try self.output(result.contents, to: config.output.path)
 
-            if let linkTo = config.output.linkTo {
-                linkTo.targets.forEach { target in
-                    link(config.output.path, to: linkTo, target: target)
+            try fileAnnotatedContent.forEach { path, contents in
+                try self.output(contents.joined(separator: "\n"), to: path)
+
+                if let linkTo = config.output.linkTo {
+                    linkTo.targets.forEach { target in
+                        link(path, to: linkTo, target: target)
+                    }
                 }
             }
-        }
-
-        try fileAnnotatedContent.forEach { path, contents in
-            try self.output(contents.joined(separator: "\n"), to: path)
 
             if let linkTo = config.output.linkTo {
-                linkTo.targets.forEach { target in
-                    link(path, to: linkTo, target: target)
-                }
+                try linkTo.project.writePBXProj(path: linkTo.projectPath, outputSettings: .init())
             }
         }
 
-        if let linkTo = config.output.linkTo {
-            try linkTo.project.writePBXProj(path: linkTo.projectPath, outputSettings: .init())
-        }
-
-        logger.benchmark("\tGeneration took \(currentTimestamp() - generationStart)")
-        logger.info("Finished.")
+        logger.info("Code generation finished in \(elapsedTime)")
     }
 
     private func generate(_ template: Template, forParsingResult parsingResult: ParsingResult, config: Configuration) throws -> GenerationResult {

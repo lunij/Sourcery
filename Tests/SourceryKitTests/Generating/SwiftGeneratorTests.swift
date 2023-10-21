@@ -5,16 +5,19 @@ import SourceryRuntime
 class SwiftGeneratorTests: XCTestCase {
     var sut: SwiftGenerator!
 
+    var clockMock: ClockMock!
     var loggerMock: LoggerMock!
 
     override func setUp() {
         super.setUp()
+        clockMock = .init()
         loggerMock = .init()
         logger = loggerMock
-        sut = .init()
+        sut = .init(clock: clockMock)
     }
 
     func test_foobar() throws {
+        clockMock.measureReturnValue = .milliseconds(100)
         var parsingResult = ParsingResult(
             parserResult: .stub(),
             types: Types(types: [], typealiases: []),
@@ -29,8 +32,7 @@ class SwiftGeneratorTests: XCTestCase {
 
         XCTAssertEqual(loggerMock.calls, [
             .info("Generating code..."),
-            .benchmark("\tGeneration took 5.996227264404297e-05"),
-            .info("Finished.")
+            .info("Code generation finished in 0.1 seconds")
         ])
     }
 }
