@@ -182,8 +182,7 @@ class StencilTemplateTests: XCTestCase {
     }
 
     func test_includesPartialTemplates() throws {
-        var outputDir = Path("/tmp")
-        outputDir = Stubs.cleanTemporarySourceryDir()
+        let output = try Output(.createTestDirectory(suffixed: #function))
 
         let templatePath = Stubs.templateDirectory + Path("Include.stencil")
         let expectedResult = """
@@ -196,10 +195,10 @@ class StencilTemplateTests: XCTestCase {
         try Sourcery(cacheDisabled: true).processConfiguration(.stub(
             sources: .paths(Paths(include: [Stubs.sourceDirectory])),
             templates: Paths(include: [templatePath]),
-            output: Output(outputDir)
+            output: output
         ))
 
-        let result = try (outputDir + templatePath.generatedPath).read(.utf8)
+        let result = try (output.path + templatePath.generatedPath).read(.utf8)
         XCTAssertEqual(result, expectedResult)
     }
 }

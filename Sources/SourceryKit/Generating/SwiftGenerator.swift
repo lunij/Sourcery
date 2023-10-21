@@ -22,20 +22,25 @@ public class SwiftGenerator {
     func generate(
         from parsingResult: inout ParsingResult,
         using templates: [Template],
+        to output: Output,
         config: Configuration,
         overridingTemplatePaths: Paths? = nil
     ) throws {
+        guard output.isNotEmpty else {
+            throw Error.undefinedOutput
+        }
+
         logger.info("Generating code...")
 
         let elapsedTime = try clock.measure {
-            if config.output.isDirectory {
+            if output.isRepresentingDirectory {
                 try templates.forEach { template in
                     let (result, sourceChanges) = try generate(template, forParsingResult: parsingResult, config: config)
                     updateRanges(in: &parsingResult, sourceChanges: sourceChanges)
-                    let outputPath = config.output.path + template.sourcePath.generatedPath
+                    let outputPath = output.path + template.sourcePath.generatedPath
                     try self.output(result, to: outputPath)
 
-                    if let linkTo = config.output.linkTo {
+                    if let linkTo = output.linkTo {
                         linkTo.targets.forEach { target in
                             link(outputPath, to: linkTo, target: target)
                         }
@@ -50,11 +55,11 @@ public class SwiftGenerator {
                     return (result, parsingResult)
                 }
                 parsingResult = result.parsingResult
-                try self.output(result.contents, to: config.output.path)
+                try self.output(result.contents, to: output.path)
 
-                if let linkTo = config.output.linkTo {
+                if let linkTo = output.linkTo {
                     linkTo.targets.forEach { target in
-                        link(config.output.path, to: linkTo, target: target)
+                        link(output.path, to: linkTo, target: target)
                     }
                 }
             }
@@ -62,14 +67,14 @@ public class SwiftGenerator {
             try fileAnnotatedContent.forEach { path, contents in
                 try self.output(contents.joined(separator: "\n"), to: path)
 
-                if let linkTo = config.output.linkTo {
+                if let linkTo = output.linkTo {
                     linkTo.targets.forEach { target in
                         link(path, to: linkTo, target: target)
                     }
                 }
             }
 
-            if let linkTo = config.output.linkTo {
+            if let linkTo = output.linkTo {
                 try linkTo.project.writePBXProj(path: linkTo.projectPath, outputSettings: .init())
             }
         }
@@ -319,5 +324,9 @@ public class SwiftGenerator {
             }
             try outputPath.writeIfChanged(content)
         }
+    }
+
+    enum Error: Swift.Error, Equatable {
+        case undefinedOutput
     }
 }

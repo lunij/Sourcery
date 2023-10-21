@@ -11,11 +11,16 @@ public struct Output: Equatable {
     public let path: Path
     public let linkTo: LinkTo?
 
-    public var isDirectory: Bool {
-        guard path.exists else {
-            return path.lastComponentWithoutExtension == path.lastComponent || path.string.hasSuffix("/")
-        }
-        return path.isDirectory
+    public var isRepresentingDirectory: Bool {
+        isNotEmpty && (path.lastComponentWithoutExtension == path.lastComponent || path.string.hasSuffix("/"))
+    }
+
+    public var isEmpty: Bool {
+        path.string.isEmpty
+    }
+
+    public var isNotEmpty: Bool {
+        path.string.isNotEmpty
     }
 
     public init(_ path: Path, linkTo: LinkTo? = nil) {

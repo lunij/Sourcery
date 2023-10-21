@@ -3,10 +3,12 @@ import XCTest
 @testable import SourceryKit
 
 class SourceryPerformanceTests: XCTestCase {
-    let outputDir: Path = {
-        Path.cleanTemporaryDir(name: "SourceryPerformance")
-    }()
-    var output: Output { .init(outputDir) }
+    var output: Output!
+
+    override func setUpWithError() throws {
+        try super.setUpWithError()
+        output = try .init(.createTestDirectory(suffixed: "SourceryPerformanceTests"))
+    }
 
     func testParsingPerformanceOnCleanRun() {
         _ = try? Path.cachesDir(sourcePath: Stubs.sourceForPerformance, basePath: nil).delete()
