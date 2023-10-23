@@ -41,7 +41,7 @@ public class SwiftGenerator {
                     let (result, sourceChanges) = try generate(from: parsingResult, using: template, config: config)
                     updateRanges(in: &parsingResult, sourceChanges: sourceChanges)
                     let outputPath = output.path + template.sourcePath.generatedPath
-                    try self.output(result, to: outputPath)
+                    try write(result, to: outputPath)
 
                     if let linkTo = output.linkTo {
                         linkTo.targets.forEach { target in
@@ -58,7 +58,7 @@ public class SwiftGenerator {
                     return (result, parsingResult)
                 }
                 parsingResult = result.parsingResult
-                try self.output(result.contents, to: output.path)
+                try write(result.contents, to: output.path)
 
                 if let linkTo = output.linkTo {
                     linkTo.targets.forEach { target in
@@ -68,7 +68,7 @@ public class SwiftGenerator {
             }
 
             try fileAnnotatedContent.forEach { path, contents in
-                try self.output(contents.joined(separator: "\n"), to: path)
+                try write(contents.joined(separator: "\n"), to: path)
 
                 if let linkTo = output.linkTo {
                     linkTo.targets.forEach { target in
@@ -307,7 +307,7 @@ public class SwiftGenerator {
         }
     }
 
-    private func output(_ content: String, to outputPath: Path) throws {
+    private func write(_ content: String, to outputPath: Path) throws {
         let resultIsEmpty = content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         var content = content
         if !resultIsEmpty, outputPath.extension == "swift" {
