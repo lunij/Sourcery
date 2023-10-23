@@ -33,36 +33,24 @@ public class SwiftGenerator {
             throw Error.noTemplates
         }
 
+        var output = output
+        if !output.isRepresentingDirectory {
+            logger.warning("The output path targets a single file. Continuing using its directory instead.")
+            output = .init(output.path.parent())
+        }
+
         logger.info("Generating code...")
 
         let elapsedTime = try clock.measure {
-            if output.isRepresentingDirectory {
-                try templates.forEach { template in
-                    let (result, sourceChanges) = try generate(from: parsingResult, using: template, config: config)
-                    updateRanges(in: &parsingResult, sourceChanges: sourceChanges)
-                    let outputPath = output.path + template.sourcePath.generatedPath
-                    try write(result, to: outputPath)
-
-                    if let linkTo = output.linkTo {
-                        linkTo.targets.forEach { target in
-                            link(outputPath, to: linkTo, target: target)
-                        }
-                    }
-                }
-            } else {
-                let result = try templates.reduce((contents: "", parsingResult: parsingResult)) { state, template in
-                    var (result, parsingResult) = state
-                    let (generatedCode, sourceChanges) = try generate(from: parsingResult, using: template, config: config)
-                    result += "\n" + generatedCode
-                    updateRanges(in: &parsingResult, sourceChanges: sourceChanges)
-                    return (result, parsingResult)
-                }
-                parsingResult = result.parsingResult
-                try write(result.contents, to: output.path)
+            try templates.forEach { template in
+                let (result, sourceChanges) = try generate(from: parsingResult, using: template, config: config)
+                updateRanges(in: &parsingResult, sourceChanges: sourceChanges)
+                let outputPath = output.path + template.sourcePath.generatedPath
+                try write(result, to: outputPath)
 
                 if let linkTo = output.linkTo {
                     linkTo.targets.forEach { target in
-                        link(output.path, to: linkTo, target: target)
+                        link(outputPath, to: linkTo, target: target)
                     }
                 }
             }

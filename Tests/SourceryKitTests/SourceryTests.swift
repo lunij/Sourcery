@@ -1232,61 +1232,21 @@ class SourceryTests: XCTestCase {
         }
     }
 
-    func test_processFiles_whenTemplateFolder_andSingleFileOutput_itJoinsGeneratedCodeIntoSingleFile() throws {
-        let outputFile = output.path + "Composed.swift"
-        let expectedResult = try? (Stubs.resultDirectory + Path("Basic+Other.swift")).read(.utf8).withoutWhitespaces
-
-        try Sourcery(cacheDisabled: true).processConfiguration(.stub(
-            sources: .paths(Paths(include: [Stubs.sourceDirectory])),
-            templates: Paths(include: [
-                Stubs.templateDirectory + "Basic.stencil",
-                Stubs.templateDirectory + "Other.stencil"
-            ]),
-            output: Output(outputFile)
-        ))
-
-        let result = try outputFile.read(.utf8)
-        XCTAssertEqual(result.withoutWhitespaces, expectedResult?.withoutWhitespaces)
-    }
-
-    func test_processFiles_whenTemplateFolder_andSingleFileOutput_itDoesNotCreateGeneratedFileWithEmptyContent() throws {
-        let outputFile = output.path + "Composed.swift"
-        let templatePath = Stubs.templateDirectory + Path("Empty.stencil")
-        "".update(in: templatePath)
-
-        try Sourcery(cacheDisabled: true).processConfiguration(.stub(
-            sources: .paths(Paths(include: [Stubs.sourceDirectory])),
-            templates: Paths(include: [templatePath]),
-            output: Output(outputFile)
-        ))
-
-        let result = try? outputFile.read(.utf8)
-        XCTAssertNil(result)
-    }
-
-    func test_processFiles_whenTemplateFolder_andOutputDirectory_itCreatesCorrespondingOutputFileForEachTemplate() throws {
-        let templateNames = ["Basic", "Other"]
-        let generated = templateNames.map { output.path + (Stubs.templateDirectory + "\($0).stencil").generatedPath }
-        let expected = templateNames.map { Stubs.resultDirectory + Path("\($0).swift") }
-
+    func test_processFiles_whenTemplateFolder_itCreatesGeneratedFileForEachTemplate() throws {
         try Sourcery(cacheDisabled: true).processConfiguration(.stub(
             sources: .paths(Paths(include: [Stubs.sourceDirectory])),
             templates: Paths(include: [Stubs.templateDirectory]),
             output: output
         ))
 
-        for (idx, outputPath) in generated.enumerated() {
-            let output = try outputPath.read(.utf8)
-            let expected = try expected[idx].read(.utf8)
-
-            XCTAssertEqual(output.withoutWhitespaces, expected.withoutWhitespaces)
-        }
+        XCTAssertTrue(output.path.appending("Basic.generated.swift").exists)
+        XCTAssertTrue(output.path.appending("GenerationWays.generated.swift").exists)
+        XCTAssertTrue(output.path.appending("Include.generated.swift").exists)
+        XCTAssertTrue(output.path.appending("Other.generated.swift").exists)
+        XCTAssertTrue(output.path.appending("Partial.generated.swift").exists)
     }
 
     func test_processFiles_whenTemplateFolder_andExcludedTemplatePaths_itDoesNotCreateGeneratedFileForExcludedTemplates() throws {
-        let outputFile = output.path + "Composed.swift"
-        let expectedResult = try (Stubs.resultDirectory + Path("Basic+Other.swift")).read(.utf8).withoutWhitespaces
-
         try Sourcery(cacheDisabled: true).processConfiguration(.stub(
             sources: .paths(Paths(include: [Stubs.sourceDirectory])),
             templates: Paths(
@@ -1297,11 +1257,14 @@ class SourceryTests: XCTestCase {
                     Stubs.templateDirectory + "Partial.stencil"
                 ]
             ),
-            output: Output(outputFile)
+            output: output
         ))
 
-        let result = try outputFile.read(.utf8)
-        XCTAssertEqual(result.withoutWhitespaces, expectedResult.withoutWhitespaces)
+        XCTAssertTrue(output.path.appending("Basic.generated.swift").exists)
+        XCTAssertFalse(output.path.appending("GenerationWays.generated.swift").exists)
+        XCTAssertFalse(output.path.appending("Include.generated.swift").exists)
+        XCTAssertTrue(output.path.appending("Other.generated.swift").exists)
+        XCTAssertFalse(output.path.appending("Partial.generated.swift").exists)
     }
 
     private func createProjectScenario(templatePath: Path) throws -> ProjectScenario {

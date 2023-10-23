@@ -34,6 +34,20 @@ class SwiftGeneratorTests: XCTestCase {
         ])
     }
 
+    func test_warnsAboutSingleFileOutput() throws {
+        var parsingResult = ParsingResult.stub()
+        let config = Configuration.stub(output: .init("Generated/SingleOutput.generated.swift"))
+
+        try sut.generate(
+            from: &parsingResult,
+            using: [StencilTemplate(templateString: "")],
+            to: config.output,
+            config: config
+        )
+
+        XCTAssertEqual(loggerMock.calls.first, .warning("The output path targets a single file. Continuing using its directory instead."))
+    }
+
     func test_failsGenerating_whenNoTemplates() throws {
         var parsingResult = ParsingResult.stub()
         let config = Configuration.stub(output: .init("Generated"))
