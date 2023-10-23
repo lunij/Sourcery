@@ -74,22 +74,16 @@ public class SwiftGenerator {
     }
 
     private func generate(from parsingResult: ParsingResult, using template: Template, config: Configuration) throws -> GenerationResult {
-        let generationStart = currentTimestamp()
         let result = try template.render(.init(
             parserResult: parsingResult.parserResult,
             types: parsingResult.types,
             functions: parsingResult.functions,
             arguments: config.arguments
         ))
-        logger.benchmark("\tGenerating \(template.sourcePath.lastComponent) took \(currentTimestamp() - generationStart)")
         return try processRanges(in: parsingResult, result: result, config: config)
     }
 
     private func processRanges(in parsingResult: ParsingResult, result: String, config: Configuration) throws -> GenerationResult {
-        let start = currentTimestamp()
-        defer {
-            logger.benchmark("\t\tProcessing Ranges took \(currentTimestamp() - start)")
-        }
         var result = result
         result = processFileRanges(for: parsingResult, in: result, config: config)
         let sourceChanges: [SourceChange]
