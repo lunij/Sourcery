@@ -38,7 +38,7 @@ public class SwiftGenerator {
         let elapsedTime = try clock.measure {
             if output.isRepresentingDirectory {
                 try templates.forEach { template in
-                    let (result, sourceChanges) = try generate(template, forParsingResult: parsingResult, config: config)
+                    let (result, sourceChanges) = try generate(from: parsingResult, using: template, config: config)
                     updateRanges(in: &parsingResult, sourceChanges: sourceChanges)
                     let outputPath = output.path + template.sourcePath.generatedPath
                     try self.output(result, to: outputPath)
@@ -52,7 +52,7 @@ public class SwiftGenerator {
             } else {
                 let result = try templates.reduce((contents: "", parsingResult: parsingResult)) { state, template in
                     var (result, parsingResult) = state
-                    let (generatedCode, sourceChanges) = try generate(template, forParsingResult: parsingResult, config: config)
+                    let (generatedCode, sourceChanges) = try generate(from: parsingResult, using: template, config: config)
                     result += "\n" + generatedCode
                     updateRanges(in: &parsingResult, sourceChanges: sourceChanges)
                     return (result, parsingResult)
@@ -85,7 +85,7 @@ public class SwiftGenerator {
         logger.info("Code generation finished in \(elapsedTime)")
     }
 
-    private func generate(_ template: Template, forParsingResult parsingResult: ParsingResult, config: Configuration) throws -> GenerationResult {
+    private func generate(from parsingResult: ParsingResult, using template: Template, config: Configuration) throws -> GenerationResult {
         let generationStart = currentTimestamp()
         let result = try template.render(.init(
             parserResult: parsingResult.parserResult,
