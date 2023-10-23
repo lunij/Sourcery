@@ -11,10 +11,6 @@ extension Path {
         try fileManager.createDirectory(at: url, withIntermediateDirectories: true, attributes: nil)
         return Path(url.path)
     }
-
-    func appending(_ component: String) -> Path {
-        self + Path(component)
-    }
 }
 
 extension String {

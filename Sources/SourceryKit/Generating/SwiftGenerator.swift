@@ -45,7 +45,7 @@ public class SwiftGenerator {
             try templates.forEach { template in
                 let (result, sourceChanges) = try generate(from: parsingResult, using: template, config: config)
                 updateRanges(in: &parsingResult, sourceChanges: sourceChanges)
-                let outputPath = output.path + template.sourcePath.generatedPath
+                let outputPath = output.path.appending(template.sourcePath.generatedFileName)
                 try write(result, to: outputPath)
 
                 if let linkTo = output.linkTo {

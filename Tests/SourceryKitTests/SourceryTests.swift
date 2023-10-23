@@ -31,7 +31,7 @@ class SourceryTests: XCTestCase {
 
     func test_processFiles_whenExistingFiles_andNoChanges() {
         let sourcePath = createExistingFiles()
-        let generatedFilePath = output.path + .otherStencilPath.generatedPath
+        let generatedFilePath = output.path.appending(Path.otherStencilPath.generatedFileName)
         let generatedFileModificationDate = generatedFilePath.url.fileModificationDate()
         var newGeneratedFileModificationDate: Date?
         let expectation = expectation(description: #function)
@@ -56,7 +56,7 @@ class SourceryTests: XCTestCase {
 
         "class Bar {}".update(in: anotherSourcePath)
 
-        let generatedFilePath = output.path + .otherStencilPath.generatedPath
+        let generatedFilePath = output.path.appending(Path.otherStencilPath.generatedFileName)
         let generatedFileModificationDate = generatedFilePath.url.fileModificationDate()
         var newGeneratedFileModificationDate: Date?
         let expectation = expectation(description: #function)
@@ -131,7 +131,7 @@ class SourceryTests: XCTestCase {
             // Line One
             """
 
-        let generatedPath = output.path + templatePath.generatedPath
+        let generatedPath = output.path.appending(templatePath.generatedFileName)
 
         let result = try generatedPath.read(.utf8)
         XCTAssertEqual(result.withoutWhitespaces, expectedResult.withoutWhitespaces)
@@ -166,7 +166,7 @@ class SourceryTests: XCTestCase {
             // sourcery:end
             """
 
-        let generatedPath = output.path + templatePath.generatedPath
+        let generatedPath = output.path.appending(templatePath.generatedFileName)
 
         let result = try generatedPath.read(.utf8)
         XCTAssertEqual(result.withoutWhitespaces, expectedResult.withoutWhitespaces)
@@ -188,7 +188,7 @@ class SourceryTests: XCTestCase {
             output: output
         ))
 
-        let generatedPath = output.path + templatePath.generatedPath
+        let generatedPath = output.path.appending(templatePath.generatedFileName)
 
         XCTAssertThrowsError(try generatedPath.read(.utf8))
     }
@@ -1072,7 +1072,7 @@ class SourceryTests: XCTestCase {
 
             """
 
-        let generatedPath = output.path + templatePath.generatedPath
+        let generatedPath = output.path.appending(templatePath.generatedFileName)
 
         let result = try generatedPath.read(.utf8)
         XCTAssertEqual(result.withoutWhitespaces, expectedResult.withoutWhitespaces)
@@ -1143,7 +1143,7 @@ class SourceryTests: XCTestCase {
     }
 
     func test_processFiles_andRestrictedFile_itIgnoresSourceryGeneratedFiles() throws {
-        let targetPath = output.path + .basicStencilPath.generatedPath
+        let targetPath = output.path.appending(Path.basicStencilPath.generatedFileName)
 
         _ = try? targetPath.delete()
 
@@ -1193,7 +1193,7 @@ class SourceryTests: XCTestCase {
             output: output
         ))
 
-        let result = try (output.path + .basicStencilPath.generatedPath).read(.utf8)
+        let result = try output.path.appending(Path.basicStencilPath.generatedFileName).read(.utf8)
         let expectedResult = try (Stubs.resultDirectory + Path("BasicFooExcluded.swift")).read(.utf8).withoutWhitespaces
         XCTAssertEqual(result.withoutWhitespaces, expectedResult.withoutWhitespaces)
     }
@@ -1205,7 +1205,7 @@ class SourceryTests: XCTestCase {
             output: output
         ))
 
-        let result = try (output.path + .basicStencilPath.generatedPath).read(.utf8)
+        let result = try output.path.appending(Path.basicStencilPath.generatedFileName).read(.utf8)
         let expectedResult = try (Stubs.resultDirectory + Path("Basic.swift")).read(.utf8).withoutWhitespaces
         XCTAssertEqual(result.withoutWhitespaces, expectedResult.withoutWhitespaces)
     }
@@ -1226,7 +1226,7 @@ class SourceryTests: XCTestCase {
         XCTAssertEqual(eventStreams.count, 2)
 
         assertContinuously {
-            try (output.path + templatePath.generatedPath).read(.utf8)
+            try output.path.appending(templatePath.generatedFileName).read(.utf8)
         } until: {
             $0.contains("\(String.generatedHeader)Found 3 Types")
         }

@@ -1,8 +1,12 @@
 import PathKit
 
 extension Path {
-    var generatedPath: Path {
-        Path("\(lastComponentWithoutExtension).generated.swift")
+    var generatedFileName: String {
+        "\(lastComponentWithoutExtension).generated.swift"
+    }
+
+    func appending(_ path: String) -> Path {
+        self + Path(path)
     }
 }
 

@@ -198,7 +198,7 @@ class StencilTemplateTests: XCTestCase {
             output: output
         ))
 
-        let result = try (output.path + templatePath.generatedPath).read(.utf8)
+        let result = try output.path.appending(templatePath.generatedFileName).read(.utf8)
         XCTAssertEqual(result, expectedResult)
     }
 }
