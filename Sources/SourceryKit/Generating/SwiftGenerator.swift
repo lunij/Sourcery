@@ -23,8 +23,7 @@ public class SwiftGenerator {
         from parsingResult: inout ParsingResult,
         using templates: [Template],
         to output: Output,
-        config: Configuration,
-        overridingTemplatePaths: Paths? = nil
+        config: Configuration
     ) throws {
         guard output.isNotEmpty else {
             throw Error.noOutput

@@ -137,8 +137,7 @@ public class Sourcery {
                         from: &result,
                         using: templates,
                         to: config.output,
-                        config: config,
-                        overridingTemplatePaths: Paths(include: [path])
+                        config: config
                     )
                 } catch {
                     logger.error(error)
