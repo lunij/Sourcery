@@ -27,7 +27,11 @@ public class SwiftGenerator {
         overridingTemplatePaths: Paths? = nil
     ) throws {
         guard output.isNotEmpty else {
-            throw Error.undefinedOutput
+            throw Error.noOutput
+        }
+
+        guard templates.isNotEmpty else {
+            throw Error.noTemplates
         }
 
         logger.info("Generating code...")
@@ -327,6 +331,7 @@ public class SwiftGenerator {
     }
 
     enum Error: Swift.Error, Equatable {
-        case undefinedOutput
+        case noOutput
+        case noTemplates
     }
 }

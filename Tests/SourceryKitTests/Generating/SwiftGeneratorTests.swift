@@ -23,7 +23,7 @@ class SwiftGeneratorTests: XCTestCase {
 
         try sut.generate(
             from: &parsingResult,
-            using: [],
+            using: [StencilTemplate(templateString: "")],
             to: config.output,
             config: config
         )
@@ -34,7 +34,23 @@ class SwiftGeneratorTests: XCTestCase {
         ])
     }
 
-    func test_failsGenerating_whenUndefinedOutput() throws {
+    func test_failsGenerating_whenNoTemplates() throws {
+        var parsingResult = ParsingResult.stub()
+        let config = Configuration.stub(output: .init("Generated"))
+
+        XCTAssertThrowsError(try sut.generate(
+            from: &parsingResult,
+            using: [],
+            to: config.output,
+            config: config
+        )) { error in
+            let error = error as? SwiftGenerator.Error
+            XCTAssertEqual(error, .noTemplates)
+        }
+        XCTAssertEqual(loggerMock.calls, [])
+    }
+
+    func test_failsGenerating_whenNoOutput() throws {
         var parsingResult = ParsingResult.stub()
         let config = Configuration.stub(output: .init(""))
 
@@ -45,7 +61,7 @@ class SwiftGeneratorTests: XCTestCase {
             config: config
         )) { error in
             let error = error as? SwiftGenerator.Error
-            XCTAssertEqual(error, .undefinedOutput)
+            XCTAssertEqual(error, .noOutput)
         }
         XCTAssertEqual(loggerMock.calls, [])
     }
