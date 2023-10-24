@@ -16,21 +16,21 @@ extension SourceryProtocol {
         } ?? []
 
         self.init(
-          name: node.identifier.text.trimmingCharacters(in: .whitespaces),
-          parent: parent,
-          accessLevel: modifiers.lazy.compactMap(AccessLevel.init).first ?? .internal,
-          isExtension: false,
-          variables: [],
-          methods: [],
-          subscripts: [],
-          inheritedTypes: node.inheritanceClause?.inheritedTypeCollection.map { $0.typeName.description.trimmed } ?? [],
-          containedTypes: [],
-          typealiases: [],
-          genericRequirements: genericRequirements,
-          attributes: Attribute.from(node.attributes),
-          modifiers: modifiers.map(SourceryModifier.init),
-          annotations: annotationsParser.annotations(from: node),
-          documentation: annotationsParser.documentation(from: node)
+            name: node.identifier.text.trimmingCharacters(in: .whitespaces),
+            parent: parent,
+            accessLevel: modifiers.lazy.compactMap(AccessLevel.init).first ?? .internal,
+            isExtension: false,
+            variables: [],
+            methods: [],
+            subscripts: [],
+            inheritedTypes: node.inheritanceClause?.inheritedTypeCollection.map(\.typeName.description.trimmed) ?? [],
+            containedTypes: [],
+            typealiases: [],
+            genericRequirements: genericRequirements,
+            attributes: Attribute.from(node.attributes),
+            modifiers: modifiers.map(SourceryModifier.init),
+            annotations: annotationsParser.annotations(from: node),
+            documentation: annotationsParser.documentation(from: node)
         )
     }
 }

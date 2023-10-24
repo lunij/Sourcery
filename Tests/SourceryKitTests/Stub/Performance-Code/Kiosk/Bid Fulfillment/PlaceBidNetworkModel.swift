@@ -1,6 +1,6 @@
 import Foundation
-import RxSwift
 import Moya
+import RxSwift
 import SwiftyJSON
 
 let OutbidDomain = "Outbid"
@@ -12,7 +12,6 @@ protocol PlaceBidNetworkModelType {
 }
 
 class PlaceBidNetworkModel: NSObject, PlaceBidNetworkModelType {
-
     let bidDetails: BidDetails
 
     init(bidDetails: BidDetails) {
@@ -41,12 +40,12 @@ class PlaceBidNetworkModel: NSObject, PlaceBidNetworkModelType {
 
         return request
             .map { position in
-                return position.id
+                position.id
             }.catchError { e -> Observable<String> in
                 // We've received an error. We're going to check to see if it's type is "param_error", which indicates we were outbid.
 
                 guard let error = e as? Moya.Error else { throw e }
-                guard case .statusCode(let response) = error else { throw e }
+                guard case let .statusCode(response) = error else { throw e }
 
                 let json = JSON(data: response.data)
 
@@ -58,5 +57,4 @@ class PlaceBidNetworkModel: NSObject, PlaceBidNetworkModelType {
             }
             .logError()
     }
-
 }

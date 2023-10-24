@@ -1,13 +1,11 @@
-import UIKit
-import Artsy_UILabels
-import RxSwift
+import Action
 import Artsy_UIButtons
 import Artsy_UILabels
 import ORStackView
-import Action
+import RxSwift
+import UIKit
 
 class PlaceBidViewController: UIViewController {
-
     var provider: Networking!
 
     fileprivate var _bidDollars = Variable(0)
@@ -23,11 +21,11 @@ class PlaceBidViewController: UIViewController {
     @IBOutlet var nextBidAmountLabel: UILabel!
 
     @IBOutlet var artworkImageView: UIImageView!
-    @IBOutlet weak var detailsStackView: ORTagBasedAutoStackView!
+    @IBOutlet var detailsStackView: ORTagBasedAutoStackView!
 
     @IBOutlet var bidButton: Button!
-    @IBOutlet weak var conditionsOfSaleButton: UIButton!
-    @IBOutlet weak var privacyPolictyButton: UIButton!
+    @IBOutlet var conditionsOfSaleButton: UIButton!
+    @IBOutlet var privacyPolictyButton: UIButton!
 
     var showBuyersPremiumCommand = { () -> CocoaAction in
         appDelegate().showBuyersPremiumCommand()
@@ -41,23 +39,23 @@ class PlaceBidViewController: UIViewController {
         appDelegate().showConditionsOfSaleCommand()
     }
 
-    lazy var bidDollars: Observable<Int> = { self.keypadContainer.intValue }()
+    lazy var bidDollars: Observable<Int> = self.keypadContainer.intValue
     var buyersPremium: () -> (BuyersPremium?) = { appDelegate().sale.buyersPremium }
 
     class func instantiateFromStoryboard(_ storyboard: UIStoryboard) -> PlaceBidViewController {
-        return storyboard.viewController(withID: .PlaceYourBid) as! PlaceBidViewController
+        storyboard.viewController(withID: .PlaceYourBid) as! PlaceBidViewController
     }
 
     fileprivate let _viewWillDisappear = PublishSubject<Void>()
     var viewWillDisappear: Observable<Void> {
-        return self._viewWillDisappear.asObserver()
+        self._viewWillDisappear.asObserver()
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         if !hasAlreadyPlacedABid {
-            self.fulfillmentNav().reset()
+            fulfillmentNav().reset()
         }
 
         currentBidTitleLabel.font = UIFont.serifSemiBoldFont(withSize: 17)
@@ -75,18 +73,17 @@ class PlaceBidViewController: UIViewController {
             .bindTo(bidAmountTextField.rx.text)
             .addDisposableTo(rx_disposeBag)
 
-        if let nav = self.navigationController as? FulfillmentNavigationController {
+        if let nav = navigationController as? FulfillmentNavigationController {
             bidDollars
                 .map { $0 * 100 }
                 .takeUntil(viewWillDisappear)
                 .map { bid in
-                    return bid as NSNumber?
+                    bid as NSNumber?
                 }
                 .bindTo(nav.bidDetails.bidAmountCents)
                 .addDisposableTo(rx_disposeBag)
 
             if let saleArtwork = nav.bidDetails.saleArtwork {
-
                 let minimumNextBid = saleArtwork
                     .rx.observe(NSNumber.self, "minimumNextBidCents")
                     .filterNil()
@@ -110,11 +107,11 @@ class PlaceBidViewController: UIViewController {
                     .bindTo(nextBidAmountLabel.rx.text)
                     .addDisposableTo(rx_disposeBag)
 
-                Observable.combineLatest([bidDollars, minimumNextBid], { ints  in
-                        return (ints[0]) * 100 >= (ints[1])
-                    })
-                    .bindTo(bidButton.rx.isEnabled)
-                    .addDisposableTo(rx_disposeBag)
+                Observable.combineLatest([bidDollars, minimumNextBid]) { ints in
+                    ints[0] * 100 >= ints[1]
+                }
+                .bindTo(bidButton.rx.isEnabled)
+                .addDisposableTo(rx_disposeBag)
 
                 enum LabelTags: Int {
                     case lotNumber = 1
@@ -137,7 +134,6 @@ class PlaceBidViewController: UIViewController {
                         .takeUntil(viewWillDisappear)
                         .bindTo(lotNumberLabel.rx.text)
                         .addDisposableTo(rx_disposeBag)
-
                 }
 
                 let artistNameLabel = sansSerifLabel()
@@ -207,9 +203,9 @@ class PlaceBidViewController: UIViewController {
                     .addDisposableTo(rx_disposeBag)
 
                 if let url = saleArtwork.artwork.defaultImage?.thumbnailURL() {
-                    self.artworkImageView.sd_setImage(with: url as URL!)
+                    artworkImageView.sd_setImage(with: url as URL!)
                 } else {
-                    self.artworkImageView.image = nil
+                    artworkImageView.image = nil
                 }
             }
         }
@@ -221,13 +217,12 @@ class PlaceBidViewController: UIViewController {
         _viewWillDisappear.onNext()
     }
 
-    @IBAction func bidButtonTapped(_ sender: AnyObject) {
+    @IBAction func bidButtonTapped(_: AnyObject) {
         let identifier = hasAlreadyPlacedABid ? SegueIdentifier.PlaceAnotherBid : SegueIdentifier.ConfirmBid
         performSegue(identifier)
     }
 
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-
+    override func prepare(for segue: UIStoryboardSegue, sender _: Any?) {
         if segue == .PlaceAnotherBid {
             let nextViewController = segue.destination as! LoadingViewController
             nextViewController.provider = provider
@@ -274,7 +269,7 @@ func dollarsToCurrencyString(_ dollars: Int) -> String {
 }
 
 func toNextBidString(_ cents: Int) -> String {
-    guard let dollars = NumberFormatter.currencyString(forDollarCents: cents as NSNumber!)  else {
+    guard let dollars = NumberFormatter.currencyString(forDollarCents: cents as NSNumber!) else {
         return ""
     }
     return "Enter \(dollars) or more"
@@ -282,8 +277,8 @@ func toNextBidString(_ cents: Int) -> String {
 
 typealias DeveloperOnly = PlaceBidViewController
 extension DeveloperOnly {
-    @IBAction func dev_nextIncrementPressed(_ sender: AnyObject) {
-        let bidDetails = (self.navigationController as? FulfillmentNavigationController)?.bidDetails
+    @IBAction func dev_nextIncrementPressed(_: AnyObject) {
+        let bidDetails = (navigationController as? FulfillmentNavigationController)?.bidDetails
         bidDetails?.bidAmountCents.value = bidDetails?.saleArtwork?.minimumNextBidCents
         performSegue(SegueIdentifier.ConfirmBid)
     }

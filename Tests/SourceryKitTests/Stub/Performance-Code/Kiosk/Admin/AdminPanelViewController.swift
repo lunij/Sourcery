@@ -1,16 +1,15 @@
-import UIKit
 import Artsy_UILabels
+import UIKit
 
 class AdminPanelViewController: UIViewController {
+    @IBOutlet var auctionIDLabel: UILabel!
 
-    @IBOutlet weak var auctionIDLabel: UILabel!
-
-    @IBAction func backTapped(_ sender: AnyObject) {
-        self.presentingViewController?.dismiss(animated: true, completion: nil)
+    @IBAction func backTapped(_: AnyObject) {
+        presentingViewController?.dismiss(animated: true, completion: nil)
         appDelegate().setHelpButtonHidden(false)
     }
 
-    @IBAction func closeAppTapped(_ sender: AnyObject) {
+    @IBAction func closeAppTapped(_: AnyObject) {
         exit(1)
     }
 
@@ -20,7 +19,7 @@ class AdminPanelViewController: UIViewController {
         appDelegate().setHelpButtonHidden(true)
     }
 
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+    override func prepare(for segue: UIStoryboardSegue, sender _: Any?) {
         if segue == .LoadAdminWebViewController {
             let webVC = segue.destination as! AuctionWebViewController
             let auctionID = AppSetup.sharedState.auctionID
@@ -39,7 +38,7 @@ class AdminPanelViewController: UIViewController {
         if APIKeys.sharedKeys.stubResponses {
             auctionIDLabel.text = "STUBBING API RESPONSES\nNOT CONTACTING ARTSY API"
         } else {
-            let version = (Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String)  ?? "Unknown"
+            let version = (Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String) ?? "Unknown"
             auctionIDLabel.text = "\(state.auctionID), Kiosk version: \(version)"
         }
 
@@ -53,8 +52,8 @@ class AdminPanelViewController: UIViewController {
         toggleCardReaderButton.setTitle(readStatus, for: .normal)
     }
 
-    @IBOutlet weak var environmentChangeButton: UIButton!
-    @IBAction func switchStagingProductionTapped(_ sender: AnyObject) {
+    @IBOutlet var environmentChangeButton: UIButton!
+    @IBAction func switchStagingProductionTapped(_: AnyObject) {
         let defaults = UserDefaults.standard
         defaults.set(!AppSetup.sharedState.useStaging, forKey: "KioskUseStaging")
 
@@ -65,23 +64,21 @@ class AdminPanelViewController: UIViewController {
         delayToMainThread(1) {
             exit(1)
         }
-
     }
 
-    @IBOutlet weak var showAdminButtonsButton: UIButton!
-    @IBAction func toggleAdminButtons(_ sender: UIButton) {
+    @IBOutlet var showAdminButtonsButton: UIButton!
+    @IBAction func toggleAdminButtons(_: UIButton) {
         let defaults = UserDefaults.standard
         defaults.set(!AppSetup.sharedState.showDebugButtons, forKey: "KioskShowDebugButtons")
         defaults.synchronize()
         delayToMainThread(1) {
             exit(1)
         }
-
     }
 
-    @IBOutlet weak var cardReaderLabel: ARSerifLabel!
-    @IBOutlet weak var toggleCardReaderButton: SecondaryActionButton!
-    @IBAction func toggleCardReaderTapped(_ sender: AnyObject) {
+    @IBOutlet var cardReaderLabel: ARSerifLabel!
+    @IBOutlet var toggleCardReaderButton: SecondaryActionButton!
+    @IBAction func toggleCardReaderTapped(_: AnyObject) {
         let defaults = UserDefaults.standard
         defaults.set(!AppSetup.sharedState.disableCardReader, forKey: "KioskDisableCardReader")
         defaults.synchronize()

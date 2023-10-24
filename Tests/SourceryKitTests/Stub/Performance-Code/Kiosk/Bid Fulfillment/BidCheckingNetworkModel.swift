@@ -1,12 +1,12 @@
-import UIKit
-import RxSwift
 import Moya
+import RxSwift
+import UIKit
 
 enum BidCheckingError: String {
     case PollingExceeded
 }
 
-extension BidCheckingError: Swift.Error { }
+extension BidCheckingError: Swift.Error {}
 
 protocol BidCheckingNetworkModelType {
     var bidDetails: BidDetails { get }
@@ -15,11 +15,10 @@ protocol BidCheckingNetworkModelType {
     var isHighestBidder: Variable<Bool> { get }
     var reserveNotMet: Variable<Bool> { get }
 
-    func waitForBidResolution (bidderPositionId: String, provider: AuthorizedNetworking) -> Observable<Void>
+    func waitForBidResolution(bidderPositionId: String, provider: AuthorizedNetworking) -> Observable<Void>
 }
 
 class BidCheckingNetworkModel: NSObject, BidCheckingNetworkModelType {
-
     fileprivate var pollInterval = TimeInterval(1)
     fileprivate var maxPollRequests = 20
     fileprivate var pollRequests = 0
@@ -40,12 +39,10 @@ class BidCheckingNetworkModel: NSObject, BidCheckingNetworkModelType {
         self.bidDetails = bidDetails
     }
 
-    func waitForBidResolution (bidderPositionId: String, provider: AuthorizedNetworking) -> Observable<Void> {
-        return self
-            .poll(forUpdatedBidderPosition: bidderPositionId, provider: provider)
+    func waitForBidResolution(bidderPositionId: String, provider: AuthorizedNetworking) -> Observable<Void> {
+        poll(forUpdatedBidderPosition: bidderPositionId, provider: provider)
             .then {
-
-                return self.getUpdatedSaleArtwork()
+                self.getUpdatedSaleArtwork()
                     .flatMap { saleArtwork -> Observable<Void> in
 
                         // This is an updated model – hooray!
@@ -53,16 +50,16 @@ class BidCheckingNetworkModel: NSObject, BidCheckingNetworkModelType {
                         self.bidDetails.saleArtwork?.updateWithValues(saleArtwork)
                         self.reserveNotMet.value = ReserveStatus.initOrDefault(saleArtwork.reserveStatus).reserveNotMet
 
-                        return .just(Void())
+                        return .just(())
                     }
                     .doOnError { _ in
                         logger.log("Bidder position was processed but corresponding saleArtwork was not found")
                     }
                     .catchErrorJustReturn()
                     .flatMap { _ -> Observable<Void> in
-                        return self.checkForMaxBid(provider: provider)
-                }
-            } .doOnNext { _ in
+                        self.checkForMaxBid(provider: provider)
+                    }
+            }.doOnNext { _ in
                 self.bidIsResolved.value = true
 
                 // If polling fails, we can still show bid confirmation. Do not error.
@@ -78,7 +75,7 @@ class BidCheckingNetworkModel: NSObject, BidCheckingNetworkModelType {
 
                 if let processedAt = bidderPositionObject.processedAt {
                     logger.log("BidPosition finished processing at \(processedAt), proceeding...")
-                    return .just(Void())
+                    return .just(())
                 } else {
                     // The backend hasn't finished processing the bid yet
 
@@ -92,10 +89,10 @@ class BidCheckingNetworkModel: NSObject, BidCheckingNetworkModelType {
                         .take(1)
                         .map(void)
                         .then {
-                            return self.poll(forUpdatedBidderPosition: bidderPositionId, provider: provider)
-                    }
+                            self.poll(forUpdatedBidderPosition: bidderPositionId, provider: provider)
+                        }
                 }
-        }
+            }
 
         return Observable<Int>.interval(pollInterval, scheduler: MainScheduler.instance)
             .take(1)
@@ -104,7 +101,7 @@ class BidCheckingNetworkModel: NSObject, BidCheckingNetworkModelType {
     }
 
     fileprivate func checkForMaxBid(provider: AuthorizedNetworking) -> Observable<Void> {
-        return getMyBidderPositions(provider: provider)
+        getMyBidderPositions(provider: provider)
             .doOnNext { newBidderPositions in
 
                 if let topBidID = self.mostRecentSaleArtwork?.saleHighestBid?.id {
@@ -129,11 +126,10 @@ class BidCheckingNetworkModel: NSObject, BidCheckingNetworkModelType {
     }
 
     fileprivate func getUpdatedSaleArtwork() -> Observable<SaleArtwork> {
-
         let artworkID = bidDetails.saleArtwork!.artwork.id
         let auctionID = bidDetails.saleArtwork!.auctionID!
 
-        let endpoint: ArtsyAPI = ArtsyAPI.auctionInfoForArtwork(auctionID: auctionID, artworkID: artworkID)
+        let endpoint = ArtsyAPI.auctionInfoForArtwork(auctionID: auctionID, artworkID: artworkID)
         return provider
             .request(endpoint)
             .filterSuccessfulStatusCodes()

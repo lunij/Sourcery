@@ -1,8 +1,7 @@
-import UIKit
 import RxSwift
+import UIKit
 
 class RegistrationMobileViewController: UIViewController, RegistrationSubController, UITextFieldDelegate {
-
     @IBOutlet var numberTextField: TextField!
     @IBOutlet var confirmButton: ActionButton!
     let finished = PublishSubject<Void>()
@@ -14,10 +13,10 @@ class RegistrationMobileViewController: UIViewController, RegistrationSubControl
 
     fileprivate let _viewWillDisappear = PublishSubject<Void>()
     var viewWillDisappear: Observable<Void> {
-        return self._viewWillDisappear.asObserver()
+        self._viewWillDisappear.asObserver()
     }
 
-    lazy var bidDetails: BidDetails! = { self.navigationController!.fulfillmentNav().bidDetails }()
+    lazy var bidDetails: BidDetails! = self.navigationController!.fulfillmentNav().bidDetails
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,8 +40,7 @@ class RegistrationMobileViewController: UIViewController, RegistrationSubControl
         _viewWillDisappear.onNext()
     }
 
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-
+    func textField(_: UITextField, shouldChangeCharactersIn _: NSRange, replacementString string: String) -> Bool {
         // Allow delete
         if string.isEmpty { return true }
 
@@ -52,6 +50,6 @@ class RegistrationMobileViewController: UIViewController, RegistrationSubControl
     }
 
     class func instantiateFromStoryboard(_ storyboard: UIStoryboard) -> RegistrationMobileViewController {
-        return storyboard.viewController(withID: .RegisterMobile) as! RegistrationMobileViewController
+        storyboard.viewController(withID: .RegisterMobile) as! RegistrationMobileViewController
     }
 }

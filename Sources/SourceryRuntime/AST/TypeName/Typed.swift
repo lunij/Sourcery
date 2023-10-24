@@ -2,7 +2,6 @@ import Foundation
 
 /// Descibes typed declaration, i.e. variable, method parameter, tuple element, enum case associated value
 public protocol Typed {
-
     // sourcery: skipEquality, skipDescription
     /// Type, if known
     var type: Type? { get }

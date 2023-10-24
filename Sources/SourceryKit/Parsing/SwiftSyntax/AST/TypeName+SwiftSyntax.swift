@@ -6,13 +6,13 @@ extension SyntaxProtocol {
     @inlinable
     var sourcerySafeTypeIdentifier: String {
         let content = description
-        return String(content[content.utf8.index(content.startIndex, offsetBy: leadingTriviaLength.utf8Length)..<content.utf8.index(content.endIndex, offsetBy: -trailingTriviaLength.utf8Length)])
+        return String(content[content.utf8.index(content.startIndex, offsetBy: leadingTriviaLength.utf8Length) ..< content.utf8.index(content.endIndex, offsetBy: -trailingTriviaLength.utf8Length)])
 
         // TBR: we only need this because we are trying to fit into old AST naming
         // TODO: there is a bug in syntax that sometimes crashes with unexpected nil when removing trivia
 
 //        if trailingTriviaLength.utf8Length != 0 || leadingTriviaLength.utf8Length != 0 {
-////            return withoutTrivia().description.trimmed
+        ////            return withoutTrivia().description.trimmed
 //        } else {
 //            return description.trimmed
 //        }
@@ -53,40 +53,42 @@ extension TypeName {
             let base = TypeName(typeIdentifier.baseType) // TODO: VERIFY IF THIS SHOULD FULLY WRAP
             let fullName = "\(base.name).\(typeIdentifier.name.text.trimmed)"
             let generic = typeIdentifier.genericArgumentClause.map { GenericType(name: fullName, node: $0) }
-            if let genericComponent = generic?.typeParameters.map({ $0.typeName.asSource }).joined(separator: ", ") {
+            if let genericComponent = generic?.typeParameters.map(\.typeName.asSource).joined(separator: ", ") {
                 self.init(name: "\(fullName)<\(genericComponent)>", generic: generic)
             } else {
                 self.init(name: fullName, generic: generic)
             }
         } else if let typeIdentifier = node.as(CompositionTypeSyntax.self) {
             let types = typeIdentifier.elements.map { TypeName($0.type) }
-            let name = types.map({ $0.name }).joined(separator:" & ")
+            let name = types.map(\.name).joined(separator: " & ")
             self.init(name: name, isProtocolComposition: true)
         } else if let typeIdentifier = node.as(OptionalTypeSyntax.self) {
             let type = TypeName(typeIdentifier.wrappedType)
             let needsWrapping = type.isClosure || type.isProtocolComposition
-            self.init(name: needsWrapping ? "(\(type.name))" : type.name,
-                      isOptional: true,
-                      isImplicitlyUnwrappedOptional: false,
-                      tuple: type.tuple,
-                      array: type.array,
-                      dictionary: type.dictionary,
-                      closure: type.closure,
-                      generic: type.generic,
-                      isProtocolComposition: type.isProtocolComposition
+            self.init(
+                name: needsWrapping ? "(\(type.name))" : type.name,
+                isOptional: true,
+                isImplicitlyUnwrappedOptional: false,
+                tuple: type.tuple,
+                array: type.array,
+                dictionary: type.dictionary,
+                closure: type.closure,
+                generic: type.generic,
+                isProtocolComposition: type.isProtocolComposition
             )
         } else if let typeIdentifier = node.as(ImplicitlyUnwrappedOptionalTypeSyntax.self) {
             let type = TypeName(typeIdentifier.wrappedType)
             let needsWrapping = type.isClosure || type.isProtocolComposition
-            self.init(name: needsWrapping ? "(\(type.name))" : type.name,
-                      isOptional: false,
-                      isImplicitlyUnwrappedOptional: true,
-                      tuple: type.tuple,
-                      array: type.array,
-                      dictionary: type.dictionary,
-                      closure: type.closure,
-                      generic: type.generic,
-                      isProtocolComposition: type.isProtocolComposition
+            self.init(
+                name: needsWrapping ? "(\(type.name))" : type.name,
+                isOptional: false,
+                isImplicitlyUnwrappedOptional: true,
+                tuple: type.tuple,
+                array: type.array,
+                dictionary: type.dictionary,
+                closure: type.closure,
+                generic: type.generic,
+                isProtocolComposition: type.isProtocolComposition
             )
         } else if let typeIdentifier = node.as(ArrayTypeSyntax.self) {
             let elementType = TypeName(typeIdentifier.elementType)
@@ -114,16 +116,17 @@ extension TypeName {
 
             // TODO: TBR
             if elements.count == 1, let type = elements.first?.typeName {
-                self.init(name: type.name,
-                          attributes: type.attributes,
-                          isOptional: type.isOptional,
-                          isImplicitlyUnwrappedOptional: type.isImplicitlyUnwrappedOptional,
-                          tuple: type.tuple,
-                          array: type.array,
-                          dictionary: type.dictionary,
-                          closure: type.closure,
-                          generic: type.generic,
-                          isProtocolComposition: type.isProtocolComposition
+                self.init(
+                    name: type.name,
+                    attributes: type.attributes,
+                    isOptional: type.isOptional,
+                    isImplicitlyUnwrappedOptional: type.isImplicitlyUnwrappedOptional,
+                    tuple: type.tuple,
+                    array: type.array,
+                    dictionary: type.dictionary,
+                    closure: type.closure,
+                    generic: type.generic,
+                    isProtocolComposition: type.isProtocolComposition
                 )
             } else if elements.count == 0 { // Void
                 self.init(name: "()")
@@ -135,17 +138,17 @@ extension TypeName {
                 let firstName = node.name?.text.trimmed.nilIfNotValidParameterName
                 let typeName = TypeName(node.type)
                 let specifiers = TypeName.specifiers(from: node.type)
-                
+
                 return ClosureParameter(
-                  argumentLabel: firstName,
-                  name: node.secondName?.text.trimmed ?? firstName,
-                  typeName: typeName,
-                  isInout: specifiers.isInOut
+                    argumentLabel: firstName,
+                    name: node.secondName?.text.trimmed ?? firstName,
+                    typeName: typeName,
+                    isInout: specifiers.isInOut
                 )
             }
             let returnTypeName = TypeName(typeIdentifier.returnType)
-            let asyncKeyword = typeIdentifier.fixedAsyncKeyword.map { $0.text.trimmed }
-            let throwsOrRethrows = typeIdentifier.fixedThrowsOrRethrowsKeyword.map { $0.text.trimmed }
+            let asyncKeyword = typeIdentifier.fixedAsyncKeyword.map(\.text.trimmed)
+            let throwsOrRethrows = typeIdentifier.fixedThrowsOrRethrowsKeyword.map(\.text.trimmed)
             let name = "\(elements.asSource)\(asyncKeyword != nil ? " \(asyncKeyword!)" : "")\(throwsOrRethrows != nil ? " \(throwsOrRethrows!)" : "") -> \(returnTypeName.asSource)"
             self.init(
                 name: name,
@@ -154,22 +157,24 @@ extension TypeName {
                     parameters: elements,
                     returnTypeName: returnTypeName,
                     asyncKeyword: asyncKeyword,
-                    throwsOrRethrowsKeyword: throwsOrRethrows)
+                    throwsOrRethrowsKeyword: throwsOrRethrows
+                )
             )
         } else if let typeIdentifier = node.as(AttributedTypeSyntax.self) {
             let type = TypeName(typeIdentifier.baseType) // TODO: add test for nested type with attributes at multiple level?
             let attributes = Attribute.from(typeIdentifier.attributes)
 
-            self.init(name: type.name,
-                      attributes: attributes,
-                      isOptional: type.isOptional,
-                      isImplicitlyUnwrappedOptional: type.isImplicitlyUnwrappedOptional,
-                      tuple: type.tuple,
-                      array: type.array,
-                      dictionary: type.dictionary,
-                      closure: type.closure,
-                      generic: type.generic,
-                      isProtocolComposition: type.isProtocolComposition
+            self.init(
+                name: type.name,
+                attributes: attributes,
+                isOptional: type.isOptional,
+                isImplicitlyUnwrappedOptional: type.isImplicitlyUnwrappedOptional,
+                tuple: type.tuple,
+                array: type.array,
+                dictionary: type.dictionary,
+                closure: type.closure,
+                generic: type.generic,
+                isProtocolComposition: type.isProtocolComposition
             )
         } else if node.as(ClassRestrictionTypeSyntax.self) != nil {
             self.init(name: "AnyObject")
@@ -184,7 +189,7 @@ extension TypeName {
 
 extension TypeName {
     static func specifiers(from type: TypeSyntax?) -> (isInOut: Bool, unused: Bool) {
-        guard let type = type else {
+        guard let type else {
             return (false, false)
         }
 
@@ -196,17 +201,17 @@ extension TypeName {
                 assertionFailure("Unhandled specifier")
             }
         }
-        
+
         return (isInOut, false)
     }
 }
 
 // TODO: when I don't need to adapt to old formats
-//import Foundation
-//import SourceryRuntime
-//import SwiftSyntax
+// import Foundation
+// import SourceryRuntime
+// import SwiftSyntax
 //
-//extension TypeName {
+// extension TypeName {
 //    convenience init(_ node: TypeSyntax) {
 //        /* TODO: redesign what `TypeName` represents, it can represent all those different variants
 //         Furthermore if `TypeName` was used to store Type the whole composer process could probably be simplified / optimized?
@@ -289,4 +294,4 @@ extension TypeName {
 //            self.init(node.description.trimmed)
 //        }
 //    }
-//}
+// }

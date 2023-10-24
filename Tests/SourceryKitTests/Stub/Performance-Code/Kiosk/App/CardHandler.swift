@@ -1,12 +1,11 @@
-import UIKit
 import RxSwift
+import UIKit
 
 class CardHandler: NSObject, CFTReaderDelegate {
-
     fileprivate let _cardStatus = PublishSubject<String>()
 
     var cardStatus: Observable<String> {
-        return _cardStatus.asObservable()
+        _cardStatus.asObservable()
     }
 
     var card: CFTCard?
@@ -41,7 +40,7 @@ class CardHandler: NSObject, CFTReaderDelegate {
     }
 
     func readerCardResponse(_ card: CFTCard?, withError error: Error?) {
-        if let card = card {
+        if let card {
             self.card = card
             _cardStatus.onNext("Got Card")
 
@@ -49,13 +48,13 @@ class CardHandler: NSObject, CFTReaderDelegate {
                 self?._cardStatus.onCompleted()
                 logger.log("Card was tokenized")
 
-            }, failure: { [weak self] (error) in
+            }, failure: { [weak self] error in
                 self?._cardStatus.onNext("Card Flight Error: \(error)")
                 logger.log("Card was not tokenizable")
             })
 
-        } else if let error = error {
-            self._cardStatus.onNext("response Error \(error)")
+        } else if let error {
+            _cardStatus.onNext("response Error \(error)")
             logger.log("CardReader got a response it cannot handle")
 
             reader.beginSwipe()
@@ -96,7 +95,7 @@ class CardHandler: NSObject, CFTReaderDelegate {
             _cardStatus.onNext("Reader is connected")
             reader.beginSwipe()
         } else {
-            if (error != nil) {
+            if error != nil {
                 _cardStatus.onNext("Reader is disconnected: \(error.localizedDescription)")
             } else {
                 _cardStatus.onNext("Reader is disconnected")

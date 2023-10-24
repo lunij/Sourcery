@@ -1,6 +1,6 @@
 import Foundation
-import SwiftSyntax
 import SourceryRuntime
+import SwiftSyntax
 
 extension Subscript {
     convenience init(_ node: SubscriptDeclSyntax, parent: Type, annotationsParser: AnnotationsParser) {
@@ -14,8 +14,9 @@ extension Subscript {
         var hadSetter = false
 
         if let block = node
-          .accessor?
-          .as(AccessorBlockSyntax.self) {
+            .accessor?
+            .as(AccessorBlockSyntax.self)
+        {
             enum Kind: String {
                 case get
                 case set
@@ -50,14 +51,14 @@ extension Subscript {
         }
 
         self.init(
-          parameters: node.indices.parameterList.map { MethodParameter($0, annotationsParser: annotationsParser) },
-          returnTypeName: TypeName(node.result.returnType.description.trimmed),
-          accessLevel: (read: readAccess, write: isWritable ? writeAccess : .none),
-          attributes: Attribute.from(node.attributes),
-          modifiers: modifiers.map(SourceryModifier.init),
-          annotations: node.firstToken.map { annotationsParser.annotations(fromToken: $0) } ?? [:],
-          documentation: node.firstToken.map { annotationsParser.documentation(fromToken: $0) } ?? [],
-          definedInTypeName: TypeName(parent.name)
+            parameters: node.indices.parameterList.map { MethodParameter($0, annotationsParser: annotationsParser) },
+            returnTypeName: TypeName(node.result.returnType.description.trimmed),
+            accessLevel: (read: readAccess, write: isWritable ? writeAccess : .none),
+            attributes: Attribute.from(node.attributes),
+            modifiers: modifiers.map(SourceryModifier.init),
+            annotations: node.firstToken.map { annotationsParser.annotations(fromToken: $0) } ?? [:],
+            documentation: node.firstToken.map { annotationsParser.documentation(fromToken: $0) } ?? [],
+            definedInTypeName: TypeName(parent.name)
         )
     }
 }

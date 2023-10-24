@@ -2,7 +2,6 @@ import Foundation
 import SwiftyJSON
 
 final class Artist: NSObject, JSONAbleType {
-
     let id: String
     dynamic var name: String
     let sortableID: String?
@@ -21,7 +20,6 @@ final class Artist: NSObject, JSONAbleType {
         let id = json["id"].stringValue
         let name = json["name"].stringValue
         let sortableID = json["sortable_id"].string
-        return Artist(id: id, name:name, sortableID:sortableID)
+        return Artist(id: id, name: name, sortableID: sortableID)
     }
-
 }

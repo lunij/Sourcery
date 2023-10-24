@@ -12,7 +12,7 @@ protocol BasicProtocol: AutoMockable {
 }
 
 protocol ImplicitlyUnwrappedOptionalReturnValueProtocol: AutoMockable {
-  func implicitReturn() -> String!
+    func implicitReturn() -> String!
 }
 
 protocol InitializationProtocol: AutoMockable {
@@ -53,7 +53,7 @@ protocol CurrencyPresenter: AutoMockable {
 }
 
 extension ExtendableProtocol {
-    var canReport: Bool { return true }
+    var canReport: Bool { true }
 
     func report(message: String = "Test") {
         print(message)
@@ -91,8 +91,10 @@ protocol FunctionWithClosureReturnType: AutoMockable {
 }
 
 protocol FunctionWithMultilineDeclaration: AutoMockable {
-    func start(car: String,
-               of model: String)
+    func start(
+        car: String,
+        of model: String
+    )
 }
 
 protocol ThrowingVariablesProtocol: AutoMockable {
@@ -121,11 +123,11 @@ protocol AsyncProtocol: AutoMockable {
 protocol FunctionWithAttributes: AutoMockable {
     @discardableResult
     func callOneAttribute() -> String
-    
+
     @discardableResult
     @available(macOS 10.15, *)
     func callTwoAttributes() -> Int
-    
+
     @discardableResult
     @available(iOS 13.0, *)
     @available(macOS 10.15, *)
@@ -135,10 +137,10 @@ protocol FunctionWithAttributes: AutoMockable {
 public protocol AccessLevelProtocol: AutoMockable {
     var company: String? { get set }
     var name: String { get }
-    
+
     func loadConfiguration() -> String?
 }
 
-protocol StaticMethodProtocol:AutoMockable {
+protocol StaticMethodProtocol: AutoMockable {
     static func staticFunction(String) -> String
 }

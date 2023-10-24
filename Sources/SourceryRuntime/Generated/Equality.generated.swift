@@ -2,777 +2,873 @@
 
 // swiftlint:disable vertical_whitespace
 
-
-extension Actor {
+public extension Actor {
     /// :nodoc:
-    public override func isEqual(_ object: Any?) -> Bool {
+    override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? Actor else { return false }
         return super.isEqual(rhs)
     }
 }
-extension ArrayType {
+
+public extension ArrayType {
     /// :nodoc:
-    public override func isEqual(_ object: Any?) -> Bool {
+    override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? ArrayType else { return false }
-        if self.name != rhs.name { return false }
-        if self.elementTypeName != rhs.elementTypeName { return false }
+        if name != rhs.name { return false }
+        if elementTypeName != rhs.elementTypeName { return false }
         return true
     }
 }
-extension AssociatedType {
+
+public extension AssociatedType {
     /// :nodoc:
-    public override func isEqual(_ object: Any?) -> Bool {
+    override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? AssociatedType else { return false }
-        if self.name != rhs.name { return false }
-        if self.typeName != rhs.typeName { return false }
+        if name != rhs.name { return false }
+        if typeName != rhs.typeName { return false }
         return true
     }
 }
-extension AssociatedValue {
+
+public extension AssociatedValue {
     /// :nodoc:
-    public override func isEqual(_ object: Any?) -> Bool {
+    override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? AssociatedValue else { return false }
-        if self.localName != rhs.localName { return false }
-        if self.externalName != rhs.externalName { return false }
-        if self.typeName != rhs.typeName { return false }
-        if self.defaultValue != rhs.defaultValue { return false }
-        if self.annotations != rhs.annotations { return false }
+        if localName != rhs.localName { return false }
+        if externalName != rhs.externalName { return false }
+        if typeName != rhs.typeName { return false }
+        if defaultValue != rhs.defaultValue { return false }
+        if annotations != rhs.annotations { return false }
         return true
     }
 }
-extension Attribute {
+
+public extension Attribute {
     /// :nodoc:
-    public override func isEqual(_ object: Any?) -> Bool {
+    override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? Attribute else { return false }
-        if self.name != rhs.name { return false }
-        if self.arguments != rhs.arguments { return false }
-        if self._description != rhs._description { return false }
+        if name != rhs.name { return false }
+        if arguments != rhs.arguments { return false }
+        if _description != rhs._description { return false }
         return true
     }
 }
-extension BytesRange {
+
+public extension BytesRange {
     /// :nodoc:
-    public override func isEqual(_ object: Any?) -> Bool {
+    override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? BytesRange else { return false }
-        if self.offset != rhs.offset { return false }
-        if self.length != rhs.length { return false }
+        if offset != rhs.offset { return false }
+        if length != rhs.length { return false }
         return true
     }
 }
-extension Class {
+
+public extension Class {
     /// :nodoc:
-    public override func isEqual(_ object: Any?) -> Bool {
+    override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? Class else { return false }
         return super.isEqual(rhs)
     }
 }
-extension ClosureParameter {
+
+public extension ClosureParameter {
     /// :nodoc:
-    public override func isEqual(_ object: Any?) -> Bool {
+    override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? ClosureParameter else { return false }
-        if self.argumentLabel != rhs.argumentLabel { return false }
-        if self.name != rhs.name { return false }
-        if self.typeName != rhs.typeName { return false }
-        if self.`inout` != rhs.`inout` { return false }
-        if self.defaultValue != rhs.defaultValue { return false }
-        if self.annotations != rhs.annotations { return false }
+        if argumentLabel != rhs.argumentLabel { return false }
+        if name != rhs.name { return false }
+        if typeName != rhs.typeName { return false }
+        if self.inout != rhs.inout { return false }
+        if defaultValue != rhs.defaultValue { return false }
+        if annotations != rhs.annotations { return false }
         return true
     }
 }
-extension ClosureType {
+
+public extension ClosureType {
     /// :nodoc:
-    public override func isEqual(_ object: Any?) -> Bool {
+    override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? ClosureType else { return false }
-        if self.name != rhs.name { return false }
-        if self.parameters != rhs.parameters { return false }
-        if self.returnTypeName != rhs.returnTypeName { return false }
-        if self.isAsync != rhs.isAsync { return false }
-        if self.asyncKeyword != rhs.asyncKeyword { return false }
-        if self.`throws` != rhs.`throws` { return false }
-        if self.throwsOrRethrowsKeyword != rhs.throwsOrRethrowsKeyword { return false }
+        if name != rhs.name { return false }
+        if parameters != rhs.parameters { return false }
+        if returnTypeName != rhs.returnTypeName { return false }
+        if isAsync != rhs.isAsync { return false }
+        if asyncKeyword != rhs.asyncKeyword { return false }
+        if self.throws != rhs.throws { return false }
+        if throwsOrRethrowsKeyword != rhs.throwsOrRethrowsKeyword { return false }
         return true
     }
 }
-extension DictionaryType {
+
+public extension DictionaryType {
     /// :nodoc:
-    public override func isEqual(_ object: Any?) -> Bool {
+    override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? DictionaryType else { return false }
-        if self.name != rhs.name { return false }
-        if self.valueTypeName != rhs.valueTypeName { return false }
-        if self.keyTypeName != rhs.keyTypeName { return false }
+        if name != rhs.name { return false }
+        if valueTypeName != rhs.valueTypeName { return false }
+        if keyTypeName != rhs.keyTypeName { return false }
         return true
     }
 }
-extension DiffableResult {
+
+public extension DiffableResult {
     /// :nodoc:
-    public override func isEqual(_ object: Any?) -> Bool {
+    override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? DiffableResult else { return false }
-        if self.identifier != rhs.identifier { return false }
+        if identifier != rhs.identifier { return false }
         return true
     }
 }
-extension Enum {
+
+public extension Enum {
     /// :nodoc:
-    public override func isEqual(_ object: Any?) -> Bool {
+    override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? Enum else { return false }
-        if self.cases != rhs.cases { return false }
-        if self.rawTypeName != rhs.rawTypeName { return false }
+        if cases != rhs.cases { return false }
+        if rawTypeName != rhs.rawTypeName { return false }
         return super.isEqual(rhs)
     }
 }
-extension EnumCase {
+
+public extension EnumCase {
     /// :nodoc:
-    public override func isEqual(_ object: Any?) -> Bool {
+    override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? EnumCase else { return false }
-        if self.name != rhs.name { return false }
-        if self.rawValue != rhs.rawValue { return false }
-        if self.associatedValues != rhs.associatedValues { return false }
-        if self.annotations != rhs.annotations { return false }
-        if self.documentation != rhs.documentation { return false }
-        if self.indirect != rhs.indirect { return false }
+        if name != rhs.name { return false }
+        if rawValue != rhs.rawValue { return false }
+        if associatedValues != rhs.associatedValues { return false }
+        if annotations != rhs.annotations { return false }
+        if documentation != rhs.documentation { return false }
+        if indirect != rhs.indirect { return false }
         return true
     }
 }
-extension FileParserResult {
+
+public extension FileParserResult {
     /// :nodoc:
-    public override func isEqual(_ object: Any?) -> Bool {
+    override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? FileParserResult else { return false }
-        if self.path != rhs.path { return false }
-        if self.module != rhs.module { return false }
-        if self.types != rhs.types { return false }
-        if self.functions != rhs.functions { return false }
-        if self.typealiases != rhs.typealiases { return false }
-        if self.inlineRanges != rhs.inlineRanges { return false }
-        if self.inlineIndentations != rhs.inlineIndentations { return false }
-        if self.modifiedDate != rhs.modifiedDate { return false }
+        if path != rhs.path { return false }
+        if module != rhs.module { return false }
+        if types != rhs.types { return false }
+        if functions != rhs.functions { return false }
+        if typealiases != rhs.typealiases { return false }
+        if inlineRanges != rhs.inlineRanges { return false }
+        if inlineIndentations != rhs.inlineIndentations { return false }
+        if modifiedDate != rhs.modifiedDate { return false }
         return true
     }
 }
-extension GenericRequirement {
+
+public extension GenericRequirement {
     /// :nodoc:
-    public override func isEqual(_ object: Any?) -> Bool {
+    override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? GenericRequirement else { return false }
-        if self.leftType != rhs.leftType { return false }
-        if self.rightType != rhs.rightType { return false }
-        if self.relationship != rhs.relationship { return false }
-        if self.relationshipSyntax != rhs.relationshipSyntax { return false }
+        if leftType != rhs.leftType { return false }
+        if rightType != rhs.rightType { return false }
+        if relationship != rhs.relationship { return false }
+        if relationshipSyntax != rhs.relationshipSyntax { return false }
         return true
     }
 }
-extension GenericType {
+
+public extension GenericType {
     /// :nodoc:
-    public override func isEqual(_ object: Any?) -> Bool {
+    override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? GenericType else { return false }
-        if self.name != rhs.name { return false }
-        if self.typeParameters != rhs.typeParameters { return false }
+        if name != rhs.name { return false }
+        if typeParameters != rhs.typeParameters { return false }
         return true
     }
 }
-extension GenericTypeParameter {
+
+public extension GenericTypeParameter {
     /// :nodoc:
-    public override func isEqual(_ object: Any?) -> Bool {
+    override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? GenericTypeParameter else { return false }
-        if self.typeName != rhs.typeName { return false }
+        if typeName != rhs.typeName { return false }
         return true
     }
 }
-extension Import {
+
+public extension Import {
     /// :nodoc:
-    public override func isEqual(_ object: Any?) -> Bool {
+    override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? Import else { return false }
-        if self.kind != rhs.kind { return false }
-        if self.path != rhs.path { return false }
+        if kind != rhs.kind { return false }
+        if path != rhs.path { return false }
         return true
     }
 }
-extension Method {
+
+public extension Method {
     /// :nodoc:
-    public override func isEqual(_ object: Any?) -> Bool {
+    override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? Method else { return false }
-        if self.name != rhs.name { return false }
-        if self.selectorName != rhs.selectorName { return false }
-        if self.parameters != rhs.parameters { return false }
-        if self.returnTypeName != rhs.returnTypeName { return false }
-        if self.isAsync != rhs.isAsync { return false }
-        if self.`throws` != rhs.`throws` { return false }
-        if self.`rethrows` != rhs.`rethrows` { return false }
-        if self.accessLevel != rhs.accessLevel { return false }
-        if self.isStatic != rhs.isStatic { return false }
-        if self.isClass != rhs.isClass { return false }
-        if self.isFailableInitializer != rhs.isFailableInitializer { return false }
-        if self.annotations != rhs.annotations { return false }
-        if self.documentation != rhs.documentation { return false }
-        if self.definedInTypeName != rhs.definedInTypeName { return false }
-        if self.attributes != rhs.attributes { return false }
-        if self.modifiers != rhs.modifiers { return false }
+        if name != rhs.name { return false }
+        if selectorName != rhs.selectorName { return false }
+        if parameters != rhs.parameters { return false }
+        if returnTypeName != rhs.returnTypeName { return false }
+        if isAsync != rhs.isAsync { return false }
+        if self.throws != rhs.throws { return false }
+        if self.rethrows != rhs.rethrows { return false }
+        if accessLevel != rhs.accessLevel { return false }
+        if isStatic != rhs.isStatic { return false }
+        if isClass != rhs.isClass { return false }
+        if isFailableInitializer != rhs.isFailableInitializer { return false }
+        if annotations != rhs.annotations { return false }
+        if documentation != rhs.documentation { return false }
+        if definedInTypeName != rhs.definedInTypeName { return false }
+        if attributes != rhs.attributes { return false }
+        if modifiers != rhs.modifiers { return false }
         return true
     }
 }
-extension MethodParameter {
+
+public extension MethodParameter {
     /// :nodoc:
-    public override func isEqual(_ object: Any?) -> Bool {
+    override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? MethodParameter else { return false }
-        if self.argumentLabel != rhs.argumentLabel { return false }
-        if self.name != rhs.name { return false }
-        if self.typeName != rhs.typeName { return false }
-        if self.`inout` != rhs.`inout` { return false }
-        if self.isVariadic != rhs.isVariadic { return false }
-        if self.defaultValue != rhs.defaultValue { return false }
-        if self.annotations != rhs.annotations { return false }
+        if argumentLabel != rhs.argumentLabel { return false }
+        if name != rhs.name { return false }
+        if typeName != rhs.typeName { return false }
+        if self.inout != rhs.inout { return false }
+        if isVariadic != rhs.isVariadic { return false }
+        if defaultValue != rhs.defaultValue { return false }
+        if annotations != rhs.annotations { return false }
         return true
     }
 }
-extension Modifier {
+
+public extension Modifier {
     /// :nodoc:
-    public override func isEqual(_ object: Any?) -> Bool {
+    override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? Modifier else { return false }
-        if self.name != rhs.name { return false }
-        if self.detail != rhs.detail { return false }
+        if name != rhs.name { return false }
+        if detail != rhs.detail { return false }
         return true
     }
 }
-extension Protocol {
+
+public extension Protocol {
     /// :nodoc:
-    public override func isEqual(_ object: Any?) -> Bool {
+    override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? Protocol else { return false }
-        if self.associatedTypes != rhs.associatedTypes { return false }
-        if self.genericRequirements != rhs.genericRequirements { return false }
+        if associatedTypes != rhs.associatedTypes { return false }
+        if genericRequirements != rhs.genericRequirements { return false }
         return super.isEqual(rhs)
     }
 }
-extension ProtocolComposition {
+
+public extension ProtocolComposition {
     /// :nodoc:
-    public override func isEqual(_ object: Any?) -> Bool {
+    override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? ProtocolComposition else { return false }
-        if self.composedTypeNames != rhs.composedTypeNames { return false }
+        if composedTypeNames != rhs.composedTypeNames { return false }
         return super.isEqual(rhs)
     }
 }
-extension Struct {
+
+public extension Struct {
     /// :nodoc:
-    public override func isEqual(_ object: Any?) -> Bool {
+    override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? Struct else { return false }
         return super.isEqual(rhs)
     }
 }
-extension Subscript {
+
+public extension Subscript {
     /// :nodoc:
-    public override func isEqual(_ object: Any?) -> Bool {
+    override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? Subscript else { return false }
-        if self.parameters != rhs.parameters { return false }
-        if self.returnTypeName != rhs.returnTypeName { return false }
-        if self.readAccess != rhs.readAccess { return false }
-        if self.writeAccess != rhs.writeAccess { return false }
-        if self.annotations != rhs.annotations { return false }
-        if self.documentation != rhs.documentation { return false }
-        if self.definedInTypeName != rhs.definedInTypeName { return false }
-        if self.attributes != rhs.attributes { return false }
-        if self.modifiers != rhs.modifiers { return false }
+        if parameters != rhs.parameters { return false }
+        if returnTypeName != rhs.returnTypeName { return false }
+        if readAccess != rhs.readAccess { return false }
+        if writeAccess != rhs.writeAccess { return false }
+        if annotations != rhs.annotations { return false }
+        if documentation != rhs.documentation { return false }
+        if definedInTypeName != rhs.definedInTypeName { return false }
+        if attributes != rhs.attributes { return false }
+        if modifiers != rhs.modifiers { return false }
         return true
     }
 }
-extension TemplateContext {
+
+public extension TemplateContext {
     /// :nodoc:
-    public override func isEqual(_ object: Any?) -> Bool {
+    override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? TemplateContext else { return false }
-        if self.parserResult != rhs.parserResult { return false }
-        if self.functions != rhs.functions { return false }
-        if self.types != rhs.types { return false }
-        if self.argument != rhs.argument { return false }
+        if parserResult != rhs.parserResult { return false }
+        if functions != rhs.functions { return false }
+        if types != rhs.types { return false }
+        if argument != rhs.argument { return false }
         return true
     }
 }
-extension TupleElement {
+
+public extension TupleElement {
     /// :nodoc:
-    public override func isEqual(_ object: Any?) -> Bool {
+    override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? TupleElement else { return false }
-        if self.name != rhs.name { return false }
-        if self.typeName != rhs.typeName { return false }
+        if name != rhs.name { return false }
+        if typeName != rhs.typeName { return false }
         return true
     }
 }
-extension TupleType {
+
+public extension TupleType {
     /// :nodoc:
-    public override func isEqual(_ object: Any?) -> Bool {
+    override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? TupleType else { return false }
-        if self.name != rhs.name { return false }
-        if self.elements != rhs.elements { return false }
+        if name != rhs.name { return false }
+        if elements != rhs.elements { return false }
         return true
     }
 }
-extension Type {
+
+public extension Type {
     /// :nodoc:
-    public override func isEqual(_ object: Any?) -> Bool {
+    override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? Type else { return false }
-        if self.module != rhs.module { return false }
-        if self.imports != rhs.imports { return false }
-        if self.typealiases != rhs.typealiases { return false }
-        if self.isExtension != rhs.isExtension { return false }
-        if self.accessLevel != rhs.accessLevel { return false }
-        if self.isUnknownExtension != rhs.isUnknownExtension { return false }
-        if self.isGeneric != rhs.isGeneric { return false }
-        if self.localName != rhs.localName { return false }
-        if self.rawVariables != rhs.rawVariables { return false }
-        if self.rawMethods != rhs.rawMethods { return false }
-        if self.rawSubscripts != rhs.rawSubscripts { return false }
-        if self.annotations != rhs.annotations { return false }
-        if self.documentation != rhs.documentation { return false }
-        if self.inheritedTypes != rhs.inheritedTypes { return false }
-        if self.inherits != rhs.inherits { return false }
-        if self.containedTypes != rhs.containedTypes { return false }
-        if self.parentName != rhs.parentName { return false }
-        if self.attributes != rhs.attributes { return false }
-        if self.modifiers != rhs.modifiers { return false }
-        if self.fileName != rhs.fileName { return false }
-        if self.kind != rhs.kind { return false }
+        if module != rhs.module { return false }
+        if imports != rhs.imports { return false }
+        if typealiases != rhs.typealiases { return false }
+        if isExtension != rhs.isExtension { return false }
+        if accessLevel != rhs.accessLevel { return false }
+        if isUnknownExtension != rhs.isUnknownExtension { return false }
+        if isGeneric != rhs.isGeneric { return false }
+        if localName != rhs.localName { return false }
+        if rawVariables != rhs.rawVariables { return false }
+        if rawMethods != rhs.rawMethods { return false }
+        if rawSubscripts != rhs.rawSubscripts { return false }
+        if annotations != rhs.annotations { return false }
+        if documentation != rhs.documentation { return false }
+        if inheritedTypes != rhs.inheritedTypes { return false }
+        if inherits != rhs.inherits { return false }
+        if containedTypes != rhs.containedTypes { return false }
+        if parentName != rhs.parentName { return false }
+        if attributes != rhs.attributes { return false }
+        if modifiers != rhs.modifiers { return false }
+        if fileName != rhs.fileName { return false }
+        if kind != rhs.kind { return false }
         return true
     }
 }
-extension TypeName {
+
+public extension TypeName {
     /// :nodoc:
-    public override func isEqual(_ object: Any?) -> Bool {
+    override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? TypeName else { return false }
-        if self.name != rhs.name { return false }
-        if self.generic != rhs.generic { return false }
-        if self.isProtocolComposition != rhs.isProtocolComposition { return false }
-        if self.attributes != rhs.attributes { return false }
-        if self.modifiers != rhs.modifiers { return false }
-        if self.tuple != rhs.tuple { return false }
-        if self.array != rhs.array { return false }
-        if self.dictionary != rhs.dictionary { return false }
-        if self.closure != rhs.closure { return false }
+        if name != rhs.name { return false }
+        if generic != rhs.generic { return false }
+        if isProtocolComposition != rhs.isProtocolComposition { return false }
+        if attributes != rhs.attributes { return false }
+        if modifiers != rhs.modifiers { return false }
+        if tuple != rhs.tuple { return false }
+        if array != rhs.array { return false }
+        if dictionary != rhs.dictionary { return false }
+        if closure != rhs.closure { return false }
         return true
     }
 }
-extension Typealias {
+
+public extension Typealias {
     /// :nodoc:
-    public override func isEqual(_ object: Any?) -> Bool {
+    override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? Typealias else { return false }
-        if self.aliasName != rhs.aliasName { return false }
-        if self.typeName != rhs.typeName { return false }
-        if self.module != rhs.module { return false }
-        if self.accessLevel != rhs.accessLevel { return false }
-        if self.parentName != rhs.parentName { return false }
+        if aliasName != rhs.aliasName { return false }
+        if typeName != rhs.typeName { return false }
+        if module != rhs.module { return false }
+        if accessLevel != rhs.accessLevel { return false }
+        if parentName != rhs.parentName { return false }
         return true
     }
 }
-extension Types {
+
+public extension Types {
     /// :nodoc:
-    public override func isEqual(_ object: Any?) -> Bool {
+    override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? Types else { return false }
-        if self.types != rhs.types { return false }
-        if self.typealiases != rhs.typealiases { return false }
+        if types != rhs.types { return false }
+        if typealiases != rhs.typealiases { return false }
         return true
     }
 }
-extension Variable {
+
+public extension Variable {
     /// :nodoc:
-    public override func isEqual(_ object: Any?) -> Bool {
+    override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? Variable else { return false }
-        if self.name != rhs.name { return false }
-        if self.typeName != rhs.typeName { return false }
-        if self.isComputed != rhs.isComputed { return false }
-        if self.isAsync != rhs.isAsync { return false }
-        if self.`throws` != rhs.`throws` { return false }
-        if self.isStatic != rhs.isStatic { return false }
-        if self.readAccess != rhs.readAccess { return false }
-        if self.writeAccess != rhs.writeAccess { return false }
-        if self.defaultValue != rhs.defaultValue { return false }
-        if self.annotations != rhs.annotations { return false }
-        if self.documentation != rhs.documentation { return false }
-        if self.attributes != rhs.attributes { return false }
-        if self.modifiers != rhs.modifiers { return false }
-        if self.definedInTypeName != rhs.definedInTypeName { return false }
+        if name != rhs.name { return false }
+        if typeName != rhs.typeName { return false }
+        if isComputed != rhs.isComputed { return false }
+        if isAsync != rhs.isAsync { return false }
+        if self.throws != rhs.throws { return false }
+        if isStatic != rhs.isStatic { return false }
+        if readAccess != rhs.readAccess { return false }
+        if writeAccess != rhs.writeAccess { return false }
+        if defaultValue != rhs.defaultValue { return false }
+        if annotations != rhs.annotations { return false }
+        if documentation != rhs.documentation { return false }
+        if attributes != rhs.attributes { return false }
+        if modifiers != rhs.modifiers { return false }
+        if definedInTypeName != rhs.definedInTypeName { return false }
         return true
     }
 }
 
 // MARK: - Actor AutoHashable
-extension Actor {
-    public override var hash: Int {
+
+public extension Actor {
+    override var hash: Int {
         var hasher = Hasher()
         hasher.combine(super.hash)
         return hasher.finalize()
     }
 }
+
 // MARK: - ArrayType AutoHashable
-extension ArrayType {
-    public override var hash: Int {
+
+public extension ArrayType {
+    override var hash: Int {
         var hasher = Hasher()
-        hasher.combine(self.name)
-        hasher.combine(self.elementTypeName)
+        hasher.combine(name)
+        hasher.combine(elementTypeName)
         return hasher.finalize()
     }
 }
+
 // MARK: - AssociatedType AutoHashable
-extension AssociatedType {
-    public override var hash: Int {
+
+public extension AssociatedType {
+    override var hash: Int {
         var hasher = Hasher()
-        hasher.combine(self.name)
-        hasher.combine(self.typeName)
+        hasher.combine(name)
+        hasher.combine(typeName)
         return hasher.finalize()
     }
 }
+
 // MARK: - AssociatedValue AutoHashable
-extension AssociatedValue {
-    public override var hash: Int {
+
+public extension AssociatedValue {
+    override var hash: Int {
         var hasher = Hasher()
-        hasher.combine(self.localName)
-        hasher.combine(self.externalName)
-        hasher.combine(self.typeName)
-        hasher.combine(self.defaultValue)
-        hasher.combine(self.annotations)
+        hasher.combine(localName)
+        hasher.combine(externalName)
+        hasher.combine(typeName)
+        hasher.combine(defaultValue)
+        hasher.combine(annotations)
         return hasher.finalize()
     }
 }
+
 // MARK: - Attribute AutoHashable
-extension Attribute {
-    public override var hash: Int {
+
+public extension Attribute {
+    override var hash: Int {
         var hasher = Hasher()
-        hasher.combine(self.name)
-        hasher.combine(self.arguments)
-        hasher.combine(self._description)
+        hasher.combine(name)
+        hasher.combine(arguments)
+        hasher.combine(_description)
         return hasher.finalize()
     }
 }
+
 // MARK: - BytesRange AutoHashable
-extension BytesRange {
-    public override var hash: Int {
+
+public extension BytesRange {
+    override var hash: Int {
         var hasher = Hasher()
-        hasher.combine(self.offset)
-        hasher.combine(self.length)
+        hasher.combine(offset)
+        hasher.combine(length)
         return hasher.finalize()
     }
 }
+
 // MARK: - Class AutoHashable
-extension Class {
-    public override var hash: Int {
+
+public extension Class {
+    override var hash: Int {
         var hasher = Hasher()
         hasher.combine(super.hash)
         return hasher.finalize()
     }
 }
+
 // MARK: - ClosureParameter AutoHashable
-extension ClosureParameter {
-    public override var hash: Int {
+
+public extension ClosureParameter {
+    override var hash: Int {
         var hasher = Hasher()
-        hasher.combine(self.argumentLabel)
-        hasher.combine(self.name)
-        hasher.combine(self.typeName)
-        hasher.combine(self.`inout`)
-        hasher.combine(self.defaultValue)
-        hasher.combine(self.annotations)
+        hasher.combine(argumentLabel)
+        hasher.combine(name)
+        hasher.combine(typeName)
+        hasher.combine(self.inout)
+        hasher.combine(defaultValue)
+        hasher.combine(annotations)
         return hasher.finalize()
     }
 }
+
 // MARK: - ClosureType AutoHashable
-extension ClosureType {
-    public override var hash: Int {
+
+public extension ClosureType {
+    override var hash: Int {
         var hasher = Hasher()
-        hasher.combine(self.name)
-        hasher.combine(self.parameters)
-        hasher.combine(self.returnTypeName)
-        hasher.combine(self.isAsync)
-        hasher.combine(self.asyncKeyword)
-        hasher.combine(self.`throws`)
-        hasher.combine(self.throwsOrRethrowsKeyword)
+        hasher.combine(name)
+        hasher.combine(parameters)
+        hasher.combine(returnTypeName)
+        hasher.combine(isAsync)
+        hasher.combine(asyncKeyword)
+        hasher.combine(self.throws)
+        hasher.combine(throwsOrRethrowsKeyword)
         return hasher.finalize()
     }
 }
+
 // MARK: - DictionaryType AutoHashable
-extension DictionaryType {
-    public override var hash: Int {
+
+public extension DictionaryType {
+    override var hash: Int {
         var hasher = Hasher()
-        hasher.combine(self.name)
-        hasher.combine(self.valueTypeName)
-        hasher.combine(self.keyTypeName)
+        hasher.combine(name)
+        hasher.combine(valueTypeName)
+        hasher.combine(keyTypeName)
         return hasher.finalize()
     }
 }
+
 // MARK: - DiffableResult AutoHashable
-extension DiffableResult {
-    public override var hash: Int {
+
+public extension DiffableResult {
+    override var hash: Int {
         var hasher = Hasher()
-        hasher.combine(self.identifier)
+        hasher.combine(identifier)
         return hasher.finalize()
     }
 }
+
 // MARK: - Enum AutoHashable
-extension Enum {
-    public override var hash: Int {
+
+public extension Enum {
+    override var hash: Int {
         var hasher = Hasher()
-        hasher.combine(self.cases)
-        hasher.combine(self.rawTypeName)
+        hasher.combine(cases)
+        hasher.combine(rawTypeName)
         hasher.combine(super.hash)
         return hasher.finalize()
     }
 }
+
 // MARK: - EnumCase AutoHashable
-extension EnumCase {
-    public override var hash: Int {
+
+public extension EnumCase {
+    override var hash: Int {
         var hasher = Hasher()
-        hasher.combine(self.name)
-        hasher.combine(self.rawValue)
-        hasher.combine(self.associatedValues)
-        hasher.combine(self.annotations)
-        hasher.combine(self.documentation)
-        hasher.combine(self.indirect)
+        hasher.combine(name)
+        hasher.combine(rawValue)
+        hasher.combine(associatedValues)
+        hasher.combine(annotations)
+        hasher.combine(documentation)
+        hasher.combine(indirect)
         return hasher.finalize()
     }
 }
+
 // MARK: - FileParserResult AutoHashable
-extension FileParserResult {
-    public override var hash: Int {
+
+public extension FileParserResult {
+    override var hash: Int {
         var hasher = Hasher()
-        hasher.combine(self.path)
-        hasher.combine(self.module)
-        hasher.combine(self.types)
-        hasher.combine(self.functions)
-        hasher.combine(self.typealiases)
-        hasher.combine(self.inlineRanges)
-        hasher.combine(self.inlineIndentations)
-        hasher.combine(self.modifiedDate)
+        hasher.combine(path)
+        hasher.combine(module)
+        hasher.combine(types)
+        hasher.combine(functions)
+        hasher.combine(typealiases)
+        hasher.combine(inlineRanges)
+        hasher.combine(inlineIndentations)
+        hasher.combine(modifiedDate)
         return hasher.finalize()
     }
 }
+
 // MARK: - GenericRequirement AutoHashable
-extension GenericRequirement {
-    public override var hash: Int {
+
+public extension GenericRequirement {
+    override var hash: Int {
         var hasher = Hasher()
-        hasher.combine(self.leftType)
-        hasher.combine(self.rightType)
-        hasher.combine(self.relationship)
-        hasher.combine(self.relationshipSyntax)
+        hasher.combine(leftType)
+        hasher.combine(rightType)
+        hasher.combine(relationship)
+        hasher.combine(relationshipSyntax)
         return hasher.finalize()
     }
 }
+
 // MARK: - GenericType AutoHashable
-extension GenericType {
-    public override var hash: Int {
+
+public extension GenericType {
+    override var hash: Int {
         var hasher = Hasher()
-        hasher.combine(self.name)
-        hasher.combine(self.typeParameters)
+        hasher.combine(name)
+        hasher.combine(typeParameters)
         return hasher.finalize()
     }
 }
+
 // MARK: - GenericTypeParameter AutoHashable
-extension GenericTypeParameter {
-    public override var hash: Int {
+
+public extension GenericTypeParameter {
+    override var hash: Int {
         var hasher = Hasher()
-        hasher.combine(self.typeName)
+        hasher.combine(typeName)
         return hasher.finalize()
     }
 }
+
 // MARK: - Import AutoHashable
-extension Import {
-    public override var hash: Int {
+
+public extension Import {
+    override var hash: Int {
         var hasher = Hasher()
-        hasher.combine(self.kind)
-        hasher.combine(self.path)
+        hasher.combine(kind)
+        hasher.combine(path)
         return hasher.finalize()
     }
 }
+
 // MARK: - Method AutoHashable
-extension Method {
-    public override var hash: Int {
+
+public extension Method {
+    override var hash: Int {
         var hasher = Hasher()
-        hasher.combine(self.name)
-        hasher.combine(self.selectorName)
-        hasher.combine(self.parameters)
-        hasher.combine(self.returnTypeName)
-        hasher.combine(self.isAsync)
-        hasher.combine(self.`throws`)
-        hasher.combine(self.`rethrows`)
-        hasher.combine(self.accessLevel)
-        hasher.combine(self.isStatic)
-        hasher.combine(self.isClass)
-        hasher.combine(self.isFailableInitializer)
-        hasher.combine(self.annotations)
-        hasher.combine(self.documentation)
-        hasher.combine(self.definedInTypeName)
-        hasher.combine(self.attributes)
-        hasher.combine(self.modifiers)
+        hasher.combine(name)
+        hasher.combine(selectorName)
+        hasher.combine(parameters)
+        hasher.combine(returnTypeName)
+        hasher.combine(isAsync)
+        hasher.combine(self.throws)
+        hasher.combine(self.rethrows)
+        hasher.combine(accessLevel)
+        hasher.combine(isStatic)
+        hasher.combine(isClass)
+        hasher.combine(isFailableInitializer)
+        hasher.combine(annotations)
+        hasher.combine(documentation)
+        hasher.combine(definedInTypeName)
+        hasher.combine(attributes)
+        hasher.combine(modifiers)
         return hasher.finalize()
     }
 }
+
 // MARK: - MethodParameter AutoHashable
-extension MethodParameter {
-    public override var hash: Int {
+
+public extension MethodParameter {
+    override var hash: Int {
         var hasher = Hasher()
-        hasher.combine(self.argumentLabel)
-        hasher.combine(self.name)
-        hasher.combine(self.typeName)
-        hasher.combine(self.`inout`)
-        hasher.combine(self.isVariadic)
-        hasher.combine(self.defaultValue)
-        hasher.combine(self.annotations)
+        hasher.combine(argumentLabel)
+        hasher.combine(name)
+        hasher.combine(typeName)
+        hasher.combine(self.inout)
+        hasher.combine(isVariadic)
+        hasher.combine(defaultValue)
+        hasher.combine(annotations)
         return hasher.finalize()
     }
 }
+
 // MARK: - Modifier AutoHashable
-extension Modifier {
-    public override var hash: Int {
+
+public extension Modifier {
+    override var hash: Int {
         var hasher = Hasher()
-        hasher.combine(self.name)
-        hasher.combine(self.detail)
+        hasher.combine(name)
+        hasher.combine(detail)
         return hasher.finalize()
     }
 }
+
 // MARK: - Protocol AutoHashable
-extension Protocol {
-    public override var hash: Int {
+
+public extension Protocol {
+    override var hash: Int {
         var hasher = Hasher()
-        hasher.combine(self.associatedTypes)
-        hasher.combine(self.genericRequirements)
+        hasher.combine(associatedTypes)
+        hasher.combine(genericRequirements)
         hasher.combine(super.hash)
         return hasher.finalize()
     }
 }
+
 // MARK: - ProtocolComposition AutoHashable
-extension ProtocolComposition {
-    public override var hash: Int {
+
+public extension ProtocolComposition {
+    override var hash: Int {
         var hasher = Hasher()
-        hasher.combine(self.composedTypeNames)
+        hasher.combine(composedTypeNames)
         hasher.combine(super.hash)
         return hasher.finalize()
     }
 }
+
 // MARK: - Struct AutoHashable
-extension Struct {
-    public override var hash: Int {
+
+public extension Struct {
+    override var hash: Int {
         var hasher = Hasher()
         hasher.combine(super.hash)
         return hasher.finalize()
     }
 }
+
 // MARK: - Subscript AutoHashable
-extension Subscript {
-    public override var hash: Int {
+
+public extension Subscript {
+    override var hash: Int {
         var hasher = Hasher()
-        hasher.combine(self.parameters)
-        hasher.combine(self.returnTypeName)
-        hasher.combine(self.readAccess)
-        hasher.combine(self.writeAccess)
-        hasher.combine(self.annotations)
-        hasher.combine(self.documentation)
-        hasher.combine(self.definedInTypeName)
-        hasher.combine(self.attributes)
-        hasher.combine(self.modifiers)
+        hasher.combine(parameters)
+        hasher.combine(returnTypeName)
+        hasher.combine(readAccess)
+        hasher.combine(writeAccess)
+        hasher.combine(annotations)
+        hasher.combine(documentation)
+        hasher.combine(definedInTypeName)
+        hasher.combine(attributes)
+        hasher.combine(modifiers)
         return hasher.finalize()
     }
 }
+
 // MARK: - TemplateContext AutoHashable
-extension TemplateContext {
-    public override var hash: Int {
+
+public extension TemplateContext {
+    override var hash: Int {
         var hasher = Hasher()
-        hasher.combine(self.parserResult)
-        hasher.combine(self.functions)
-        hasher.combine(self.types)
-        hasher.combine(self.argument)
+        hasher.combine(parserResult)
+        hasher.combine(functions)
+        hasher.combine(types)
+        hasher.combine(argument)
         return hasher.finalize()
     }
 }
+
 // MARK: - TupleElement AutoHashable
-extension TupleElement {
-    public override var hash: Int {
+
+public extension TupleElement {
+    override var hash: Int {
         var hasher = Hasher()
-        hasher.combine(self.name)
-        hasher.combine(self.typeName)
+        hasher.combine(name)
+        hasher.combine(typeName)
         return hasher.finalize()
     }
 }
+
 // MARK: - TupleType AutoHashable
-extension TupleType {
-    public override var hash: Int {
+
+public extension TupleType {
+    override var hash: Int {
         var hasher = Hasher()
-        hasher.combine(self.name)
-        hasher.combine(self.elements)
+        hasher.combine(name)
+        hasher.combine(elements)
         return hasher.finalize()
     }
 }
+
 // MARK: - Type AutoHashable
-extension Type {
-    public override var hash: Int {
+
+public extension Type {
+    override var hash: Int {
         var hasher = Hasher()
-        hasher.combine(self.module)
-        hasher.combine(self.imports)
-        hasher.combine(self.typealiases)
-        hasher.combine(self.isExtension)
-        hasher.combine(self.accessLevel)
-        hasher.combine(self.isUnknownExtension)
-        hasher.combine(self.isGeneric)
-        hasher.combine(self.localName)
-        hasher.combine(self.rawVariables)
-        hasher.combine(self.rawMethods)
-        hasher.combine(self.rawSubscripts)
-        hasher.combine(self.annotations)
-        hasher.combine(self.documentation)
-        hasher.combine(self.inheritedTypes)
-        hasher.combine(self.inherits)
-        hasher.combine(self.containedTypes)
-        hasher.combine(self.parentName)
-        hasher.combine(self.attributes)
-        hasher.combine(self.modifiers)
-        hasher.combine(self.fileName)
+        hasher.combine(module)
+        hasher.combine(imports)
+        hasher.combine(typealiases)
+        hasher.combine(isExtension)
+        hasher.combine(accessLevel)
+        hasher.combine(isUnknownExtension)
+        hasher.combine(isGeneric)
+        hasher.combine(localName)
+        hasher.combine(rawVariables)
+        hasher.combine(rawMethods)
+        hasher.combine(rawSubscripts)
+        hasher.combine(annotations)
+        hasher.combine(documentation)
+        hasher.combine(inheritedTypes)
+        hasher.combine(inherits)
+        hasher.combine(containedTypes)
+        hasher.combine(parentName)
+        hasher.combine(attributes)
+        hasher.combine(modifiers)
+        hasher.combine(fileName)
         hasher.combine(kind)
         return hasher.finalize()
     }
 }
+
 // MARK: - TypeName AutoHashable
-extension TypeName {
-    public override var hash: Int {
+
+public extension TypeName {
+    override var hash: Int {
         var hasher = Hasher()
-        hasher.combine(self.name)
-        hasher.combine(self.generic)
-        hasher.combine(self.isProtocolComposition)
-        hasher.combine(self.attributes)
-        hasher.combine(self.modifiers)
-        hasher.combine(self.tuple)
-        hasher.combine(self.array)
-        hasher.combine(self.dictionary)
-        hasher.combine(self.closure)
+        hasher.combine(name)
+        hasher.combine(generic)
+        hasher.combine(isProtocolComposition)
+        hasher.combine(attributes)
+        hasher.combine(modifiers)
+        hasher.combine(tuple)
+        hasher.combine(array)
+        hasher.combine(dictionary)
+        hasher.combine(closure)
         return hasher.finalize()
     }
 }
+
 // MARK: - Typealias AutoHashable
-extension Typealias {
-    public override var hash: Int {
+
+public extension Typealias {
+    override var hash: Int {
         var hasher = Hasher()
-        hasher.combine(self.aliasName)
-        hasher.combine(self.typeName)
-        hasher.combine(self.module)
-        hasher.combine(self.accessLevel)
-        hasher.combine(self.parentName)
+        hasher.combine(aliasName)
+        hasher.combine(typeName)
+        hasher.combine(module)
+        hasher.combine(accessLevel)
+        hasher.combine(parentName)
         return hasher.finalize()
     }
 }
+
 // MARK: - Types AutoHashable
-extension Types {
-    public override var hash: Int {
+
+public extension Types {
+    override var hash: Int {
         var hasher = Hasher()
-        hasher.combine(self.types)
-        hasher.combine(self.typealiases)
+        hasher.combine(types)
+        hasher.combine(typealiases)
         return hasher.finalize()
     }
 }
+
 // MARK: - Variable AutoHashable
-extension Variable {
-    public override var hash: Int {
+
+public extension Variable {
+    override var hash: Int {
         var hasher = Hasher()
-        hasher.combine(self.name)
-        hasher.combine(self.typeName)
-        hasher.combine(self.isComputed)
-        hasher.combine(self.isAsync)
-        hasher.combine(self.`throws`)
-        hasher.combine(self.isStatic)
-        hasher.combine(self.readAccess)
-        hasher.combine(self.writeAccess)
-        hasher.combine(self.defaultValue)
-        hasher.combine(self.annotations)
-        hasher.combine(self.documentation)
-        hasher.combine(self.attributes)
-        hasher.combine(self.modifiers)
-        hasher.combine(self.definedInTypeName)
+        hasher.combine(name)
+        hasher.combine(typeName)
+        hasher.combine(isComputed)
+        hasher.combine(isAsync)
+        hasher.combine(self.throws)
+        hasher.combine(isStatic)
+        hasher.combine(readAccess)
+        hasher.combine(writeAccess)
+        hasher.combine(defaultValue)
+        hasher.combine(annotations)
+        hasher.combine(documentation)
+        hasher.combine(attributes)
+        hasher.combine(modifiers)
+        hasher.combine(definedInTypeName)
         return hasher.finalize()
     }
 }

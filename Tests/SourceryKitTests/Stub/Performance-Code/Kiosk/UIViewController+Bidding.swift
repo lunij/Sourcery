@@ -1,5 +1,5 @@
-import UIKit
 import ARAnalytics
+import UIKit
 
 extension UIViewController {
     func bid(auctionID: String, saleArtwork: SaleArtwork, allowAnimations: Bool, provider: Networking) {

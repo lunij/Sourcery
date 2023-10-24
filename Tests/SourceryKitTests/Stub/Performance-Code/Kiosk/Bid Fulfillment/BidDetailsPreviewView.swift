@@ -1,12 +1,11 @@
-import UIKit
-import Artsy_UILabels
 import Artsy_UIButtons
-import UIImageViewAligned
-import RxSwift
+import Artsy_UILabels
 import RxCocoa
+import RxSwift
+import UIImageViewAligned
+import UIKit
 
 class BidDetailsPreviewView: UIView {
-
     let _bidDetails = Variable<BidDetails?>(nil)
     var bidDetails: BidDetails? {
         didSet {
@@ -20,7 +19,7 @@ class BidDetailsPreviewView: UIView {
     dynamic let currentBidPriceLabel = ARSerifLabel()
 
     override func awakeFromNib() {
-        self.backgroundColor = .white
+        backgroundColor = .white
 
         artistNameLabel.numberOfLines = 1
         artworkTitleLabel.numberOfLines = 1
@@ -37,7 +36,7 @@ class BidDetailsPreviewView: UIView {
             .asObservable()
             .filterNil()
             .map { bidDetails in
-                return bidDetails.saleArtwork?.artwork
+                bidDetails.saleArtwork?.artwork
             }
             .take(1)
 
@@ -53,17 +52,17 @@ class BidDetailsPreviewView: UIView {
 
         artwork
             .map { artwork in
-                return artwork?.artists?.first?.name
+                artwork?.artists?.first?.name
             }
             .map { name in
-                return name ?? ""
+                name ?? ""
             }
             .bindTo(artistNameLabel.rx.text)
             .addDisposableTo(rx_disposeBag)
 
         artwork
             .map { artwork -> NSAttributedString in
-                guard let artwork = artwork else {
+                guard let artwork else {
                     return NSAttributedString()
                 }
 
@@ -86,10 +85,10 @@ class BidDetailsPreviewView: UIView {
             .addDisposableTo(rx_disposeBag)
 
         for subview in [artworkImageView, artistNameLabel, artworkTitleLabel, currentBidPriceLabel] {
-            self.addSubview(subview)
+            addSubview(subview)
         }
 
-        self.constrainHeight("60")
+        constrainHeight("60")
 
         artworkImageView.alignTop("0", leading: "0", bottom: "0", trailing: nil, to: self)
         artworkImageView.constrainWidth("84")
@@ -102,9 +101,7 @@ class BidDetailsPreviewView: UIView {
         currentBidPriceLabel.alignAttribute(.top, to: .bottom, of: artworkTitleLabel, predicate: "4")
         currentBidPriceLabel.constrainHeight("16")
 
-        UIView.alignAttribute(.leading, ofViews: [artistNameLabel, artworkTitleLabel, currentBidPriceLabel], to:.trailing, ofViews: [artworkImageView, artworkImageView, artworkImageView], predicate: "20")
-        UIView.alignAttribute(.trailing, ofViews: [artistNameLabel, artworkTitleLabel, currentBidPriceLabel], to:.trailing, ofViews: [self, self, self], predicate: "0")
-
+        UIView.alignAttribute(.leading, ofViews: [artistNameLabel, artworkTitleLabel, currentBidPriceLabel], to: .trailing, ofViews: [artworkImageView, artworkImageView, artworkImageView], predicate: "20")
+        UIView.alignAttribute(.trailing, ofViews: [artistNameLabel, artworkTitleLabel, currentBidPriceLabel], to: .trailing, ofViews: [self, self, self], predicate: "0")
     }
-
 }

@@ -9,7 +9,6 @@ final class Card: NSObject, JSONAbleType {
     let expirationYear: String
 
     init(id: String, name: String, lastDigits: String, expirationMonth: String, expirationYear: String) {
-
         self.id = id
         self.name = name
         self.lastDigits = lastDigits
@@ -28,5 +27,4 @@ final class Card: NSObject, JSONAbleType {
 
         return Card(id: id, name: name, lastDigits: lastDigits, expirationMonth: expirationMonth, expirationYear: expirationYear)
     }
-
 }

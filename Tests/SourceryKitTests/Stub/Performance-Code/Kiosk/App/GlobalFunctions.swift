@@ -1,11 +1,12 @@
-import RxSwift
-import Reachability
 import Moya
+import Reachability
+import RxSwift
 
 // Ideally a Pod. For now a file.
-func delayToMainThread(_ delay: Double, closure:@escaping ()->()) {
-    DispatchQueue.main.asyncAfter (
-        deadline: DispatchTime.now() + Double(Int64(delay * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC), execute: closure)
+func delayToMainThread(_ delay: Double, closure: @escaping () -> Void) {
+    DispatchQueue.main.asyncAfter(
+        deadline: DispatchTime.now() + Double(Int64(delay * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC), execute: closure
+    )
 }
 
 func logPath() -> URL {
@@ -26,13 +27,13 @@ func connectedToInternetOrStubbing() -> Observable<Bool> {
 }
 
 func responseIsOK(_ response: Response) -> Bool {
-    return response.statusCode == 200
+    response.statusCode == 200
 }
 
 func detectDevelopmentEnvironment() -> Bool {
     var developmentEnvironment = false
     #if DEBUG || (arch(i386) || arch(x86_64)) && os(iOS)
-        developmentEnvironment = true
+    developmentEnvironment = true
     #endif
     return developmentEnvironment
 }
@@ -40,7 +41,7 @@ func detectDevelopmentEnvironment() -> Bool {
 private class ReachabilityManager: NSObject {
     let _reach = ReplaySubject<Bool>.create(bufferSize: 1)
     var reach: Observable<Bool> {
-        return _reach.asObservable()
+        _reach.asObservable()
     }
 
     fileprivate let reachability = Reachability.forInternetConnection()
@@ -68,15 +69,15 @@ private class ReachabilityManager: NSObject {
 func bindingErrorToInterface(_ error: Swift.Error) {
     let error = "Binding error to UI: \(error)"
     #if DEBUG
-        fatalError(error)
+    fatalError(error)
     #else
-        print(error)
+    print(error)
     #endif
 }
 
 // Applies an instance method to the instance with an unowned reference.
 func applyUnowned<Type: AnyObject, Parameters, ReturnValue>(_ instance: Type, _ function: @escaping ((Type) -> (Parameters) -> ReturnValue)) -> ((Parameters) -> ReturnValue) {
-    return { [unowned instance] parameters -> ReturnValue in
-        return function(instance)(parameters)
+    { [unowned instance] parameters -> ReturnValue in
+        function(instance)(parameters)
     }
 }

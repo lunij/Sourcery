@@ -2,20 +2,20 @@ extension Optional {
     var hasValue: Bool {
         switch self {
         case .none:
-            return false
-        case .some(_):
-            return true
+            false
+        case .some:
+            true
         }
     }
 }
 
 extension String {
     func toUInt() -> UInt? {
-        return UInt(self)
+        UInt(self)
     }
 
     func toUInt(withDefault defaultValue: UInt) -> UInt {
-        return UInt(self) ?? defaultValue
+        UInt(self) ?? defaultValue
     }
 }
 
@@ -28,29 +28,29 @@ protocol Occupiable {
 // Give a default implementation of isNotEmpty, so conformance only requires one implementation
 extension Occupiable {
     var isNotEmpty: Bool {
-        return !isEmpty
+        !isEmpty
     }
 }
 
-extension String: Occupiable { }
+extension String: Occupiable {}
 
 // I can't think of a way to combine these collection types. Suggestions welcome.
-extension Array: Occupiable { }
-extension Dictionary: Occupiable { }
-extension Set: Occupiable { }
+extension Array: Occupiable {}
+extension Dictionary: Occupiable {}
+extension Set: Occupiable {}
 
 // Extend the idea of occupiability to optionals. Specifically, optionals wrapping occupiable things.
 extension Optional where Wrapped: Occupiable {
     var isNilOrEmpty: Bool {
         switch self {
         case .none:
-            return true
-        case .some(let value):
-            return value.isEmpty
+            true
+        case let .some(value):
+            value.isEmpty
         }
     }
 
     var isNotNilNotEmpty: Bool {
-        return !isNilOrEmpty
+        !isNilOrEmpty
     }
 }

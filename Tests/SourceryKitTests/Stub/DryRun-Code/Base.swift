@@ -3,8 +3,8 @@ import Foundation
 protocol AutoEquatable {}
 
 struct Eq: AutoEquatable {
-// sourcery:inline:Eq.AutoEquatable
-// sourcery:end
+    // sourcery:inline:Eq.AutoEquatable
+    // sourcery:end
     let s: Int
     let o: String
     let u: String
@@ -20,8 +20,8 @@ struct Eq3: AutoEquatable {
 }
 
 struct Eq2: AutoEquatable {
-// sourcery:inline:Eq2.AutoEquatable
-// sourcery:end
+    // sourcery:inline:Eq2.AutoEquatable
+    // sourcery:end
     let r: Int
     let y: String
     let d: [Int: Bool]

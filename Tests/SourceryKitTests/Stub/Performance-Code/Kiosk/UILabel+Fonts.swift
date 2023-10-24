@@ -6,11 +6,11 @@ extension UILabel {
     }
 
     func makeSubstringBold(_ boldText: String) {
-        let attributedText = self.attributedText!.mutableCopy() as! NSMutableAttributedString
+        let attributedText = attributedText!.mutableCopy() as! NSMutableAttributedString
 
-        let range = ((self.text ?? "") as NSString).range(of: boldText)
+        let range = ((text ?? "") as NSString).range(of: boldText)
         if range.location != NSNotFound {
-            attributedText.setAttributes([NSFontAttributeName: UIFont.serifSemiBoldFont(withSize: self.font.pointSize)], range: range)
+            attributedText.setAttributes([NSFontAttributeName: UIFont.serifSemiBoldFont(withSize: font.pointSize)], range: range)
         }
 
         self.attributedText = attributedText
@@ -21,11 +21,11 @@ extension UILabel {
     }
 
     func makeSubstringItalic(_ italicText: String) {
-        let attributedText = self.attributedText!.mutableCopy() as! NSMutableAttributedString
+        let attributedText = attributedText!.mutableCopy() as! NSMutableAttributedString
 
-        let range = ((self.text ?? "") as NSString).range(of: italicText)
+        let range = ((text ?? "") as NSString).range(of: italicText)
         if range.location != NSNotFound {
-            attributedText.setAttributes([NSFontAttributeName: UIFont.serifItalicFont(withSize: self.font.pointSize)], range: range)
+            attributedText.setAttributes([NSFontAttributeName: UIFont.serifItalicFont(withSize: font.pointSize)], range: range)
         }
 
         self.attributedText = attributedText
@@ -33,11 +33,11 @@ extension UILabel {
 
     func setLineHeight(_ lineHeight: Int) {
         let displayText = text ?? ""
-        let attributedString = self.attributedText!.mutableCopy() as! NSMutableAttributedString
+        let attributedString = attributedText!.mutableCopy() as! NSMutableAttributedString
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineSpacing = CGFloat(lineHeight)
         paragraphStyle.alignment = textAlignment
-        attributedString.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSMakeRange(0, displayText.count))
+        attributedString.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSRange(location: 0, length: displayText.count))
 
         attributedText = attributedString
     }

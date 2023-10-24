@@ -1,5 +1,5 @@
-import UIKit
 import SwiftyJSON
+import UIKit
 
 final class Location: NSObject, JSONAbleType {
     let address: String
@@ -21,14 +21,13 @@ final class Location: NSObject, JSONAbleType {
     static func fromJSON(_ json: [String: Any]) -> Location {
         let json = JSON(json)
 
-        let address =  json["address"].stringValue
-        let address2 =  json["address_2"].stringValue
-        let city =  json["city"].stringValue
-        let state =  json["state"].stringValue
-        let stateCode =  json["state_code"].stringValue
-        let postalCode =  json["postal_code"].stringValue
+        let address = json["address"].stringValue
+        let address2 = json["address_2"].stringValue
+        let city = json["city"].stringValue
+        let state = json["state"].stringValue
+        let stateCode = json["state_code"].stringValue
+        let postalCode = json["postal_code"].stringValue
 
         return Location(address: address, address2: address2, city: city, state: state, stateCode: stateCode, postalCode: postalCode)
     }
-
 }

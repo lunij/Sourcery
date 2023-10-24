@@ -2,7 +2,6 @@ import Foundation
 import SwiftyJSON
 
 final class Artwork: NSObject, JSONAbleType {
-
     enum SoldStatus {
         case notSold
         case sold
@@ -10,9 +9,9 @@ final class Artwork: NSObject, JSONAbleType {
         static func fromString(_ string: String) -> SoldStatus {
             switch string.lowercased() {
             case "sold":
-                return .sold
+                .sold
             default:
-                return .notSold
+                .notSold
             }
         }
     }
@@ -22,8 +21,9 @@ final class Artwork: NSObject, JSONAbleType {
     let dateString: String
     dynamic let title: String
     var titleAndDate: NSAttributedString {
-        return titleAndDateAttributedString(self.title, dateString: self.date)
+        titleAndDateAttributedString(self.title, dateString: self.date)
     }
+
     dynamic let price: String
     dynamic let date: String
 
@@ -41,7 +41,7 @@ final class Artwork: NSObject, JSONAbleType {
     dynamic var images: [Image]?
 
     lazy var defaultImage: Image? = {
-        let defaultImages = self.images?.filter { $0.isDefault }
+        let defaultImages = self.images?.filter(\.isDefault)
 
         return defaultImages?.first ?? self.images?.first
     }()
@@ -52,7 +52,7 @@ final class Artwork: NSObject, JSONAbleType {
         self.title = title
         self.price = price
         self.date = date
-        self.soldStatus = sold
+        soldStatus = sold
     }
 
     static func fromJSON(_ json: [String: Any]) -> Artwork {
@@ -75,22 +75,22 @@ final class Artwork: NSObject, JSONAbleType {
             artwork.artists = [Artist.fromJSON(artistDictionary)]
         }
 
-        if let imageDicts = json["images"].object as? Array<Dictionary<String, AnyObject>> {
+        if let imageDicts = json["images"].object as? [[String: AnyObject]] {
             // There's a possibility that image_versions comes back as null from the API, which fromJSON() is allergic to.
             artwork.images = imageDicts.filter { dict -> Bool in
                 let imageVersions = (dict["image_versions"] as? [String]) ?? []
                 return imageVersions.count > 0
-            }.map { return Image.fromJSON($0) }
+            }.map { Image.fromJSON($0) }
         }
 
         if let dimensions = json["dimensions"].dictionary {
-            artwork.dimensions = ["in", "cm"].reduce([String](), { (array, key) -> [String] in
+            artwork.dimensions = ["in", "cm"].reduce([String]()) { array, key -> [String] in
                 if let dimension = dimensions[key]?.string {
-                    return array + [dimension]
+                    array + [dimension]
                 } else {
-                    return array
+                    array
                 }
-            })
+            }
         }
 
         return artwork
@@ -102,7 +102,7 @@ final class Artwork: NSObject, JSONAbleType {
     }
 
     func sortableArtistID() -> String {
-        return artists?.first?.sortableID ?? "_"
+        artists?.first?.sortableID ?? "_"
     }
 }
 
@@ -110,11 +110,11 @@ private func titleAndDateAttributedString(_ title: String, dateString: String) -
     let workTitle = title.isEmpty ? "Untitled" : title
 
     let workFont = UIFont.serifItalicFont(withSize: 16)!
-    let attributedString = NSMutableAttributedString(string: workTitle, attributes: [NSFontAttributeName : workFont])
+    let attributedString = NSMutableAttributedString(string: workTitle, attributes: [NSFontAttributeName: workFont])
 
     if dateString.isNotEmpty {
         let dateFont = UIFont.serifFont(withSize: 16)!
-        let dateString = NSAttributedString(string: ", " + dateString, attributes: [NSFontAttributeName : dateFont])
+        let dateString = NSAttributedString(string: ", " + dateString, attributes: [NSFontAttributeName: dateFont])
         attributedString.append(dateString)
     }
 

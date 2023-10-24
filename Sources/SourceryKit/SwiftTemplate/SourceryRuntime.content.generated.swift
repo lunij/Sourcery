@@ -98,14 +98,14 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             /**
              All annotations of declaration stored by their name. Value can be `bool`, `String`, float `NSNumber`
              or array of those types if you use several annotations with the same name.
-            
+
              **Example:**
-             
+
              ```
              //sourcery: booleanAnnotation
              //sourcery: stringAnnotation = "value"
              //sourcery: numericAnnotation = 0.5
-             
+
              [
               "booleanAnnotation": true,
               "stringAnnotation": "value",
@@ -477,7 +477,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             /// Returns "class"
             public override var kind: String { return "class" }
 
-            /// Whether type is final 
+            /// Whether type is final
             public var isFinal: Bool {
                 return modifiers.contains { $0.name == "final" }
             }
@@ -577,7 +577,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             public var unwrappedReturnTypeName: String {
                 return returnTypeName.unwrappedTypeName
             }
-            
+
             /// Whether method is async method
             public let isAsync: Bool
 
@@ -991,11 +991,11 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
         /// Describes that the object is defined in a context of some `Type`
         public protocol Definition: AnyObject {
-            /// Reference to type name where the object is defined, 
+            /// Reference to type name where the object is defined,
             /// nil if defined outside of any `enum`, `struct`, `class` etc
             var definedInTypeName: TypeName? { get }
 
-            /// Reference to actual type where the object is defined, 
+            /// Reference to actual type where the object is defined,
             /// nil if defined outside of any `enum`, `struct`, `class` etc or type is unknown
             var definedInType: Type? { get }
 
@@ -3819,7 +3819,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
             /// Parameter flag whether it's inout or not
             public let `inout`: Bool
-            
+
             /// Is this variadic parameter?
             public let isVariadic: Bool
 
@@ -6595,10 +6595,10 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
             /// Whether variable is computed and not stored
             public let isComputed: Bool
-            
+
             /// Whether variable is async
             public let isAsync: Bool
-            
+
             /// Whether variable throws
             public let `throws`: Bool
 

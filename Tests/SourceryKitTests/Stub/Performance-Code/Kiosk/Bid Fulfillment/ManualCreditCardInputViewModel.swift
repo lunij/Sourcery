@@ -1,11 +1,10 @@
+import Action
 import Foundation
 import RxSwift
-import Action
 import Stripe
 
 class ManualCreditCardInputViewModel: NSObject {
-
-    /// MARK: - Things the user is entering (expecting to be bound to s)
+    // MARK: - Things the user is entering (expecting to be bound to s)
 
     var cardFullDigits = Variable("")
     var expirationMonth = Variable("")
@@ -16,7 +15,7 @@ class ManualCreditCardInputViewModel: NSObject {
     fileprivate(set) var bidDetails: BidDetails!
     fileprivate(set) var finishedSubject: PublishSubject<Void>?
 
-    /// Mark: - Public members
+    // MARK: - Public members
 
     init(bidDetails: BidDetails!, finishedSubject: PublishSubject<Void>? = nil) {
         super.init()
@@ -26,27 +25,27 @@ class ManualCreditCardInputViewModel: NSObject {
     }
 
     var creditCardNumberIsValid: Observable<Bool> {
-        return cardFullDigits.asObservable().map(stripeManager.stringIsCreditCard)
+        cardFullDigits.asObservable().map(stripeManager.stringIsCreditCard)
     }
 
     var expiryDatesAreValid: Observable<Bool> {
-        let month = expirationMonth.asObservable().map(isStringLength(in: 1..<3))
+        let month = expirationMonth.asObservable().map(isStringLength(in: 1 ..< 3))
         let year = expirationYear.asObservable().map(isStringLength(oneOf: [2, 4]))
 
         return [month, year].combineLatestAnd()
     }
 
     var securityCodeIsValid: Observable<Bool> {
-        return securityCode.asObservable().map(isStringLength(in: 3..<5))
+        securityCode.asObservable().map(isStringLength(in: 3 ..< 5))
     }
 
     var billingZipIsValid: Observable<Bool> {
-        return billingZip.asObservable().map(isStringLength(in: 4..<8))
+        billingZip.asObservable().map(isStringLength(in: 4 ..< 8))
     }
 
     var moveToYear: Observable<Void> {
-        return expirationMonth.asObservable().filter { value in
-            return value.count == 2
+        expirationMonth.asObservable().filter { value in
+            value.count == 2
         }.map(void)
     }
 
@@ -63,19 +62,18 @@ class ManualCreditCardInputViewModel: NSObject {
                 me.finishedSubject?.onCompleted()
             }.map(void)
         }
-
     }
 
     func isEntryValid(_ entry: String) -> Bool {
         // Allow delete
-        if (entry.isEmpty) { return true }
+        if entry.isEmpty { return true }
 
         // the API doesn't accept chars
         let notNumberChars = CharacterSet.decimalDigits.inverted
         return entry.trimmingCharacters(in: notNumberChars).isNotEmpty
     }
 
-    /// MARK: - Private Methods
+    // MARK: - Private Methods
 
     fileprivate func registerCard(newUser: NewUser) -> Observable<STPToken> {
         let month = expirationMonth.value.toUInt(withDefault: 0)
@@ -91,5 +89,5 @@ class ManualCreditCardInputViewModel: NSObject {
     }
 
     // Only set for testing purposes, otherwise ignore.
-    lazy var stripeManager: StripeManager = StripeManager()
+    lazy var stripeManager: StripeManager = .init()
 }

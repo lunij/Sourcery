@@ -15,12 +15,13 @@ class TemplateAnnotationsParserTests: XCTestCase {
         let result = TemplateAnnotationsParser.parseAnnotations("inline", contents: source, forceParse: [])
 
         let annotatedRanges = result.annotatedRanges["Type.AutoCoding"]
-        XCTAssertEqual(annotatedRanges?.map { $0.range }, [NSRange(location: 35, length: 19)])
-        XCTAssertEqual(annotatedRanges?.map { $0.indentation }, [""])
-        XCTAssertEqual(result.contents,
+        XCTAssertEqual(annotatedRanges?.map(\.range), [NSRange(location: 35, length: 19)])
+        XCTAssertEqual(annotatedRanges?.map(\.indentation), [""])
+        XCTAssertEqual(
+            result.contents,
             "// sourcery:inline:Type.AutoCoding\n" +
-            String(repeating: " ", count: 19) +
-            "// sourcery:end"
+                String(repeating: " ", count: 19) +
+                "// sourcery:end"
         )
     }
 
@@ -34,8 +35,8 @@ class TemplateAnnotationsParserTests: XCTestCase {
         let result = TemplateAnnotationsParser.parseAnnotations("inline", contents: source, aggregate: false, forceParse: ["AutoCoding"])
 
         let annotatedRanges = result.annotatedRanges["Type.AutoCoding"]
-        XCTAssertEqual(annotatedRanges?.map { $0.range }, [NSRange(location: 35, length: 19)])
-        XCTAssertEqual(annotatedRanges?.map { $0.indentation }, [""])
+        XCTAssertEqual(annotatedRanges?.map(\.range), [NSRange(location: 35, length: 19)])
+        XCTAssertEqual(annotatedRanges?.map(\.indentation), [""])
         XCTAssertEqual(result.contents, """
         // sourcery:inline:Type.AutoCoding
         var something: Int
@@ -52,12 +53,13 @@ class TemplateAnnotationsParserTests: XCTestCase {
         let result = TemplateAnnotationsParser.parseAnnotations("inline", contents: source, forceParse: [])
 
         let annotatedRanges = result.annotatedRanges["Type.AutoCoding"]
-        XCTAssertEqual(annotatedRanges?.map { $0.range }, [NSRange(location: 39, length: 23)])
-        XCTAssertEqual(annotatedRanges?.map { $0.indentation }, ["    "])
-        XCTAssertEqual(result.contents,
+        XCTAssertEqual(annotatedRanges?.map(\.range), [NSRange(location: 39, length: 23)])
+        XCTAssertEqual(annotatedRanges?.map(\.indentation), ["    "])
+        XCTAssertEqual(
+            result.contents,
             "    // sourcery:inline:Type.AutoCoding\n" +
-            String(repeating: " ", count: 23) +
-            "    // sourcery:end\n"
+                String(repeating: " ", count: 23) +
+                "    // sourcery:end\n"
         )
     }
 
@@ -70,12 +72,13 @@ class TemplateAnnotationsParserTests: XCTestCase {
         let result = TemplateAnnotationsParser.parseAnnotations("inline", contents: source, aggregate: false, forceParse: ["AutoCoding"])
 
         let annotatedRanges = result.annotatedRanges["Type.AutoCoding"]
-        XCTAssertEqual(annotatedRanges?.map { $0.range }, [NSRange(location: 39, length: 23)])
-        XCTAssertEqual(annotatedRanges?.map { $0.indentation }, ["    "])
-        XCTAssertEqual(result.contents,
+        XCTAssertEqual(annotatedRanges?.map(\.range), [NSRange(location: 39, length: 23)])
+        XCTAssertEqual(annotatedRanges?.map(\.indentation), ["    "])
+        XCTAssertEqual(
+            result.contents,
             "    // sourcery:inline:Type.AutoCoding\n" +
-            "    var something: Int\n" +
-            "    // sourcery:end\n"
+                "    var something: Int\n" +
+                "    // sourcery:end\n"
         )
     }
 }

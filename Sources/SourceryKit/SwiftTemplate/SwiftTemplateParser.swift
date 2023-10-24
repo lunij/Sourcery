@@ -29,9 +29,9 @@ open class SwiftTemplateParser {
                 return [command]
             }
             return commands
-        } catch ParsingError.invalidIncludeStatement(let line) {
+        } catch let ParsingError.invalidIncludeStatement(line) {
             throw Error.invalidIncludeStatement(file: file, line: line)
-        } catch ParsingError.missingClosingTag(let line) {
+        } catch let ParsingError.missingClosingTag(line) {
             throw Error.missingClosingTag(file: file, line: line)
         }
     }

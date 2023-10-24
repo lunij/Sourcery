@@ -1,16 +1,15 @@
-import UIKit
-import RxSwift
-import RxCocoa
 import Action
+import RxCocoa
+import RxSwift
+import UIKit
 
 class ConfirmYourBidEnterYourEmailViewController: UIViewController {
-
     @IBOutlet var emailTextField: UITextField!
     @IBOutlet var confirmButton: UIButton!
     @IBOutlet var bidDetailsPreviewView: BidDetailsPreviewView!
 
     class func instantiateFromStoryboard(_ storyboard: UIStoryboard) -> ConfirmYourBidEnterYourEmailViewController {
-        return storyboard.viewController(withID: .ConfirmYourBidEnterEmail) as! ConfirmYourBidEnterYourEmailViewController
+        storyboard.viewController(withID: .ConfirmYourBidEnterEmail) as! ConfirmYourBidEnterYourEmailViewController
     }
 
     var provider: Networking!
@@ -24,14 +23,14 @@ class ConfirmYourBidEnterYourEmailViewController: UIViewController {
         let action = CocoaAction(enabledIf: inputIsEmail) { [weak self] _ in
             guard let me = self else { return .empty() }
 
-            let endpoint: ArtsyAPI = ArtsyAPI.findExistingEmailRegistration(email: me.emailTextField.text ?? "")
+            let endpoint = ArtsyAPI.findExistingEmailRegistration(email: me.emailTextField.text ?? "")
 
             return self?.provider.request(endpoint)
                 .filterStatusCode(200)
                 .doOnNext { _ in
                     me.performSegue(.ExistingArtsyUserFound)
                 }
-                .doOnError { error in
+                .doOnError { _ in
 
                     self?.performSegue(.EmailNotFoundonArtsy)
                 }
@@ -42,7 +41,7 @@ class ConfirmYourBidEnterYourEmailViewController: UIViewController {
 
         let unbind = action.executing.ignore(value: false)
 
-        let nav = self.fulfillmentNav()
+        let nav = fulfillmentNav()
 
         bidDetailsPreviewView.bidDetails = nav.bidDetails
 
@@ -61,7 +60,7 @@ class ConfirmYourBidEnterYourEmailViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        self.emailTextField.becomeFirstResponder()
+        emailTextField.becomeFirstResponder()
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -78,13 +77,11 @@ class ConfirmYourBidEnterYourEmailViewController: UIViewController {
 }
 
 private extension ConfirmYourBidEnterYourEmailViewController {
-
-    @IBAction func dev_emailFound(_ sender: AnyObject) {
+    @IBAction func dev_emailFound(_: AnyObject) {
         performSegue(.ExistingArtsyUserFound)
     }
 
-    @IBAction func dev_emailNotFound(_ sender: AnyObject) {
+    @IBAction func dev_emailNotFound(_: AnyObject) {
         performSegue(.EmailNotFoundonArtsy)
     }
-
 }

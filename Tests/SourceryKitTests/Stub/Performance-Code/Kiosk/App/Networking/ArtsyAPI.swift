@@ -1,7 +1,7 @@
-import Foundation
-import RxSwift
-import Moya
 import Alamofire
+import Foundation
+import Moya
+import RxSwift
 
 protocol ArtsyAPIType {
     var addXAuth: Bool { get }
@@ -48,347 +48,341 @@ enum ArtsyAuthenticatedAPI {
     case me
 }
 
-extension ArtsyAPI : TargetType, ArtsyAPIType {
+extension ArtsyAPI: TargetType, ArtsyAPIType {
     public var task: Task {
-        return .request
+        .request
     }
 
-     var path: String {
+    var path: String {
         switch self {
-
         case .xApp:
-            return "/api/v1/xapp_token"
+            "/api/v1/xapp_token"
 
         case .xAuth:
-            return "/oauth2/access_token"
+            "/oauth2/access_token"
 
-        case .auctionInfo(let id):
-            return "/api/v1/sale/\(id)"
+        case let .auctionInfo(id):
+            "/api/v1/sale/\(id)"
 
         case .auctions:
-            return "/api/v1/sales"
+            "/api/v1/sales"
 
-        case .auctionListings(let id, _, _):
-            return "/api/v1/sale/\(id)/sale_artworks"
+        case let .auctionListings(id, _, _):
+            "/api/v1/sale/\(id)/sale_artworks"
 
-        case .auctionInfoForArtwork(let auctionID, let artworkID):
-            return "/api/v1/sale/\(auctionID)/sale_artwork/\(artworkID)"
+        case let .auctionInfoForArtwork(auctionID, artworkID):
+            "/api/v1/sale/\(auctionID)/sale_artwork/\(artworkID)"
 
         case .systemTime:
-            return "/api/v1/system/time"
+            "/api/v1/system/time"
 
         case .ping:
-            return "/api/v1/system/ping"
+            "/api/v1/system/ping"
 
         case .findBidderRegistration:
-            return "/api/v1/bidder"
+            "/api/v1/bidder"
 
         case .activeAuctions:
-            return "/api/v1/sales"
+            "/api/v1/sales"
 
         case .createUser:
-            return "/api/v1/user"
+            "/api/v1/user"
 
-        case .artwork(let id):
-            return "/api/v1/artwork/\(id)"
+        case let .artwork(id):
+            "/api/v1/artwork/\(id)"
 
-        case .artist(let id):
-            return "/api/v1/artist/\(id)"
+        case let .artist(id):
+            "/api/v1/artist/\(id)"
 
         case .trustToken:
-            return "/api/v1/me/trust_token"
+            "/api/v1/me/trust_token"
 
         case .bidderDetailsNotification:
-            return "/api/v1/bidder/bidding_details_notification"
+            "/api/v1/bidder/bidding_details_notification"
 
         case .lostPasswordNotification:
-            return "/api/v1/users/send_reset_password_instructions"
+            "/api/v1/users/send_reset_password_instructions"
 
         case .findExistingEmailRegistration:
-            return "/api/v1/user"
-
+            "/api/v1/user"
         }
     }
 
-    var base: String { return AppSetup.sharedState.useStaging ? "https://stagingapi.artsy.net" : "https://api.artsy.net" }
-    var baseURL: URL { return URL(string: base)! }
+    var base: String { AppSetup.sharedState.useStaging ? "https://stagingapi.artsy.net" : "https://api.artsy.net" }
+    var baseURL: URL { URL(string: base)! }
 
     var parameters: [String: Any]? {
         switch self {
-
-        case .xAuth(let email, let password):
-            return [
+        case let .xAuth(email, password):
+            [
                 "client_id": APIKeys.sharedKeys.key as AnyObject? ?? "" as AnyObject,
                 "client_secret": APIKeys.sharedKeys.secret as AnyObject? ?? "" as AnyObject,
                 "email": email as AnyObject,
-                "password":  password as AnyObject,
+                "password": password as AnyObject,
                 "grant_type": "credentials" as AnyObject
             ]
 
         case .xApp:
-            return ["client_id": APIKeys.sharedKeys.key as AnyObject? ?? "" as AnyObject,
-                "client_secret": APIKeys.sharedKeys.secret as AnyObject? ?? "" as AnyObject]
-
-        case .auctions:
-            return ["is_auction": "true" as AnyObject]
-
-        case .trustToken(let number, let auctionID):
-            return ["number": number as AnyObject, "auction_pin": auctionID as AnyObject]
-
-        case .createUser(let email, let password, let phone, let postCode, let name):
-            return [
-                "email": email as AnyObject, "password": password as AnyObject,
-                "phone": phone as AnyObject, "name": name as AnyObject,
-                "location": [ "postal_code": postCode ] as AnyObject
+            [
+                "client_id": APIKeys.sharedKeys.key as AnyObject? ?? "" as AnyObject,
+                "client_secret": APIKeys.sharedKeys.secret as AnyObject? ?? "" as AnyObject
             ]
 
-        case .bidderDetailsNotification(let auctionID, let identifier):
-            return ["sale_id": auctionID as AnyObject, "identifier": identifier as AnyObject]
+        case .auctions:
+            ["is_auction": "true" as AnyObject]
 
-        case .lostPasswordNotification(let email):
-            return ["email": email as AnyObject]
+        case let .trustToken(number, auctionID):
+            ["number": number as AnyObject, "auction_pin": auctionID as AnyObject]
 
-        case .findExistingEmailRegistration(let email):
-            return ["email": email as AnyObject]
+        case let .createUser(email, password, phone, postCode, name):
+            [
+                "email": email as AnyObject, "password": password as AnyObject,
+                "phone": phone as AnyObject, "name": name as AnyObject,
+                "location": ["postal_code": postCode] as AnyObject
+            ]
 
-        case .findBidderRegistration(let auctionID, let phone):
-            return ["sale_id": auctionID as AnyObject, "number": phone as AnyObject]
+        case let .bidderDetailsNotification(auctionID, identifier):
+            ["sale_id": auctionID as AnyObject, "identifier": identifier as AnyObject]
 
-        case .auctionListings(_, let page, let pageSize):
-            return ["size": pageSize as AnyObject, "page": page as AnyObject]
+        case let .lostPasswordNotification(email):
+            ["email": email as AnyObject]
+
+        case let .findExistingEmailRegistration(email):
+            ["email": email as AnyObject]
+
+        case let .findBidderRegistration(auctionID, phone):
+            ["sale_id": auctionID as AnyObject, "number": phone as AnyObject]
+
+        case let .auctionListings(_, page, pageSize):
+            ["size": pageSize as AnyObject, "page": page as AnyObject]
 
         case .activeAuctions:
-            return ["is_auction": true as AnyObject, "live": true as AnyObject]
+            ["is_auction": true as AnyObject, "live": true as AnyObject]
 
         default:
-            return nil
+            nil
         }
     }
 
     var method: Moya.Method {
         switch self {
         case .lostPasswordNotification,
-        .createUser:
-            return .post
+             .createUser:
+            .post
         case .findExistingEmailRegistration:
-            return .head
+            .head
         case .bidderDetailsNotification:
-            return .put
+            .put
         default:
-            return .get
+            .get
         }
     }
 
     var sampleData: Data {
         switch self {
-
         case .xApp:
-            return stubbedResponse("XApp")
+            stubbedResponse("XApp")
 
         case .xAuth:
-            return stubbedResponse("XAuth")
+            stubbedResponse("XAuth")
 
         case .trustToken:
-            return stubbedResponse("XAuth")
+            stubbedResponse("XAuth")
 
         case .auctions:
-            return stubbedResponse("Auctions")
+            stubbedResponse("Auctions")
 
         case .auctionListings:
-            return stubbedResponse("AuctionListings")
+            stubbedResponse("AuctionListings")
 
         case .systemTime:
-            return stubbedResponse("SystemTime")
+            stubbedResponse("SystemTime")
 
         case .activeAuctions:
-            return stubbedResponse("ActiveAuctions")
+            stubbedResponse("ActiveAuctions")
 
         case .createUser:
-            return stubbedResponse("Me")
+            stubbedResponse("Me")
 
         case .artwork:
-            return stubbedResponse("Artwork")
+            stubbedResponse("Artwork")
 
         case .artist:
-            return stubbedResponse("Artist")
+            stubbedResponse("Artist")
 
         case .auctionInfo:
-            return stubbedResponse("AuctionInfo")
+            stubbedResponse("AuctionInfo")
 
         // This API returns a 302, so stubbed response isn't valid
         case .findBidderRegistration:
-            return stubbedResponse("Me")
+            stubbedResponse("Me")
 
         case .bidderDetailsNotification:
-            return stubbedResponse("RegisterToBid")
+            stubbedResponse("RegisterToBid")
 
         case .lostPasswordNotification:
-            return stubbedResponse("ForgotPassword")
+            stubbedResponse("ForgotPassword")
 
         case .findExistingEmailRegistration:
-            return stubbedResponse("ForgotPassword")
+            stubbedResponse("ForgotPassword")
 
         case .auctionInfoForArtwork:
-            return stubbedResponse("AuctionInfoForArtwork")
+            stubbedResponse("AuctionInfoForArtwork")
 
         case .ping:
-            return stubbedResponse("Ping")
-
+            stubbedResponse("Ping")
         }
     }
 
     var addXAuth: Bool {
         switch self {
-        case .xApp: return false
-        case .xAuth: return false
-        default: return true
+        case .xApp: false
+        case .xAuth: false
+        default: true
         }
     }
 }
 
 extension ArtsyAuthenticatedAPI: TargetType, ArtsyAPIType {
     public var task: Task {
-        return .request
+        .request
     }
 
     var path: String {
         switch self {
-
         case .registerToBid:
-            return "/api/v1/bidder"
+            "/api/v1/bidder"
 
         case .myCreditCards:
-            return "/api/v1/me/credit_cards"
+            "/api/v1/me/credit_cards"
 
-        case .createPINForBidder(let bidderID):
-            return "/api/v1/bidder/\(bidderID)/pin"
+        case let .createPINForBidder(bidderID):
+            "/api/v1/bidder/\(bidderID)/pin"
 
         case .me:
-            return "/api/v1/me"
+            "/api/v1/me"
 
         case .updateMe:
-            return "/api/v1/me"
+            "/api/v1/me"
 
         case .myBiddersForAuction:
-            return "/api/v1/me/bidders"
+            "/api/v1/me/bidders"
 
         case .myBidPositionsForAuctionArtwork:
-            return "/api/v1/me/bidder_positions"
+            "/api/v1/me/bidder_positions"
 
-        case .myBidPosition(let id):
-            return "/api/v1/me/bidder_position/\(id)"
+        case let .myBidPosition(id):
+            "/api/v1/me/bidder_position/\(id)"
 
         case .findMyBidderRegistration:
-            return "/api/v1/me/bidders"
+            "/api/v1/me/bidders"
 
         case .placeABid:
-            return "/api/v1/me/bidder_position"
+            "/api/v1/me/bidder_position"
 
         case .registerCard:
-            return "/api/v1/me/credit_cards"
+            "/api/v1/me/credit_cards"
         }
     }
 
-    var base: String { return AppSetup.sharedState.useStaging ? "https://stagingapi.artsy.net" : "https://api.artsy.net" }
-    var baseURL: URL { return URL(string: base)! }
+    var base: String { AppSetup.sharedState.useStaging ? "https://stagingapi.artsy.net" : "https://api.artsy.net" }
+    var baseURL: URL { URL(string: base)! }
 
     var parameters: [String: Any]? {
         switch self {
+        case let .registerToBid(auctionID):
+            ["sale_id": auctionID as AnyObject]
 
-        case .registerToBid(let auctionID):
-            return ["sale_id": auctionID as AnyObject]
+        case let .myBiddersForAuction(auctionID):
+            ["sale_id": auctionID as AnyObject]
 
-        case .myBiddersForAuction(let auctionID):
-            return ["sale_id": auctionID as AnyObject]
-
-        case .placeABid(let auctionID, let artworkID, let maxBidCents):
-            return [
+        case let .placeABid(auctionID, artworkID, maxBidCents):
+            [
                 "sale_id": auctionID as AnyObject,
-                "artwork_id":  artworkID as AnyObject,
+                "artwork_id": artworkID as AnyObject,
                 "max_bid_amount_cents": maxBidCents as AnyObject
             ]
 
-        case .findMyBidderRegistration(let auctionID):
-            return ["sale_id": auctionID as AnyObject]
+        case let .findMyBidderRegistration(auctionID):
+            ["sale_id": auctionID as AnyObject]
 
-        case .updateMe(let email, let phone, let postCode, let name):
-            return [
+        case let .updateMe(email, phone, postCode, name):
+            [
                 "email": email as AnyObject, "phone": phone as AnyObject,
-                "name": name as AnyObject, "location": [ "postal_code": postCode ]
+                "name": name as AnyObject, "location": ["postal_code": postCode]
             ]
 
-        case .registerCard(let token, let swiped):
-            return ["provider": "stripe" as AnyObject, "token": token as AnyObject, "created_by_trusted_client": swiped as AnyObject]
+        case let .registerCard(token, swiped):
+            ["provider": "stripe" as AnyObject, "token": token as AnyObject, "created_by_trusted_client": swiped as AnyObject]
 
-        case .myBidPositionsForAuctionArtwork(let auctionID, let artworkID):
-            return ["sale_id": auctionID as AnyObject, "artwork_id": artworkID as AnyObject]
+        case let .myBidPositionsForAuctionArtwork(auctionID, artworkID):
+            ["sale_id": auctionID as AnyObject, "artwork_id": artworkID as AnyObject]
 
         default:
-            return nil
+            nil
         }
     }
 
     var method: Moya.Method {
         switch self {
         case .placeABid,
-        .registerCard,
-        .registerToBid,
-        .createPINForBidder:
-            return .post
+             .registerCard,
+             .registerToBid,
+             .createPINForBidder:
+            .post
         case .updateMe:
-            return .put
+            .put
         default:
-            return .get
+            .get
         }
     }
 
     var sampleData: Data {
         switch self {
         case .createPINForBidder:
-            return stubbedResponse("CreatePINForBidder")
+            stubbedResponse("CreatePINForBidder")
 
         case .myCreditCards:
-            return stubbedResponse("MyCreditCards")
+            stubbedResponse("MyCreditCards")
 
         case .registerToBid:
-            return stubbedResponse("RegisterToBid")
+            stubbedResponse("RegisterToBid")
 
         case .myBiddersForAuction:
-            return stubbedResponse("MyBiddersForAuction")
+            stubbedResponse("MyBiddersForAuction")
 
         case .me:
-            return stubbedResponse("Me")
+            stubbedResponse("Me")
 
         case .updateMe:
-            return stubbedResponse("Me")
+            stubbedResponse("Me")
 
         case .placeABid:
-            return stubbedResponse("CreateABid")
+            stubbedResponse("CreateABid")
 
         case .findMyBidderRegistration:
-            return stubbedResponse("FindMyBidderRegistration")
+            stubbedResponse("FindMyBidderRegistration")
 
         case .registerCard:
-            return stubbedResponse("RegisterCard")
+            stubbedResponse("RegisterCard")
 
         case .myBidPositionsForAuctionArtwork:
-            return stubbedResponse("MyBidPositionsForAuctionArtwork")
+            stubbedResponse("MyBidPositionsForAuctionArtwork")
 
         case .myBidPosition:
-            return stubbedResponse("MyBidPosition")
-
+            stubbedResponse("MyBidPosition")
         }
     }
 
     var addXAuth: Bool {
-        return true
+        true
     }
 }
 
 // MARK: - Provider support
 
 func stubbedResponse(_ filename: String) -> Data! {
-    @objc class TestClass: NSObject { }
+    @objc class TestClass: NSObject {}
 
     let bundle = Bundle(for: TestClass.self)
     let path = bundle.path(forResource: filename, ofType: "json")
@@ -397,10 +391,10 @@ func stubbedResponse(_ filename: String) -> Data! {
 
 private extension String {
     var URLEscapedString: String {
-        return self.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlHostAllowed)!
+        addingPercentEncoding(withAllowedCharacters: CharacterSet.urlHostAllowed)!
     }
 }
 
 func url(_ route: TargetType) -> String {
-    return route.baseURL.appendingPathComponent(route.path).absoluteString
+    route.baseURL.appendingPathComponent(route.path).absoluteString
 }

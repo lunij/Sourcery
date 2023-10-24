@@ -1,5 +1,5 @@
-import UIKit
 import RxSwift
+import UIKit
 
 enum RegistrationIndex {
     case mobileVC
@@ -10,30 +10,29 @@ enum RegistrationIndex {
     case confirmVC
 
     func toInt() -> Int {
-        switch (self) {
-            case .mobileVC: return 0
-            case .emailVC: return 1
-            case .passwordVC: return 1
-            case .zipCodeVC: return 2
-            case .creditCardVC: return 3
-            case .confirmVC: return 4
+        switch self {
+        case .mobileVC: 0
+        case .emailVC: 1
+        case .passwordVC: 1
+        case .zipCodeVC: 2
+        case .creditCardVC: 3
+        case .confirmVC: 4
         }
     }
 
     static func fromInt(_ index: Int) -> RegistrationIndex {
-        switch (index) {
-            case 0: return .mobileVC
-            case 1: return .emailVC
-            case 1: return .passwordVC
-            case 2: return .zipCodeVC
-            case 3: return .creditCardVC
-            default : return .confirmVC
+        switch index {
+        case 0: .mobileVC
+        case 1: .emailVC
+        case 1: .passwordVC
+        case 2: .zipCodeVC
+        case 3: .creditCardVC
+        default: .confirmVC
         }
     }
 }
 
 class RegistrationCoordinator: NSObject {
-
     let currentIndex = Variable(0)
     var storyboard: UIStoryboard!
 
@@ -41,7 +40,6 @@ class RegistrationCoordinator: NSObject {
         currentIndex.value = index.toInt()
 
         switch index {
-
         case .mobileVC:
             return storyboard.viewController(withID: .RegisterMobile)
 
@@ -79,7 +77,7 @@ class RegistrationCoordinator: NSObject {
             return viewControllerForIndex(.passwordVC)
         }
 
-        if notSet(details.newUser.zipCode.value) && AppSetup.sharedState.needsZipCode {
+        if notSet(details.newUser.zipCode.value), AppSetup.sharedState.needsZipCode {
             return viewControllerForIndex(.zipCodeVC)
         }
 
@@ -92,5 +90,5 @@ class RegistrationCoordinator: NSObject {
 }
 
 private func notSet(_ string: String?) -> Bool {
-    return string?.isEmpty ?? true
+    string?.isEmpty ?? true
 }

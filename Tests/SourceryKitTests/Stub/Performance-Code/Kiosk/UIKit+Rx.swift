@@ -1,18 +1,17 @@
-import UIKit
-import RxSwift
 import RxCocoa
+import RxSwift
+import UIKit
 
-extension UIView {
-    public var rx_hidden: AnyObserver<Bool> {
-        return AnyObserver { [weak self] event in
+public extension UIView {
+    var rx_hidden: AnyObserver<Bool> {
+        AnyObserver { [weak self] event in
             MainScheduler.ensureExecutingOnScheduler()
 
             switch event {
-            case .next(let value):
+            case let .next(value):
                 self?.isHidden = value
-            case .error(let error):
+            case let .error(error):
                 bindingErrorToInterface(error)
-                break
             case .completed:
                 break
             }
@@ -22,6 +21,6 @@ extension UIView {
 
 extension UITextField {
     var rx_returnKey: Observable<Void> {
-        return self.rx.controlEvent(.editingDidEndOnExit).takeUntil(rx.deallocated)
+        rx.controlEvent(.editingDidEndOnExit).takeUntil(rx.deallocated)
     }
 }

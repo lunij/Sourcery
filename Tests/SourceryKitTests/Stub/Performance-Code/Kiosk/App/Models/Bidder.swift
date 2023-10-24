@@ -1,5 +1,5 @@
-import UIKit
 import SwiftyJSON
+import UIKit
 
 final class Bidder: NSObject, JSONAbleType {
     let id: String

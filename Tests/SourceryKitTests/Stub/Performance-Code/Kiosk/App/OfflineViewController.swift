@@ -1,5 +1,5 @@
-import UIKit
 import Artsy_UIFonts
+import UIKit
 
 class OfflineViewController: UIViewController {
     @IBOutlet var offlineLabel: UILabel!

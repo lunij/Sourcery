@@ -1,8 +1,7 @@
 // Generated using Sourcery
 
 extension AssociatedValuesEnum {
-
-    internal init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         let enumCase = try container.decode(String.self, forKey: .enumCaseKey)
@@ -24,7 +23,7 @@ extension AssociatedValuesEnum {
         }
     }
 
-    internal func encode(to encoder: Encoder) throws {
+    func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
 
         switch self {
@@ -42,11 +41,9 @@ extension AssociatedValuesEnum {
             try container.encode(CodingKeys.anotherCase.rawValue, forKey: .enumCaseKey)
         }
     }
-
 }
 
 extension AssociatedValuesEnumNoCaseKey {
-
     enum CodingKeys: String, CodingKey {
         case someCase
         case unnamedCase
@@ -56,7 +53,7 @@ extension AssociatedValuesEnumNoCaseKey {
         case name
     }
 
-    internal init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         if container.allKeys.contains(.someCase), try container.decodeNil(forKey: .someCase) == false {
@@ -84,7 +81,7 @@ extension AssociatedValuesEnumNoCaseKey {
         throw DecodingError.dataCorrupted(.init(codingPath: decoder.codingPath, debugDescription: "Unknown enum case"))
     }
 
-    internal func encode(to encoder: Encoder) throws {
+    func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
 
         switch self {
@@ -103,48 +100,39 @@ extension AssociatedValuesEnumNoCaseKey {
             _ = container.nestedContainer(keyedBy: CodingKeys.self, forKey: .anotherCase)
         }
     }
-
 }
 
-
 extension CustomCodingWithNotAllDefinedKeys {
-
-    internal init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         value = try container.decode(Int.self, forKey: .value)
     }
 
-    internal func encode(to encoder: Encoder) throws {
+    func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
 
         try container.encode(value, forKey: .value)
         encodeComputedValue(to: &container)
     }
-
 }
 
-extension CustomContainerCodable {
-
-    public init(from decoder: Decoder) throws {
+public extension CustomContainerCodable {
+    init(from decoder: Decoder) throws {
         let container = try CustomContainerCodable.decodingContainer(decoder)
 
         value = try container.decode(Int.self, forKey: .value)
     }
 
-    public func encode(to encoder: Encoder) throws {
+    func encode(to encoder: Encoder) throws {
         var container = encodingContainer(encoder)
 
         try container.encode(value, forKey: .value)
     }
-
 }
 
-
-
-extension CustomMethodsCodable {
-
-    enum CodingKeys: String, CodingKey {
+public extension CustomMethodsCodable {
+    internal enum CodingKeys: String, CodingKey {
         case boolValue
         case intValue
         case optionalString
@@ -153,7 +141,7 @@ extension CustomMethodsCodable {
         case computedPropertyToEncode
     }
 
-    public init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         boolValue = try CustomMethodsCodable.decodeBoolValue(from: decoder)
@@ -163,7 +151,7 @@ extension CustomMethodsCodable {
         requiredStringWithDefault = (try? container.decode(String.self, forKey: .requiredStringWithDefault)) ?? CustomMethodsCodable.defaultRequiredStringWithDefault
     }
 
-    public func encode(to encoder: Encoder) throws {
+    func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
 
         try encodeBoolValue(to: encoder)
@@ -174,17 +162,15 @@ extension CustomMethodsCodable {
         encodeComputedPropertyToEncode(to: &container)
         try encodeAdditionalValues(to: encoder)
     }
-
 }
 
 extension SimpleEnum {
-
     enum CodingKeys: String, CodingKey {
         case someCase
         case anotherCase
     }
 
-    internal init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
 
         let enumCase = try container.decode(String.self)
@@ -195,7 +181,7 @@ extension SimpleEnum {
         }
     }
 
-    internal func encode(to encoder: Encoder) throws {
+    func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
 
         switch self {
@@ -203,37 +189,32 @@ extension SimpleEnum {
         case .anotherCase: try container.encode(CodingKeys.anotherCase.rawValue)
         }
     }
-
 }
 
 extension SkipDecodingWithDefaultValueOrComputedProperty {
-
-    internal init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         value = try container.decode(Int.self, forKey: .value)
     }
 
-    internal func encode(to encoder: Encoder) throws {
+    func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
 
         try container.encode(value, forKey: .value)
         try container.encode(computedValue, forKey: .computedValue)
     }
-
 }
 
 extension SkipEncodingKeys {
-
     enum CodingKeys: String, CodingKey {
         case value
         case skipValue
     }
 
-    internal func encode(to encoder: Encoder) throws {
+    func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
 
         try container.encode(value, forKey: .value)
     }
-
 }

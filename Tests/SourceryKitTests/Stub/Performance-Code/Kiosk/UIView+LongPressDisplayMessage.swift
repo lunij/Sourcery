@@ -1,8 +1,8 @@
-import UIKit
 import RxSwift
+import UIKit
 
 private func alertController(_ message: String, title: String) -> UIAlertController {
-    let alertController =  UIAlertController(title: title, message: message, preferredStyle: .alert)
+    let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
 
     alertController.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
 

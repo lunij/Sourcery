@@ -19,7 +19,7 @@ class StripeManager: NSObject {
                 return Disposables.create()
             }
 
-            me.stripeClient?.createToken(with: card) { (token, error) in
+            me.stripeClient?.createToken(with: card) { token, error in
                 if (token as STPToken?).hasValue {
                     observer.onNext(token!)
                     observer.onCompleted()
@@ -33,7 +33,7 @@ class StripeManager: NSObject {
     }
 
     func stringIsCreditCard(_ cardNumber: String) -> Bool {
-        return STPCard.validateNumber(cardNumber)
+        STPCard.validateNumber(cardNumber)
     }
 }
 
@@ -41,19 +41,19 @@ extension STPCardBrand {
     var name: String? {
         switch self {
         case .visa:
-            return "Visa"
+            "Visa"
         case .amex:
-            return "American Express"
+            "American Express"
         case .masterCard:
-            return "MasterCard"
+            "MasterCard"
         case .discover:
-            return "Discover"
+            "Discover"
         case .JCB:
-            return "JCB"
+            "JCB"
         case .dinersClub:
-            return "Diners Club"
+            "Diners Club"
         default:
-            return nil
+            nil
         }
     }
 }

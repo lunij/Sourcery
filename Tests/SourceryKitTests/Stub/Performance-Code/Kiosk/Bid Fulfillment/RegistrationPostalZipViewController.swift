@@ -12,10 +12,10 @@ class RegistrationPostalZipViewController: UIViewController, RegistrationSubCont
 
     fileprivate let _viewWillDisappear = PublishSubject<Void>()
     var viewWillDisappear: Observable<Void> {
-        return self._viewWillDisappear.asObserver()
+        self._viewWillDisappear.asObserver()
     }
 
-    lazy var bidDetails: BidDetails! = { self.navigationController!.fulfillmentNav().bidDetails }()
+    lazy var bidDetails: BidDetails! = self.navigationController!.fulfillmentNav().bidDetails
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,6 +41,6 @@ class RegistrationPostalZipViewController: UIViewController, RegistrationSubCont
     }
 
     class func instantiateFromStoryboard(_ storyboard: UIStoryboard) -> RegistrationPostalZipViewController {
-        return storyboard.viewController(withID: .RegisterPostalorZip) as! RegistrationPostalZipViewController
+        storyboard.viewController(withID: .RegisterPostalorZip) as! RegistrationPostalZipViewController
     }
 }

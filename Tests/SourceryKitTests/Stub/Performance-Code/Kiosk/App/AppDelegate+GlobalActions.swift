@@ -1,23 +1,22 @@
-import UIKit
-import QuartzCore
-import ARAnalytics
-import RxSwift
 import Action
+import ARAnalytics
+import QuartzCore
+import RxSwift
+import UIKit
 
 func appDelegate() -> AppDelegate {
-    return UIApplication.shared.delegate as! AppDelegate
+    UIApplication.shared.delegate as! AppDelegate
 }
 
 extension AppDelegate {
-
     // Registration
 
     var sale: Sale! {
-        return appViewController!.sale.value
+        appViewController!.sale.value
     }
 
-    internal var appViewController: AppViewController! {
-        let nav = self.window?.rootViewController?.findChildViewControllerOfType(UINavigationController.self) as? UINavigationController
+    var appViewController: AppViewController! {
+        let nav = window?.rootViewController?.findChildViewControllerOfType(UINavigationController.self) as? UINavigationController
         return nav?.delegate as? AppViewController
     }
 
@@ -32,7 +31,7 @@ extension AppDelegate {
         window?.layoutIfNeeded()
 
         helpIsVisisble.subscribe(onNext: { visisble in
-            let image: UIImage? = visisble ?  UIImage(named: "xbtn_white")?.withRenderingMode(.alwaysOriginal) : nil
+            let image: UIImage? = visisble ? UIImage(named: "xbtn_white")?.withRenderingMode(.alwaysOriginal) : nil
             let text: String? = visisble ? nil : "HELP"
 
             self.helpButton.setTitle(text, for: .normal)
@@ -54,12 +53,12 @@ extension AppDelegate {
 
 // MARK: - ReactiveCocoa extensions
 
-fileprivate var retainedAction: CocoaAction?
+private var retainedAction: CocoaAction?
 extension AppDelegate {
     // In this extension, I'm omitting [weak self] because the app delegate will outlive everyone.
 
     func showBuyersPremiumCommand(enabled: Observable<Bool> = .just(true)) -> CocoaAction {
-        return CocoaAction(enabledIf: enabled) { _ in
+        CocoaAction(enabledIf: enabled) { _ in
             self.hideAllTheThings()
                 .then(self.showWebController(address: "https://m.artsy.net/auction/\(self.sale.id)/buyers-premium"))
                 .map(void)
@@ -67,28 +66,28 @@ extension AppDelegate {
     }
 
     func registerToBidCommand(enabled: Observable<Bool> = .just(true)) -> CocoaAction {
-        return CocoaAction(enabledIf: enabled) { _ in
+        CocoaAction(enabledIf: enabled) { _ in
             self.hideAllTheThings()
                 .then(self.showRegistration())
         }
     }
 
     func requestBidderDetailsCommand(enabled: Observable<Bool> = .just(true)) -> CocoaAction {
-        return CocoaAction(enabledIf: enabled) { _ in
+        CocoaAction(enabledIf: enabled) { _ in
             self.hideHelp()
                 .then(self.showBidderDetailsRetrieval())
         }
     }
 
     func helpButtonCommand() -> CocoaAction {
-        return CocoaAction { _ in
+        CocoaAction { _ in
             let showHelp = self.hideAllTheThings().then(self.showHelp())
 
             return self.helpIsVisisble.take(1).flatMap { (visible: Bool) -> Observable<Void> in
                 if visible {
-                    return self.hideHelp()
+                    self.hideHelp()
                 } else {
-                    return showHelp
+                    showHelp
                 }
             }
         }
@@ -100,24 +99,24 @@ extension AppDelegate {
     func ensureAction(action: CocoaAction) -> CocoaAction {
         retainedAction = action
         let action = CocoaAction { input -> Observable<Void> in
-            return retainedAction?
+            retainedAction?
                 .execute(input)
                 .doOnCompleted {
                     retainedAction = nil
-                } ?? Observable.just(Void())
+                } ?? Observable.just(())
         }
 
         return action
     }
 
     func showPrivacyPolicyCommand() -> CocoaAction {
-        return ensureAction(action: CocoaAction { _ in
+        ensureAction(action: CocoaAction { _ in
             self.hideAllTheThings().then(self.showWebController(address: "https://artsy.net/privacy"))
         })
     }
 
     func showConditionsOfSaleCommand() -> CocoaAction {
-        return ensureAction(action: CocoaAction { _ in
+        ensureAction(action: CocoaAction { _ in
             self.hideAllTheThings().then(self.showWebController(address: "https://artsy.net/conditions-of-sale"))
         })
     }
@@ -126,25 +125,24 @@ extension AppDelegate {
 // MARK: - Private ReactiveCocoa Extension
 
 private extension AppDelegate {
-
     // MARK: - s that do things
 
     func ツ() -> Observable<Void> {
-        return hideAllTheThings()
+        hideAllTheThings()
     }
 
     func hideAllTheThings() -> Observable<Void> {
-        return self.closeFulfillmentViewController().then(self.hideHelp())
+        closeFulfillmentViewController().then(hideHelp())
     }
 
     func showBidderDetailsRetrieval() -> Observable<Void> {
-        let appVC = self.appViewController
+        let appVC = appViewController
         let presentingViewController: UIViewController = (appVC!.presentedViewController ?? appVC!)
-        return presentingViewController.promptForBidderDetailsRetrieval(provider: self.provider)
+        return presentingViewController.promptForBidderDetailsRetrieval(provider: provider)
     }
 
     func showRegistration() -> Observable<Void> {
-        return Observable.create { observer in
+        Observable.create { observer in
             ARAnalytics.event("Register To Bid Tapped")
 
             let storyboard = UIStoryboard.fulfillment()
@@ -171,7 +169,7 @@ private extension AppDelegate {
     }
 
     func showHelp() -> Observable<Void> {
-        return Observable.create { observer in
+        Observable.create { observer in
             let helpViewController = HelpViewController()
             helpViewController.modalPresentationStyle = .custom
             helpViewController.transitioningDelegate = self
@@ -187,7 +185,7 @@ private extension AppDelegate {
 
     func closeFulfillmentViewController() -> Observable<Void> {
         let close: Observable<Void> = Observable.create { observer in
-            (self.appViewController.presentedViewController as? FulfillmentContainerViewController)?.closeFulfillmentModal() {
+            (self.appViewController.presentedViewController as? FulfillmentContainerViewController)?.closeFulfillmentModal {
                 sendDispatchCompleted(to: observer)
             }
 
@@ -196,23 +194,22 @@ private extension AppDelegate {
 
         return fullfilmentVisible.flatMap { visible -> Observable<Void> in
             if visible {
-                return close
+                close
             } else {
-                return .empty()
+                .empty()
             }
         }
-
     }
 
     func showWebController(address: String) -> Observable<Void> {
-        return hideWebViewController().then (
+        hideWebViewController().then(
             Observable.create { observer in
                 let webController = ModalWebViewController(url: NSURL(string: address)! as URL)
 
                 let nav = UINavigationController(rootViewController: webController)
                 nav.modalPresentationStyle = .formSheet
 
-                ARAnalytics.event("Show Web View", withProperties: ["url" : address])
+                ARAnalytics.event("Show Web View", withProperties: ["url": address])
                 self.window?.rootViewController?.present(nav, animated: true) {
                     sendDispatchCompleted(to: observer)
                 }
@@ -225,7 +222,7 @@ private extension AppDelegate {
     }
 
     func hideHelp() -> Observable<Void> {
-        return Observable.create { observer in
+        Observable.create { observer in
             if let presentingViewController = self.helpViewController.value?.presentingViewController {
                 presentingViewController.dismiss(animated: true) {
                     DispatchQueue.main.async {
@@ -243,7 +240,7 @@ private extension AppDelegate {
     }
 
     func hideWebViewController() -> Observable<Void> {
-        return Observable.create { observer in
+        Observable.create { observer in
             if let webViewController = self.webViewController {
                 webViewController.presentingViewController?.dismiss(animated: true) {
                     sendDispatchCompleted(to: observer)
@@ -259,8 +256,8 @@ private extension AppDelegate {
     // MARK: - Computed property observables
 
     var fullfilmentVisible: Observable<Bool> {
-        return Observable.deferred {
-            return Observable.create { observer in
+        Observable.deferred {
+            Observable.create { observer in
                 observer.onNext((self.appViewController.presentedViewController as? FulfillmentContainerViewController) != nil)
                 observer.onCompleted()
 
@@ -270,8 +267,8 @@ private extension AppDelegate {
     }
 
     var helpIsVisisble: Observable<Bool> {
-        return helpViewController.asObservable().map { controller in
-            return controller.hasValue
+        helpViewController.asObservable().map { controller in
+            controller.hasValue
         }
     }
 }
@@ -279,11 +276,11 @@ private extension AppDelegate {
 // MARK: - Help transtion animation
 
 extension AppDelegate: UIViewControllerTransitioningDelegate {
-    func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        return HelpAnimator(presenting: true)
+    func animationController(forPresented _: UIViewController, presenting _: UIViewController, source _: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        HelpAnimator(presenting: true)
     }
 
-    func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        return HelpAnimator()
+    func animationController(forDismissed _: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        HelpAnimator()
     }
 }

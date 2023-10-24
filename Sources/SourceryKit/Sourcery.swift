@@ -8,7 +8,7 @@ public class Sourcery {
     private let cacheDisabled: Bool
     private let buildPath: Path?
     private let serialParse: Bool
-    
+
     private let swiftGenerator: SwiftGenerator
     private let swiftParser: SwiftParser
     private let templateLoader: TemplateLoading
@@ -136,8 +136,8 @@ public class Sourcery {
         var top: [(Path, [Path])] = []
         paths.forEach { path in
             // See if its already contained by the topDirectories
-            guard top.first(where: { (_, children) -> Bool in
-                return children.contains(path)
+            guard top.first(where: { _, children -> Bool in
+                children.contains(path)
             }) == nil else { return }
 
             if path.isDirectory {
@@ -153,6 +153,6 @@ public class Sourcery {
             }
         }
 
-        return top.map { $0.0 }
+        return top.map(\.0)
     }
 }

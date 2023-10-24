@@ -1,7 +1,7 @@
-import Foundation
-import RxSwift
-import Moya
 import Action
+import Foundation
+import Moya
+import RxSwift
 
 protocol RegistrationPasswordViewModelType {
     var emailExists: Observable<Bool> { get }
@@ -11,7 +11,6 @@ protocol RegistrationPasswordViewModelType {
 }
 
 class RegistrationPasswordViewModel: RegistrationPasswordViewModelType {
-
     fileprivate let password = Variable("")
 
     var action: CocoaAction!
@@ -42,17 +41,17 @@ class RegistrationPasswordViewModel: RegistrationPasswordViewModelType {
         // If it doesn't exist, then it does nothing.
         let action = CocoaAction(enabledIf: password.asObservable().map(isStringLengthAtLeast(length: 6))) { _ in
 
-            return self.emailExists
+            self.emailExists
                 .flatMap { exists -> Observable<Void> in
                     if exists {
-                        let endpoint: ArtsyAPI = ArtsyAPI.xAuth(email: email, password: password.value )
+                        let endpoint: ArtsyAPI = .xAuth(email: email, password: password.value)
                         return provider
                             .request(endpoint)
                             .filterSuccessfulStatusCodes()
                             .map(void)
                     } else {
                         // Return a non-empty observable, so that the action sends something on its elements observable.
-                        return .just(Void())
+                        return .just(())
                     }
                 }
                 .doOnCompleted {
@@ -64,7 +63,7 @@ class RegistrationPasswordViewModel: RegistrationPasswordViewModelType {
 
         execute
             .subscribe { _ in
-                action.execute(Void())
+                action.execute(())
             }
             .addDisposableTo(disposeBag)
     }

@@ -1,22 +1,20 @@
-import UIKit
 import Moya
 import RxSwift
+import UIKit
 
 // We abstract this out so that we don't have network models, etc, aware of the view controller.
-// This is a "source of truth" that should be referenced in lieu of many independent variables. 
+// This is a "source of truth" that should be referenced in lieu of many independent variables.
 protocol FulfillmentController: AnyObject {
     var bidDetails: BidDetails { get set }
     var auctionID: String! { get set }
 }
 
 class FulfillmentNavigationController: UINavigationController, FulfillmentController {
-
     // MARK: - FulfillmentController bits
 
     /// The the collection of details necessary to eventually create a bid
-    lazy var bidDetails: BidDetails = {
-        return BidDetails(saleArtwork:nil, paddleNumber: nil, bidderPIN: nil, bidAmountCents:nil, auctionID: self.auctionID)
-    }()
+    lazy var bidDetails: BidDetails = .init(saleArtwork: nil, paddleNumber: nil, bidderPIN: nil, bidAmountCents: nil, auctionID: self.auctionID)
+
     var auctionID: String!
     var user: User!
 
@@ -26,7 +24,7 @@ class FulfillmentNavigationController: UINavigationController, FulfillmentContro
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.delegate = self
+        delegate = self
     }
 
     func reset() {
@@ -58,7 +56,7 @@ class FulfillmentNavigationController: UINavigationController, FulfillmentContro
 }
 
 extension FulfillmentNavigationController: UINavigationControllerDelegate {
-    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+    func navigationController(_: UINavigationController, willShow viewController: UIViewController, animated _: Bool) {
         guard let viewController = viewController as? PlaceBidViewController else { return }
 
         viewController.provider = provider

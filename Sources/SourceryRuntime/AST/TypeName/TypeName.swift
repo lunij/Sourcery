@@ -3,31 +3,33 @@ import Foundation
 /// Describes name of the type used in typed declaration (variable, method parameter or return value etc.)
 @objcMembers public final class TypeName: NSObject, SourceryModelWithoutDescription, LosslessStringConvertible {
     /// :nodoc:
-    public init(name: String,
-                actualTypeName: TypeName? = nil,
-                unwrappedTypeName: String? = nil,
-                attributes: AttributeList = [:],
-                isOptional: Bool = false,
-                isImplicitlyUnwrappedOptional: Bool = false,
-                tuple: TupleType? = nil,
-                array: ArrayType? = nil,
-                dictionary: DictionaryType? = nil,
-                closure: ClosureType? = nil,
-                generic: GenericType? = nil,
-                isProtocolComposition: Bool = false) {
-
-        let optionalSuffix: String
-        // TODO: TBR
-        if !name.hasPrefix("Optional<") && !name.contains(" where ") {
+    public init(
+        name: String,
+        actualTypeName: TypeName? = nil,
+        unwrappedTypeName: String? = nil,
+        attributes: AttributeList = [:],
+        isOptional: Bool = false,
+        isImplicitlyUnwrappedOptional: Bool = false,
+        tuple: TupleType? = nil,
+        array: ArrayType? = nil,
+        dictionary: DictionaryType? = nil,
+        closure: ClosureType? = nil,
+        generic: GenericType? = nil,
+        isProtocolComposition: Bool = false
+    ) {
+        let optionalSuffix
+            // TODO: TBR
+            = if !name.hasPrefix("Optional<") && !name.contains(" where ")
+        {
             if isOptional {
-                optionalSuffix = "?"
+                "?"
             } else if isImplicitlyUnwrappedOptional {
-                optionalSuffix = "!"
+                "!"
             } else {
-                optionalSuffix = ""
+                ""
             }
         } else {
-            optionalSuffix = ""
+            ""
         }
 
         self.name = name + optionalSuffix
@@ -43,7 +45,7 @@ import Foundation
         self.isProtocolComposition = isProtocolComposition
 
         self.attributes = attributes
-        self.modifiers = []
+        modifiers = []
         super.init()
     }
 
@@ -86,7 +88,7 @@ import Foundation
     // sourcery: skipEquality
     /// Whether type is void (`Void` or `()`)
     public var isVoid: Bool {
-        return name == "Void" || name == "()" || unwrappedTypeName == "Void"
+        name == "Void" || name == "()" || unwrappedTypeName == "Void"
     }
 
     /// Whether type is a tuple
@@ -127,9 +129,9 @@ import Foundation
         let specialTreatment = isOptional && name.hasPrefix("Optional<")
 
         var description = (
-          attributes.flatMap({ $0.value }).map({ $0.asSource }).sorted() +
-          modifiers.map({ $0.asSource }) +
-          [specialTreatment ? name : unwrappedTypeName]
+            attributes.flatMap(\.value).map(\.asSource).sorted() +
+                modifiers.map(\.asSource) +
+                [specialTreatment ? name : unwrappedTypeName]
         ).joined(separator: " ")
 
         if let _ = self.dictionary { // array and dictionary cases are covered by the unwrapped type name
@@ -153,11 +155,11 @@ import Foundation
         return description
     }
 
-    public override var description: String {
-       (
-          attributes.flatMap({ $0.value }).map({ $0.asSource }).sorted() +
-          modifiers.map({ $0.asSource }) +
-          [name]
+    override public var description: String {
+        (
+            attributes.flatMap(\.value).map(\.asSource).sorted() +
+                modifiers.map(\.asSource) +
+                [name]
         ).joined(separator: " ")
     }
 
@@ -200,8 +202,8 @@ import Foundation
 
     // sourcery: skipEquality, skipDescription
     /// :nodoc:
-    public override var debugDescription: String {
-        return name
+    override public var debugDescription: String {
+        name
     }
 
     public convenience init(_ description: String) {
@@ -209,9 +211,9 @@ import Foundation
     }
 }
 
-extension TypeName {
-    public static func unknown(description: String?, attributes: AttributeList = [:]) -> TypeName {
-        if let description = description {
+public extension TypeName {
+    static func unknown(description: String?, attributes: AttributeList = [:]) -> TypeName {
+        if let description {
             logger.astWarning("Unknown type, please add type attribution to \(description)")
         } else {
             logger.astWarning("Unknown type, please add type attribution")

@@ -2,7 +2,6 @@ import Foundation
 
 /// Describes Swift attribute
 @objcMembers public class Attribute: NSObject, AutoCoding, AutoEquatable, AutoDiffable, AutoJSExport {
-
     /// Attribute name
     public let name: String
 
@@ -20,17 +19,17 @@ import Foundation
     public init(name: String, arguments: [String: NSObject] = [:], description: String? = nil) {
         self.name = name
         self.arguments = arguments
-        self._description = description ?? "@\(name)"
+        _description = description ?? "@\(name)"
     }
 
-    /// TODO: unify `asSource` / `description`?
+    // TODO: unify `asSource` / `description`?
     public var asSource: String {
         description
     }
 
     /// Attribute description that can be used in a template.
-    public override var description: String {
-        return _description
+    override public var description: String {
+        _description
     }
 
     /// :nodoc:
@@ -57,10 +56,10 @@ import Foundation
         case final
         case open
         case lazy
-        case `public` = "public"
-        case `internal` = "internal"
-        case `private` = "private"
-        case `fileprivate` = "fileprivate"
+        case `public`
+        case `internal`
+        case `private`
+        case `fileprivate`
         case publicSetter = "setter_access.public"
         case internalSetter = "setter_access.internal"
         case privateSetter = "setter_access.private"
@@ -79,47 +78,47 @@ import Foundation
         public static func from(string: String) -> Identifier? {
             switch string {
             case "GKInspectable":
-                return Identifier.GKInspectable
+                Identifier.GKInspectable
             case "objc":
-                return .objc
+                .objc
             case "IBOutlet":
-                return .IBOutlet
+                .IBOutlet
             case "IBInspectable":
-                return .IBInspectable
+                .IBInspectable
             case "IBDesignable":
-                return .IBDesignable
+                .IBDesignable
             default:
-                return Identifier(rawValue: string)
+                Identifier(rawValue: string)
             }
         }
 
         public var name: String {
             switch self {
             case .GKInspectable:
-                return "GKInspectable"
+                "GKInspectable"
             case .objc:
-                return "objc"
+                "objc"
             case .IBOutlet:
-                return "IBOutlet"
+                "IBOutlet"
             case .IBInspectable:
-                return "IBInspectable"
+                "IBInspectable"
             case .IBDesignable:
-                return "IBDesignable"
+                "IBDesignable"
             case .fileprivateSetter:
-                return "fileprivate"
+                "fileprivate"
             case .privateSetter:
-                return "private"
+                "private"
             case .internalSetter:
-                return "internal"
+                "internal"
             case .publicSetter:
-                return "public"
+                "public"
             default:
-                return rawValue
+                rawValue
             }
         }
 
         public var description: String {
-            return hasAtPrefix ? "@\(name)" : name
+            hasAtPrefix ? "@\(name)" : name
         }
 
         public var hasAtPrefix: Bool {
@@ -140,9 +139,9 @@ import Foundation
                  .autoclosure,
                  .convention,
                  .escaping:
-                return true
+                true
             default:
-                return false
+                false
             }
         }
     }

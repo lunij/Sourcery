@@ -1,13 +1,13 @@
-import UIKit
-import RxSwift
 import Moya
+import RxSwift
+import UIKit
 
 @objc class BidDetails: NSObject {
-    typealias DownloadImageClosure = (_ url: URL, _ imageView: UIImageView) -> ()
+    typealias DownloadImageClosure = (_ url: URL, _ imageView: UIImageView) -> Void
 
     let auctionID: String
 
-    var newUser: NewUser = NewUser()
+    var newUser: NewUser = .init()
     var saleArtwork: SaleArtwork?
 
     var paddleNumber = Variable<String?>(nil)
@@ -15,7 +15,7 @@ import Moya
     var bidAmountCents = Variable<NSNumber?>(nil)
     var bidderID = Variable<String?>(nil)
 
-    var setImage: DownloadImageClosure = { (url, imageView) -> () in
+    var setImage: DownloadImageClosure = { url, imageView in
         imageView.sd_setImage(with: url)
     }
 
@@ -31,7 +31,6 @@ import Moya
     /// - User's paddle/phone # and PIN, or
     /// - User's email and password
     func authenticatedNetworking(provider: Networking) -> Observable<AuthorizedNetworking> {
-
         let auctionID = saleArtwork?.auctionID ?? ""
 
         if let number = paddleNumber.value, let pin = bidderPIN.value {
@@ -47,7 +46,7 @@ import Moya
             return .just(AuthorizedNetworking(provider: provider))
 
         } else {
-            let endpoint: ArtsyAPI = ArtsyAPI.xAuth(email: newUser.email.value ?? "", password: newUser.password.value ?? "")
+            let endpoint = ArtsyAPI.xAuth(email: newUser.email.value ?? "", password: newUser.password.value ?? "")
 
             return provider.request(endpoint)
                 .filterSuccessfulStatusCodes()

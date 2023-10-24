@@ -1,4 +1,3 @@
-
 import Foundation
 
 protocol AutoEquatable {}
@@ -10,7 +9,7 @@ protocol Parent {
 /// General protocol
 protocol AutoEquatableProtocol: AutoEquatable {
     var width: Double { get }
-    var height: Double { get}
+    var height: Double { get }
     static var name: String { get }
 }
 
@@ -21,7 +20,7 @@ enum AutoEquatableEnum: AutoEquatable {
     case three(bar: Int)
 
     func allValue() -> [AutoEquatableEnum] {
-        return [.one, .two(first: "a", second: "b"), .three(bar: 42)]
+        [.one, .two(first: "a", second: "b"), .three(bar: 42)]
     }
 }
 
@@ -72,12 +71,12 @@ struct AutoEquatableStruct: AutoEquatable {
 
     // Method with return value
     func greeting(for name: String) -> String {
-        return "Hi \(name)"
+        "Hi \(name)"
     }
 
     // Method with optional return value
-    func books(sharedWith name: String) -> String? {
-        return nil
+    func books(sharedWith _: String) -> String? {
+        nil
     }
 }
 
@@ -123,16 +122,16 @@ class AutoEquatableClass: AutoEquatable {
 
     // Method with return value
     func greeting(for name: String) -> String {
-        return "Hi \(name)"
+        "Hi \(name)"
     }
 
     // Method with optional return value
-    func books(sharedWith name: String) -> String? {
-        return nil
+    func books(sharedWith _: String) -> String? {
+        nil
     }
 }
 
-/// Sourcery doesn't support inheritance for AutoEqualtable 
+/// Sourcery doesn't support inheritance for AutoEqualtable
 class AutoEquatableClassInherited: AutoEquatableClass {
     // Optional constants
     let middleName: String?
@@ -155,25 +154,19 @@ class AutoEquatableNSObject: NSObject, AutoEquatable {
 /// It should generate correct code for general class
 /// sourcery: AutoEquatable
 class AutoEquatableAnnotatedClass {
-
     // Variable
     var moneyInThePocket: Double = 0
-
 }
 
 // It won't be generated
 class AutoEquatableAnnotatedClassInherited: AutoEquatableAnnotatedClass {
-
     // Variable
     var middleName: String = "Poor"
-
 }
 
 // Sourcery doesn't support inheritance for AutoEqualtable so it won't be generated
 /// sourcery: AutoEquatable
 class AutoEquatableAnnotatedClassAnnotatedInherited: AutoEquatableAnnotatedClass {
-
     // Variable
     var middleName: String = "Poor"
-
 }

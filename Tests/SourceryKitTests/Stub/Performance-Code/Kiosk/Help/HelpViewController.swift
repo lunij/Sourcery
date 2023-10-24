@@ -1,10 +1,10 @@
-import UIKit
-import ORStackView
-import Artsy_UILabels
-import Artsy_UIButtons
 import Action
-import RxSwift
+import Artsy_UIButtons
+import Artsy_UILabels
+import ORStackView
 import RxCocoa
+import RxSwift
+import UIKit
 
 class HelpViewController: UIViewController {
     var positionConstraints: [NSLayoutConstraint]?
@@ -39,19 +39,15 @@ class HelpViewController: UIViewController {
         appDelegate().showConditionsOfSaleCommand()
     }
 
-    lazy var hasBuyersPremium: Observable<Bool> = {
-        return appDelegate()
-            .appViewController
-            .sale
-            .value
-            .rx.observe(String.self, "buyersPremium")
-            .map { $0.hasValue }
-    }()
+    lazy var hasBuyersPremium: Observable<Bool> = appDelegate()
+        .appViewController
+        .sale
+        .value
+        .rx.observe(String.self, "buyersPremium")
+        .map(\.hasValue)
 
     class var width: Float {
-        get {
-            return 415.0
-        }
+        415.0
     }
 
     override func viewDidLoad() {
@@ -65,7 +61,6 @@ class HelpViewController: UIViewController {
 }
 
 private extension HelpViewController {
-
     enum SubviewTag: Int {
         case assistanceLabel = 0
         case stuckLabel, stuckExplainLabel
@@ -76,7 +71,6 @@ private extension HelpViewController {
     }
 
     func addSubviews() {
-
         // Configure subviews
         let assistanceLabel = ARSerifLabel()
         assistanceLabel.font = assistanceLabel.font.withSize(35)
@@ -125,7 +119,7 @@ private extension HelpViewController {
         stackView.addSubview(bidderDetailsExplainLabel, withTopMargin: "\(inbetweenMargin)", sideMargin: "\(sideMargin)")
         stackView.addSubview(sendDetailsButton, withTopMargin: "\(inbetweenMargin)", sideMargin: "\(sideMargin)")
         stackView.addSubview(conditionsButton, withTopMargin: "\(headerMargin)", sideMargin: "\(sideMargin)")
-        stackView.addSubview(privacyButton, withTopMargin: "\(inbetweenMargin)", sideMargin: "\(self.sideMargin)")
+        stackView.addSubview(privacyButton, withTopMargin: "\(inbetweenMargin)", sideMargin: "\(sideMargin)")
 
         hasBuyersPremium
             .subscribe(onNext: { [weak self] hasBuyersPremium in

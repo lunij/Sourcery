@@ -1,10 +1,9 @@
-import UIKit
-import RxSwift
-import Moya
 import Action
+import Moya
+import RxSwift
+import UIKit
 
 class RegistrationPasswordViewController: UIViewController, RegistrationSubController {
-
     @IBOutlet var passwordTextField: TextField!
     @IBOutlet var confirmButton: ActionButton!
     @IBOutlet var subtitleLabel: UILabel!
@@ -16,7 +15,7 @@ class RegistrationPasswordViewController: UIViewController, RegistrationSubContr
 
     fileprivate let _viewWillDisappear = PublishSubject<Void>()
     var viewWillDisappear: Observable<Void> {
-        return self._viewWillDisappear.asObserver()
+        self._viewWillDisappear.asObserver()
     }
 
     lazy var viewModel: RegistrationPasswordViewModelType = {
@@ -27,10 +26,11 @@ class RegistrationPasswordViewController: UIViewController, RegistrationSubContr
             password: self.passwordTextField.rx.text.asObservable().replaceNil(with: ""),
             execute: self.passwordTextField.rx_returnKey,
             completed: self.finished,
-            email: email)
+            email: email
+        )
     }()
 
-    lazy var bidDetails: BidDetails! = { self.navigationController!.fulfillmentNav().bidDetails }()
+    lazy var bidDetails: BidDetails! = self.navigationController!.fulfillmentNav().bidDetails
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -51,7 +51,6 @@ class RegistrationPasswordViewController: UIViewController, RegistrationSubContr
             .errors
             .subscribe(onNext: { [weak self] _ in
                 self?.showAuthenticationError()
-                return
             })
             .addDisposableTo(rx_disposeBag)
 
@@ -63,7 +62,7 @@ class RegistrationPasswordViewController: UIViewController, RegistrationSubContr
             .addDisposableTo(rx_disposeBag)
 
         forgotPasswordButton.rx.action = CocoaAction { [weak self] _ in
-            return self?
+            self?
                 .viewModel
                 .userForgotPassword()
                 .then {
@@ -75,9 +74,9 @@ class RegistrationPasswordViewController: UIViewController, RegistrationSubContr
             .emailExists
             .map { emailExists in
                 if emailExists {
-                    return "Enter your Artsy password"
+                    "Enter your Artsy password"
                 } else {
-                    return "Create a password"
+                    "Create a password"
                 }
             }
             .bindTo(subtitleLabel.rx.text)
@@ -92,11 +91,11 @@ class RegistrationPasswordViewController: UIViewController, RegistrationSubContr
     }
 
     func alertUserPasswordSent() -> Observable<Void> {
-        return Observable.create { observer in
+        Observable.create { observer in
 
             let alertController = UIAlertController(title: "Forgot Password", message: "We have sent you your password.", preferredStyle: .alert)
 
-            let okAction = UIAlertAction(title: "OK", style: .default) { (_) in }
+            let okAction = UIAlertAction(title: "OK", style: .default) { _ in }
 
             alertController.addAction(okAction)
 
@@ -117,6 +116,6 @@ class RegistrationPasswordViewController: UIViewController, RegistrationSubContr
     }
 
     class func instantiateFromStoryboard(_ storyboard: UIStoryboard) -> RegistrationPasswordViewController {
-        return storyboard.viewController(withID: .RegisterPassword) as! RegistrationPasswordViewController
+        storyboard.viewController(withID: .RegisterPassword) as! RegistrationPasswordViewController
     }
 }

@@ -1,12 +1,10 @@
 import UIKit
 
 class PasswordAlertViewController: UIAlertController {
-
-    class func alertView(completion: @escaping () -> ()) -> PasswordAlertViewController {
+    class func alertView(completion: @escaping () -> Void) -> PasswordAlertViewController {
         let alertController = PasswordAlertViewController(title: "Exit Kiosk", message: nil, preferredStyle: .alert)
-        let exitAction = UIAlertAction(title: "Exit", style: .default) { (_) in
+        let exitAction = UIAlertAction(title: "Exit", style: .default) { _ in
             completion()
-            return
         }
 
         if detectDevelopmentEnvironment() {
@@ -15,12 +13,12 @@ class PasswordAlertViewController: UIAlertController {
             exitAction.isEnabled = false
         }
 
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { (_) in }
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { _ in }
 
-        alertController.addTextField { (textField) in
+        alertController.addTextField { textField in
             textField.placeholder = "Exit Password"
 
-            NotificationCenter.default.addObserver(forName: NSNotification.Name.UITextFieldTextDidChange, object: textField, queue: OperationQueue.main) { (notification) in
+            NotificationCenter.default.addObserver(forName: NSNotification.Name.UITextFieldTextDidChange, object: textField, queue: OperationQueue.main) { _ in
                 // compiler crashes when using weak
                 exitAction.isEnabled = textField.text == "Genome401"
             }

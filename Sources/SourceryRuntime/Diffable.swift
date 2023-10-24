@@ -1,7 +1,6 @@
 import Foundation
 
 public protocol Diffable {
-
     /// Returns `DiffableResult` for the given objects.
     ///
     /// - Parameter object: Object to diff against.
@@ -13,7 +12,7 @@ public protocol Diffable {
 extension NSRange: Diffable {
     /// :nodoc:
     public static func == (lhs: NSRange, rhs: NSRange) -> Bool {
-        return NSEqualRanges(lhs, rhs)
+        NSEqualRanges(lhs, rhs)
     }
 
     public func diffAgainst(_ object: Any?) -> DiffableResult {
@@ -22,8 +21,8 @@ extension NSRange: Diffable {
             results.append("Incorrect type <expected: FileParserResult, received: \(type(of: object))>")
             return results
         }
-        results.append(contentsOf: DiffableResult(identifier: "location").trackDifference(actual: self.location, expected: rhs.location))
-        results.append(contentsOf: DiffableResult(identifier: "length").trackDifference(actual: self.length, expected: rhs.length))
+        results.append(contentsOf: DiffableResult(identifier: "location").trackDifference(actual: location, expected: rhs.location))
+        results.append(contentsOf: DiffableResult(identifier: "length").trackDifference(actual: length, expected: rhs.length))
         return results
     }
 }
@@ -31,7 +30,7 @@ extension NSRange: Diffable {
 @objcMembers public class DiffableResult: NSObject, AutoEquatable {
     // sourcery: skipEquality
     private var results: [String]
-    internal var identifier: String?
+    var identifier: String?
 
     init(results: [String] = [], identifier: String? = nil) {
         self.results = results
@@ -48,18 +47,17 @@ extension NSRange: Diffable {
         }
     }
 
-    var isEmpty: Bool { return results.isEmpty }
+    var isEmpty: Bool { results.isEmpty }
 
-    public override var description: String {
+    override public var description: String {
         guard !results.isEmpty else { return "" }
         return "\(identifier.flatMap { "\($0) " } ?? "")" + results.joined(separator: "\n")
     }
 }
 
 public extension DiffableResult {
-
-#if swift(>=4.1)
-#else
+    #if swift(>=4.1)
+    #else
     /// :nodoc:
     @discardableResult func trackDifference<T: Equatable>(actual: T, expected: T) -> DiffableResult {
         if actual != expected {
@@ -68,12 +66,12 @@ public extension DiffableResult {
         }
         return self
     }
-#endif
+    #endif
 
     /// :nodoc:
     @discardableResult func trackDifference<T: Equatable>(actual: T?, expected: T?) -> DiffableResult {
         if actual != expected {
-            let result = DiffableResult(results: ["<expected: \(expected.map({ "\($0)" }) ?? "nil"), received: \(actual.map({ "\($0)" }) ?? "nil")>"])
+            let result = DiffableResult(results: ["<expected: \(expected.map { "\($0)" } ?? "nil"), received: \(actual.map { "\($0)" } ?? "nil")>"])
             append(contentsOf: result)
         }
         return self
@@ -162,7 +160,7 @@ public extension DiffableResult {
         return self
     }
 
-// MARK: - NSObject diffing
+    // MARK: - NSObject diffing
 
     /// :nodoc:
     @discardableResult func trackDifference<K, T: NSObjectProtocol>(actual: [K: T], expected: [K: T]) -> DiffableResult {
@@ -175,8 +173,8 @@ public extension DiffableResult {
             if expected.count > actual.count {
                 let missingKeys = Array(expected.keys.filter {
                     actual[$0] == nil
-                    }.map {
-                        String(describing: $0)
+                }.map {
+                    String(describing: $0)
                 })
                 diffResult.append("Missing keys: \(missingKeys.joined(separator: ", "))")
             }

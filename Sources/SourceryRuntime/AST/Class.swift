@@ -3,29 +3,31 @@ import Foundation
 /// Descibes Swift class
 @objc(SwiftClass) @objcMembers public final class Class: Type {
     /// Returns "class"
-    public override var kind: String { return "class" }
+    override public var kind: String { "class" }
 
-    /// Whether type is final 
+    /// Whether type is final
     public var isFinal: Bool {
-        return modifiers.contains { $0.name == "final" }
+        modifiers.contains { $0.name == "final" }
     }
 
     /// :nodoc:
-    public override init(name: String = "",
-                         parent: Type? = nil,
-                         accessLevel: AccessLevel = .internal,
-                         isExtension: Bool = false,
-                         variables: [Variable] = [],
-                         methods: [Method] = [],
-                         subscripts: [Subscript] = [],
-                         inheritedTypes: [String] = [],
-                         containedTypes: [Type] = [],
-                         typealiases: [Typealias] = [],
-                         attributes: AttributeList = [:],
-                         modifiers: [SourceryModifier] = [],
-                         annotations: [String: NSObject] = [:],
-                         documentation: [String] = [],
-                         isGeneric: Bool = false) {
+    override public init(
+        name: String = "",
+        parent: Type? = nil,
+        accessLevel: AccessLevel = .internal,
+        isExtension: Bool = false,
+        variables: [Variable] = [],
+        methods: [Method] = [],
+        subscripts: [Subscript] = [],
+        inheritedTypes: [String] = [],
+        containedTypes: [Type] = [],
+        typealiases: [Typealias] = [],
+        attributes: AttributeList = [:],
+        modifiers: [SourceryModifier] = [],
+        annotations: [String: NSObject] = [:],
+        documentation: [String] = [],
+        isGeneric: Bool = false
+    ) {
         super.init(
             name: name,
             parent: parent,
@@ -50,11 +52,6 @@ import Foundation
     /// :nodoc:
     public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-    }
-
-    /// :nodoc:
-    override public func encode(with aCoder: NSCoder) {
-        super.encode(with: aCoder)
     }
     // sourcery:end
 }

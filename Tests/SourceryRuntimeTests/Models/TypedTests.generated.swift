@@ -4,7 +4,6 @@ import XCTest
 @testable import SourceryRuntime
 
 class TypedTests: XCTestCase {
-
     // MARK: - AssociatedValue
 
     func test_AssociatedValue_canReportOptionalViaKVC() {

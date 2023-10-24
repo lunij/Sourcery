@@ -3,9 +3,8 @@ import Foundation
 // sourcery: skipJSExport
 /// Describes a Swift [protocol composition](https://docs.swift.org/swift-book/ReferenceManual/Types.html#ID454).
 @objcMembers public final class ProtocolComposition: Type {
-
     /// Returns "protocolComposition"
-    public override var kind: String { return "protocolComposition" }
+    override public var kind: String { "protocolComposition" }
 
     /// The names of the types composed to form this composition
     public let composedTypeNames: [TypeName]
@@ -15,21 +14,23 @@ import Foundation
     public var composedTypes: [Type]?
 
     /// :nodoc:
-    public init(name: String = "",
-                parent: Type? = nil,
-                accessLevel: AccessLevel = .internal,
-                isExtension: Bool = false,
-                variables: [Variable] = [],
-                methods: [Method] = [],
-                subscripts: [Subscript] = [],
-                inheritedTypes: [String] = [],
-                containedTypes: [Type] = [],
-                typealiases: [Typealias] = [],
-                attributes: AttributeList = [:],
-                annotations: [String: NSObject] = [:],
-                isGeneric: Bool = false,
-                composedTypeNames: [TypeName] = [],
-                composedTypes: [Type]? = nil) {
+    public init(
+        name: String = "",
+        parent: Type? = nil,
+        accessLevel: AccessLevel = .internal,
+        isExtension: Bool = false,
+        variables: [Variable] = [],
+        methods: [Method] = [],
+        subscripts: [Subscript] = [],
+        inheritedTypes: [String] = [],
+        containedTypes: [Type] = [],
+        typealiases: [Typealias] = [],
+        attributes _: AttributeList = [:],
+        annotations: [String: NSObject] = [:],
+        isGeneric: Bool = false,
+        composedTypeNames: [TypeName] = [],
+        composedTypes: [Type]? = nil
+    ) {
         self.composedTypeNames = composedTypeNames
         self.composedTypes = composedTypes
         super.init(

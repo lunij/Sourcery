@@ -1,11 +1,11 @@
-import UIKit
-import ORStackView
-import Artsy_UILabels
-import Artsy_UIFonts
-import RxSwift
-import Artsy_UIButtons
-import SDWebImage
 import Action
+import Artsy_UIButtons
+import Artsy_UIFonts
+import Artsy_UILabels
+import ORStackView
+import RxSwift
+import SDWebImage
+import UIKit
 
 class SaleArtworkDetailsViewController: UIViewController {
     var allowAnimations = true
@@ -18,7 +18,7 @@ class SaleArtworkDetailsViewController: UIViewController {
     }
 
     class func instantiateFromStoryboard(_ storyboard: UIStoryboard) -> SaleArtworkDetailsViewController {
-        return storyboard.viewController(withID: .SaleArtworkDetail) as! SaleArtworkDetailsViewController
+        storyboard.viewController(withID: .SaleArtworkDetail) as! SaleArtworkDetailsViewController
     }
 
     lazy var artistInfo: Observable<Any> = {
@@ -26,8 +26,8 @@ class SaleArtworkDetailsViewController: UIViewController {
         return artistInfo.shareReplay(1)
     }()
 
-    @IBOutlet weak var metadataStackView: ORTagBasedAutoStackView!
-    @IBOutlet weak var additionalDetailScrollView: ORStackScrollView!
+    @IBOutlet var metadataStackView: ORTagBasedAutoStackView!
+    @IBOutlet var additionalDetailScrollView: ORStackScrollView!
 
     var buyersPremium: () -> (BuyersPremium?) = { appDelegate().sale.buyersPremium }
     let layoutSubviews = PublishSubject<Void>()
@@ -59,7 +59,7 @@ class SaleArtworkDetailsViewController: UIViewController {
         viewWillAppear.onCompleted()
     }
 
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+    override func prepare(for segue: UIStoryboardSegue, sender _: Any?) {
         if segue == .ZoomIntoArtwork {
             let nextViewController = segue.destination as! SaleArtworkZoomViewController
             nextViewController.saleArtwork = saleArtwork
@@ -83,7 +83,7 @@ class SaleArtworkDetailsViewController: UIViewController {
         case buyersPremium
     }
 
-    @IBAction func backWasPressed(_ sender: AnyObject) {
+    @IBAction func backWasPressed(_: AnyObject) {
         _ = navigationController?.popViewController(animated: true)
     }
 
@@ -161,7 +161,7 @@ class SaleArtworkDetailsViewController: UIViewController {
 
         retrieveImageRights()
             .filter { imageRights -> Bool in
-                return imageRights.isNotEmpty
+                imageRights.isNotEmpty
             }.subscribe(onNext: { [weak self] imageRights in
                 let rightsLabel = label(.serif, tag: .imageRightsLabel)
                 rightsLabel.text = imageRights
@@ -207,9 +207,9 @@ class SaleArtworkDetailsViewController: UIViewController {
         hasBids
             .flatMap { hasBids -> Observable<String> in
                 if hasBids {
-                    return .just("Current Bid:")
+                    .just("Current Bid:")
                 } else {
-                    return .just("Starting Bid:")
+                    .just("Starting Bid:")
                 }
             }
             .mapToOptional()
@@ -278,7 +278,7 @@ class SaleArtworkDetailsViewController: UIViewController {
 
             var buyersPremiumButton = ARButton()
             let title = "buyers premium"
-            let attributes: [String: AnyObject] = [ NSUnderlineStyleAttributeName: NSUnderlineStyle.styleSingle.rawValue as AnyObject, NSFontAttributeName: buyersPremiumLabel.font ]
+            let attributes: [String: AnyObject] = [NSUnderlineStyleAttributeName: NSUnderlineStyle.styleSingle.rawValue as AnyObject, NSFontAttributeName: buyersPremiumLabel.font]
             let attributedTitle = NSAttributedString(string: title, attributes: attributes)
             buyersPremiumButton.setTitle(title, for: .normal)
             buyersPremiumButton.titleLabel?.attributedText = attributedTitle
@@ -301,7 +301,6 @@ class SaleArtworkDetailsViewController: UIViewController {
 
     fileprivate func setupImageView(_ imageView: UIImageView) {
         if let image = saleArtwork.artwork.defaultImage {
-
             // We'll try to retrieve the thumbnail image from the cache. If we don't have it, we'll set the background colour to grey to indicate that we're downloading it.
             let key = SDWebImageManager.shared().cacheKey(for: image.thumbnailURL() as URL!)
             let thumbnailImage = SDImageCache.shared().imageFromDiskCache(forKey: key)
@@ -309,7 +308,7 @@ class SaleArtworkDetailsViewController: UIViewController {
                 imageView.backgroundColor = .artsyGrayLight()
             }
 
-            imageView.sd_setImage(with: image.fullsizeURL(), placeholderImage: thumbnailImage, options: [], completed: { (image, _, _, _) in
+            imageView.sd_setImage(with: image.fullsizeURL(), placeholderImage: thumbnailImage, options: [], completed: { image, _, _, _ in
                 // If the image was successfully downloaded, make sure we aren't still displaying grey.
                 if image != nil {
                     imageView.backgroundColor = .clear
@@ -324,7 +323,7 @@ class SaleArtworkDetailsViewController: UIViewController {
                 }
                 return 400
             }()
-            imageView.constrainHeight( "\(heightConstraintNumber)" )
+            imageView.constrainHeight("\(heightConstraintNumber)")
 
             imageView.contentMode = .scaleAspectFit
             imageView.isUserInteractionEnabled = true
@@ -335,7 +334,7 @@ class SaleArtworkDetailsViewController: UIViewController {
                 .rx.event
                 .asObservable()
                 .subscribe(onNext: { [weak self] _ in
-                     self?.performSegue(.ZoomIntoArtwork)
+                    self?.performSegue(.ZoomIntoArtwork)
                 })
                 .addDisposableTo(rx_disposeBag)
         }
@@ -351,9 +350,9 @@ class SaleArtworkDetailsViewController: UIViewController {
             let (label, fontSize) = { () -> (UILabel, CGFloat) in
                 switch type {
                 case .header:
-                    return (ARSansSerifLabel(), 14)
+                    (ARSansSerifLabel(), 14)
                 case .body:
-                    return (ARSerifLabel(), 16)
+                    (ARSerifLabel(), 16)
                 }
             }()
 
@@ -362,8 +361,8 @@ class SaleArtworkDetailsViewController: UIViewController {
 
             layout?
                 .take(1)
-                .subscribe(onNext: { [weak label] (_) in
-                    if let label = label {
+                .subscribe(onNext: { [weak label] _ in
+                    if let label {
                         label.preferredMaxLayoutWidth = label.frame.width
                     }
                 })
@@ -384,17 +383,17 @@ class SaleArtworkDetailsViewController: UIViewController {
 
         if let blurb = saleArtwork.artwork.blurb {
             let blurbLabel = label(.body, layout: layoutSubviews)
-            blurbLabel.attributedText = MarkdownParser().attributedString( fromMarkdownString: blurb )
+            blurbLabel.attributedText = MarkdownParser().attributedString(fromMarkdownString: blurb)
             additionalDetailScrollView.stackView.addSubview(blurbLabel, withTopMargin: "22", sideMargin: "40")
         }
 
         let additionalInfoLabel = label(.body, layout: layoutSubviews)
-        additionalInfoLabel.attributedText = MarkdownParser().attributedString( fromMarkdownString: saleArtwork.artwork.additionalInfo )
+        additionalInfoLabel.attributedText = MarkdownParser().attributedString(fromMarkdownString: saleArtwork.artwork.additionalInfo)
         additionalDetailScrollView.stackView.addSubview(additionalInfoLabel, withTopMargin: "22", sideMargin: "40")
 
         retrieveAdditionalInfo()
             .filter { info in
-                return info.isNotEmpty
+                info.isNotEmpty
             }.subscribe(onNext: { [weak self] info in
                 additionalInfoLabel.attributedText = MarkdownParser().attributedString(fromMarkdownString: info)
                 self?.view.setNeedsLayout()
@@ -405,7 +404,7 @@ class SaleArtworkDetailsViewController: UIViewController {
         if let artist = artist() {
             retrieveArtistBlurb()
                 .filter { blurb in
-                    return blurb.isNotEmpty
+                    blurb.isNotEmpty
                 }
                 .subscribe(onNext: { [weak self] blurb in
                     guard let me = self else { return }
@@ -423,7 +422,7 @@ class SaleArtworkDetailsViewController: UIViewController {
     }
 
     fileprivate func artist() -> Artist? {
-        return saleArtwork.artwork.artists?.first
+        saleArtwork.artwork.artists?.first
     }
 
     fileprivate func retrieveImageRights() -> Observable<String> {
@@ -434,12 +433,12 @@ class SaleArtworkDetailsViewController: UIViewController {
 
         } else {
             return artistInfo.map { json in
-                    return (json as AnyObject)["image_rights"] as? String
-                }
-                .filterNil()
-                .doOnNext { imageRights in
-                    artwork.imageRights = imageRights
-                }
+                (json as AnyObject)["image_rights"] as? String
+            }
+            .filterNil()
+            .doOnNext { imageRights in
+                artwork.imageRights = imageRights
+            }
         }
     }
 
@@ -450,12 +449,12 @@ class SaleArtworkDetailsViewController: UIViewController {
             return .just(additionalInfo)
         } else {
             return artistInfo.map { json in
-                    return (json as AnyObject)["additional_information"] as? String
-                }
-                .filterNil()
-                .doOnNext { info in
-                    artwork.additionalInfo = info
-                }
+                (json as AnyObject)["additional_information"] as? String
+            }
+            .filterNil()
+            .doOnNext { info in
+                artwork.additionalInfo = info
+            }
         }
     }
 
@@ -472,12 +471,12 @@ class SaleArtworkDetailsViewController: UIViewController {
                 .mapJSON()
 
             return retrieveArtist.map { json in
-                    return (json as AnyObject)["blurb"] as? String
-                }
-                .filterNil()
-                .doOnNext { blurb in
-                    artist.blurb = blurb
-                }
+                (json as AnyObject)["blurb"] as? String
+            }
+            .filterNil()
+            .doOnNext { blurb in
+                artist.blurb = blurb
+            }
         }
     }
 }

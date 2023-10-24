@@ -18,6 +18,6 @@ class WhitespaceGobbler: UIView {
     }
 
     override var intrinsicContentSize: CGSize {
-        return CGSize.zero
+        CGSize.zero
     }
 }

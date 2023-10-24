@@ -1,5 +1,5 @@
-import SwiftSyntax
 import SourceryRuntime
+import SwiftSyntax
 
 public struct Signature {
     /// The function inputs.
@@ -7,7 +7,7 @@ public struct Signature {
 
     /// The function output, if any.
     public let output: TypeName?
-    
+
     /// The `async` keyword, if any.
     public let asyncKeyword: String?
 
@@ -15,11 +15,12 @@ public struct Signature {
     public let throwsOrRethrowsKeyword: String?
 
     public init(_ node: FunctionSignatureSyntax, annotationsParser: AnnotationsParser) {
-        self.init(parameters: node.input.parameterList,
-                  output: node.output.map { TypeName($0.returnType) },
-                  asyncKeyword: node.asyncOrReasyncKeyword?.text,
-                  throwsOrRethrowsKeyword: node.throwsOrRethrowsKeyword?.description.trimmed,
-                  annotationsParser: annotationsParser
+        self.init(
+            parameters: node.input.parameterList,
+            output: node.output.map { TypeName($0.returnType) },
+            asyncKeyword: node.asyncOrReasyncKeyword?.text,
+            throwsOrRethrowsKeyword: node.throwsOrRethrowsKeyword?.description.trimmed,
+            annotationsParser: annotationsParser
         )
     }
 
@@ -32,8 +33,8 @@ public struct Signature {
 
     public func definition(with name: String) -> String {
         let parameters = input
-          .map { $0.asSource }
-          .joined(separator: ", ")
+            .map(\.asSource)
+            .joined(separator: ", ")
 
         let final = "\(name)(\(parameters))"
         return final
@@ -45,8 +46,8 @@ public struct Signature {
         }
 
         let parameters = input
-          .map { "\($0.argumentLabel ?? "_"):" }
-          .joined(separator: "")
+            .map { "\($0.argumentLabel ?? "_"):" }
+            .joined(separator: "")
 
         return "\(name)(\(parameters))"
     }

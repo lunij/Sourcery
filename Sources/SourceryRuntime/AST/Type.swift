@@ -5,7 +5,6 @@ public typealias AttributeList = [String: [Attribute]]
 
 /// Defines Swift type
 @objcMembers public class Type: NSObject, SourceryModel, Annotated, Documented {
-
     /// :nodoc:
     public var module: String?
 
@@ -15,13 +14,13 @@ public typealias AttributeList = [String: [Attribute]]
     // sourcery: skipEquality
     /// Imports existed in all files containing this type and all its super classes/protocols
     public var allImports: [Import] {
-        return self.unique({ $0.gatherAllImports() }, filter: { $0 == $1 })
+        unique({ $0.gatherAllImports() }, filter: { $0 == $1 })
     }
 
     private func gatherAllImports() -> [Import] {
-        var allImports: [Import] = Array(self.imports)
+        var allImports: [Import] = Array(imports)
 
-        self.basedTypes.values.forEach { (basedType) in
+        basedTypes.values.forEach { basedType in
             allImports.append(contentsOf: basedType.imports)
         }
         return allImports
@@ -42,7 +41,7 @@ public typealias AttributeList = [String: [Attribute]]
 
     // sourcery: forceEquality
     /// Kind of type declaration, i.e. `enum`, `struct`, `class`, `protocol` or `extension`
-    public var kind: String { return isExtension ? "extension" : "unknown" }
+    public var kind: String { isExtension ? "extension" : "unknown" }
 
     /// Type access level, i.e. `internal`, `private`, `fileprivate`, `public`, `open`
     public let accessLevel: String
@@ -60,7 +59,7 @@ public typealias AttributeList = [String: [Attribute]]
     // sourcery: skipDescription
     /// Global type name including module name, unless it's an extension of unknown type
     public var globalName: String {
-        guard let module = module, !isUnknownExtension else { return name }
+        guard let module, !isUnknownExtension else { return name }
         return "\(module).\(name)"
     }
 
@@ -85,17 +84,19 @@ public typealias AttributeList = [String: [Attribute]]
     /// All variables defined for this type, including variables defined in extensions,
     /// in superclasses (for classes only) and protocols
     public var allVariables: [Variable] {
-        return flattenAll({
-            return $0.variables
-        },
-        isExtension: { $0.definedInType?.isExtension == true },
-        filter: { all, extracted in
-            !all.contains(where: { Self.uniqueVariableFilter($0, rhs: extracted) })
-        })
+        flattenAll(
+            {
+                $0.variables
+            },
+            isExtension: { $0.definedInType?.isExtension == true },
+            filter: { all, extracted in
+                !all.contains(where: { Self.uniqueVariableFilter($0, rhs: extracted) })
+            }
+        )
     }
 
     private static func uniqueVariableFilter(_ lhs: Variable, rhs: Variable) -> Bool {
-        return lhs.name == rhs.name && lhs.isStatic == rhs.isStatic && lhs.typeName == rhs.typeName
+        lhs.name == rhs.name && lhs.isStatic == rhs.isStatic && lhs.typeName == rhs.typeName
     }
 
     // sourcery: skipEquality, skipDescription
@@ -113,17 +114,19 @@ public typealias AttributeList = [String: [Attribute]]
     /// All methods defined for this type, including methods defined in extensions,
     /// in superclasses (for classes only) and protocols
     public var allMethods: [Method] {
-        return flattenAll({
-            $0.methods
-        },
-        isExtension: { $0.definedInType?.isExtension == true },
-        filter: { all, extracted in
-            !all.contains(where: { Self.uniqueMethodFilter($0, rhs: extracted) })
-        })
+        flattenAll(
+            {
+                $0.methods
+            },
+            isExtension: { $0.definedInType?.isExtension == true },
+            filter: { all, extracted in
+                !all.contains(where: { Self.uniqueMethodFilter($0, rhs: extracted) })
+            }
+        )
     }
 
     private static func uniqueMethodFilter(_ lhs: Method, rhs: Method) -> Bool {
-        return lhs.name == rhs.name && lhs.isStatic == rhs.isStatic && lhs.isClass == rhs.isClass && lhs.actualReturnTypeName == rhs.actualReturnTypeName
+        lhs.name == rhs.name && lhs.isStatic == rhs.isStatic && lhs.isClass == rhs.isClass && lhs.actualReturnTypeName == rhs.actualReturnTypeName
     }
 
     // sourcery: skipEquality, skipDescription
@@ -141,15 +144,17 @@ public typealias AttributeList = [String: [Attribute]]
     /// All subscripts defined for this type, including subscripts defined in extensions,
     /// in superclasses (for classes only) and protocols
     public var allSubscripts: [Subscript] {
-        return flattenAll({ $0.subscripts },
+        flattenAll(
+            { $0.subscripts },
             isExtension: { $0.definedInType?.isExtension == true },
             filter: { all, extracted in
                 !all.contains(where: { Self.uniqueSubscriptFilter($0, rhs: extracted) })
-            })
+            }
+        )
     }
 
     private static func uniqueSubscriptFilter(_ lhs: Subscript, rhs: Subscript) -> Bool {
-        return lhs.parameters == rhs.parameters && lhs.returnTypeName == rhs.returnTypeName && lhs.readAccess == rhs.readAccess && lhs.writeAccess == rhs.writeAccess
+        lhs.parameters == rhs.parameters && lhs.returnTypeName == rhs.returnTypeName && lhs.readAccess == rhs.readAccess && lhs.writeAccess == rhs.writeAccess
     }
 
     // sourcery: skipEquality, skipDescription, skipJSExport
@@ -186,7 +191,7 @@ public typealias AttributeList = [String: [Attribute]]
         func filteredExtraction(_ target: Type) -> [T] {
             // swiftlint:disable:next force_cast
             let all = all.array as! [T]
-            let extracted = extraction(target).filter({ filter(all, $0) })
+            let extracted = extraction(target).filter { filter(all, $0) }
             return extracted
         }
 
@@ -195,7 +200,7 @@ public typealias AttributeList = [String: [Attribute]]
 
         // swiftlint:disable:next force_cast
         let array = all.array as! [T]
-        all.addObjects(from: extensions.filter({ filter(array, $0) }))
+        all.addObjects(from: extensions.filter { filter(array, $0) })
 
         return all.array.compactMap { $0 as? T }
     }
@@ -214,7 +219,7 @@ public typealias AttributeList = [String: [Attribute]]
 
     /// All initializers defined in this type
     public var initializers: [Method] {
-        return methods.filter { $0.isInitializer }
+        methods.filter(\.isInitializer)
     }
 
     /// All annotations for this type
@@ -224,37 +229,37 @@ public typealias AttributeList = [String: [Attribute]]
 
     /// Static variables defined in this type
     public var staticVariables: [Variable] {
-        return variables.filter { $0.isStatic }
+        variables.filter(\.isStatic)
     }
 
     /// Static methods defined in this type
     public var staticMethods: [Method] {
-        return methods.filter { $0.isStatic }
+        methods.filter(\.isStatic)
     }
 
     /// Class methods defined in this type
     public var classMethods: [Method] {
-        return methods.filter { $0.isClass }
+        methods.filter(\.isClass)
     }
 
     /// Instance variables defined in this type
     public var instanceVariables: [Variable] {
-        return variables.filter { !$0.isStatic }
+        variables.filter { !$0.isStatic }
     }
 
     /// Instance methods defined in this type
     public var instanceMethods: [Method] {
-        return methods.filter { !$0.isStatic && !$0.isClass }
+        methods.filter { !$0.isStatic && !$0.isClass }
     }
 
     /// Computed instance variables defined in this type
     public var computedVariables: [Variable] {
-        return variables.filter { $0.isComputed && !$0.isStatic }
+        variables.filter { $0.isComputed && !$0.isStatic }
     }
 
     /// Stored instance variables defined in this type
     public var storedVariables: [Variable] {
-        return variables.filter { !$0.isComputed && !$0.isStatic }
+        variables.filter { !$0.isComputed && !$0.isStatic }
     }
 
     /// Names of types this type inherits from (for classes only) and protocols it implements, in order of definition
@@ -331,7 +336,7 @@ public typealias AttributeList = [String: [Attribute]]
     // sourcery: skipDescription, skipEquality, skipJSExport
     public var path: String? {
         didSet {
-            if let path = path {
+            if let path {
                 fileName = (path as NSString).lastPathComponent
             }
         }
@@ -340,42 +345,41 @@ public typealias AttributeList = [String: [Attribute]]
     /// Directory to file where the type is defined
     // sourcery: skipDescription, skipEquality, skipJSExport
     public var directory: String? {
-        get {
-            return (path as? NSString)?.deletingLastPathComponent
-        }
+        (path as? NSString)?.deletingLastPathComponent
     }
 
     /// File name where the type was defined
     public var fileName: String?
 
     /// :nodoc:
-    public init(name: String = "",
-                parent: Type? = nil,
-                accessLevel: AccessLevel = .internal,
-                isExtension: Bool = false,
-                variables: [Variable] = [],
-                methods: [Method] = [],
-                subscripts: [Subscript] = [],
-                inheritedTypes: [String] = [],
-                containedTypes: [Type] = [],
-                typealiases: [Typealias] = [],
-                attributes: AttributeList = [:],
-                modifiers: [SourceryModifier] = [],
-                annotations: [String: NSObject] = [:],
-                documentation: [String] = [],
-                isGeneric: Bool = false) {
-
-        self.localName = name
+    public init(
+        name: String = "",
+        parent: Type? = nil,
+        accessLevel: AccessLevel = .internal,
+        isExtension: Bool = false,
+        variables: [Variable] = [],
+        methods: [Method] = [],
+        subscripts: [Subscript] = [],
+        inheritedTypes: [String] = [],
+        containedTypes: [Type] = [],
+        typealiases: [Typealias] = [],
+        attributes: AttributeList = [:],
+        modifiers: [SourceryModifier] = [],
+        annotations: [String: NSObject] = [:],
+        documentation: [String] = [],
+        isGeneric: Bool = false
+    ) {
+        localName = name
         self.accessLevel = accessLevel.rawValue
         self.isExtension = isExtension
-        self.rawVariables = variables
-        self.rawMethods = methods
-        self.rawSubscripts = subscripts
+        rawVariables = variables
+        rawMethods = methods
+        rawSubscripts = subscripts
         self.inheritedTypes = inheritedTypes
         self.containedTypes = containedTypes
         self.typealiases = [:]
         self.parent = parent
-        self.parentName = parent?.name
+        parentName = parent?.name
         self.attributes = attributes
         self.modifiers = modifiers
         self.annotations = annotations
@@ -390,10 +394,10 @@ public typealias AttributeList = [String: [Attribute]]
         inheritedTypes.forEach { name in
             self.based[name] = name
         }
-        typealiases.forEach({
+        typealiases.forEach {
             $0.parent = self
             self.typealiases[$0.aliasName] = $0
-        })
+        }
     }
 
     /// :nodoc:
@@ -401,12 +405,12 @@ public typealias AttributeList = [String: [Attribute]]
         type.annotations.forEach { self.annotations[$0.key] = $0.value }
         type.inherits.forEach { self.inherits[$0.key] = $0.value }
         type.implements.forEach { self.implements[$0.key] = $0.value }
-        self.inheritedTypes += type.inheritedTypes
-        self.containedTypes += type.containedTypes
+        inheritedTypes += type.inheritedTypes
+        containedTypes += type.containedTypes
 
-        self.rawVariables += type.rawVariables
-        self.rawMethods += type.rawMethods
-        self.rawSubscripts += type.rawSubscripts
+        rawVariables += type.rawVariables
+        rawMethods += type.rawMethods
+        rawSubscripts += type.rawSubscripts
     }
 
     // sourcery:inline:Type.AutoCoding
@@ -478,7 +482,6 @@ public typealias AttributeList = [String: [Attribute]]
 }
 
 extension Type {
-
     // sourcery: skipDescription, skipJSExport
     /// :nodoc:
     var isClass: Bool {
@@ -488,9 +491,9 @@ extension Type {
 }
 
 /// Extends type so that inner types can be accessed via KVC e.g. Parent.Inner.Children
-extension Type {
+public extension Type {
     /// :nodoc:
-    override public func value(forUndefinedKey key: String) -> Any? {
+    override func value(forUndefinedKey key: String) -> Any? {
         if let innerType = containedTypes.lazy.filter({ $0.localName == key }).first {
             return innerType
         }

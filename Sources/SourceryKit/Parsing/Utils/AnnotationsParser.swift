@@ -1,10 +1,9 @@
 import Foundation
-import SwiftSyntax
 import SourceryRuntime
+import SwiftSyntax
 
 /// Parser for annotations, and also documentation
 public struct AnnotationsParser {
-
     private enum AnnotationType {
         case begin(Annotations)
         case annotations(Annotations)
@@ -24,6 +23,7 @@ public struct AnnotationsParser {
             case inlineEnd
             case file
         }
+
         let content: String
         let type: LineType
         let annotations: Annotations
@@ -33,14 +33,14 @@ public struct AnnotationsParser {
     private let lines: [Line]
     private let contents: String
     private var parseDocumentation: Bool
-    internal var sourceLocationConverter: SourceLocationConverter?
+    var sourceLocationConverter: SourceLocationConverter?
 
     /// Initializes parser
     ///
     /// - Parameter contents: Contents to parse
     init(contents: String, parseDocumentation: Bool = false, sourceLocationConverter: SourceLocationConverter? = nil) {
         self.parseDocumentation = parseDocumentation
-        self.lines = AnnotationsParser.parse(contents: contents)
+        lines = AnnotationsParser.parse(contents: contents)
         self.sourceLocationConverter = sourceLocationConverter
         self.contents = contents
     }
@@ -58,44 +58,44 @@ public struct AnnotationsParser {
 
     func annotations(from node: IdentifierSyntax) -> Annotations {
         from(
-          location: findLocation(syntax: node.identifier),
-          precedingComments: node.leadingTrivia?.compactMap({ $0.comment }) ?? []
+            location: findLocation(syntax: node.identifier),
+            precedingComments: node.leadingTrivia?.compactMap(\.comment) ?? []
         )
     }
 
     func annotations(fromToken token: SyntaxProtocol) -> Annotations {
         from(
-          location: findLocation(syntax: token),
-          precedingComments: token.leadingTrivia?.compactMap({ $0.comment }) ?? []
+            location: findLocation(syntax: token),
+            precedingComments: token.leadingTrivia?.compactMap(\.comment) ?? []
         )
     }
 
     func documentation(from node: IdentifierSyntax) -> Documentation {
         guard parseDocumentation else {
-            return  []
+            return []
         }
         return documentationFrom(
-          location: findLocation(syntax: node.identifier),
-          precedingComments: node.leadingTrivia?.compactMap({ $0.comment }) ?? []
+            location: findLocation(syntax: node.identifier),
+            precedingComments: node.leadingTrivia?.compactMap(\.comment) ?? []
         )
     }
 
     func documentation(fromToken token: SyntaxProtocol) -> Documentation {
         guard parseDocumentation else {
-            return  []
+            return []
         }
         return documentationFrom(
-          location: findLocation(syntax: token),
-          precedingComments: token.leadingTrivia?.compactMap({ $0.comment }) ?? []
+            location: findLocation(syntax: token),
+            precedingComments: token.leadingTrivia?.compactMap(\.comment) ?? []
         )
     }
 
     // TODO: once removing SourceKitten just kill this optionality
     private func findLocation(syntax: SyntaxProtocol) -> SwiftSyntax.SourceLocation {
-        return sourceLocationConverter!.location(for: syntax.positionAfterSkippingLeadingTrivia)
+        sourceLocationConverter!.location(for: syntax.positionAfterSkippingLeadingTrivia)
     }
 
-    private func from(location: SwiftSyntax.SourceLocation, precedingComments: [String]) -> Annotations {
+    private func from(location: SwiftSyntax.SourceLocation, precedingComments _: [String]) -> Annotations {
         guard let lineNumber = location.line, let column = location.column else {
             return [:]
         }
@@ -104,25 +104,26 @@ public struct AnnotationsParser {
         var annotations = inlineFrom(line: (lineNumber, column), stop: &stop)
         guard !stop else { return annotations }
 
-        for line in lines[0..<lineNumber-1].reversed() {
+        for line in lines[0 ..< lineNumber - 1].reversed() {
             line.annotations.forEach { annotation in
                 AnnotationsParser.append(key: annotation.key, value: annotation.value, to: &annotations)
             }
-            if line.type != .comment && line.type != .documentationComment {
+            if line.type != .comment, line.type != .documentationComment {
                 break
             }
         }
 
-        lines[lineNumber-1].annotations.forEach { annotation in
+        lines[lineNumber - 1].annotations.forEach { annotation in
             AnnotationsParser.append(key: annotation.key, value: annotation.value, to: &annotations)
         }
 
         return annotations
     }
 
-    private func documentationFrom(location: SwiftSyntax.SourceLocation, precedingComments: [String]) -> Documentation {
+    private func documentationFrom(location: SwiftSyntax.SourceLocation, precedingComments _: [String]) -> Documentation {
         guard parseDocumentation,
-            let lineNumber = location.line, let column = location.column else {
+              let lineNumber = location.line, let column = location.column
+        else {
             return []
         }
 
@@ -135,18 +136,17 @@ public struct AnnotationsParser {
 
         var documentation: Documentation = []
 
-        for line in lines[0..<lineNumber-1].reversed() {
+        for line in lines[0 ..< lineNumber - 1].reversed() {
             if line.type == .documentationComment {
                 documentation.append(line.content.trimmingCharacters(in: .whitespaces).trimmingPrefix("///").trimmingPrefix("/**").trimmingPrefix(" "))
             }
-            if line.type != .comment && line.type != .documentationComment {
+            if line.type != .comment, line.type != .documentationComment {
                 break
             }
         }
 
         return documentation.reversed()
     }
-
 
     func inlineFrom(line lineInfo: (line: Int, character: Int), stop: inout Bool) -> Annotations {
         let sourceLine = lines[lineInfo.line - 1]
@@ -156,7 +156,7 @@ public struct AnnotationsParser {
 
         guard !prefix.isEmpty else { return [:] }
         var annotations = sourceLine.blockAnnotations // get block annotations for this line
-        sourceLine.annotations.forEach { annotation in  // TODO: verify
+        sourceLine.annotations.forEach { annotation in // TODO: verify
             AnnotationsParser.append(key: annotation.key, value: annotation.value, to: &annotations)
         }
 
@@ -179,7 +179,7 @@ public struct AnnotationsParser {
             prefix = prefix[..<commentStart.lowerBound].trimmingCharacters(in: .whitespaces)
         }
 
-        if (inlineCommentFound || isInsideCaseDefinition) && !prefix.isEmpty {
+        if inlineCommentFound || isInsideCaseDefinition, !prefix.isEmpty {
             stop = true
             return annotations
         }
@@ -204,58 +204,60 @@ public struct AnnotationsParser {
         var annotationsBlock: Annotations?
         var fileAnnotationsBlock = Annotations()
         return StringView(contents).lines
-                .map { line in
-                    let content = line.content.trimmingCharacters(in: .whitespaces)
-                    var annotations = Annotations()
-                    let isComment = content.hasPrefix("//") || content.hasPrefix("/*") || content.hasPrefix("*")
-                    let isDocumentationComment = content.hasPrefix("///") || content.hasPrefix("/**")
-                    var type = Line.LineType.other
-                    if isDocumentationComment {
-                        type = .documentationComment
-                    } else if isComment {
-                        type = .comment
-                    }
-                    if isComment {
-                        switch searchForAnnotations(commentLine: content) {
-                        case let .begin(items):
-                            type = .blockStart
-                            annotationsBlock = Annotations()
-                            items.forEach { annotationsBlock?[$0.key] = $0.value }
-                        case let .annotations(items):
-                            items.forEach { annotations[$0.key] = $0.value }
-                        case .end:
-                            if annotationsBlock != nil {
-                                type = .blockEnd
-                                annotationsBlock?.removeAll()
-                            } else {
-                                type = .inlineEnd
-                            }
-                        case .inlineStart:
-                            type = .inlineStart
-                        case let .file(items):
-                            type = .file
-                            items.forEach {
-                                fileAnnotationsBlock[$0.key] = $0.value
-                            }
-                        }
-                    } else {
-                        searchForTrailingAnnotations(codeLine: content)
-                            .forEach { annotations[$0.key] = $0.value }
-                    }
-
-                    annotationsBlock?.forEach { annotation in
-                        annotations[annotation.key] = annotation.value
-                    }
-
-                    fileAnnotationsBlock.forEach { annotation in
-                        annotations[annotation.key] = annotation.value
-                    }
-
-                    return Line(content: line.content,
-                                type: type,
-                                annotations: annotations,
-                                blockAnnotations: annotationsBlock ?? [:])
+            .map { line in
+                let content = line.content.trimmingCharacters(in: .whitespaces)
+                var annotations = Annotations()
+                let isComment = content.hasPrefix("//") || content.hasPrefix("/*") || content.hasPrefix("*")
+                let isDocumentationComment = content.hasPrefix("///") || content.hasPrefix("/**")
+                var type = Line.LineType.other
+                if isDocumentationComment {
+                    type = .documentationComment
+                } else if isComment {
+                    type = .comment
                 }
+                if isComment {
+                    switch searchForAnnotations(commentLine: content) {
+                    case let .begin(items):
+                        type = .blockStart
+                        annotationsBlock = Annotations()
+                        items.forEach { annotationsBlock?[$0.key] = $0.value }
+                    case let .annotations(items):
+                        items.forEach { annotations[$0.key] = $0.value }
+                    case .end:
+                        if annotationsBlock != nil {
+                            type = .blockEnd
+                            annotationsBlock?.removeAll()
+                        } else {
+                            type = .inlineEnd
+                        }
+                    case .inlineStart:
+                        type = .inlineStart
+                    case let .file(items):
+                        type = .file
+                        items.forEach {
+                            fileAnnotationsBlock[$0.key] = $0.value
+                        }
+                    }
+                } else {
+                    searchForTrailingAnnotations(codeLine: content)
+                        .forEach { annotations[$0.key] = $0.value }
+                }
+
+                annotationsBlock?.forEach { annotation in
+                    annotations[annotation.key] = annotation.value
+                }
+
+                fileAnnotationsBlock.forEach { annotation in
+                    annotations[annotation.key] = annotation.value
+                }
+
+                return Line(
+                    content: line.content,
+                    type: type,
+                    annotations: annotations,
+                    blockAnnotations: annotationsBlock ?? [:]
+                )
+            }
     }
 
     private static func searchForTrailingAnnotations(codeLine: String) -> Annotations {
@@ -263,19 +265,21 @@ public struct AnnotationsParser {
         if blockComponents.count > 1,
            let lastBlockComponent = blockComponents.last,
            let endBlockRange = lastBlockComponent.range(of: "*/"),
-           let lowerBound = lastBlockComponent.range(of: "sourcery:")?.upperBound {
+           let lowerBound = lastBlockComponent.range(of: "sourcery:")?.upperBound
+        {
             let trailingStart = endBlockRange.upperBound
             let trailing = String(lastBlockComponent[trailingStart...])
             if trailing.components(separatedBy: "//", excludingDelimiterBetween: ("", "")).first?.trimmed.count == 0 {
                 let upperBound = endBlockRange.lowerBound
-                return AnnotationsParser.parse(line: String(lastBlockComponent[lowerBound..<upperBound]))
+                return AnnotationsParser.parse(line: String(lastBlockComponent[lowerBound ..< upperBound]))
             }
         }
 
         let components = codeLine.components(separatedBy: "//", excludingDelimiterBetween: ("", ""))
         if components.count > 1,
            let trailingComment = components.last?.stripped(),
-           let lowerBound = trailingComment.range(of: "sourcery:")?.upperBound {
+           let lowerBound = trailingComment.range(of: "sourcery:")?.upperBound
+        {
             return AnnotationsParser.parse(line: String(trailingComment[lowerBound...]))
         }
 
@@ -293,8 +297,8 @@ public struct AnnotationsParser {
 
         let lowerBound: String.Index?
         let upperBound: String.Index?
-        var insideBlock: Bool = false
-        var insideFileBlock: Bool = false
+        var insideBlock = false
+        var insideFileBlock = false
 
         if comment.hasPrefix("sourcery:begin:") {
             lowerBound = commentLine.range(of: "sourcery:begin:")?.upperBound
@@ -315,8 +319,8 @@ public struct AnnotationsParser {
             }
         }
 
-        if let lowerBound = lowerBound, let upperBound = upperBound {
-            let annotations = AnnotationsParser.parse(line: String(commentLine[lowerBound..<upperBound]))
+        if let lowerBound, let upperBound {
+            let annotations = AnnotationsParser.parse(line: String(commentLine[lowerBound ..< upperBound]))
             if insideBlock {
                 return .begin(annotations)
             } else if insideFileBlock {
@@ -345,10 +349,9 @@ public struct AnnotationsParser {
         annotationDefinitions.forEach { annotation in
             let parts = annotation
                 .components(separatedBy: "=", excludingDelimiterBetween: ("", ""))
-                .map({ $0.trimmingCharacters(in: .whitespaces) })
+                .map { $0.trimmingCharacters(in: .whitespaces) }
 
             if let name = parts.first, !name.isEmpty {
-
                 guard parts.count > 1, var value = parts.last, value.isEmpty == false else {
                     append(key: name, value: NSNumber(value: true), to: &annotations)
                     return
@@ -363,9 +366,10 @@ public struct AnnotationsParser {
                     }
 
                     guard let data = (value as String).data(using: .utf8),
-                        let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) else {
-                            append(key: name, value: value as NSString, to: &annotations)
-                            return
+                          let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments)
+                    else {
+                        append(key: name, value: value as NSString, to: &annotations)
+                        return
                     }
                     if let array = json as? [Any] {
                         append(key: name, value: array as NSArray, to: &annotations)
@@ -399,9 +403,9 @@ public struct AnnotationsParser {
                     annotations[key] = array as NSObject
                 }
             } else if var oldDict = oldValue as? [String: NSObject], let newDict = value as? [String: NSObject] {
-                newDict.forEach({ (key, value) in
+                newDict.forEach { key, value in
                     append(key: key, value: value, to: &oldDict)
-                })
+                }
                 annotations[key] = oldDict as NSObject
             } else if oldValue != value {
                 annotations[key] = [oldValue, value] as NSObject
@@ -410,5 +414,4 @@ public struct AnnotationsParser {
             annotations[key] = value
         }
     }
-
 }

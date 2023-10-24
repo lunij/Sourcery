@@ -1,8 +1,7 @@
-import UIKit
 import RxSwift
+import UIKit
 
 class RegistrationEmailViewController: UIViewController, RegistrationSubController, UITextFieldDelegate {
-
     @IBOutlet var emailTextField: TextField!
     @IBOutlet var confirmButton: ActionButton!
     var finished = PublishSubject<Void>()
@@ -14,10 +13,10 @@ class RegistrationEmailViewController: UIViewController, RegistrationSubControll
 
     fileprivate let _viewWillDisappear = PublishSubject<Void>()
     var viewWillDisappear: Observable<Void> {
-        return self._viewWillDisappear.asObserver()
+        self._viewWillDisappear.asObserver()
     }
 
-    lazy var bidDetails: BidDetails! = { self.navigationController!.fulfillmentNav().bidDetails }()
+    lazy var bidDetails: BidDetails! = self.navigationController!.fulfillmentNav().bidDetails
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,16 +39,15 @@ class RegistrationEmailViewController: UIViewController, RegistrationSubControll
         _viewWillDisappear.onNext()
     }
 
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-
+    func textField(_: UITextField, shouldChangeCharactersIn _: NSRange, replacementString string: String) -> Bool {
         // Allow delete
-        if (string.isEmpty) { return true }
+        if string.isEmpty { return true }
 
         // the API doesn't accept spaces
         return string != " "
     }
 
     class func instantiateFromStoryboard(_ storyboard: UIStoryboard) -> RegistrationEmailViewController {
-        return storyboard.viewController(withID: .RegisterEmail) as! RegistrationEmailViewController
+        storyboard.viewController(withID: .RegisterEmail) as! RegistrationEmailViewController
     }
 }

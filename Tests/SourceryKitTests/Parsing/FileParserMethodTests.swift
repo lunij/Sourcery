@@ -1,7 +1,7 @@
 import Foundation
 import PathKit
-import XCTest
 import SourceryRuntime
+import XCTest
 @testable import SourceryKit
 
 class Bar {}
@@ -144,7 +144,7 @@ class FileParserMethodTests: XCTestCase {
             Method(
                 name: "foo()",
                 selectorName: "foo",
-                accessLevel: (.private),
+                accessLevel: .private,
                 isStatic: false,
                 modifiers: [Modifier(name: "private")],
                 definedInTypeName: nil
@@ -166,7 +166,7 @@ class FileParserMethodTests: XCTestCase {
         XCTAssertEqual("class Foo { func foo(bar: Int...) {} }".parse(), [
             Class(name: "Foo", methods: [
                 Method(name: "foo(bar: Int...)", selectorName: "foo(bar:)", parameters: [
-                        MethodParameter(name: "bar", typeName: TypeName(name: "Int"), isVariadic: true)
+                    MethodParameter(name: "bar", typeName: TypeName(name: "Int"), isVariadic: true)
                 ], definedInTypeName: TypeName(name: "Foo"))
             ])
         ])
@@ -174,7 +174,8 @@ class FileParserMethodTests: XCTestCase {
 
     func test_parsesMethodWithSingleSetParameter() {
         let type = "protocol Foo { func someMethod(aValue: Set<Int>) }".parse().first
-        XCTAssertEqual(type,
+        XCTAssertEqual(
+            type,
             Protocol(name: "Foo", methods: [
                 Method(name: "someMethod(aValue: Set<Int>)", selectorName: "someMethod(aValue:)", parameters: [
                     MethodParameter(name: "aValue", typeName: .buildSet(of: .Int))
@@ -275,15 +276,20 @@ class FileParserMethodTests: XCTestCase {
 
         XCTAssertEqual(types, [
             Class(name: "Foo", methods: [
-                Method(name: "foo(bar: [String: String], foo: (String, String) -> Void, other: Optional<String>)",
-                       selectorName: "foo(bar:foo:other:)", parameters: [
-                    MethodParameter(name: "bar", typeName: TypeName(name: "[String: String]", dictionary: DictionaryType(name: "[String: String]", valueTypeName: TypeName(name: "String"), keyTypeName: TypeName(name: "String")), generic: GenericType(name: "Dictionary", typeParameters: [GenericTypeParameter(typeName: TypeName(name: "String")), GenericTypeParameter(typeName: TypeName(name: "String"))]))),
-                    MethodParameter(name: "foo", typeName: TypeName(name: "(String, String) -> Void", closure: ClosureType(name: "(String, String) -> Void", parameters: [
-                        ClosureParameter(typeName: TypeName(name: "String")),
-                        ClosureParameter(typeName: TypeName(name: "String"))
-                    ], returnTypeName: TypeName(name: "Void")))),
-                    MethodParameter(name: "other", typeName: TypeName(name: "Optional<String>"))
-                ], returnTypeName: TypeName(name: "Void"), definedInTypeName: TypeName(name: "Foo"))
+                Method(
+                    name: "foo(bar: [String: String], foo: (String, String) -> Void, other: Optional<String>)",
+                    selectorName: "foo(bar:foo:other:)",
+                    parameters: [
+                        MethodParameter(name: "bar", typeName: TypeName(name: "[String: String]", dictionary: DictionaryType(name: "[String: String]", valueTypeName: TypeName(name: "String"), keyTypeName: TypeName(name: "String")), generic: GenericType(name: "Dictionary", typeParameters: [GenericTypeParameter(typeName: TypeName(name: "String")), GenericTypeParameter(typeName: TypeName(name: "String"))]))),
+                        MethodParameter(name: "foo", typeName: TypeName(name: "(String, String) -> Void", closure: ClosureType(name: "(String, String) -> Void", parameters: [
+                            ClosureParameter(typeName: TypeName(name: "String")),
+                            ClosureParameter(typeName: TypeName(name: "String"))
+                        ], returnTypeName: TypeName(name: "Void")))),
+                        MethodParameter(name: "other", typeName: TypeName(name: "Optional<String>"))
+                    ],
+                    returnTypeName: TypeName(name: "Void"),
+                    definedInTypeName: TypeName(name: "Foo")
+                )
             ])
         ])
     }

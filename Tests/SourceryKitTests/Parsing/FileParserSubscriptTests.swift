@@ -85,7 +85,7 @@ class FileParserSubscriptTests: XCTestCase {
           subscript(/* sourcery: thisIsSubscriptParam */a: Int) -> Int { return 0 }
         }
         """)
-            .first?.subscripts
+        .first?.subscripts
 
         let subscriptAnnotations = subscripts?.first?.annotations
         XCTAssertEqual(subscriptAnnotations, ["thisIsSubscript": NSNumber(value: true)])

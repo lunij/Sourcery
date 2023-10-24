@@ -2,7 +2,7 @@ import Stencil
 
 extension Array {
     func chunked(into size: Int) -> [[Element]] {
-        return stride(from: 0, to: count, by: size).map {
+        stride(from: 0, to: count, by: size).map {
             Array(self[$0 ..< Swift.min($0 + size, count)])
         }
     }
@@ -13,13 +13,13 @@ class TypedNode: NodeType {
         case nodes([NodeType])
         case reference(resolvable: Resolvable)
     }
-    
+
     typealias Binding = (name: String, type: String)
 
     let token: Token?
     let bindings: [Binding]
 
-    class func parse(_ parser: TokenParser, token: Token) throws -> NodeType {
+    class func parse(_: TokenParser, token: Token) throws -> NodeType {
         let components = token.components
         guard components.count > 1, (components.count - 1) % 3 == 0 else {
             throw TemplateSyntaxError(
@@ -31,7 +31,7 @@ class TypedNode: NodeType {
 
         let chunks = Array(components.dropFirst()).chunked(into: 3)
         let bindings: [Binding] = chunks.compactMap { binding in
-            return (name: binding[0], type: binding[2])
+            (name: binding[0], type: binding[2])
         }
         return TypedNode(bindings: bindings)
     }
@@ -41,7 +41,7 @@ class TypedNode: NodeType {
         self.bindings = bindings
     }
 
-    func render(_ context: Context) throws -> String {
-        return ""
+    func render(_: Context) throws -> String {
+        ""
     }
 }

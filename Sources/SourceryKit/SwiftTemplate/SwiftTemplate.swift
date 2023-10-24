@@ -81,7 +81,7 @@ open class SwiftTemplate {
     public func render(_ context: Any) throws -> String {
         let binaryPath: Path
 
-        if let cachePath = cachePath,
+        if let cachePath,
            let hash = cacheKey,
            let hashPath = hash.addingPercentEncoding(withAllowedCharacters: CharacterSet.alphanumerics)
         {
@@ -102,8 +102,10 @@ open class SwiftTemplate {
         }
         try serializedContextPath.write(data)
 
-        let result = try Process.runCommand(path: binaryPath.description,
-                                            arguments: [serializedContextPath.description])
+        let result = try Process.runCommand(
+            path: binaryPath.description,
+            arguments: [serializedContextPath.description]
+        )
         if !result.error.isEmpty {
             throw Error.renderingFailed(sourcePath: path, error: result.error)
         }
@@ -139,11 +141,13 @@ open class SwiftTemplate {
             "build",
             "-c", "release",
             "-Xswiftc", "-suppress-warnings",
-            "--disable-sandbox",
+            "--disable-sandbox"
         ]
-        let compilationResult = try Process.runCommand(path: "/usr/bin/env",
-                                                       arguments: arguments,
-                                                       currentDirectoryPath: buildDir)
+        let compilationResult = try Process.runCommand(
+            path: "/usr/bin/env",
+            arguments: arguments,
+            currentDirectoryPath: buildDir
+        )
 
         if compilationResult.exitCode != EXIT_SUCCESS {
             throw Error.compilationFailed(output: compilationResult.output, error: compilationResult.error)
@@ -197,7 +201,7 @@ open class SwiftTemplate {
 
 extension SwiftTemplate: Template {
     public func render(_ context: TemplateContext) throws -> String {
-        return try self.render(context as Any)
+        try render(context as Any)
     }
 }
 
@@ -240,7 +244,7 @@ private extension Process {
         task.launchPath = path
         task.environment = environment
         task.arguments = arguments
-        if let currentDirectoryPath = currentDirectoryPath {
+        if let currentDirectoryPath {
             if #available(OSX 10.13, *) {
                 task.currentDirectoryURL = currentDirectoryPath.url
             } else {

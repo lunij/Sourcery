@@ -2,11 +2,11 @@ import Foundation
 import SwiftyJSON
 
 final class GenericError: NSObject, JSONAbleType {
-    let detail: [String:AnyObject]
+    let detail: [String: AnyObject]
     let message: String
     let type: String
 
-    init(type: String, message: String, detail: [String:AnyObject]) {
+    init(type: String, message: String, detail: [String: AnyObject]) {
         self.detail = detail
         self.message = message
         self.type = type

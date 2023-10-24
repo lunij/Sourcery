@@ -2,7 +2,6 @@ import Foundation
 
 /// Defines enum case associated value
 @objcMembers public final class AssociatedValue: NSObject, SourceryModel, AutoDescription, Typed, Annotated {
-
     /// Associated value local name.
     /// This is a name to be used to construct enum case value
     public let localName: String?
@@ -64,7 +63,6 @@ import Foundation
 
 /// Defines enum case
 @objcMembers public final class EnumCase: NSObject, SourceryModel, AutoDescription, Annotated, Documented {
-
     /// Enum case name
     public let name: String
 
@@ -84,7 +82,7 @@ import Foundation
 
     /// Whether enum case has associated value
     public var hasAssociatedValue: Bool {
-        return !associatedValues.isEmpty
+        !associatedValues.isEmpty
     }
 
     // Underlying parser data, never to be used by anything else
@@ -128,10 +126,9 @@ import Foundation
 
 /// Defines Swift enum
 @objcMembers public final class Enum: Type {
-
     // sourcery: skipDescription
     /// Returns "enum"
-    public override var kind: String { return "enum" }
+    override public var kind: String { "enum" }
 
     /// Enum cases
     public var cases: [EnumCase]
@@ -144,7 +141,7 @@ import Foundation
      */
     public var rawTypeName: TypeName? {
         didSet {
-            if let rawTypeName = rawTypeName {
+            if let rawTypeName {
                 hasRawType = true
                 if let index = inheritedTypes.firstIndex(of: rawTypeName.name) {
                     inheritedTypes.remove(at: index)
@@ -168,9 +165,9 @@ import Foundation
 
     // sourcery: skipEquality, skipDescription, skipCoding
     /// Names of types or protocols this type inherits from, including unknown (not scanned) types
-    public override var based: [String: String] {
+    override public var based: [String: String] {
         didSet {
-            if let rawTypeName = rawTypeName, based[rawTypeName.name] != nil {
+            if let rawTypeName, based[rawTypeName.name] != nil {
                 based[rawTypeName.name] = nil
             }
         }
@@ -178,30 +175,31 @@ import Foundation
 
     /// Whether enum contains any associated values
     public var hasAssociatedValues: Bool {
-        return cases.contains(where: { $0.hasAssociatedValue })
+        cases.contains(where: \.hasAssociatedValue)
     }
 
     /// :nodoc:
-    public init(name: String = "",
-                parent: Type? = nil,
-                accessLevel: AccessLevel = .internal,
-                isExtension: Bool = false,
-                inheritedTypes: [String] = [],
-                rawTypeName: TypeName? = nil,
-                cases: [EnumCase] = [],
-                variables: [Variable] = [],
-                methods: [Method] = [],
-                containedTypes: [Type] = [],
-                typealiases: [Typealias] = [],
-                attributes: AttributeList = [:],
-                modifiers: [SourceryModifier] = [],
-                annotations: [String: NSObject] = [:],
-                documentation: [String] = [],
-                isGeneric: Bool = false) {
-
+    public init(
+        name: String = "",
+        parent: Type? = nil,
+        accessLevel: AccessLevel = .internal,
+        isExtension: Bool = false,
+        inheritedTypes: [String] = [],
+        rawTypeName: TypeName? = nil,
+        cases: [EnumCase] = [],
+        variables: [Variable] = [],
+        methods: [Method] = [],
+        containedTypes: [Type] = [],
+        typealiases: [Typealias] = [],
+        attributes: AttributeList = [:],
+        modifiers: [SourceryModifier] = [],
+        annotations: [String: NSObject] = [:],
+        documentation: [String] = [],
+        isGeneric: Bool = false
+    ) {
         self.cases = cases
         self.rawTypeName = rawTypeName
-        self.hasRawType = rawTypeName != nil || !inheritedTypes.isEmpty
+        hasRawType = rawTypeName != nil || !inheritedTypes.isEmpty
 
         super.init(name: name, parent: parent, accessLevel: accessLevel, isExtension: isExtension, variables: variables, methods: methods, inheritedTypes: inheritedTypes, containedTypes: containedTypes, typealiases: typealiases, attributes: attributes, modifiers: modifiers, annotations: annotations, documentation: documentation, isGeneric: isGeneric)
 

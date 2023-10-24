@@ -1,10 +1,9 @@
-import UIKit
 import RxSwift
+import UIKit
 
 class ListingsCountdownManager: NSObject {
-
-    @IBOutlet weak var countdownLabel: UILabel!
-    @IBOutlet weak var countdownContainerView: UIView!
+    @IBOutlet var countdownLabel: UILabel!
+    @IBOutlet var countdownContainerView: UIView!
     let formatter = NumberFormatter()
 
     let sale = Variable<Sale?>(nil)
@@ -15,7 +14,7 @@ class ListingsCountdownManager: NSObject {
             time.sync(provider)
                 .dispatchAsyncMainScheduler()
                 .take(1)
-                .subscribe(onNext: { [weak self] (_) in
+                .subscribe(onNext: { [weak self] _ in
                     self?.startTimer()
                     self?.setLabelsHidden(false)
                 })
@@ -23,7 +22,7 @@ class ListingsCountdownManager: NSObject {
         }
     }
 
-    fileprivate var _timer: Timer? = nil
+    fileprivate var _timer: Timer?
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -36,7 +35,7 @@ class ListingsCountdownManager: NSObject {
     }
 
     func setFonts() {
-        (countdownContainerView.subviews).forEach { (view) -> () in
+        (countdownContainerView.subviews).forEach { view in
             if let label = view as? UILabel {
                 label.font = UIFont.serifFont(withSize: 15)
             }
@@ -66,7 +65,7 @@ class ListingsCountdownManager: NSObject {
 
         _timer = timer
 
-        self.tick(timer)
+        tick(timer)
     }
 
     func tick(_ timer: Timer) {
@@ -79,10 +78,10 @@ class ListingsCountdownManager: NSObject {
 
             let components = Calendar.current.dateComponents([.hour, .minute, .second], from: now, to: sale.endDate)
 
-            self.countdownLabel.text = "\(formatter.string(from: (components.hour ?? 0) as NSNumber)!) : \(formatter.string(from: (components.minute ?? 0) as NSNumber)!) : \(formatter.string(from: (components.second ?? 0) as NSNumber)!)"
+            countdownLabel.text = "\(formatter.string(from: (components.hour ?? 0) as NSNumber)!) : \(formatter.string(from: (components.minute ?? 0) as NSNumber)!) : \(formatter.string(from: (components.second ?? 0) as NSNumber)!)"
 
         } else {
-            self.countdownLabel.text = "CLOSED"
+            countdownLabel.text = "CLOSED"
             hideDenomenatorLabels()
             timer.invalidate()
             _timer = nil

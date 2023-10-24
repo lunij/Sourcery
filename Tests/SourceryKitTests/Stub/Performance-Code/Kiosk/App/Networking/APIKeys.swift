@@ -3,7 +3,7 @@ import Keys
 
 private let minimumKeyLength = 2
 
-// Mark: - API Keys
+// MARK: - API Keys
 
 struct APIKeys {
     let key: String
@@ -11,16 +11,16 @@ struct APIKeys {
 
     // MARK: Shared Keys
 
-    fileprivate struct SharedKeys {
+    fileprivate enum SharedKeys {
         static var instance = APIKeys()
     }
 
     static var sharedKeys: APIKeys {
         get {
-            return SharedKeys.instance
+            SharedKeys.instance
         }
 
-        set (newSharedKeys) {
+        set(newSharedKeys) {
             SharedKeys.instance = newSharedKeys
         }
     }
@@ -28,7 +28,7 @@ struct APIKeys {
     // MARK: Methods
 
     var stubResponses: Bool {
-        return key.count < minimumKeyLength || secret.count < minimumKeyLength
+        key.count < minimumKeyLength || secret.count < minimumKeyLength
     }
 
     // MARK: Initializers

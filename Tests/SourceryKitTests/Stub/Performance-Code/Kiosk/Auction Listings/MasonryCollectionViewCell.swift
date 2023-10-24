@@ -1,6 +1,6 @@
-import UIKit
-import RxSwift
 import ORStackView
+import RxSwift
+import UIKit
 
 let MasonryCollectionViewCellWidth: CGFloat = 254
 
@@ -9,8 +9,8 @@ class MasonryCollectionViewCell: ListingsCollectionViewCell {
         let view = UIView()
         for subview in [self.currentBidLabel, self.numberOfBidsLabel] {
             view.addSubview(subview)
-            subview.alignTopEdge(with: view, predicate:"13")
-            subview.alignBottomEdge(with: view, predicate:"0")
+            subview.alignTopEdge(with: view, predicate: "13")
+            subview.alignBottomEdge(with: view, predicate: "0")
             subview.constrainHeight("18")
         }
         self.currentBidLabel.alignLeadingEdge(with: view, predicate: "0")
@@ -54,32 +54,32 @@ class MasonryCollectionViewCell: ListingsCollectionViewCell {
         moreInfoLabel.constrainHeight("44")
 
         viewModel.flatMapTo(SaleArtworkViewModel.lotNumber)
-            .map { $0.isNilOrEmpty }
+            .map(\.isNilOrEmpty)
             .subscribe(onNext: removeLabelWhenEmpty(label: lotNumberLabel, topMargin: "20"))
             .addDisposableTo(rx_disposeBag)
 
         viewModel
-            .map { $0.estimateString }
-            .map { $0.isEmpty }
+            .map(\.estimateString)
+            .map(\.isEmpty)
             .subscribe(onNext: removeLabelWhenEmpty(label: estimateLabel, topMargin: "10"))
             .addDisposableTo(rx_disposeBag)
 
         viewModel
-            .map { $0.artistName }
-            .map { $0.isNilOrEmpty }
+            .map(\.artistName)
+            .map(\.isNilOrEmpty)
             .subscribe(onNext: removeLabelWhenEmpty(label: artistNameLabel, topMargin: "20"))
             .addDisposableTo(rx_disposeBag)
 
         // Binds the imageView to always be the correct aspect ratio
         viewModel.subscribe(onNext: { [weak self] viewModel in
-                if let artworkImageViewHeightConstraint = self?.artworkImageViewHeightConstraint {
-                    self?.artworkImageView.removeConstraint(artworkImageViewHeightConstraint)
-                }
-                let imageHeight = heightForImage(withAspectRatio: viewModel.thumbnailAspectRatio)
-                self?.artworkImageViewHeightConstraint = self?.artworkImageView.constrainHeight("\(imageHeight)").first as? NSLayoutConstraint
-                self?.layoutIfNeeded()
-            })
-            .addDisposableTo(rx_disposeBag)
+            if let artworkImageViewHeightConstraint = self?.artworkImageViewHeightConstraint {
+                self?.artworkImageView.removeConstraint(artworkImageViewHeightConstraint)
+            }
+            let imageHeight = heightForImage(withAspectRatio: viewModel.thumbnailAspectRatio)
+            self?.artworkImageViewHeightConstraint = self?.artworkImageView.constrainHeight("\(imageHeight)").first as? NSLayoutConstraint
+            self?.layoutIfNeeded()
+        })
+        .addDisposableTo(rx_disposeBag)
     }
 
     override func layoutSubviews() {
@@ -88,12 +88,12 @@ class MasonryCollectionViewCell: ListingsCollectionViewCell {
     }
 
     func removeLabelWhenEmpty(label: UIView, topMargin: String) -> (Bool) -> Void {
-        return { [weak self] isEmpty in
-            guard let `self` = self else { return }
+        { [weak self] isEmpty in
+            guard let self else { return }
             if isEmpty {
-                self.stackView.removeSubview(label)
+                stackView.removeSubview(label)
             } else {
-                self.stackView.addSubview(label, withTopMargin: topMargin, sideMargin: "0")
+                stackView.addSubview(label, withTopMargin: topMargin, sideMargin: "0")
             }
         }
     }
@@ -104,7 +104,7 @@ extension MasonryCollectionViewCell {
         let imageHeight = heightForImage(withAspectRatio: aspectRatio)
         let estimateHeight =
             16 + // estimate
-            13   // padding
+            13 // padding
         let remainingHeight =
             20 + // padding
             20 + // artist name
@@ -115,7 +115,7 @@ extension MasonryCollectionViewCell {
             16 + // bid
             13 + // padding
             44 + // more info button
-            12   // padding
+            12 // padding
 
         return imageHeight + ButtonHeight + CGFloat(remainingHeight) + CGFloat(hasEstimate ? estimateHeight : 0)
     }

@@ -1,19 +1,19 @@
 import Foundation
-import Stencil
 import PathKit
-import StencilSwiftKit
 import SourceryRuntime
+import Stencil
+import StencilSwiftKit
 
 public final class StencilTemplate: StencilSwiftKit.StencilSwiftTemplate {
-    private(set) public var path: Path = ""
+    public private(set) var path: Path = ""
 
     /// Trim leading / trailing whitespaces until content or newline tag appears
     public var trimEnabled: Bool = false
 
     public convenience init(path: Path) throws {
-        try self.init(path: path, content: try path.read())
+        try self.init(path: path, content: path.read())
     }
-    
+
     public convenience init(path: Path, content: String) throws {
         self.init(templateString: content, environment: StencilTemplate.sourceryEnvironment(templatePath: path))
         self.path = path
@@ -22,22 +22,22 @@ public final class StencilTemplate: StencilSwiftKit.StencilSwiftTemplate {
     public convenience init(content: String) {
         self.init(templateString: content, environment: StencilTemplate.sourceryEnvironment())
     }
-    
+
     // swiftlint:disable:next discouraged_optional_collection
     override public func render(_ dictionary: [String: Any]? = nil) throws -> String {
         var result = try super.render(dictionary)
         if trimEnabled {
             result = result.trimmed
         }
-        
+
         return result.replacingOccurrences(of: NewLineNode.marker, with: "\n")
     }
 
     public static func sourceryEnvironment(templatePath: Path? = nil) -> Stencil.Environment {
         let ext = Stencil.Extension()
 
-        ext.registerFilter("json") { (value, arguments) -> Any? in
-            guard let value = value else { return nil }
+        ext.registerFilter("json") { value, arguments -> Any? in
+            guard let value else { return nil }
             guard arguments.isEmpty || arguments.count == 1 && arguments.first is Bool else {
                 throw TemplateSyntaxError("'json' filter takes a single boolean argument")
             }
@@ -64,18 +64,26 @@ public final class StencilTemplate: StencilSwiftKit.StencilSwiftTemplate {
         ext.registerAccessLevelFilters(.fileprivate)
         ext.registerAccessLevelFilters(.internal)
 
-        ext.registerBoolFilterOrWithArguments("based",
-                                              filter: { (t: Type, name: String) in t.based[name] != nil },
-                                              other: { (t: Typed, name: String) in t.type?.based[name] != nil })
-        ext.registerBoolFilterOrWithArguments("implements",
-                                              filter: { (t: Type, name: String) in t.implements[name] != nil },
-                                              other: { (t: Typed, name: String) in t.type?.implements[name] != nil })
-        ext.registerBoolFilterOrWithArguments("inherits",
-                                              filter: { (t: Type, name: String) in t.inherits[name] != nil },
-                                              other: { (t: Typed, name: String) in t.type?.inherits[name] != nil })
-        ext.registerBoolFilterOrWithArguments("extends",
-                                              filter: { (t: Type, name: String) in t.isExtension && t.name == name },
-                                              other: { (t: Typed, name: String) in guard let type = t.type else { return false }; return type.isExtension && type.name == name })
+        ext.registerBoolFilterOrWithArguments(
+            "based",
+            filter: { (t: Type, name: String) in t.based[name] != nil },
+            other: { (t: Typed, name: String) in t.type?.based[name] != nil }
+        )
+        ext.registerBoolFilterOrWithArguments(
+            "implements",
+            filter: { (t: Type, name: String) in t.implements[name] != nil },
+            other: { (t: Typed, name: String) in t.type?.implements[name] != nil }
+        )
+        ext.registerBoolFilterOrWithArguments(
+            "inherits",
+            filter: { (t: Type, name: String) in t.inherits[name] != nil },
+            other: { (t: Typed, name: String) in t.type?.inherits[name] != nil }
+        )
+        ext.registerBoolFilterOrWithArguments(
+            "extends",
+            filter: { (t: Type, name: String) in t.isExtension && t.name == name },
+            other: { (t: Typed, name: String) in guard let type = t.type else { return false }; return type.isExtension && type.name == name }
+        )
 
         ext.registerBoolFilter("extension", filter: { (t: Type) in t.isExtension })
         ext.registerBoolFilter("enum", filter: { (t: Type) in t is Enum })
@@ -108,15 +116,21 @@ public final class StencilTemplate: StencilSwiftKit.StencilSwiftTemplate {
         }
 
         ext.registerBoolFilter("initializer", filter: { (m: SourceryMethod) in m.isInitializer })
-        ext.registerBoolFilterOr("class",
-                                 filter: { (t: Type) in t is Class },
-                                 other: { (m: SourceryMethod) in m.isClass })
-        ext.registerBoolFilterOr("static",
-                                 filter: { (v: SourceryVariable) in v.isStatic },
-                                 other: { (m: SourceryMethod) in m.isStatic })
-        ext.registerBoolFilterOr("instance",
-                                 filter: { (v: SourceryVariable) in !v.isStatic },
-                                 other: { (m: SourceryMethod) in !(m.isStatic || m.isClass) })
+        ext.registerBoolFilterOr(
+            "class",
+            filter: { (t: Type) in t is Class },
+            other: { (m: SourceryMethod) in m.isClass }
+        )
+        ext.registerBoolFilterOr(
+            "static",
+            filter: { (v: SourceryVariable) in v.isStatic },
+            other: { (m: SourceryMethod) in m.isStatic }
+        )
+        ext.registerBoolFilterOr(
+            "instance",
+            filter: { (v: SourceryVariable) in !v.isStatic },
+            other: { (m: SourceryMethod) in !(m.isStatic || m.isClass) }
+        )
 
         ext.registerBoolFilterWithArguments("annotated", filter: { (a: Annotated, annotation) in a.isAnnotated(with: annotation) })
         ext.registerTag("newline", parser: NewLineNode.parse)
@@ -124,7 +138,7 @@ public final class StencilTemplate: StencilSwiftKit.StencilSwiftTemplate {
 
         var extensions = stencilSwiftEnvironment().extensions
         extensions.append(ext)
-        let loader = templatePath.map({ FileSystemLoader(paths: [$0.parent()]) })
+        let loader = templatePath.map { FileSystemLoader(paths: [$0.parent()]) }
         return Environment(loader: loader, extensions: extensions, templateClass: StencilTemplate.self)
     }
 
@@ -136,7 +150,7 @@ public final class StencilTemplate: StencilSwiftKit.StencilSwiftTemplate {
 extension StencilTemplate: Template {
     public func render(_ context: TemplateContext) throws -> String {
         do {
-            return try self.render(context.stencilContext)
+            return try render(context.stencilContext)
         } catch {
             throw Error.renderingFailed(path: path, error: String(describing: error))
         }
@@ -153,14 +167,12 @@ extension StencilTemplate.Error: CustomStringConvertible {
 }
 
 public extension Annotated {
-
     func isAnnotated(with annotation: String) -> Bool {
-
         if annotation.contains("=") {
-            let components = annotation.components(separatedBy: "=").map({ $0.trimmingCharacters(in: .whitespaces) })
+            let components = annotation.components(separatedBy: "=").map { $0.trimmingCharacters(in: .whitespaces) }
             var keyPath = components[0].components(separatedBy: ".")
             var annotationValue: Annotations? = annotations
-            while !keyPath.isEmpty && annotationValue != nil {
+            while !keyPath.isEmpty, annotationValue != nil {
                 let key = keyPath.removeFirst()
                 let value = annotationValue?[key]
                 if keyPath.isEmpty {
@@ -174,11 +186,9 @@ public extension Annotated {
             return annotations[annotation] != nil
         }
     }
-
 }
 
 public extension Stencil.Extension {
-
     func registerStringFilters() {
         let lowercase = FilterOr<String, TypeName>.make({ $0.lowercased() }, other: { $0.name.lowercased() })
         registerFilter("lowercase", filter: lowercase)
@@ -192,12 +202,12 @@ public extension Stencil.Extension {
         let titleCase = FilterOr<String, TypeName>.make({ $0.titleCase }, other: { $0.name.titleCase })
         registerFilter("titleCase", filter: titleCase)
 
-        let deletingLastComponent = Filter<String>.make({ ($0 as NSString).deletingLastPathComponent })
+        let deletingLastComponent = Filter<String>.make { ($0 as NSString).deletingLastPathComponent }
         registerFilter("deletingLastComponent", filter: deletingLastComponent)
     }
 
     func registerFilterWithTwoArguments<T, A, B>(_ name: String, filter: @escaping (T, A, B) throws -> Any?) {
-        registerFilter(name) { (any, args) throws -> Any? in
+        registerFilter(name) { any, args throws -> Any? in
             guard let type = any as? T else { return any }
             guard args.count == 2, let argA = args[0] as? A, let argB = args[1] as? B else {
                 throw TemplateSyntaxError("'\(name)' filter takes two arguments: \(A.self) and \(B.self)")
@@ -207,7 +217,7 @@ public extension Stencil.Extension {
     }
 
     func registerFilterOrWithTwoArguments<T, Y, A, B>(_ name: String, filter: @escaping (T, A, B) throws -> Any?, other: @escaping (Y, A, B) throws -> Any?) {
-        registerFilter(name) { (any, args) throws -> Any? in
+        registerFilter(name) { any, args throws -> Any? in
             guard args.count == 2, let argA = args[0] as? A, let argB = args[1] as? B else {
                 throw TemplateSyntaxError("'\(name)' filter takes two arguments: \(A.self) and \(B.self)")
             }
@@ -232,12 +242,12 @@ public extension Stencil.Extension {
 
     func registerBoolFilterWithArguments<U, A>(_ name: String, filter: @escaping (U, A) -> Bool) {
         registerFilterWithArguments(name, filter: Filter.make(filter))
-        registerFilterWithArguments("!\(name)", filter: Filter.make({ !filter($0, $1) }))
+        registerFilterWithArguments("!\(name)", filter: Filter.make { !filter($0, $1) })
     }
 
     func registerBoolFilter<U>(_ name: String, filter: @escaping (U) -> Bool) {
         registerFilter(name, filter: Filter.make(filter))
-        registerFilter("!\(name)", filter: Filter.make({ !filter($0) }))
+        registerFilter("!\(name)", filter: Filter.make { !filter($0) })
     }
 
     func registerBoolFilterOrWithArguments<U, V, A>(_ name: String, filter: @escaping (U, A) -> Bool, other: @escaping (V, A) -> Bool) {
@@ -251,30 +261,31 @@ public extension Stencil.Extension {
     }
 
     func registerAccessLevelFilters(_ accessLevel: AccessLevel) {
-        registerBoolFilterOr(accessLevel.rawValue,
-                             filter: { (t: Type) in t.accessLevel == accessLevel.rawValue && t.accessLevel != AccessLevel.none.rawValue },
-                             other: { (m: SourceryMethod) in m.accessLevel == accessLevel.rawValue && m.accessLevel != AccessLevel.none.rawValue }
+        registerBoolFilterOr(
+            accessLevel.rawValue,
+            filter: { (t: Type) in t.accessLevel == accessLevel.rawValue && t.accessLevel != AccessLevel.none.rawValue },
+            other: { (m: SourceryMethod) in m.accessLevel == accessLevel.rawValue && m.accessLevel != AccessLevel.none.rawValue }
         )
-        registerBoolFilterOr("!\(accessLevel.rawValue)",
-                             filter: { (t: Type) in t.accessLevel != accessLevel.rawValue && t.accessLevel != AccessLevel.none.rawValue },
-                             other: { (m: SourceryMethod) in m.accessLevel != accessLevel.rawValue && m.accessLevel != AccessLevel.none.rawValue }
+        registerBoolFilterOr(
+            "!\(accessLevel.rawValue)",
+            filter: { (t: Type) in t.accessLevel != accessLevel.rawValue && t.accessLevel != AccessLevel.none.rawValue },
+            other: { (m: SourceryMethod) in m.accessLevel != accessLevel.rawValue && m.accessLevel != AccessLevel.none.rawValue }
         )
         registerBoolFilter("\(accessLevel.rawValue)Get", filter: { (v: SourceryVariable) in v.readAccess == accessLevel.rawValue && v.readAccess != AccessLevel.none.rawValue })
         registerBoolFilter("!\(accessLevel.rawValue)Get", filter: { (v: SourceryVariable) in v.readAccess != accessLevel.rawValue && v.readAccess != AccessLevel.none.rawValue })
         registerBoolFilter("\(accessLevel.rawValue)Set", filter: { (v: SourceryVariable) in v.writeAccess == accessLevel.rawValue && v.writeAccess != AccessLevel.none.rawValue })
         registerBoolFilter("!\(accessLevel.rawValue)Set", filter: { (v: SourceryVariable) in v.writeAccess != accessLevel.rawValue && v.writeAccess != AccessLevel.none.rawValue })
     }
-
 }
 
 private func toArray(_ value: Any?) -> Any? {
     switch value {
     case let array as NSArray:
-        return array
-    case .some(let something):
-        return [something]
+        array
+    case let .some(something):
+        [something]
     default:
-        return nil
+        nil
     }
 }
 
@@ -300,125 +311,125 @@ private func isEmpty(_ value: Any?) -> Any? {
     return array.count == 0
 }
 
-private struct Filter<T> {
+private enum Filter<T> {
     static func make(_ filter: @escaping (T) -> Bool) -> (Any?) throws -> Any? {
-        return { (any) throws -> Any? in
+        { any throws -> Any? in
             switch any {
             case let type as T:
-                return filter(type)
+                filter(type)
 
             case let array as NSArray:
-                return array.compactMap { $0 as? T }.filter(filter)
+                array.compactMap { $0 as? T }.filter(filter)
 
             default:
-                return any
+                any
             }
         }
     }
 
-    static func make<U>(_ filter: @escaping (T) -> U?) -> (Any?) throws -> Any? {
-        return { (any) throws -> Any? in
+    static func make(_ filter: @escaping (T) -> (some Any)?) -> (Any?) throws -> Any? {
+        { any throws -> Any? in
             switch any {
             case let type as T:
-                return filter(type)
+                filter(type)
 
             case let array as NSArray:
-                return array.compactMap { $0 as? T }.compactMap(filter)
+                array.compactMap { $0 as? T }.compactMap(filter)
 
             default:
-                return any
+                any
             }
         }
     }
 
     static func make<A>(_ filter: @escaping (T, A) -> Bool) -> (Any?, A) throws -> Any? {
-        return { (any, arg) throws -> Any? in
+        { any, arg throws -> Any? in
             switch any {
             case let type as T:
-                return filter(type, arg)
+                filter(type, arg)
 
             case let array as NSArray:
-                return array.compactMap { $0 as? T }.filter { filter($0, arg) }
+                array.compactMap { $0 as? T }.filter { filter($0, arg) }
 
             default:
-                return any
+                any
             }
         }
     }
 }
 
-private struct FilterOr<T, Y> {
+private enum FilterOr<T, Y> {
     static func make(_ filter: @escaping (T) -> Bool, other: @escaping (Y) -> Bool) -> (Any?) throws -> Any? {
-        return { (any) throws -> Any? in
+        { any throws -> Any? in
             switch any {
             case let type as T:
-                return filter(type)
+                filter(type)
 
             case let type as Y:
-                return other(type)
+                other(type)
 
             case let array as NSArray:
                 if array.firstObject is T {
-                    return array.compactMap { $0 as? T }.filter(filter)
+                    array.compactMap { $0 as? T }.filter(filter)
                 } else {
-                    return array.compactMap { $0 as? Y }.filter(other)
+                    array.compactMap { $0 as? Y }.filter(other)
                 }
 
             default:
-                return any
+                any
             }
         }
     }
 
     static func make<U>(_ filter: @escaping (T) -> U?, other: @escaping (Y) -> U?) -> (Any?) throws -> Any? {
-        return { (any) throws -> Any? in
+        { any throws -> Any? in
             switch any {
             case let type as T:
-                return filter(type)
+                filter(type)
 
             case let type as Y:
-                return other(type)
+                other(type)
 
             case let array as NSArray:
                 if array.firstObject is T {
-                    return array.compactMap { $0 as? T }.compactMap(filter)
+                    array.compactMap { $0 as? T }.compactMap(filter)
                 } else {
-                    return array.compactMap { $0 as? Y }.compactMap(other)
+                    array.compactMap { $0 as? Y }.compactMap(other)
                 }
 
             default:
-                return any
+                any
             }
         }
     }
 
     static func make<A>(_ filter: @escaping (T, A) -> Bool, other: @escaping (Y, A) -> Bool) -> (Any?, A) throws -> Any? {
-        return { (any, arg) throws -> Any? in
+        { any, arg throws -> Any? in
             switch any {
             case let type as T:
-                return filter(type, arg)
+                filter(type, arg)
 
             case let type as Y:
-                return other(type, arg)
+                other(type, arg)
 
             case let array as NSArray:
                 if array.firstObject is T {
-                    return array.compactMap { $0 as? T }.filter({ filter($0, arg) })
+                    array.compactMap { $0 as? T }.filter { filter($0, arg) }
                 } else {
-                    return array.compactMap { $0 as? Y }.filter({ other($0, arg) })
+                    array.compactMap { $0 as? Y }.filter { other($0, arg) }
                 }
 
             default:
-                return any
+                any
             }
         }
     }
 }
 
-fileprivate extension String {
+private extension String {
     /// Returns string with uppercased first character
     var uppercasedFirst: String {
-        return first
+        first
             .map { String($0).uppercased() + dropFirst() }
             ?? ""
     }

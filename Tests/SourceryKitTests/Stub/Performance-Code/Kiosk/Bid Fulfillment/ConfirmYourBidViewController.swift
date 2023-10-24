@@ -1,11 +1,10 @@
-import UIKit
+import Action
 import ECPhoneNumberFormatter
 import Moya
 import RxSwift
-import Action
+import UIKit
 
 class ConfirmYourBidViewController: UIViewController {
-
     fileprivate var _number = Variable("")
     let phoneNumberFormatter = ECPhoneNumberFormatter()
 
@@ -18,26 +17,28 @@ class ConfirmYourBidViewController: UIViewController {
 
     fileprivate let _viewWillDisappear = PublishSubject<Void>()
     var viewWillDisappear: Observable<Void> {
-        return self._viewWillDisappear.asObserver()
+        self._viewWillDisappear.asObserver()
     }
 
     // Need takeUntil because we bind this observable eventually to bidDetails, making us stick around longer than we should!
-    lazy var number: Observable<String> = { self.keypadContainer.stringValue.takeUntil(self.viewWillDisappear) }()
+    lazy var number: Observable<String> = self.keypadContainer.stringValue.takeUntil(self.viewWillDisappear)
 
     var provider: Networking!
 
     class func instantiateFromStoryboard(_ storyboard: UIStoryboard) -> ConfirmYourBidViewController {
-        return storyboard.viewController(withID: .ConfirmYourBid) as! ConfirmYourBidViewController
+        storyboard.viewController(withID: .ConfirmYourBid) as! ConfirmYourBidViewController
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         let titleString = useArtsyLoginButton.title(for: useArtsyLoginButton.state)!
-        let attributes = [NSUnderlineStyleAttributeName: NSUnderlineStyle.styleSingle.rawValue,
-            NSFontAttributeName: useArtsyLoginButton.titleLabel!.font] as [String : Any]
-        let attrTitle = NSAttributedString(string: titleString, attributes:attributes)
-        useArtsyLoginButton.setAttributedTitle(attrTitle, for:useArtsyLoginButton.state)
+        let attributes = [
+            NSUnderlineStyleAttributeName: NSUnderlineStyle.styleSingle.rawValue,
+            NSFontAttributeName: useArtsyLoginButton.titleLabel!.font
+        ] as [String: Any]
+        let attrTitle = NSAttributedString(string: titleString, attributes: attributes)
+        useArtsyLoginButton.setAttributedTitle(attrTitle, for: useArtsyLoginButton.state)
 
         number
             .bindTo(_number)
@@ -48,7 +49,7 @@ class ConfirmYourBidViewController: UIViewController {
             .bindTo(numberAmountTextField.rx.text)
             .addDisposableTo(rx_disposeBag)
 
-        let nav = self.fulfillmentNav()
+        let nav = fulfillmentNav()
 
         bidDetailsPreviewView.bidDetails = nav.bidDetails
 
@@ -87,12 +88,11 @@ class ConfirmYourBidViewController: UIViewController {
 
                     var response: Moya.Response?
 
-                    if case .statusCode(let receivedResponse)? = error as? Moya.Error {
+                    if case let .statusCode(receivedResponse)? = error as? Moya.Error {
                         response = receivedResponse
                     }
 
                     if let responseURL = response?.response?.url?.absoluteString, responseURL.contains("v1/bidder/") {
-
                         me.performSegue(.ConfirmyourBidBidderFound)
                     } else {
                         me.performSegue(.ConfirmyourBidBidderNotFound)
@@ -108,7 +108,7 @@ class ConfirmYourBidViewController: UIViewController {
         _viewWillDisappear.onNext()
     }
 
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+    override func prepare(for segue: UIStoryboardSegue, sender _: Any?) {
         if segue == .ConfirmyourBidBidderFound {
             let nextViewController = segue.destination as! ConfirmYourBidPINViewController
             nextViewController.provider = provider
@@ -133,21 +133,19 @@ class ConfirmYourBidViewController: UIViewController {
 
     func toPhoneNumberString(_ number: String) -> String {
         if number.count >= 7 {
-            return phoneNumberFormatter.string(for: number) ?? number
+            phoneNumberFormatter.string(for: number) ?? number
         } else {
-            return number
+            number
         }
     }
 }
 
 private extension ConfirmYourBidViewController {
-
-    @IBAction func dev_noPhoneNumberFoundTapped(_ sender: AnyObject) {
-        self.performSegue(.ConfirmyourBidArtsyLogin )
+    @IBAction func dev_noPhoneNumberFoundTapped(_: AnyObject) {
+        performSegue(.ConfirmyourBidArtsyLogin)
     }
 
-    @IBAction func dev_phoneNumberFoundTapped(_ sender: AnyObject) {
-        self.performSegue(.ConfirmyourBidBidderFound)
+    @IBAction func dev_phoneNumberFoundTapped(_: AnyObject) {
+        performSegue(.ConfirmyourBidBidderFound)
     }
-
 }

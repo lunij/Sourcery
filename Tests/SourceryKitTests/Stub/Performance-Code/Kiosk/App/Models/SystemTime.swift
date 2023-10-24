@@ -2,12 +2,12 @@ import Foundation
 import RxSwift
 
 class SystemTime {
-    var systemTimeInterval: TimeInterval? = nil
+    var systemTimeInterval: TimeInterval?
 
-    init () {}
+    init() {}
 
     func sync(_ provider: Networking) -> Observable<Void> {
-        let endpoint: ArtsyAPI = ArtsyAPI.systemTime
+        let endpoint = ArtsyAPI.systemTime
 
         return provider.request(endpoint)
             .filterSuccessfulStatusCodes()
@@ -24,12 +24,12 @@ class SystemTime {
     }
 
     func inSync() -> Bool {
-        return systemTimeInterval != nil
+        systemTimeInterval != nil
     }
 
     func date() -> Date {
         let now = Date()
-        if let systemTimeInterval = systemTimeInterval {
+        if let systemTimeInterval {
             return now.addingTimeInterval(-systemTimeInterval)
         } else {
             return now

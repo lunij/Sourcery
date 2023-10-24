@@ -2,7 +2,6 @@ import Foundation
 
 /// Describes closure type
 @objcMembers public final class ClosureType: NSObject, SourceryModel {
-
     /// Type name used in declaration with stripped whitespaces and new lines
     public let name: String
 
@@ -14,7 +13,7 @@ import Foundation
 
     /// Actual return value type name if declaration uses typealias, otherwise just a `returnTypeName`
     public var actualReturnTypeName: TypeName {
-        return returnTypeName.actualTypeName ?? returnTypeName
+        returnTypeName.actualTypeName ?? returnTypeName
     }
 
     // sourcery: skipEquality, skipDescription
@@ -24,21 +23,21 @@ import Foundation
     // sourcery: skipEquality, skipDescription
     /// Whether return value type is optional
     public var isOptionalReturnType: Bool {
-        return returnTypeName.isOptional
+        returnTypeName.isOptional
     }
 
     // sourcery: skipEquality, skipDescription
     /// Whether return value type is implicitly unwrapped optional
     public var isImplicitlyUnwrappedOptionalReturnType: Bool {
-        return returnTypeName.isImplicitlyUnwrappedOptional
+        returnTypeName.isImplicitlyUnwrappedOptional
     }
 
     // sourcery: skipEquality, skipDescription
     /// Return value type name without attributes and optional type information
     public var unwrappedReturnTypeName: String {
-        return returnTypeName.unwrappedTypeName
+        returnTypeName.unwrappedTypeName
     }
-    
+
     /// Whether method is async method
     public let isAsync: Bool
 
@@ -58,9 +57,9 @@ import Foundation
         self.returnTypeName = returnTypeName
         self.returnType = returnType
         self.asyncKeyword = asyncKeyword
-        self.isAsync = asyncKeyword != nil
+        isAsync = asyncKeyword != nil
         self.throwsOrRethrowsKeyword = throwsOrRethrowsKeyword
-        self.`throws` = throwsOrRethrowsKeyword != nil
+        self.throws = throwsOrRethrowsKeyword != nil
     }
 
     public var asSource: String {

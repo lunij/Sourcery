@@ -1,21 +1,21 @@
-import UIKit
+import Action
 import RxSwift
 import SVProgressHUD
-import Action
+import UIKit
 
 extension UIViewController {
     func promptForBidderDetailsRetrieval(provider: Networking) -> Observable<Void> {
-        return Observable.deferred { () -> Observable<Void> in
+        Observable.deferred { () -> Observable<Void> in
             let alertController = self.emailPromptAlertController(provider: provider)
 
-            self.present(alertController, animated: true) { }
+            self.present(alertController, animated: true) {}
 
             return .empty()
         }
     }
 
     func retrieveBidderDetails(provider: Networking, email: String) -> Observable<Void> {
-        return Observable.just(email)
+        Observable.just(email)
             .take(1)
             .doOnNext { _ in
                 SVProgressHUD.show()

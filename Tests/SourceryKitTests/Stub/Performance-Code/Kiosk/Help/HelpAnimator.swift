@@ -1,5 +1,5 @@
-import UIKit
 import RxSwift
+import UIKit
 
 class HelpAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     let presenting: Bool
@@ -9,8 +9,8 @@ class HelpAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         super.init()
     }
 
-    func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
-        return AnimationDuration.Normal
+    func transitionDuration(using _: UIViewControllerContextTransitioning?) -> TimeInterval {
+        AnimationDuration.Normal
     }
 
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
@@ -31,7 +31,7 @@ class HelpAnimator: NSObject, UIViewControllerAnimatedTransitioning {
                         appDelegate().helpButtonCommand().execute()
                     }
                 })
-            .addDisposableTo(rx_disposeBag)
+                .addDisposableTo(rx_disposeBag)
             toViewController.dismissTapGestureRecognizer = dismissTapGestureRecognizer
             containerView.addGestureRecognizer(dismissTapGestureRecognizer)
 
@@ -53,7 +53,7 @@ class HelpAnimator: NSObject, UIViewControllerAnimatedTransitioning {
                 containerView.layoutIfNeeded()
 
                 fromView.alpha = 0.5
-            }, completion: { (value: Bool) in
+            }, completion: { (_: Bool) in
                 transitionContext.completeTransition(true)
             })
         } else {
@@ -68,13 +68,13 @@ class HelpAnimator: NSObject, UIViewControllerAnimatedTransitioning {
             containerView.addSubview(toView)
             containerView.addSubview(fromView)
 
-            UIView.animate(withDuration: self.transitionDuration(using: transitionContext), animations: {
+            UIView.animate(withDuration: transitionDuration(using: transitionContext), animations: {
                 containerView.removeConstraints(fromViewController.positionConstraints ?? [])
                 fromViewController.positionConstraints = fromView.alignAttribute(.left, to: .right, of: containerView, predicate: "0") as? [NSLayoutConstraint]
                 containerView.layoutIfNeeded()
 
                 toView.alpha = 1.0
-            }, completion: { (value: Bool) in
+            }, completion: { (_: Bool) in
                 transitionContext.completeTransition(true)
                 // This following line is to work around a bug in iOS 8 💩
                 UIApplication.shared.keyWindow!.insertSubview(transitionContext.viewController(forKey: UITransitionContextViewControllerKey.to)!.view, at: 0)

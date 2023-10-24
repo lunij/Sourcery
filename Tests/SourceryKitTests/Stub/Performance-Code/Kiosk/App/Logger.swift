@@ -2,14 +2,15 @@ import Foundation
 
 class Logger {
     let destination: URL
-    lazy fileprivate var dateFormatter: DateFormatter = {
+    private lazy var dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.locale = Locale.current
         formatter.dateFormat = "yyyy-MM-dd HH:mm:ss.SSS"
 
         return formatter
     }()
-    lazy fileprivate var fileHandle: FileHandle? = {
+
+    private lazy var fileHandle: FileHandle? = {
         let path = self.destination.path
         FileManager.default.createFile(atPath: path, contents: nil, attributes: nil)
 

@@ -1,5 +1,5 @@
-import UIKit
 import SwiftyJSON
+import UIKit
 
 enum ReserveStatus: String {
     case ReserveNotMet = "reserve_not_met"
@@ -7,20 +7,19 @@ enum ReserveStatus: String {
     case ReserveMet = "reserve_met"
 
     var reserveNotMet: Bool {
-        return self == .ReserveNotMet
+        self == .ReserveNotMet
     }
 
-    static func initOrDefault (_ rawValue: String?) -> ReserveStatus {
-        return ReserveStatus(rawValue: rawValue ?? "") ?? .NoReserve
+    static func initOrDefault(_ rawValue: String?) -> ReserveStatus {
+        ReserveStatus(rawValue: rawValue ?? "") ?? .NoReserve
     }
 }
 
-struct SaleNumberFormatter {
+enum SaleNumberFormatter {
     static let dollarFormatter = createDollarFormatter()
 }
 
 final class SaleArtwork: NSObject, JSONAbleType {
-
     let id: String
     let artwork: Artwork
 
@@ -48,9 +47,7 @@ final class SaleArtwork: NSObject, JSONAbleType {
         self.artwork = artwork
     }
 
-    lazy var viewModel: SaleArtworkViewModel = {
-        return SaleArtworkViewModel(saleArtwork: self)
-    }()
+    lazy var viewModel: SaleArtworkViewModel = .init(saleArtwork: self)
 
     static func fromJSON(_ json: [String: Any]) -> SaleArtwork {
         let json = JSON(json)
@@ -109,6 +106,6 @@ func createDollarFormatter() -> NumberFormatter {
     return formatter
 }
 
-func ==(lhs: SaleArtwork, rhs: SaleArtwork) -> Bool {
-    return lhs.id == rhs.id
+func == (lhs: SaleArtwork, rhs: SaleArtwork) -> Bool {
+    lhs.id == rhs.id
 }

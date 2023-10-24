@@ -1,10 +1,10 @@
-import UIKit
-import Foundation
-import RxSwift
 import Action
 import FLKAutoLayout
+import Foundation
+import RxSwift
+import UIKit
 
-//@IBDesignable
+// @IBDesignable
 class KeypadContainerView: UIView {
     fileprivate var keypad: KeypadView!
     fileprivate let viewModel = KeypadViewModel()
@@ -18,11 +18,11 @@ class KeypadContainerView: UIView {
         for subview in subviews { subview.removeFromSuperview() }
 
         let bundle = Bundle(for: type(of: self))
-        let image  = UIImage(named: "KeypadViewPreviewIB", in: bundle, compatibleWith: self.traitCollection)
-        let imageView = UIImageView(frame: self.bounds)
+        let image = UIImage(named: "KeypadViewPreviewIB", in: bundle, compatibleWith: traitCollection)
+        let imageView = UIImageView(frame: bounds)
         imageView.image = image
 
-        self.addSubview(imageView)
+        addSubview(imageView)
     }
 
     override func awakeFromNib() {
@@ -38,7 +38,7 @@ class KeypadContainerView: UIView {
         deleteAction = viewModel.deleteAction
         resetAction = viewModel.clearAction
 
-        self.addSubview(keypad)
+        addSubview(keypad)
 
         keypad.align(to: self)
     }

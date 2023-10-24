@@ -1,12 +1,11 @@
 import Foundation
 
 private func currentTimestamp() -> TimeInterval {
-    return CFAbsoluteTimeGetCurrent()
+    CFAbsoluteTimeGetCurrent()
 }
 
 /// Responsible for composing results of `FileParser`.
 public enum Composer {
-
     /// Performs final processing of discovered types:
     /// - extends types with their corresponding extensions;
     /// - replaces typealiases with actual types
@@ -19,7 +18,7 @@ public enum Composer {
         let composed = ParserResultsComposed(parserResult: parserResult)
 
         let resolveType = { (typeName: TypeName, containingType: Type?) -> Type? in
-            return composed.resolveType(typeName: typeName, containingType: containingType)
+            composed.resolveType(typeName: typeName, containingType: containingType)
         }
 
         composed.types.parallelPerform { type in
@@ -73,7 +72,7 @@ public enum Composer {
     }
 
     private static func resolveSubscriptTypes(_ subscript: Subscript, of type: Type, resolve: TypeResolver) {
-        `subscript`.parameters.forEach { (parameter) in
+        `subscript`.parameters.forEach { parameter in
             parameter.type = resolve(parameter.typeName, type)
         }
 
@@ -137,7 +136,8 @@ public enum Composer {
         } else if let rawTypeName = enumeration.inheritedTypes.first {
             // enums with no cases or enums with cases that contain associated values can't have raw type
             guard !enumeration.cases.isEmpty,
-                  !enumeration.hasAssociatedValues else {
+                  !enumeration.hasAssociatedValues
+            else {
                 return enumeration.rawTypeName = nil
             }
 
@@ -161,7 +161,7 @@ public enum Composer {
     }
 
     private static func resolveProtocolTypes(_ sourceryProtocol: SourceryProtocol, resolve: TypeResolver) {
-        sourceryProtocol.associatedTypes.forEach { (_, value) in
+        sourceryProtocol.associatedTypes.forEach { _, value in
             guard let typeName = value.typeName,
                   let type = resolve(typeName, sourceryProtocol)
             else { return }

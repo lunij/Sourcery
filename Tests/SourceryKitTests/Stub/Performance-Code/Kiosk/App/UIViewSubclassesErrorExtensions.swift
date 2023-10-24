@@ -1,9 +1,8 @@
 import UIKit
 
 extension Button {
-
     func flashError(_ message: String) {
-        let originalTitle = self.title(for: .normal)
+        let originalTitle = title(for: .normal)
 
         setTitleColor(.white, for: .disabled)
         setBackgroundColor(.artsyRedRegular(), for: .disabled, animated: true)
@@ -21,9 +20,8 @@ extension Button {
 }
 
 extension TextField {
-
     func flashForError() {
-        self.setBorderColor(.artsyRedRegular())
+        setBorderColor(.artsyRedRegular())
         delayToMainThread(2) {
             self.setBorderColor(.artsyPurpleRegular())
         }

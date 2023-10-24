@@ -4,13 +4,12 @@ import Result
 
 /// Logs network activity (outgoing requests and incoming responses).
 class NetworkLogger: PluginType {
-
     typealias Comparison = (TargetType) -> Bool
 
     let whitelist: Comparison
     let blacklist: Comparison
 
-    init(whitelist: @escaping Comparison = { _ -> Bool in return true }, blacklist: @escaping Comparison = { _ -> Bool in  return true }) {
+    init(whitelist: @escaping Comparison = { _ -> Bool in true }, blacklist: @escaping Comparison = { _ -> Bool in true }) {
         self.whitelist = whitelist
         self.blacklist = blacklist
     }
@@ -26,12 +25,12 @@ class NetworkLogger: PluginType {
         guard blacklist(target) == false else { return }
 
         switch result {
-        case .success(let response):
-            if 200..<400 ~= (response.statusCode ) && whitelist(target) == false {
+        case let .success(response):
+            if 200 ..< 400 ~= (response.statusCode), whitelist(target) == false {
                 // If the status code is OK, and if it's not in our whitelist, then don't worry about logging its response body.
-                logger.log("Received response(\(response.statusCode )) from \(response.response?.url?.absoluteString ?? String()).")
+                logger.log("Received response(\(response.statusCode)) from \(response.response?.url?.absoluteString ?? String()).")
             }
-        case .failure(let error):
+        case let .failure(error):
             // Otherwise, log everything.
             logger.log("Received networking error: \(error)")
         }

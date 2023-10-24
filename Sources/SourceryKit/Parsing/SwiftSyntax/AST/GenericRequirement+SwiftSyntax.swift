@@ -1,6 +1,6 @@
 import Foundation
-import SwiftSyntax
 import SourceryRuntime
+import SwiftSyntax
 
 extension GenericRequirement {
     convenience init(_ node: SameTypeRequirementSyntax) {

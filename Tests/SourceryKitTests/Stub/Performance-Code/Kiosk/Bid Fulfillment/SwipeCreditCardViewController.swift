@@ -1,22 +1,21 @@
-import UIKit
 import Artsy_UILabels
-import RxSwift
 import Keys
+import RxSwift
 import Stripe
+import UIKit
 
 class SwipeCreditCardViewController: UIViewController, RegistrationSubController {
-
     @IBOutlet var cardStatusLabel: ARSerifLabel!
     let finished = PublishSubject<Void>()
 
-    @IBOutlet weak var spinner: Spinner!
-    @IBOutlet weak var processingLabel: UILabel!
-    @IBOutlet weak var illustrationImageView: UIImageView!
+    @IBOutlet var spinner: Spinner!
+    @IBOutlet var processingLabel: UILabel!
+    @IBOutlet var illustrationImageView: UIImageView!
 
-    @IBOutlet weak var titleLabel: ARSerifLabel!
+    @IBOutlet var titleLabel: ARSerifLabel!
 
     class func instantiateFromStoryboard(_ storyboard: UIStoryboard) -> SwipeCreditCardViewController {
-        return storyboard.viewController(withID: .RegisterCreditCard) as! SwipeCreditCardViewController
+        storyboard.viewController(withID: .RegisterCreditCard) as! SwipeCreditCardViewController
     }
 
     let cardName = Variable("")
@@ -24,29 +23,28 @@ class SwipeCreditCardViewController: UIViewController, RegistrationSubController
     let cardToken = Variable("")
 
     lazy var keys = EidolonKeys()
-    lazy var bidDetails: BidDetails! = { self.navigationController!.fulfillmentNav().bidDetails }()
+    lazy var bidDetails: BidDetails! = self.navigationController!.fulfillmentNav().bidDetails
 
     lazy var appSetup = AppSetup.sharedState
-    lazy var cardHandler: CardHandler = {
-        if self.appSetup.useStaging {
-            return CardHandler(apiKey: self.keys.cardflightStagingAPIClientKey(), accountToken: self.keys.cardflightStagingMerchantAccountToken())
-        } else {
-            return CardHandler(apiKey: self.keys.cardflightProductionAPIClientKey(), accountToken: self.keys.cardflightProductionMerchantAccountToken())
-        }
-    }()
+    lazy var cardHandler: CardHandler = if self.appSetup.useStaging {
+        .init(apiKey: keys.cardflightStagingAPIClientKey(), accountToken: keys.cardflightStagingMerchantAccountToken())
+    } else {
+        .init(apiKey: keys.cardflightProductionAPIClientKey(), accountToken: keys.cardflightProductionMerchantAccountToken())
+    }
 
     fileprivate let _viewWillDisappear = PublishSubject<Void>()
     var viewWillDisappear: Observable<Void> {
-        return self._viewWillDisappear.asObserver()
+        self._viewWillDisappear.asObserver()
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.setInProgress(false)
+        setInProgress(false)
 
         cardHandler.cardStatus
-            .takeUntil(self.viewWillDisappear)
-            .subscribe(onNext: { message in
+            .takeUntil(viewWillDisappear)
+            .subscribe(
+                onNext: { message in
                     self.cardStatusLabel.text = "Card Status: \(message)"
                     if message == "Got Card" {
                         self.setInProgress(true)
@@ -56,7 +54,7 @@ class SwipeCreditCardViewController: UIViewController, RegistrationSubController
                         self.processingLabel.text = "ERROR PROCESSING CARD - SEE ADMIN"
                     }
                 },
-                onError: { error in
+                onError: { _ in
                     self.cardStatusLabel.text = "Card Status: Errored"
                     self.setInProgress(false)
                     self.titleLabel.text = "Please Swipe a Valid Credit Card"
@@ -79,8 +77,9 @@ class SwipeCreditCardViewController: UIViewController, RegistrationSubController
                     self.cardHandler.end()
                     self.finished.onCompleted()
                 },
-                onDisposed: nil)
-                .addDisposableTo(rx_disposeBag)
+                onDisposed: nil
+            )
+            .addDisposableTo(rx_disposeBag)
 
         cardHandler.startSearching()
 
@@ -144,11 +143,11 @@ private extension SwipeCreditCardViewController {
             .addDisposableTo(rx_disposeBag)
     }
 
-    @IBAction func dev_creditCardOKTapped(_ sender: AnyObject) {
+    @IBAction func dev_creditCardOKTapped(_: AnyObject) {
         applyCardWithSuccess(true)
     }
 
-    @IBAction func dev_creditCardFailTapped(_ sender: AnyObject) {
+    @IBAction func dev_creditCardFailTapped(_: AnyObject) {
         applyCardWithSuccess(false)
     }
 }

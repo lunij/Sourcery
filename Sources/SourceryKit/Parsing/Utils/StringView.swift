@@ -31,19 +31,19 @@ public struct ByteCount: ExpressibleByIntegerLiteral, Hashable {
 
 extension ByteCount: CustomStringConvertible {
     public var description: String {
-        return value.description
+        value.description
     }
 }
 
 extension ByteCount: Comparable {
     public static func < (lhs: ByteCount, rhs: ByteCount) -> Bool {
-        return lhs.value < rhs.value
+        lhs.value < rhs.value
     }
 }
 
 extension ByteCount: AdditiveArithmetic {
     public static func - (lhs: ByteCount, rhs: ByteCount) -> ByteCount {
-        return ByteCount(lhs.value - rhs.value)
+        ByteCount(lhs.value - rhs.value)
     }
 
     public static func -= (lhs: inout ByteCount, rhs: ByteCount) {
@@ -51,7 +51,7 @@ extension ByteCount: AdditiveArithmetic {
     }
 
     public static func + (lhs: ByteCount, rhs: ByteCount) -> ByteCount {
-        return ByteCount(lhs.value + rhs.value)
+        ByteCount(lhs.value + rhs.value)
     }
 
     public static func += (lhs: inout ByteCount, rhs: ByteCount) {
@@ -78,27 +78,27 @@ public struct ByteRange: Equatable {
 
     /// The range's upper bound.
     public var upperBound: ByteCount {
-        return location + length
+        location + length
     }
 
     /// The range's lower bound.
     public var lowerBound: ByteCount {
-        return location
+        location
     }
 
     public func contains(_ value: ByteCount) -> Bool {
-        return location <= value && upperBound > value
+        location <= value && upperBound > value
     }
 
     public func intersects(_ otherRange: ByteRange) -> Bool {
-        return contains(otherRange.lowerBound) ||
+        contains(otherRange.lowerBound) ||
             contains(otherRange.upperBound - 1) ||
             otherRange.contains(lowerBound) ||
             otherRange.contains(upperBound - 1)
     }
 
     public func intersects(_ ranges: [ByteRange]) -> Bool {
-        return ranges.contains { intersects($0) }
+        ranges.contains { intersects($0) }
     }
 
     public func union(with otherRange: ByteRange) -> ByteRange {
@@ -108,10 +108,10 @@ public struct ByteRange: Equatable {
     }
 
     /*
-     Returns a new range which is the receiver after inserting or removing some content
-     before, within or after the receiver.
-     change.length is amount of content inserted or removed.
-    */
+      Returns a new range which is the receiver after inserting or removing some content
+      before, within or after the receiver.
+      change.length is amount of content inserted or removed.
+     */
     public func editingContent(_ change: ByteRange) -> ByteRange {
         // bytes inserted after type definition
         if change.location > upperBound {
@@ -176,7 +176,6 @@ private let newlinesCharacterSet = CharacterSet(charactersIn: "\u{000A}\u{000D}"
 /// Structure that precalculates lines for the specified string and then uses this information for
 /// ByteRange to NSRange and NSRange to ByteRange operations
 public struct StringView {
-
     /// Reference to the NSString of represented string
     public let nsString: NSString
 
@@ -203,7 +202,7 @@ public struct StringView {
     private init(_ string: String, _ nsString: NSString) {
         self.string = string
         self.nsString = nsString
-        self.range = NSRange(location: 0, length: nsString.length)
+        range = NSRange(location: 0, length: nsString.length)
 
         utf8View = string.utf8
         utf16View = string.utf16
@@ -213,12 +212,12 @@ public struct StringView {
         var lines = [Line]()
         let lineContents = string.components(separatedBy: newlinesCharacterSet)
         // Be compatible with `NSString.getLineStart(_:end:contentsEnd:forRange:)`
-        let endsWithNewLineCharacter: Bool
-        if let lastChar = utf16View.last,
-            let lastCharScalar = UnicodeScalar(lastChar) {
-            endsWithNewLineCharacter = newlinesCharacterSet.contains(lastCharScalar)
+        let endsWithNewLineCharacter: Bool = if let lastChar = utf16View.last,
+                                                let lastCharScalar = UnicodeScalar(lastChar)
+        {
+            newlinesCharacterSet.contains(lastCharScalar)
         } else {
-            endsWithNewLineCharacter = false
+            false
         }
         // if string ends with new line character, no empty line is generated after that.
         let enumerator = endsWithNewLineCharacter
@@ -254,7 +253,7 @@ public struct StringView {
     ///
     /// - parameter range: UTF16 range.
     public func substring(with range: NSRange) -> String {
-        return nsString.substring(with: range)
+        nsString.substring(with: range)
     }
 
     /**
@@ -264,11 +263,12 @@ public struct StringView {
         guard start.offset < end.offset else {
             return nil
         }
-        let byteRange = ByteRange(location: ByteCount(Int(start.offset)),
-                                  length: ByteCount(Int(end.offset - start.offset)))
+        let byteRange = ByteRange(
+            location: ByteCount(Int(start.offset)),
+            length: ByteCount(Int(end.offset - start.offset))
+        )
         return substringWithByteRange(byteRange)
     }
-
 
     /**
      Returns a substring with the provided byte range.
@@ -277,14 +277,14 @@ public struct StringView {
      - parameter length: Length of bytes to include in range.
      */
     public func substringWithByteRange(_ byteRange: ByteRange) -> String? {
-        return byteRangeToNSRange(byteRange).map(nsString.substring)
+        byteRangeToNSRange(byteRange).map(nsString.substring)
     }
 
     /// Returns a substictg, started at UTF-16 location.
     ///
     /// - parameter location: UTF-16 location.
     func substring(from location: Int) -> String {
-        return nsString.substring(from: location)
+        nsString.substring(from: location)
     }
 
     /**
@@ -343,21 +343,22 @@ public struct StringView {
     }
 
     /**
-    Converts an `NSRange` suitable for filtering `self` as an
-    `NSString` to a range of byte offsets in `self`.
+     Converts an `NSRange` suitable for filtering `self` as an
+     `NSString` to a range of byte offsets in `self`.
 
-    - parameter start: Starting character index in the string.
-    - parameter length: Number of characters to include in range.
+     - parameter start: Starting character index in the string.
+     - parameter length: Number of characters to include in range.
 
-    - returns: An equivalent `NSRange`.
-    */
+     - returns: An equivalent `NSRange`.
+     */
     public func NSRangeToByteRange(start: Int, length: Int) -> ByteRange? {
         let startUTF16Index = utf16View.index(utf16View.startIndex, offsetBy: start)
         let endUTF16Index = utf16View.index(startUTF16Index, offsetBy: length)
 
         guard let startUTF8Index = startUTF16Index.samePosition(in: utf8View),
-            let endUTF8Index = endUTF16Index.samePosition(in: utf8View) else {
-                return nil
+              let endUTF8Index = endUTF16Index.samePosition(in: utf8View)
+        else {
+            return nil
         }
 
         let length = utf8View.distance(from: startUTF8Index, to: endUTF8Index)
@@ -365,7 +366,7 @@ public struct StringView {
     }
 
     public func NSRangeToByteRange(_ range: NSRange) -> ByteRange? {
-        return NSRangeToByteRange(start: range.location, length: range.length)
+        NSRangeToByteRange(start: range.location, length: range.length)
     }
 
     /**
@@ -404,7 +405,7 @@ public struct StringView {
     }
 
     public func substringStartingLinesWithByteRange(_ byteRange: ByteRange) -> String? {
-        return byteRangeToNSRange(byteRange).map { range in
+        byteRangeToNSRange(byteRange).map { range in
             var lineStart = 0, lineEnd = 0
             nsString.getLineStart(&lineStart, end: &lineEnd, contentsEnd: nil, for: range)
             return nsString.substring(with: NSRange(location: lineStart, length: NSMaxRange(range) - lineStart))
@@ -419,7 +420,7 @@ public struct StringView {
      - parameter length: Length of bytes to include in range.
      */
     public func substringLinesWithByteRange(_ byteRange: ByteRange) -> String? {
-        return byteRangeToNSRange(byteRange).map { range in
+        byteRangeToNSRange(byteRange).map { range in
             var lineStart = 0, lineEnd = 0
             nsString.getLineStart(&lineStart, end: &lineEnd, contentsEnd: nil, for: range)
             return nsString.substring(with: NSRange(location: lineStart, length: lineEnd - lineStart))
@@ -433,7 +434,7 @@ public struct StringView {
      - parameter length: Length of bytes to include in range.
      */
     public func lineRangeWithByteRange(_ byteRange: ByteRange) -> (start: Int, end: Int)? {
-        return byteRangeToNSRange(byteRange).flatMap { range in
+        byteRangeToNSRange(byteRange).flatMap { range in
             var numberOfLines = 0, index = 0, lineRangeStart = 0
             while index < nsString.length {
                 numberOfLines += 1
@@ -469,16 +470,14 @@ public struct StringView {
             let line = lines[$0]
 
             let prefixLength = offset - line.range.location
-            let character: Int
-
-            if tabWidth == 1 {
-                character = prefixLength
+            let character: Int = if tabWidth == 1 {
+                prefixLength
             } else {
-                character = line.content.prefix(prefixLength).reduce(0) { sum, character in
+                line.content.prefix(prefixLength).reduce(0) { sum, character in
                     if character == "\t" {
-                        return sum - (sum % tabWidth) + tabWidth
+                        sum - (sum % tabWidth) + tabWidth
                     } else {
-                        return sum + 1
+                        sum + 1
                     }
                 }
             }
@@ -486,5 +485,4 @@ public struct StringView {
             return (line: line.index, character: character + 1)
         }
     }
-
 }

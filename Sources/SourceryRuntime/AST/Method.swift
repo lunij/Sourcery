@@ -18,7 +18,7 @@ public typealias SourceryMethod = Method
 
     /// Parameter flag whether it's inout or not
     public let `inout`: Bool
-    
+
     /// Is this variadic parameter?
     public let isVariadic: Bool
 
@@ -28,7 +28,7 @@ public typealias SourceryMethod = Method
 
     /// Parameter type attributes, i.e. `@escaping`
     public var typeAttributes: AttributeList {
-        return typeName.attributes
+        typeName.attributes
     }
 
     /// Method parameter default value expression
@@ -45,19 +45,19 @@ public typealias SourceryMethod = Method
         self.type = type
         self.defaultValue = defaultValue
         self.annotations = annotations
-        self.`inout` = isInout
+        self.inout = isInout
         self.isVariadic = isVariadic
     }
 
     /// :nodoc:
     public init(name: String = "", typeName: TypeName, type: Type? = nil, defaultValue: String? = nil, annotations: [String: NSObject] = [:], isInout: Bool = false, isVariadic: Bool = false) {
         self.typeName = typeName
-        self.argumentLabel = name
+        argumentLabel = name
         self.name = name
         self.type = type
         self.defaultValue = defaultValue
         self.annotations = annotations
-        self.`inout` = isInout
+        self.inout = isInout
         self.isVariadic = isVariadic
     }
 
@@ -68,8 +68,8 @@ public typealias SourceryMethod = Method
         }
 
         let labels = [argumentLabel ?? "_", name.nilIfEmpty]
-          .compactMap { $0 }
-          .joined(separator: " ")
+            .compactMap { $0 }
+            .joined(separator: " ")
 
         return (labels.nilIfEmpty ?? "_") + typeSuffix
     }
@@ -102,9 +102,9 @@ public typealias SourceryMethod = Method
     // sourcery:end
 }
 
-extension Array where Element == MethodParameter {
-    public var asSource: String {
-        "(\(map { $0.asSource }.joined(separator: ", ")))"
+public extension [MethodParameter] {
+    var asSource: String {
+        "(\(map(\.asSource).joined(separator: ", ")))"
     }
 }
 
@@ -128,7 +128,7 @@ extension Array where Element == MethodParameter {
 
     /// Parameter type attributes, i.e. `@escaping`
     public var typeAttributes: AttributeList {
-        return typeName.attributes
+        typeName.attributes
     }
 
     /// Method parameter default value expression
@@ -138,15 +138,22 @@ extension Array where Element == MethodParameter {
     public var annotations: Annotations = [:]
 
     /// :nodoc:
-    public init(argumentLabel: String? = nil, name: String? = nil, typeName: TypeName, type: Type? = nil,
-                defaultValue: String? = nil, annotations: [String: NSObject] = [:], isInout: Bool = false) {
+    public init(
+        argumentLabel: String? = nil,
+        name: String? = nil,
+        typeName: TypeName,
+        type: Type? = nil,
+        defaultValue: String? = nil,
+        annotations: [String: NSObject] = [:],
+        isInout: Bool = false
+    ) {
         self.typeName = typeName
         self.argumentLabel = argumentLabel
         self.name = name
         self.type = type
         self.defaultValue = defaultValue
         self.annotations = annotations
-        self.`inout` = isInout
+        self.inout = isInout
     }
 
     public var asSource: String {
@@ -161,8 +168,8 @@ extension Array where Element == MethodParameter {
         }
 
         let labels = [argumentLabel ?? "_", name?.nilIfEmpty]
-          .compactMap { $0 }
-          .joined(separator: " ")
+            .compactMap { $0 }
+            .joined(separator: " ")
 
         return (labels.nilIfEmpty ?? "_") + typeSuffix
     }
@@ -194,15 +201,14 @@ extension Array where Element == MethodParameter {
     // sourcery:end
 }
 
-extension Array where Element == ClosureParameter {
-    public var asSource: String {
-        "(\(map { $0.asSource }.joined(separator: ", ")))"
+public extension [ClosureParameter] {
+    var asSource: String {
+        "(\(map(\.asSource).joined(separator: ", ")))"
     }
 }
 
 /// Describes method
 @objc(SwiftMethod) @objcMembers public final class Method: NSObject, SourceryModel, Annotated, Documented, Definition {
-
     /// Full method name, including generic constraints, i.e. `foo<T>(bar: T)`
     public let name: String
 
@@ -212,13 +218,13 @@ extension Array where Element == ClosureParameter {
     // sourcery: skipEquality, skipDescription
     /// Method name without arguments names and parenthesis, i.e. `foo<T>`
     public var shortName: String {
-        return name.range(of: "(").map({ String(name[..<$0.lowerBound]) }) ?? name
+        name.range(of: "(").map { String(name[..<$0.lowerBound]) } ?? name
     }
 
     // sourcery: skipEquality, skipDescription
     /// Method name without arguments names, parenthesis and generic types, i.e. `foo` (can be used to generate code for method call)
     public var callName: String {
-        return shortName.range(of: "<").map({ String(shortName[..<$0.lowerBound]) }) ?? shortName
+        shortName.range(of: "<").map { String(shortName[..<$0.lowerBound]) } ?? shortName
     }
 
     /// Method parameters
@@ -230,7 +236,7 @@ extension Array where Element == ClosureParameter {
     // sourcery: skipEquality, skipDescription
     /// Actual return value type name if declaration uses typealias, otherwise just a `returnTypeName`
     public var actualReturnTypeName: TypeName {
-        return returnTypeName.actualTypeName ?? returnTypeName
+        returnTypeName.actualTypeName ?? returnTypeName
     }
 
     // sourcery: skipEquality, skipDescription
@@ -240,19 +246,19 @@ extension Array where Element == ClosureParameter {
     // sourcery: skipEquality, skipDescription
     /// Whether return value type is optional
     public var isOptionalReturnType: Bool {
-        return returnTypeName.isOptional || isFailableInitializer
+        returnTypeName.isOptional || isFailableInitializer
     }
 
     // sourcery: skipEquality, skipDescription
     /// Whether return value type is implicitly unwrapped optional
     public var isImplicitlyUnwrappedOptionalReturnType: Bool {
-        return returnTypeName.isImplicitlyUnwrappedOptional
+        returnTypeName.isImplicitlyUnwrappedOptional
     }
 
     // sourcery: skipEquality, skipDescription
     /// Return value type name without attributes and optional type information
     public var unwrappedReturnTypeName: String {
-        return returnTypeName.unwrappedTypeName
+        returnTypeName.unwrappedTypeName
     }
 
     /// Whether method is async method
@@ -276,13 +282,13 @@ extension Array where Element == ClosureParameter {
     // sourcery: skipEquality, skipDescription
     /// Whether method is an initializer
     public var isInitializer: Bool {
-        return selectorName.hasPrefix("init(") || selectorName == "init"
+        selectorName.hasPrefix("init(") || selectorName == "init"
     }
 
     // sourcery: skipEquality, skipDescription
     /// Whether method is an deinitializer
     public var isDeinitializer: Bool {
-        return selectorName == "deinit"
+        selectorName == "deinit"
     }
 
     /// Whether method is a failable initializer
@@ -342,7 +348,7 @@ extension Array where Element == ClosureParameter {
     // sourcery: skipEquality, skipDescription
     /// Reference to actual type name where the method is defined if declaration uses typealias, otherwise just a `definedInTypeName`
     public var actualDefinedInTypeName: TypeName? {
-        return definedInTypeName?.actualTypeName ?? definedInTypeName
+        definedInTypeName?.actualTypeName ?? definedInTypeName
     }
 
     // sourcery: skipEquality, skipDescription
@@ -362,23 +368,24 @@ extension Array where Element == ClosureParameter {
     public var __parserData: Any?
 
     /// :nodoc:
-    public init(name: String,
-                selectorName: String? = nil,
-                parameters: [MethodParameter] = [],
-                returnTypeName: TypeName = TypeName(name: "Void"),
-                isAsync: Bool = false,
-                throws: Bool = false,
-                rethrows: Bool = false,
-                accessLevel: AccessLevel = .internal,
-                isStatic: Bool = false,
-                isClass: Bool = false,
-                isFailableInitializer: Bool = false,
-                attributes: AttributeList = [:],
-                modifiers: [SourceryModifier] = [],
-                annotations: [String: NSObject] = [:],
-                documentation: [String] = [],
-                definedInTypeName: TypeName? = nil) {
-
+    public init(
+        name: String,
+        selectorName: String? = nil,
+        parameters: [MethodParameter] = [],
+        returnTypeName: TypeName = TypeName(name: "Void"),
+        isAsync: Bool = false,
+        throws: Bool = false,
+        rethrows: Bool = false,
+        accessLevel: AccessLevel = .internal,
+        isStatic: Bool = false,
+        isClass: Bool = false,
+        isFailableInitializer: Bool = false,
+        attributes: AttributeList = [:],
+        modifiers: [SourceryModifier] = [],
+        annotations: [String: NSObject] = [:],
+        documentation: [String] = [],
+        definedInTypeName: TypeName? = nil
+    ) {
         self.name = name
         self.selectorName = selectorName ?? name
         self.parameters = parameters

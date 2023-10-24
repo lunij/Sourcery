@@ -161,7 +161,6 @@ class FileParserAttributeTests: XCTestCase {
         assertGetterAccess("internal")
         assertGetterAccess("public")
         assertGetterAccess("open")
-
     }
 
     func test_parsesTypeAttributes() {

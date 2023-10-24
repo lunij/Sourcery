@@ -1,12 +1,12 @@
-import Foundation
 import Artsy_UILabels
-import RxSwift
-import RxCocoa
+import Foundation
 import NSObject_Rx
+import RxCocoa
+import RxSwift
 
 class ListingsCollectionViewCell: UICollectionViewCell {
-    typealias DownloadImageClosure = (_ url: URL?, _ imageView: UIImageView) -> ()
-    typealias CancelDownloadImageClosure = (_ imageView: UIImageView) -> ()
+    typealias DownloadImageClosure = (_ url: URL?, _ imageView: UIImageView) -> Void
+    typealias CancelDownloadImageClosure = (_ imageView: UIImageView) -> Void
 
     dynamic let lotNumberLabel = ListingsCollectionViewCell._sansSerifLabel()
     dynamic let artworkImageView = ListingsCollectionViewCell._artworkImageView()
@@ -22,9 +22,7 @@ class ListingsCollectionViewCell: UICollectionViewCell {
     var cancelDownloadImage: CancelDownloadImageClosure?
     var reuseBag: DisposeBag?
 
-    lazy var moreInfo: Observable<Date> = {
-        return Observable.from([self.imageGestureSigal, self.infoGesture]).merge()
-    }()
+    lazy var moreInfo: Observable<Date> = Observable.from([self.imageGestureSigal, self.infoGesture]).merge()
 
     fileprivate lazy var imageGestureSigal: Observable<Date> = {
         let recognizer = UITapGestureRecognizer()
@@ -43,17 +41,17 @@ class ListingsCollectionViewCell: UICollectionViewCell {
     fileprivate var _preparingForReuse = PublishSubject<Void>()
 
     var preparingForReuse: Observable<Void> {
-        return _preparingForReuse.asObservable()
+        _preparingForReuse.asObservable()
     }
 
     var viewModel = PublishSubject<SaleArtworkViewModel>()
     func setViewModel(_ newViewModel: SaleArtworkViewModel) {
-        self.viewModel.onNext(newViewModel)
+        viewModel.onNext(newViewModel)
     }
 
     fileprivate var _bidPressed = PublishSubject<Date>()
     var bidPressed: Observable<Date> {
-        return _bidPressed.asObservable()
+        _bidPressed.asObservable()
     }
 
     override init(frame: CGRect) {
@@ -81,47 +79,46 @@ class ListingsCollectionViewCell: UICollectionViewCell {
     }
 
     func setupSubscriptions() {
-
         // Bind subviews
         reuseBag = DisposeBag()
 
-        guard let reuseBag = reuseBag else { return }
+        guard let reuseBag else { return }
 
-        // Start with things not expected to ever change. 
+        // Start with things not expected to ever change.
         viewModel.flatMapTo(SaleArtworkViewModel.lotNumber)
             .replaceNil(with: "")
             .mapToOptional()
             .bindTo(lotNumberLabel.rx.text)
             .addDisposableTo(reuseBag)
 
-        viewModel.map { (viewModel) -> URL? in
-                return viewModel.thumbnailURL
-            }.subscribe(onNext: { [weak self] url in
-                guard let imageView = self?.artworkImageView else { return }
-                self?.downloadImage?(url, imageView)
-            }).addDisposableTo(reuseBag)
+        viewModel.map { viewModel -> URL? in
+            viewModel.thumbnailURL
+        }.subscribe(onNext: { [weak self] url in
+            guard let imageView = self?.artworkImageView else { return }
+            self?.downloadImage?(url, imageView)
+        }).addDisposableTo(reuseBag)
 
         viewModel.map { $0.artistName ?? "" }
             .bindTo(artistNameLabel.rx.text)
             .addDisposableTo(reuseBag)
 
-        viewModel.map { $0.titleAndDateAttributedString }
+        viewModel.map(\.titleAndDateAttributedString)
             .mapToOptional()
             .bindTo(artworkTitleLabel.rx.attributedText)
             .addDisposableTo(reuseBag)
 
-        viewModel.map { $0.estimateString }
+        viewModel.map(\.estimateString)
             .bindTo(estimateLabel.rx.text)
             .addDisposableTo(reuseBag)
 
         // Now do properties that _do_ change.
 
-        viewModel.flatMap { (viewModel) -> Observable<String> in
-                return viewModel.currentBid(prefix: "Current Bid: ", missingPrefix: "Starting Bid: ")
-            }
-            .mapToOptional()
-            .bindTo(currentBidLabel.rx.text)
-            .addDisposableTo(reuseBag)
+        viewModel.flatMap { viewModel -> Observable<String> in
+            viewModel.currentBid(prefix: "Current Bid: ", missingPrefix: "Starting Bid: ")
+        }
+        .mapToOptional()
+        .bindTo(currentBidLabel.rx.text)
+        .addDisposableTo(reuseBag)
 
         viewModel.flatMapTo(SaleArtworkViewModel.numberOfBids)
             .mapToOptional()
@@ -131,21 +128,21 @@ class ListingsCollectionViewCell: UICollectionViewCell {
         viewModel.flatMapTo(SaleArtworkViewModel.forSale)
             .doOnNext { [weak bidButton] forSale in
                 // Button titles aren't KVO-able
-                bidButton?.setTitle((forSale ? "BID" : "SOLD"), for: .normal)
+                bidButton?.setTitle(forSale ? "BID" : "SOLD", for: .normal)
             }
             .bindTo(bidButton.rx.isEnabled)
             .addDisposableTo(reuseBag)
 
         bidButton.rx.tap.subscribe(onNext: { [weak self] in
-                self?._bidPressed.onNext(Date())
-            })
-            .addDisposableTo(reuseBag)
+            self?._bidPressed.onNext(Date())
+        })
+        .addDisposableTo(reuseBag)
     }
 }
 
 private extension ListingsCollectionViewCell {
+    // MARK: UIView-property-methods – need an _ prefix to appease the compiler ¯\_(ツ)_/¯
 
-    // Mark: UIView-property-methods – need an _ prefix to appease the compiler ¯\_(ツ)_/¯
     class func _artworkImageView() -> UIImageView {
         let imageView = UIImageView()
         imageView.backgroundColor = .artsyGrayLight()

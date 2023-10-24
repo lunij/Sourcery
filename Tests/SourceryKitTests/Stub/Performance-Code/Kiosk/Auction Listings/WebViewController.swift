@@ -5,7 +5,7 @@ let modalHeight: CGFloat = 660
 class WebViewController: DZNWebViewController {
     var showToolbar = true
 
-    convenience override init(url: URL) {
+    override convenience init(url: URL) {
         self.init()
         self.url = url
     }
@@ -16,13 +16,13 @@ class WebViewController: DZNWebViewController {
         let webView = view as! UIWebView
         webView.scalesPageToFit = true
 
-        self.navigationItem.rightBarButtonItem = nil
+        navigationItem.rightBarButtonItem = nil
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        navigationController?.setNavigationBarHidden(true, animated:false)
-        navigationController?.setToolbarHidden(!showToolbar, animated:false)
+        navigationController?.setNavigationBarHidden(true, animated: false)
+        navigationController?.setToolbarHidden(!showToolbar, animated: false)
     }
 }
 
@@ -35,11 +35,11 @@ class ModalWebViewController: WebViewController {
         closeButton = UIButton()
         view.addSubview(closeButton)
         closeButton.titleLabel?.font = UIFont.sansSerifFont(withSize: 14)
-        closeButton.setTitleColor(.artsyGrayMedium(), for:.normal)
-        closeButton.setTitle("CLOSE", for:.normal)
+        closeButton.setTitleColor(.artsyGrayMedium(), for: .normal)
+        closeButton.setTitle("CLOSE", for: .normal)
         closeButton.constrainWidth("140", height: "72")
-        closeButton.alignTop("0", leading:"0", bottom:nil, trailing:nil, to:view)
-        closeButton.addTarget(self, action:#selector(closeTapped(_:)), for:.touchUpInside)
+        closeButton.alignTop("0", leading: "0", bottom: nil, trailing: nil, to: view)
+        closeButton.addTarget(self, action: #selector(closeTapped(_:)), for: .touchUpInside)
 
         var height = modalHeight
         if let nav = navigationController {
@@ -54,7 +54,7 @@ class ModalWebViewController: WebViewController {
         navigationController?.view.superview?.layer.cornerRadius = 0
     }
 
-    func closeTapped(_ sender: AnyObject) {
-        presentingViewController?.dismiss(animated: true, completion:nil)
+    func closeTapped(_: AnyObject) {
+        presentingViewController?.dismiss(animated: true, completion: nil)
     }
 }

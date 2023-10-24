@@ -1,4 +1,3 @@
-
 import Foundation
 
 protocol AutoDecodable: Swift.Decodable {}
@@ -13,12 +12,11 @@ public struct CustomKeyDecodable: AutoDecodable {
     enum CodingKeys: String, CodingKey {
         case intValue = "integer"
 
-// sourcery:inline:auto:CustomKeyDecodable.CodingKeys.AutoCodable
+        // sourcery:inline:auto:CustomKeyDecodable.CodingKeys.AutoCodable
         case stringValue
         case boolValue
-// sourcery:end
+        // sourcery:end
     }
-
 }
 
 public struct CustomMethodsCodable: AutoCodable {
@@ -29,18 +27,18 @@ public struct CustomMethodsCodable: AutoCodable {
     let requiredStringWithDefault: String
 
     var computedPropertyToEncode: Int {
-        return 0
+        0
     }
 
     static let defaultIntValue: Int = 0
     static let defaultRequiredStringWithDefault: String = ""
 
     static func decodeIntValue(from container: KeyedDecodingContainer<CodingKeys>) -> Int? {
-        return (try? container.decode(String.self, forKey: .intValue)).flatMap(Int.init)
+        (try? container.decode(String.self, forKey: .intValue)).flatMap(Int.init)
     }
 
     static func decodeBoolValue(from decoder: Decoder) throws -> Bool {
-        return try decoder.container(keyedBy: CodingKeys.self).decode(Bool.self, forKey: .boolValue)
+        try decoder.container(keyedBy: CodingKeys.self).decode(Bool.self, forKey: .boolValue)
     }
 
     func encodeIntValue(to container: inout KeyedEncodingContainer<CodingKeys>) {
@@ -56,10 +54,7 @@ public struct CustomMethodsCodable: AutoCodable {
         try? container.encode(computedPropertyToEncode, forKey: .computedPropertyToEncode)
     }
 
-    func encodeAdditionalValues(to encoder: Encoder) throws {
-
-    }
-
+    func encodeAdditionalValues(to _: Encoder) throws {}
 }
 
 public struct CustomContainerCodable: AutoCodable {
@@ -71,7 +66,7 @@ public struct CustomContainerCodable: AutoCodable {
     }
 
     static func decodingContainer(_ decoder: Decoder) throws -> KeyedDecodingContainer<CodingKeys> {
-        return try decoder.container(keyedBy: CodingKeys.self)
+        try decoder.container(keyedBy: CodingKeys.self)
             .nestedContainer(keyedBy: CodingKeys.self, forKey: .nested)
     }
 
@@ -83,26 +78,25 @@ public struct CustomContainerCodable: AutoCodable {
 
 struct CustomCodingWithNotAllDefinedKeys: AutoCodable {
     let value: Int
-    var computedValue: Int { return 0 }
+    var computedValue: Int { 0 }
 
     enum CodingKeys: String, CodingKey {
         case value
 
-// sourcery:inline:auto:CustomCodingWithNotAllDefinedKeys.CodingKeys.AutoCodable
+        // sourcery:inline:auto:CustomCodingWithNotAllDefinedKeys.CodingKeys.AutoCodable
         case computedValue
-// sourcery:end
+        // sourcery:end
     }
 
     func encodeComputedValue(to container: inout KeyedEncodingContainer<CodingKeys>) {
         try? container.encode(computedValue, forKey: .computedValue)
     }
-
 }
 
 struct SkipDecodingWithDefaultValueOrComputedProperty: AutoCodable {
     let value: Int
     let skipValue: Int = 0
-    var computedValue: Int { return 0 }
+    var computedValue: Int { 0 }
 
     enum CodingKeys: String, CodingKey {
         case value
@@ -133,14 +127,14 @@ enum AssociatedValuesEnum: AutoCodable, Equatable {
     enum CodingKeys: String, CodingKey {
         case enumCaseKey = "type"
 
-// sourcery:inline:auto:AssociatedValuesEnum.CodingKeys.AutoCodable
+        // sourcery:inline:auto:AssociatedValuesEnum.CodingKeys.AutoCodable
         case someCase
         case unnamedCase
         case mixCase
         case anotherCase
         case id
         case name
-// sourcery:end
+        // sourcery:end
     }
 }
 

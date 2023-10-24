@@ -6,6 +6,6 @@ import Foundation
 // sourcery: showComment
 /// other documentation
 class Bar: Foo, AutoEquatable {
-    var parent: Foo? = nil
+    var parent: Foo?
     var otherVariable: Int = 0
 }

@@ -1,15 +1,14 @@
 import UIKit
 
 class AdminLogViewController: UIViewController {
-
     override func viewDidLoad() {
         super.viewDidLoad()
         textView.text = try? NSString(contentsOf: logPath(), encoding: String.Encoding.ascii.rawValue) as String
     }
 
-    @IBOutlet weak var textView: UITextView!
-    @IBAction func backButtonTapped(_ sender: AnyObject) {
-        _ = self.navigationController?.popViewController(animated: true)
+    @IBOutlet var textView: UITextView!
+    @IBAction func backButtonTapped(_: AnyObject) {
+        _ = navigationController?.popViewController(animated: true)
     }
 
     func logPath() -> URL {
@@ -17,7 +16,7 @@ class AdminLogViewController: UIViewController {
         return docs.appendingPathComponent("logger.txt")
     }
 
-    @IBAction func scrollTapped(_ sender: AnyObject) {
-        textView.scrollRangeToVisible(NSMakeRange(textView.text.count - 1, 1))
+    @IBAction func scrollTapped(_: AnyObject) {
+        textView.scrollRangeToVisible(NSRange(location: textView.text.count - 1, length: 1))
     }
 }

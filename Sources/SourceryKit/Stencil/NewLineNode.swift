@@ -9,7 +9,7 @@ class NewLineNode: NodeType {
 
     let token: Token?
 
-    class func parse(_ parser: TokenParser, token: Token) throws -> NodeType {
+    class func parse(_: TokenParser, token: Token) throws -> NodeType {
         let components = token.components
         guard components.count == 1 else {
             throw TemplateSyntaxError(
@@ -26,7 +26,7 @@ class NewLineNode: NodeType {
         self.token = token
     }
 
-    func render(_ context: Context) throws -> String {
-        return Self.marker
+    func render(_: Context) throws -> String {
+        Self.marker
     }
 }

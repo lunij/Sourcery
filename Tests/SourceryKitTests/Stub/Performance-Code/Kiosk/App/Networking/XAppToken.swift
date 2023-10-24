@@ -3,14 +3,14 @@ import Foundation
 private extension Date {
     var isInPast: Bool {
         let now = Date()
-        return self.compare(now) == ComparisonResult.orderedAscending
+        return compare(now) == ComparisonResult.orderedAscending
     }
 }
 
 struct XAppToken {
     enum DefaultsKeys: String {
-        case TokenKey = "TokenKey"
-        case TokenExpiry = "TokenExpiry"
+        case TokenKey
+        case TokenExpiry
     }
 
     // MARK: - Initializers
@@ -22,7 +22,7 @@ struct XAppToken {
     }
 
     init() {
-        self.defaults = UserDefaults.standard
+        defaults = UserDefaults.standard
     }
 
     // MARK: - Properties
@@ -39,7 +39,7 @@ struct XAppToken {
 
     var expiry: Date? {
         get {
-            return defaults.object(forKey: DefaultsKeys.TokenExpiry.rawValue) as? Date
+            defaults.object(forKey: DefaultsKeys.TokenExpiry.rawValue) as? Date
         }
         set(newExpiry) {
             defaults.set(newExpiry, forKey: DefaultsKeys.TokenExpiry.rawValue)
@@ -47,14 +47,14 @@ struct XAppToken {
     }
 
     var expired: Bool {
-        if let expiry = expiry {
+        if let expiry {
             return expiry.isInPast
         }
         return true
     }
 
     var isValid: Bool {
-        if let token = token {
+        if let token {
             return token.isNotEmpty && !expired
         }
 

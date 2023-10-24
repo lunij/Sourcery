@@ -2,7 +2,7 @@ import SourceryRuntime
 
 enum EqualityGenerator {
     static func generate(for types: Types) -> String {
-        return types.classes.map { $0.generateEquality() }.joined(separator: "\n")
+        types.classes.map { $0.generateEquality() }.joined(separator: "\n")
     }
 }
 
@@ -36,6 +36,6 @@ extension Class {
 
 extension Variable {
     func generateEquality() -> String {
-        return "if lhs.\(name) != rhs.\(name) { return false }"
+        "if lhs.\(name) != rhs.\(name) { return false }"
     }
 }

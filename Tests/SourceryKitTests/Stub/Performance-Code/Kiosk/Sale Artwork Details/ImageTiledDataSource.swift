@@ -1,5 +1,5 @@
-import Foundation
 import ARTiledImageView
+import Foundation
 
 class TiledImageDataSourceWithImage: ARWebTiledImageDataSource {
     let image: Image

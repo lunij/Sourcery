@@ -1,5 +1,5 @@
-import UIKit
 import SwiftyJSON
+import UIKit
 
 final class Sale: NSObject, JSONAbleType {
     dynamic let id: String
@@ -19,7 +19,7 @@ final class Sale: NSObject, JSONAbleType {
         self.startDate = startDate
         self.endDate = endDate
         self.artworkCount = artworkCount
-        self.auctionState = state
+        auctionState = state
     }
 
     static func fromJSON(_ json: [String: Any]) -> Sale {
@@ -33,7 +33,7 @@ final class Sale: NSObject, JSONAbleType {
         let artworkCount = json["eligible_sale_artworks_count"].intValue
         let state = json["auction_state"].stringValue
 
-        let sale = Sale(id: id, name:name, isAuction: isAuction, startDate: startDate, endDate: endDate, artworkCount: artworkCount, state: state)
+        let sale = Sale(id: id, name: name, isAuction: isAuction, startDate: startDate, endDate: endDate, artworkCount: artworkCount, state: state)
 
         if let buyersPremiumDict = json["buyers_premium"].object as? [String: AnyObject] {
             sale.buyersPremium = BuyersPremium.fromJSON(buyersPremiumDict)

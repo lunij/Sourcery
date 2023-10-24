@@ -1,7 +1,6 @@
 import UIKit
 
 class TextField: UITextField {
-
     var shouldAnimateStateChange: Bool = true
     var shouldChangeColorWhenEditing: Bool = true
 
@@ -26,21 +25,21 @@ class TextField: UITextField {
         layer.masksToBounds = true
         layer.borderWidth = 1
         tintColor = .black
-        font = UIFont.serifFont(withSize: self.font?.pointSize ?? 26)
+        font = UIFont.serifFont(withSize: font?.pointSize ?? 26)
         stateChangedAnimated(false)
         setupEvents()
     }
 
-    func setupEvents () {
+    func setupEvents() {
         addTarget(self, action: #selector(TextField.editingDidBegin(_:)), for: .editingDidBegin)
         addTarget(self, action: #selector(TextField.editingDidFinish(_:)), for: .editingDidEnd)
     }
 
-    func editingDidBegin (_ sender: AnyObject) {
+    func editingDidBegin(_: AnyObject) {
         stateChangedAnimated(shouldAnimateStateChange)
     }
 
-    func editingDidFinish(_ sender: AnyObject) {
+    func editingDidFinish(_: AnyObject) {
         stateChangedAnimated(shouldAnimateStateChange)
     }
 
@@ -52,7 +51,7 @@ class TextField: UITextField {
         if animated {
             let fade = CABasicAnimation()
             if layer.borderColor == nil { layer.borderColor = UIColor.clear.cgColor }
-            fade.fromValue = self.layer.borderColor ?? UIColor.clear.cgColor
+            fade.fromValue = layer.borderColor ?? UIColor.clear.cgColor
             fade.toValue = newBorderColor
             fade.duration = AnimationDuration.Short
             layer.add(fade, forKey: "borderColor")
@@ -61,41 +60,40 @@ class TextField: UITextField {
     }
 
     func borderColorForState() -> UIColor {
-        if isEditing && shouldChangeColorWhenEditing {
-            return .artsyPurpleRegular()
+        if isEditing, shouldChangeColorWhenEditing {
+            .artsyPurpleRegular()
         } else {
-            return .artsyGrayMedium()
+            .artsyGrayMedium()
         }
     }
 
     func setBorderColor(_ color: UIColor) {
-        self.layer.borderColor = color.cgColor
+        layer.borderColor = color.cgColor
     }
 
     override func textRect(forBounds bounds: CGRect) -> CGRect {
-        return bounds.insetBy(dx: 10, dy: 0 )
+        bounds.insetBy(dx: 10, dy: 0)
     }
 
     override func editingRect(forBounds bounds: CGRect) -> CGRect {
-        return bounds.insetBy(dx: 10, dy: 0 )
+        bounds.insetBy(dx: 10, dy: 0)
     }
 }
 
 class SecureTextField: TextField {
-
     var actualText: String = ""
 
     override var text: String! {
         get {
             if isEditing {
-                return super.text
+                super.text
             } else {
-                return actualText
+                actualText
             }
         }
 
         set {
-            super.text=(newValue)
+            super.text = newValue
         }
     }
 
@@ -104,18 +102,18 @@ class SecureTextField: TextField {
         clearsOnBeginEditing = true
     }
 
-    override func setupEvents () {
+    override func setupEvents() {
         super.setupEvents()
         addTarget(self, action: #selector(SecureTextField.editingDidChange(_:)), for: .editingChanged)
     }
 
-    override func editingDidBegin (_ sender: AnyObject) {
+    override func editingDidBegin(_ sender: AnyObject) {
         super.editingDidBegin(sender)
         isSecureTextEntry = true
         actualText = text
     }
 
-    func editingDidChange(_ sender: AnyObject) {
+    func editingDidChange(_: AnyObject) {
         actualText = text
     }
 
@@ -129,7 +127,7 @@ class SecureTextField: TextField {
     func dotPlaceholder() -> String {
         var index = 0
         let dots = NSMutableString()
-        while (index < text.count) {
+        while index < text.count {
             dots.append("•")
             index += 1
         }

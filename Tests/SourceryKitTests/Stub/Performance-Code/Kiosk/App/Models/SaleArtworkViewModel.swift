@@ -6,7 +6,7 @@ private let kNoBidsString = ""
 class SaleArtworkViewModel: NSObject {
     fileprivate let saleArtwork: SaleArtwork
 
-    init (saleArtwork: SaleArtwork) {
+    init(saleArtwork: SaleArtwork) {
         self.saleArtwork = saleArtwork
     }
 }
@@ -14,19 +14,18 @@ class SaleArtworkViewModel: NSObject {
 // Extension for computed properties
 
 extension SaleArtworkViewModel {
-
     // MARK: Computed values we don't expect to ever change.
 
     var estimateString: String {
         // Default to estimateCents
         switch (saleArtwork.estimateCents, saleArtwork.lowEstimateCents, saleArtwork.highEstimateCents) {
         // Default to estimateCents.
-        case (.some(let estimateCents), _, _):
+        case let (.some(estimateCents), _, _):
             let dollars = NumberFormatter.currencyString(forDollarCents: estimateCents as NSNumber!)!
             return "Estimate: \(dollars)"
 
         // Try to extract non-nil low/high estimates.
-        case (_, .some(let lowCents), .some(let highCents)):
+        case let (_, .some(lowCents), .some(highCents)):
             let lowDollars = NumberFormatter.currencyString(forDollarCents: lowCents as NSNumber!)!
             let highDollars = NumberFormatter.currencyString(forDollarCents: highCents as NSNumber!)!
             return "Estimate: \(lowDollars)–\(highDollars)"
@@ -36,29 +35,29 @@ extension SaleArtworkViewModel {
     }
 
     var thumbnailURL: URL? {
-        return saleArtwork.artwork.defaultImage?.thumbnailURL() as URL?
+        saleArtwork.artwork.defaultImage?.thumbnailURL() as URL?
     }
 
     var thumbnailAspectRatio: CGFloat? {
-        return saleArtwork.artwork.defaultImage?.aspectRatio
+        saleArtwork.artwork.defaultImage?.aspectRatio
     }
 
     var artistName: String? {
-        return saleArtwork.artwork.artists?.first?.name
+        saleArtwork.artwork.artists?.first?.name
     }
 
     var titleAndDateAttributedString: NSAttributedString {
-        return saleArtwork.artwork.titleAndDate
+        saleArtwork.artwork.titleAndDate
     }
 
     var saleArtworkID: String {
-        return saleArtwork.id
+        saleArtwork.id
     }
 
     // Observables representing values that change over time.
 
     func numberOfBids() -> Observable<String> {
-        return saleArtwork.rx.observe(NSNumber.self, "bidCount").map { optionalBidCount -> String in
+        saleArtwork.rx.observe(NSNumber.self, "bidCount").map { optionalBidCount -> String in
             guard let bidCount = optionalBidCount, bidCount.intValue > 0 else {
                 return kNoBidsString
             }
@@ -70,15 +69,14 @@ extension SaleArtworkViewModel {
 
     // The language used here is very specific – see https://github.com/artsy/eidolon/pull/325#issuecomment-64121996 for details
     var numberOfBidsWithReserve: Observable<String> {
-
         // Ignoring highestBidCents; only there to trigger on bid update.
         let highestBidString = saleArtwork.rx.observe(NSNumber.self, "highestBidCents").map { "\($0)" }
         let reserveStatus = saleArtwork.rx.observe(String.self, "reserveStatus").map { input -> String in
             switch input {
-            case .some(let reserveStatus):
-                return reserveStatus
+            case let .some(reserveStatus):
+                reserveStatus
             default:
-                return ""
+                ""
             }
         }
 
@@ -104,29 +102,28 @@ extension SaleArtworkViewModel {
     }
 
     func lotNumber() -> Observable<String?> {
-        return saleArtwork.rx.observe(NSNumber.self, "lotNumber").map { lotNumber  in
+        saleArtwork.rx.observe(NSNumber.self, "lotNumber").map { lotNumber in
             if let lotNumber = lotNumber as? Int {
-                return "Lot \(lotNumber)"
+                "Lot \(lotNumber)"
             } else {
-                return ""
+                ""
             }
         }
     }
 
     func forSale() -> Observable<Bool> {
-        return saleArtwork.artwork.rx.observe(String.self, "soldStatus").filterNil().map { status in
-            return Artwork.SoldStatus.fromString(status) == .notSold
+        saleArtwork.artwork.rx.observe(String.self, "soldStatus").filterNil().map { status in
+            Artwork.SoldStatus.fromString(status) == .notSold
         }
-
     }
 
     func currentBid(prefix: String = "", missingPrefix: String = "") -> Observable<String> {
-        return saleArtwork.rx.observe(NSNumber.self, "highestBidCents").map { [weak self] highestBidCents in
+        saleArtwork.rx.observe(NSNumber.self, "highestBidCents").map { [weak self] highestBidCents in
             if let currentBidCents = highestBidCents as? Int {
                 let formatted = NumberFormatter.currencyString(forDollarCents: currentBidCents as NSNumber) ?? ""
                 return "\(prefix)\(formatted)"
             } else {
-                 let formatted = NumberFormatter.currencyString(forDollarCents: self?.saleArtwork.openingBidCents ?? 0) ?? ""
+                let formatted = NumberFormatter.currencyString(forDollarCents: self?.saleArtwork.openingBidCents ?? 0) ?? ""
                 return "\(missingPrefix)\(formatted)"
             }
         }
@@ -149,7 +146,7 @@ extension SaleArtworkViewModel {
     }
 
     func currentBidOrOpeningBidLabel() -> Observable<String> {
-        return saleArtwork.rx.observe(NSNumber.self, "bidCount").map { input in
+        saleArtwork.rx.observe(NSNumber.self, "bidCount").map { input in
             guard let count = input as? Int else { return "" }
 
             if count > 0 {

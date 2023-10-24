@@ -1,6 +1,6 @@
 import Foundation
 
-internal struct ParserResultsComposed {
+struct ParserResultsComposed {
     private(set) var typeMap = [String: Type]()
     private(set) var modules = [String: [String: Type]]()
     private(set) var types = [Type]()
@@ -14,7 +14,7 @@ internal struct ParserResultsComposed {
         // TODO: This logic should really be more complicated
         // For any resolution we need to be looking at accessLevel and module boundaries
         // e.g. there might be a typealias `private typealias Something = MyType` in one module and same name in another with public modifier, one could be accessed and the other could not
-        self.functions = parserResult.functions
+        functions = parserResult.functions
         let aliases = Self.typealiases(parserResult)
         resolvedTypealiases = aliases.resolved
         unresolvedTypealiases = aliases.unresolved
@@ -73,7 +73,7 @@ internal struct ParserResultsComposed {
     private mutating func unifyTypes() -> [Type] {
         /// Resolve actual names of extensions, as they could have been done on typealias and note updated child names in uniques if needed
         parsedTypes
-            .filter { $0.isExtension }
+            .filter(\.isExtension)
             .forEach {
                 let oldName = $0.globalName
 
@@ -140,12 +140,12 @@ internal struct ParserResultsComposed {
 
         let values = typeMap.values
         var processed = Set<String>(minimumCapacity: values.count)
-        return typeMap.values.filter({
+        return typeMap.values.filter {
             let name = $0.globalName
             let wasProcessed = processed.contains(name)
             processed.insert(name)
             return !wasProcessed
-        })
+        }
     }
 
     /// returns typealiases map to their full names, with `resolved` removing intermediate
@@ -154,11 +154,11 @@ internal struct ParserResultsComposed {
         var typealiasesByNames = [String: Typealias]()
         parserResult.typealiases.forEach { typealiasesByNames[$0.name] = $0 }
         parserResult.types.forEach { type in
-            type.typealiases.forEach({ (_, alias) in
+            type.typealiases.forEach { _, alias in
                 // TODO: should I deal with the fact that alias.name depends on type name but typenames might be updated later on
                 // maybe just handle non extension case here and extension aliases after resolving them?
                 typealiasesByNames[alias.name] = alias
-            })
+            }
         }
 
         let unresolved = typealiasesByNames
@@ -180,11 +180,13 @@ internal struct ParserResultsComposed {
     }
 
     /// Resolves type identifier for name
-    func resolveGlobalName(for type: String,
-                           containingType: Type? = nil,
-                           unique: [String: Type]? = nil,
-                           modules: [String: [String: Type]],
-                           typealiases: [String: Typealias]) -> (name: String, typealias: Typealias?)? {
+    func resolveGlobalName(
+        for type: String,
+        containingType: Type? = nil,
+        unique: [String: Type]? = nil,
+        modules: [String: [String: Type]],
+        typealiases: [String: Typealias]
+    ) -> (name: String, typealias: Typealias?)? {
         // if the type exists for this name and isn't an extension just return it's name
         // if it's extension we need to check if there aren't other options TODO: verify
         if let realType = unique?[type], realType.isExtension == false {
@@ -195,7 +197,7 @@ internal struct ParserResultsComposed {
             return (name: alias.type?.globalName ?? alias.typeName.name, typealias: alias)
         }
 
-        if let containingType = containingType {
+        if let containingType {
             if type == "Self" {
                 return (name: containingType.globalName, typealias: nil)
             }
@@ -235,19 +237,19 @@ internal struct ParserResultsComposed {
         }
 
         func type(for module: String) -> Type? {
-            return modules[module]?[typeIdentifier]
+            modules[module]?[typeIdentifier]
         }
 
         func ambiguousErrorMessage(from types: [Type]) -> String? {
-            logger.astWarning("Ambiguous type \(typeIdentifier), found \(types.map { $0.globalName }.joined(separator: ", ")). Specify module name at declaration site to disambiguate.")
+            logger.astWarning("Ambiguous type \(typeIdentifier), found \(types.map(\.globalName).joined(separator: ", ")). Specify module name at declaration site to disambiguate.")
             return nil
         }
 
         let explicitModulesAtDeclarationSite: [String] = [
-            containedInType?.module.map { [$0] } ?? [],    // main module for this typename
-            containedInType?.imports.map { $0.moduleName } ?? []    // imported modules
+            containedInType?.module.map { [$0] } ?? [], // main module for this typename
+            containedInType?.imports.map(\.moduleName) ?? [] // imported modules
         ]
-            .flatMap { $0 }
+        .flatMap { $0 }
 
         let remainingModules = Set(modules.keys).subtracting(explicitModulesAtDeclarationSite)
 
@@ -292,7 +294,7 @@ internal struct ParserResultsComposed {
 
     func resolveType(typeName: TypeName, containingType: Type?) -> Type? {
         let resolveTypeWithName = { (typeName: TypeName) -> Type? in
-            return self.resolveType(typeName: typeName, containingType: containingType)
+            resolveType(typeName: typeName, containingType: containingType)
         }
 
         let unique = typeMap
@@ -324,14 +326,15 @@ internal struct ParserResultsComposed {
                 tupleCopy.name = tupleCopy.elements.asTypeName
 
                 typeName.tuple = tupleCopy // TODO: really don't like this old behaviour
-                typeName.actualTypeName = TypeName(name: tupleCopy.name,
-                                                   isOptional: typeName.isOptional,
-                                                   isImplicitlyUnwrappedOptional: typeName.isImplicitlyUnwrappedOptional,
-                                                   tuple: tupleCopy,
-                                                   array: lookupName.array,
-                                                   dictionary: lookupName.dictionary,
-                                                   closure: lookupName.closure,
-                                                   generic: lookupName.generic
+                typeName.actualTypeName = TypeName(
+                    name: tupleCopy.name,
+                    isOptional: typeName.isOptional,
+                    isImplicitlyUnwrappedOptional: typeName.isImplicitlyUnwrappedOptional,
+                    tuple: tupleCopy,
+                    array: lookupName.array,
+                    dictionary: lookupName.dictionary,
+                    closure: lookupName.closure,
+                    generic: lookupName.generic
                 )
             }
             return nil
@@ -347,14 +350,15 @@ internal struct ParserResultsComposed {
                 typeName.array = array // TODO: really don't like this old behaviour
                 typeName.generic = array.asGeneric // TODO: really don't like this old behaviour
 
-                typeName.actualTypeName = TypeName(name: array.name,
-                                                   isOptional: typeName.isOptional,
-                                                   isImplicitlyUnwrappedOptional: typeName.isImplicitlyUnwrappedOptional,
-                                                   tuple: lookupName.tuple,
-                                                   array: array,
-                                                   dictionary: lookupName.dictionary,
-                                                   closure: lookupName.closure,
-                                                   generic: typeName.generic
+                typeName.actualTypeName = TypeName(
+                    name: array.name,
+                    isOptional: typeName.isOptional,
+                    isImplicitlyUnwrappedOptional: typeName.isImplicitlyUnwrappedOptional,
+                    tuple: lookupName.tuple,
+                    array: array,
+                    dictionary: lookupName.dictionary,
+                    closure: lookupName.closure,
+                    generic: typeName.generic
                 )
             }
         } else
@@ -374,14 +378,15 @@ internal struct ParserResultsComposed {
                 typeName.dictionary = dictionary // TODO: really don't like this old behaviour
                 typeName.generic = dictionary.asGeneric // TODO: really don't like this old behaviour
 
-                typeName.actualTypeName = TypeName(name: dictionary.asSource,
-                                                   isOptional: typeName.isOptional,
-                                                   isImplicitlyUnwrappedOptional: typeName.isImplicitlyUnwrappedOptional,
-                                                   tuple: lookupName.tuple,
-                                                   array: lookupName.array,
-                                                   dictionary: dictionary,
-                                                   closure: lookupName.closure,
-                                                   generic: dictionary.asGeneric
+                typeName.actualTypeName = TypeName(
+                    name: dictionary.asSource,
+                    isOptional: typeName.isOptional,
+                    isImplicitlyUnwrappedOptional: typeName.isImplicitlyUnwrappedOptional,
+                    tuple: lookupName.tuple,
+                    array: lookupName.array,
+                    dictionary: dictionary,
+                    closure: lookupName.closure,
+                    generic: dictionary.asGeneric
                 )
             }
         } else
@@ -399,14 +404,15 @@ internal struct ParserResultsComposed {
             if closure.returnTypeName.actualTypeName != nil || needsUpdate || retrievedName != nil {
                 typeName.closure = closure // TODO: really don't like this old behaviour
 
-                typeName.actualTypeName = TypeName(name: closure.asSource,
-                                                   isOptional: typeName.isOptional,
-                                                   isImplicitlyUnwrappedOptional: typeName.isImplicitlyUnwrappedOptional,
-                                                   tuple: lookupName.tuple,
-                                                   array: lookupName.array,
-                                                   dictionary: lookupName.dictionary,
-                                                   closure: closure,
-                                                   generic: lookupName.generic
+                typeName.actualTypeName = TypeName(
+                    name: closure.asSource,
+                    isOptional: typeName.isOptional,
+                    isImplicitlyUnwrappedOptional: typeName.isImplicitlyUnwrappedOptional,
+                    tuple: lookupName.tuple,
+                    array: lookupName.array,
+                    dictionary: lookupName.dictionary,
+                    closure: closure,
+                    generic: lookupName.generic
                 )
             }
 
@@ -432,16 +438,17 @@ internal struct ParserResultsComposed {
                 typeName.array = lookupName.array // TODO: really don't like this old behaviour
                 typeName.dictionary = lookupName.dictionary // TODO: really don't like this old behaviour
 
-                let params = generic.typeParameters.map { $0.typeName.asSource }.joined(separator: ", ")
+                let params = generic.typeParameters.map(\.typeName.asSource).joined(separator: ", ")
 
-                typeName.actualTypeName = TypeName(name: "\(generic.name)<\(params)>",
-                                                   isOptional: typeName.isOptional,
-                                                   isImplicitlyUnwrappedOptional: typeName.isImplicitlyUnwrappedOptional,
-                                                   tuple: lookupName.tuple,
-                                                   array: lookupName.array, // TODO: asArray
-                                                   dictionary: lookupName.dictionary, // TODO: asDictionary
-                                                   closure: lookupName.closure,
-                                                   generic: generic
+                typeName.actualTypeName = TypeName(
+                    name: "\(generic.name)<\(params)>",
+                    isOptional: typeName.isOptional,
+                    isImplicitlyUnwrappedOptional: typeName.isImplicitlyUnwrappedOptional,
+                    tuple: lookupName.tuple,
+                    array: lookupName.array, // TODO: asArray
+                    dictionary: lookupName.dictionary, // TODO: asDictionary
+                    closure: lookupName.closure,
+                    generic: generic
                 )
             }
         }
@@ -457,8 +464,10 @@ internal struct ParserResultsComposed {
         return unique[resolvedIdentifier]
     }
 
-    private func actualTypeName(for typeName: TypeName,
-                                       containingType: Type? = nil) -> TypeName? {
+    private func actualTypeName(
+        for typeName: TypeName,
+        containingType: Type? = nil
+    ) -> TypeName? {
         let unique = typeMap
         let typealiases = resolvedTypealiases
 
@@ -471,7 +480,7 @@ internal struct ParserResultsComposed {
             return nil
         }
 
-        /// TODO: verify
+        // TODO: verify
         let generic = typeName.generic.map { GenericType(name: $0.name, typeParameters: $0.typeParameters) }
         generic?.name = aliased.name
         let dictionary = typeName.dictionary.map { DictionaryType(name: $0.name, valueTypeName: $0.valueTypeName, valueType: $0.valueType, keyTypeName: $0.keyTypeName, keyType: $0.keyType) }
@@ -479,15 +488,15 @@ internal struct ParserResultsComposed {
         let array = typeName.array.map { ArrayType(name: $0.name, elementTypeName: $0.elementTypeName, elementType: $0.elementType) }
         array?.name = aliased.name
 
-        return TypeName(name: aliased.name,
-                        isOptional: typeName.isOptional,
-                        isImplicitlyUnwrappedOptional: typeName.isImplicitlyUnwrappedOptional,
-                        tuple: aliased.typealias?.typeName.tuple ?? typeName.tuple, // TODO: verify
-                        array: aliased.typealias?.typeName.array ?? array,
-                        dictionary: aliased.typealias?.typeName.dictionary ?? dictionary,
-                        closure: aliased.typealias?.typeName.closure ?? typeName.closure,
-                        generic: aliased.typealias?.typeName.generic ?? generic
+        return TypeName(
+            name: aliased.name,
+            isOptional: typeName.isOptional,
+            isImplicitlyUnwrappedOptional: typeName.isImplicitlyUnwrappedOptional,
+            tuple: aliased.typealias?.typeName.tuple ?? typeName.tuple, // TODO: verify
+            array: aliased.typealias?.typeName.array ?? array,
+            dictionary: aliased.typealias?.typeName.dictionary ?? dictionary,
+            closure: aliased.typealias?.typeName.closure ?? typeName.closure,
+            generic: aliased.typealias?.typeName.generic ?? generic
         )
     }
-
 }

@@ -1,5 +1,5 @@
-import UIKit
 import RxCocoa
+import UIKit
 
 class TableCollectionViewCell: ListingsCollectionViewCell {
     fileprivate lazy var infoView: UIView = {
@@ -57,8 +57,8 @@ class TableCollectionViewCell: ListingsCollectionViewCell {
         // Replaces the observable defined in the superclass, normally used to emit taps to a "More Info" label, which we don't have.
         let recognizer = UITapGestureRecognizer()
         contentView.addGestureRecognizer(recognizer)
-        self.moreInfo = recognizer.rx.event.map { _ -> Date in
-            return Date()
+        moreInfo = recognizer.rx.event.map { _ -> Date in
+            Date()
         }
     }
 
@@ -78,14 +78,14 @@ extension TableCollectionViewCell {
 
     class var Width: CGFloat {
         get {
-            return SharedDimensions.instance.width
+            SharedDimensions.instance.width
         }
-        set (newWidth) {
+        set(newWidth) {
             SharedDimensions.instance.width = newWidth
         }
     }
 
     class var Height: CGFloat {
-        return SharedDimensions.instance.height
+        SharedDimensions.instance.height
     }
 }

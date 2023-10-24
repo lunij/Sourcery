@@ -2,7 +2,6 @@ import Foundation
 import PathKit
 
 public enum Verifier {
-
     // swiftlint:disable:next force_try
     private static let conflictRegex = try! NSRegularExpression(pattern: "^\\s+?(<<<<<|>>>>>)")
 
@@ -20,10 +19,10 @@ public enum Verifier {
         guard !content.isEmpty else { return .approved }
 
         let shouldForceParse = forceParse.contains { name in
-            return path.hasExtension(as: name)
+            path.hasExtension(as: name)
         }
 
-        if content.hasPrefix(.generatedHeader) && shouldForceParse == false {
+        if content.hasPrefix(.generatedHeader), shouldForceParse == false {
             return .isCodeGenerated
         }
 

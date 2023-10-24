@@ -11,43 +11,44 @@ import AppKit
 #endif
 
 public class AccessLevelProtocolMock: AccessLevelProtocol {
-
     public init() {}
 
     public var company: String?
     public var name: String {
-        get { return underlyingName }
+        get { underlyingName }
         set(value) { underlyingName = value }
     }
+
     public var underlyingName: String!
 
-    //MARK: - loadConfiguration
+    // MARK: - loadConfiguration
 
     public var loadConfigurationCallsCount = 0
     public var loadConfigurationCalled: Bool {
-        return loadConfigurationCallsCount > 0
+        loadConfigurationCallsCount > 0
     }
+
     public var loadConfigurationReturnValue: String?
     public var loadConfigurationClosure: (() -> String?)?
 
     public func loadConfiguration() -> String? {
         loadConfigurationCallsCount += 1
-        if let loadConfigurationClosure = loadConfigurationClosure {
+        if let loadConfigurationClosure {
             return loadConfigurationClosure()
         } else {
             return loadConfigurationReturnValue
         }
     }
-
 }
-class AnnotatedProtocolMock: AnnotatedProtocol {
 
-    //MARK: - sayHelloWith
+class AnnotatedProtocolMock: AnnotatedProtocol {
+    // MARK: - sayHelloWith
 
     var sayHelloWithNameCallsCount = 0
     var sayHelloWithNameCalled: Bool {
-        return sayHelloWithNameCallsCount > 0
+        sayHelloWithNameCallsCount > 0
     }
+
     var sayHelloWithNameReceivedName: String?
     var sayHelloWithNameReceivedInvocations: [String] = []
     var sayHelloWithNameClosure: ((String) -> Void)?
@@ -58,16 +59,16 @@ class AnnotatedProtocolMock: AnnotatedProtocol {
         sayHelloWithNameReceivedInvocations.append(name)
         sayHelloWithNameClosure?(name)
     }
-
 }
-class AsyncProtocolMock: AsyncProtocol {
 
-    //MARK: - callAsync
+class AsyncProtocolMock: AsyncProtocol {
+    // MARK: - callAsync
 
     var callAsyncParameterCallsCount = 0
     var callAsyncParameterCalled: Bool {
-        return callAsyncParameterCallsCount > 0
+        callAsyncParameterCallsCount > 0
     }
+
     var callAsyncParameterReceivedParameter: Int?
     var callAsyncParameterReceivedInvocations: [Int] = []
     var callAsyncParameterReturnValue: String!
@@ -78,20 +79,21 @@ class AsyncProtocolMock: AsyncProtocol {
         callAsyncParameterCallsCount += 1
         callAsyncParameterReceivedParameter = parameter
         callAsyncParameterReceivedInvocations.append(parameter)
-        if let callAsyncParameterClosure = callAsyncParameterClosure {
+        if let callAsyncParameterClosure {
             return await callAsyncParameterClosure(parameter)
         } else {
             return callAsyncParameterReturnValue
         }
     }
 
-    //MARK: - callAsyncAndThrow
+    // MARK: - callAsyncAndThrow
 
     var callAsyncAndThrowParameterThrowableError: Error?
     var callAsyncAndThrowParameterCallsCount = 0
     var callAsyncAndThrowParameterCalled: Bool {
-        return callAsyncAndThrowParameterCallsCount > 0
+        callAsyncAndThrowParameterCallsCount > 0
     }
+
     var callAsyncAndThrowParameterReceivedParameter: Int?
     var callAsyncAndThrowParameterReceivedInvocations: [Int] = []
     var callAsyncAndThrowParameterReturnValue: String!
@@ -104,19 +106,20 @@ class AsyncProtocolMock: AsyncProtocol {
         callAsyncAndThrowParameterCallsCount += 1
         callAsyncAndThrowParameterReceivedParameter = parameter
         callAsyncAndThrowParameterReceivedInvocations.append(parameter)
-        if let callAsyncAndThrowParameterClosure = callAsyncAndThrowParameterClosure {
+        if let callAsyncAndThrowParameterClosure {
             return try await callAsyncAndThrowParameterClosure(parameter)
         } else {
             return callAsyncAndThrowParameterReturnValue
         }
     }
 
-    //MARK: - callAsyncVoid
+    // MARK: - callAsyncVoid
 
     var callAsyncVoidParameterCallsCount = 0
     var callAsyncVoidParameterCalled: Bool {
-        return callAsyncVoidParameterCallsCount > 0
+        callAsyncVoidParameterCallsCount > 0
     }
+
     var callAsyncVoidParameterReceivedParameter: Int?
     var callAsyncVoidParameterReceivedInvocations: [Int] = []
     var callAsyncVoidParameterClosure: ((Int) async -> Void)?
@@ -128,13 +131,14 @@ class AsyncProtocolMock: AsyncProtocol {
         await callAsyncVoidParameterClosure?(parameter)
     }
 
-    //MARK: - callAsyncAndThrowVoid
+    // MARK: - callAsyncAndThrowVoid
 
     var callAsyncAndThrowVoidParameterThrowableError: Error?
     var callAsyncAndThrowVoidParameterCallsCount = 0
     var callAsyncAndThrowVoidParameterCalled: Bool {
-        return callAsyncAndThrowVoidParameterCallsCount > 0
+        callAsyncAndThrowVoidParameterCallsCount > 0
     }
+
     var callAsyncAndThrowVoidParameterReceivedParameter: Int?
     var callAsyncAndThrowVoidParameterReceivedInvocations: [Int] = []
     var callAsyncAndThrowVoidParameterClosure: ((Int) async throws -> Void)?
@@ -148,12 +152,12 @@ class AsyncProtocolMock: AsyncProtocol {
         callAsyncAndThrowVoidParameterReceivedInvocations.append(parameter)
         try await callAsyncAndThrowVoidParameterClosure?(parameter)
     }
-
 }
+
 class AsyncThrowingVariablesProtocolMock: AsyncThrowingVariablesProtocol {
     var titleCallsCount = 0
     var titleCalled: Bool {
-        return titleCallsCount > 0
+        titleCallsCount > 0
     }
 
     var title: String? {
@@ -162,19 +166,20 @@ class AsyncThrowingVariablesProtocolMock: AsyncThrowingVariablesProtocol {
                 throw error
             }
             titleCallsCount += 1
-            if let titleClosure = titleClosure {
+            if let titleClosure {
                 return try await titleClosure()
             } else {
                 return underlyingTitle
             }
         }
     }
+
     var underlyingTitle: String?
     var titleThrowableError: Error?
     var titleClosure: (() async throws -> String?)?
     var firstNameCallsCount = 0
     var firstNameCalled: Bool {
-        return firstNameCallsCount > 0
+        firstNameCallsCount > 0
     }
 
     var firstName: String {
@@ -183,81 +188,85 @@ class AsyncThrowingVariablesProtocolMock: AsyncThrowingVariablesProtocol {
                 throw error
             }
             firstNameCallsCount += 1
-            if let firstNameClosure = firstNameClosure {
+            if let firstNameClosure {
                 return try await firstNameClosure()
             } else {
                 return underlyingFirstName
             }
         }
     }
+
     var underlyingFirstName: String!
     var firstNameThrowableError: Error?
     var firstNameClosure: (() async throws -> String)?
-
 }
+
 class AsyncVariablesProtocolMock: AsyncVariablesProtocol {
     var titleCallsCount = 0
     var titleCalled: Bool {
-        return titleCallsCount > 0
+        titleCallsCount > 0
     }
 
     var title: String? {
         get async {
             titleCallsCount += 1
-            if let titleClosure = titleClosure {
+            if let titleClosure {
                 return await titleClosure()
             } else {
                 return underlyingTitle
             }
         }
     }
+
     var underlyingTitle: String?
     var titleClosure: (() async -> String?)?
     var firstNameCallsCount = 0
     var firstNameCalled: Bool {
-        return firstNameCallsCount > 0
+        firstNameCallsCount > 0
     }
 
     var firstName: String {
         get async {
             firstNameCallsCount += 1
-            if let firstNameClosure = firstNameClosure {
+            if let firstNameClosure {
                 return await firstNameClosure()
             } else {
                 return underlyingFirstName
             }
         }
     }
+
     var underlyingFirstName: String!
     var firstNameClosure: (() async -> String)?
-
 }
-class BasicProtocolMock: BasicProtocol {
 
-    //MARK: - loadConfiguration
+class BasicProtocolMock: BasicProtocol {
+    // MARK: - loadConfiguration
 
     var loadConfigurationCallsCount = 0
     var loadConfigurationCalled: Bool {
-        return loadConfigurationCallsCount > 0
+        loadConfigurationCallsCount > 0
     }
+
     var loadConfigurationReturnValue: String?
     var loadConfigurationClosure: (() -> String?)?
 
     func loadConfiguration() -> String? {
         loadConfigurationCallsCount += 1
-        if let loadConfigurationClosure = loadConfigurationClosure {
+        if let loadConfigurationClosure {
             return loadConfigurationClosure()
         } else {
             return loadConfigurationReturnValue
         }
     }
 
-    //MARK: - save
+    // MARK: - save
 
     var saveConfigurationCallsCount = 0
     var saveConfigurationCalled: Bool {
-        return saveConfigurationCallsCount > 0
+        saveConfigurationCallsCount > 0
     }
+
     var saveConfigurationReceivedConfiguration: String?
     var saveConfigurationReceivedInvocations: [String] = []
     var saveConfigurationClosure: ((String) -> Void)?
@@ -268,18 +277,18 @@ class BasicProtocolMock: BasicProtocol {
         saveConfigurationReceivedInvocations.append(configuration)
         saveConfigurationClosure?(configuration)
     }
-
 }
-class ClosureProtocolMock: ClosureProtocol {
 
-    //MARK: - setClosure
+class ClosureProtocolMock: ClosureProtocol {
+    // MARK: - setClosure
 
     var setClosureCallsCount = 0
     var setClosureCalled: Bool {
-        return setClosureCallsCount > 0
+        setClosureCallsCount > 0
     }
+
     var setClosureReceivedClosure: (() -> Void)?
-    var setClosureReceivedInvocations: [(() -> Void)] = []
+    var setClosureReceivedInvocations: [() -> Void] = []
     var setClosureClosure: ((@escaping () -> Void) -> Void)?
 
     func setClosure(_ closure: @escaping () -> Void) {
@@ -288,16 +297,16 @@ class ClosureProtocolMock: ClosureProtocol {
         setClosureReceivedInvocations.append(closure)
         setClosureClosure?(closure)
     }
-
 }
-class CurrencyPresenterMock: CurrencyPresenter {
 
-    //MARK: - showSourceCurrency
+class CurrencyPresenterMock: CurrencyPresenter {
+    // MARK: - showSourceCurrency
 
     var showSourceCurrencyCallsCount = 0
     var showSourceCurrencyCalled: Bool {
-        return showSourceCurrencyCallsCount > 0
+        showSourceCurrencyCallsCount > 0
     }
+
     var showSourceCurrencyReceivedCurrency: String?
     var showSourceCurrencyReceivedInvocations: [String] = []
     var showSourceCurrencyClosure: ((String) -> Void)?
@@ -308,21 +317,23 @@ class CurrencyPresenterMock: CurrencyPresenter {
         showSourceCurrencyReceivedInvocations.append(currency)
         showSourceCurrencyClosure?(currency)
     }
-
 }
+
 class ExtendableProtocolMock: ExtendableProtocol {
     var canReport: Bool {
-        get { return underlyingCanReport }
+        get { underlyingCanReport }
         set(value) { underlyingCanReport = value }
     }
+
     var underlyingCanReport: Bool!
 
-    //MARK: - report
+    // MARK: - report
 
     var reportMessageCallsCount = 0
     var reportMessageCalled: Bool {
-        return reportMessageCallsCount > 0
+        reportMessageCallsCount > 0
     }
+
     var reportMessageReceivedMessage: String?
     var reportMessageReceivedInvocations: [String] = []
     var reportMessageClosure: ((String) -> Void)?
@@ -333,35 +344,36 @@ class ExtendableProtocolMock: ExtendableProtocol {
         reportMessageReceivedInvocations.append(message)
         reportMessageClosure?(message)
     }
-
 }
-class FunctionWithAttributesMock: FunctionWithAttributes {
 
-    //MARK: - callOneAttribute
+class FunctionWithAttributesMock: FunctionWithAttributes {
+    // MARK: - callOneAttribute
 
     var callOneAttributeCallsCount = 0
     var callOneAttributeCalled: Bool {
-        return callOneAttributeCallsCount > 0
+        callOneAttributeCallsCount > 0
     }
+
     var callOneAttributeReturnValue: String!
     var callOneAttributeClosure: (() -> String)?
 
     @discardableResult
     func callOneAttribute() -> String {
         callOneAttributeCallsCount += 1
-        if let callOneAttributeClosure = callOneAttributeClosure {
+        if let callOneAttributeClosure {
             return callOneAttributeClosure()
         } else {
             return callOneAttributeReturnValue
         }
     }
 
-    //MARK: - callTwoAttributes
+    // MARK: - callTwoAttributes
 
     var callTwoAttributesCallsCount = 0
     var callTwoAttributesCalled: Bool {
-        return callTwoAttributesCallsCount > 0
+        callTwoAttributesCallsCount > 0
     }
+
     var callTwoAttributesReturnValue: Int!
     var callTwoAttributesClosure: (() -> Int)?
 
@@ -369,19 +381,20 @@ class FunctionWithAttributesMock: FunctionWithAttributes {
     @discardableResult
     func callTwoAttributes() -> Int {
         callTwoAttributesCallsCount += 1
-        if let callTwoAttributesClosure = callTwoAttributesClosure {
+        if let callTwoAttributesClosure {
             return callTwoAttributesClosure()
         } else {
             return callTwoAttributesReturnValue
         }
     }
 
-    //MARK: - callRepeatedAttributes
+    // MARK: - callRepeatedAttributes
 
     var callRepeatedAttributesCallsCount = 0
     var callRepeatedAttributesCalled: Bool {
-        return callRepeatedAttributesCallsCount > 0
+        callRepeatedAttributesCallsCount > 0
     }
+
     var callRepeatedAttributesReturnValue: Bool!
     var callRepeatedAttributesClosure: (() -> Bool)?
 
@@ -390,61 +403,62 @@ class FunctionWithAttributesMock: FunctionWithAttributes {
     @discardableResult
     func callRepeatedAttributes() -> Bool {
         callRepeatedAttributesCallsCount += 1
-        if let callRepeatedAttributesClosure = callRepeatedAttributesClosure {
+        if let callRepeatedAttributesClosure {
             return callRepeatedAttributesClosure()
         } else {
             return callRepeatedAttributesReturnValue
         }
     }
-
 }
-class FunctionWithClosureReturnTypeMock: FunctionWithClosureReturnType {
 
-    //MARK: - get
+class FunctionWithClosureReturnTypeMock: FunctionWithClosureReturnType {
+    // MARK: - get
 
     var getCallsCount = 0
     var getCalled: Bool {
-        return getCallsCount > 0
+        getCallsCount > 0
     }
+
     var getReturnValue: (() -> Void)!
     var getClosure: (() -> () -> Void)?
 
     func get() -> () -> Void {
         getCallsCount += 1
-        if let getClosure = getClosure {
+        if let getClosure {
             return getClosure()
         } else {
             return getReturnValue
         }
     }
 
-    //MARK: - getOptional
+    // MARK: - getOptional
 
     var getOptionalCallsCount = 0
     var getOptionalCalled: Bool {
-        return getOptionalCallsCount > 0
+        getOptionalCallsCount > 0
     }
+
     var getOptionalReturnValue: (() -> Void)?
     var getOptionalClosure: (() -> (() -> Void)?)?
 
     func getOptional() -> (() -> Void)? {
         getOptionalCallsCount += 1
-        if let getOptionalClosure = getOptionalClosure {
+        if let getOptionalClosure {
             return getOptionalClosure()
         } else {
             return getOptionalReturnValue
         }
     }
-
 }
-class FunctionWithMultilineDeclarationMock: FunctionWithMultilineDeclaration {
 
-    //MARK: - start
+class FunctionWithMultilineDeclarationMock: FunctionWithMultilineDeclaration {
+    // MARK: - start
 
     var startCarOfCallsCount = 0
     var startCarOfCalled: Bool {
-        return startCarOfCallsCount > 0
+        startCarOfCallsCount > 0
     }
+
     var startCarOfReceivedArguments: (car: String, model: String)?
     var startCarOfReceivedInvocations: [(car: String, model: String)] = []
     var startCarOfClosure: ((String, String) -> Void)?
@@ -455,32 +469,31 @@ class FunctionWithMultilineDeclarationMock: FunctionWithMultilineDeclaration {
         startCarOfReceivedInvocations.append((car: car, model: model))
         startCarOfClosure?(car, model)
     }
-
 }
-class ImplicitlyUnwrappedOptionalReturnValueProtocolMock: ImplicitlyUnwrappedOptionalReturnValueProtocol {
 
-    //MARK: - implicitReturn
+class ImplicitlyUnwrappedOptionalReturnValueProtocolMock: ImplicitlyUnwrappedOptionalReturnValueProtocol {
+    // MARK: - implicitReturn
 
     var implicitReturnCallsCount = 0
     var implicitReturnCalled: Bool {
-        return implicitReturnCallsCount > 0
+        implicitReturnCallsCount > 0
     }
+
     var implicitReturnReturnValue: String!
     var implicitReturnClosure: (() -> String?)?
 
     func implicitReturn() -> String! {
         implicitReturnCallsCount += 1
-        if let implicitReturnClosure = implicitReturnClosure {
+        if let implicitReturnClosure {
             return implicitReturnClosure()
         } else {
             return implicitReturnReturnValue
         }
     }
-
 }
-class InitializationProtocolMock: InitializationProtocol {
 
-    //MARK: - init
+class InitializationProtocolMock: InitializationProtocol {
+    // MARK: - init
 
     var initIntParameterStringParameterOptionalParameterReceivedArguments: (intParameter: Int, stringParameter: String, optionalParameter: String?)?
     var initIntParameterStringParameterOptionalParameterReceivedInvocations: [(intParameter: Int, stringParameter: String, optionalParameter: String?)] = []
@@ -491,12 +504,14 @@ class InitializationProtocolMock: InitializationProtocol {
         initIntParameterStringParameterOptionalParameterReceivedInvocations.append((intParameter: intParameter, stringParameter: stringParameter, optionalParameter: optionalParameter))
         initIntParameterStringParameterOptionalParameterClosure?(intParameter, stringParameter, optionalParameter)
     }
-    //MARK: - start
+
+    // MARK: - start
 
     var startCallsCount = 0
     var startCalled: Bool {
-        return startCallsCount > 0
+        startCallsCount > 0
     }
+
     var startClosure: (() -> Void)?
 
     func start() {
@@ -504,28 +519,29 @@ class InitializationProtocolMock: InitializationProtocol {
         startClosure?()
     }
 
-    //MARK: - stop
+    // MARK: - stop
 
     var stopCallsCount = 0
     var stopCalled: Bool {
-        return stopCallsCount > 0
+        stopCallsCount > 0
     }
+
     var stopClosure: (() -> Void)?
 
     func stop() {
         stopCallsCount += 1
         stopClosure?()
     }
-
 }
-class MultiClosureProtocolMock: MultiClosureProtocol {
 
-    //MARK: - setClosure
+class MultiClosureProtocolMock: MultiClosureProtocol {
+    // MARK: - setClosure
 
     var setClosureNameCallsCount = 0
     var setClosureNameCalled: Bool {
-        return setClosureNameCallsCount > 0
+        setClosureNameCallsCount > 0
     }
+
     var setClosureNameReceivedArguments: (name: String, closure: () -> Void)?
     var setClosureNameReceivedInvocations: [(name: String, closure: () -> Void)] = []
     var setClosureNameClosure: ((String, @escaping () -> Void) -> Void)?
@@ -536,48 +552,48 @@ class MultiClosureProtocolMock: MultiClosureProtocol {
         setClosureNameReceivedInvocations.append((name: name, closure: closure))
         setClosureNameClosure?(name, closure)
     }
-
 }
-class MultiNonEscapingClosureProtocolMock: MultiNonEscapingClosureProtocol {
 
-    //MARK: - executeClosure
+class MultiNonEscapingClosureProtocolMock: MultiNonEscapingClosureProtocol {
+    // MARK: - executeClosure
 
     var executeClosureNameCallsCount = 0
     var executeClosureNameCalled: Bool {
-        return executeClosureNameCallsCount > 0
+        executeClosureNameCallsCount > 0
     }
+
     var executeClosureNameClosure: ((String, () -> Void) -> Void)?
 
     func executeClosure(name: String, _ closure: () -> Void) {
         executeClosureNameCallsCount += 1
         executeClosureNameClosure?(name, closure)
     }
-
 }
-class NonEscapingClosureProtocolMock: NonEscapingClosureProtocol {
 
-    //MARK: - executeClosure
+class NonEscapingClosureProtocolMock: NonEscapingClosureProtocol {
+    // MARK: - executeClosure
 
     var executeClosureCallsCount = 0
     var executeClosureCalled: Bool {
-        return executeClosureCallsCount > 0
+        executeClosureCallsCount > 0
     }
+
     var executeClosureClosure: ((() -> Void) -> Void)?
 
     func executeClosure(_ closure: () -> Void) {
         executeClosureCallsCount += 1
         executeClosureClosure?(closure)
     }
-
 }
-class ReservedWordsProtocolMock: ReservedWordsProtocol {
 
-    //MARK: - `continue`
+class ReservedWordsProtocolMock: ReservedWordsProtocol {
+    // MARK: - `continue`
 
     var continueWithCallsCount = 0
     var continueWithCalled: Bool {
-        return continueWithCallsCount > 0
+        continueWithCallsCount > 0
     }
+
     var continueWithReceivedMessage: String?
     var continueWithReceivedInvocations: [String] = []
     var continueWithReturnValue: String!
@@ -587,22 +603,22 @@ class ReservedWordsProtocolMock: ReservedWordsProtocol {
         continueWithCallsCount += 1
         continueWithReceivedMessage = message
         continueWithReceivedInvocations.append(message)
-        if let continueWithClosure = continueWithClosure {
+        if let continueWithClosure {
             return continueWithClosure(message)
         } else {
             return continueWithReturnValue
         }
     }
-
 }
-class SameShortMethodNamesProtocolMock: SameShortMethodNamesProtocol {
 
-    //MARK: - start
+class SameShortMethodNamesProtocolMock: SameShortMethodNamesProtocol {
+    // MARK: - start
 
     var startCarOfCallsCount = 0
     var startCarOfCalled: Bool {
-        return startCarOfCallsCount > 0
+        startCarOfCallsCount > 0
     }
+
     var startCarOfReceivedArguments: (car: String, model: String)?
     var startCarOfReceivedInvocations: [(car: String, model: String)] = []
     var startCarOfClosure: ((String, String) -> Void)?
@@ -614,12 +630,13 @@ class SameShortMethodNamesProtocolMock: SameShortMethodNamesProtocol {
         startCarOfClosure?(car, model)
     }
 
-    //MARK: - start
+    // MARK: - start
 
     var startPlaneOfCallsCount = 0
     var startPlaneOfCalled: Bool {
-        return startPlaneOfCallsCount > 0
+        startPlaneOfCallsCount > 0
     }
+
     var startPlaneOfReceivedArguments: (plane: String, model: String)?
     var startPlaneOfReceivedInvocations: [(plane: String, model: String)] = []
     var startPlaneOfClosure: ((String, String) -> Void)?
@@ -630,16 +647,16 @@ class SameShortMethodNamesProtocolMock: SameShortMethodNamesProtocol {
         startPlaneOfReceivedInvocations.append((plane: plane, model: model))
         startPlaneOfClosure?(plane, model)
     }
-
 }
-class SingleOptionalParameterFunctionMock: SingleOptionalParameterFunction {
 
-    //MARK: - send
+class SingleOptionalParameterFunctionMock: SingleOptionalParameterFunction {
+    // MARK: - send
 
     var sendMessageCallsCount = 0
     var sendMessageCalled: Bool {
-        return sendMessageCallsCount > 0
+        sendMessageCallsCount > 0
     }
+
     var sendMessageReceivedMessage: String?
     var sendMessageReceivedInvocations: [String?] = []
     var sendMessageClosure: ((String?) -> Void)?
@@ -650,28 +667,25 @@ class SingleOptionalParameterFunctionMock: SingleOptionalParameterFunction {
         sendMessageReceivedInvocations.append(message)
         sendMessageClosure?(message)
     }
-
 }
+
 class StaticMethodProtocolMock: StaticMethodProtocol {
+    static func reset() {
+        // MARK: - staticFunction
 
-
-
-    static func reset()
-    {
-         //MARK: - staticFunction
         staticFunctionCallsCount = 0
         staticFunctionReceived = nil
         staticFunctionReceivedInvocations = []
         staticFunctionClosure = nil
-
     }
 
-    //MARK: - staticFunction
+    // MARK: - staticFunction
 
     static var staticFunctionCallsCount = 0
     static var staticFunctionCalled: Bool {
-        return staticFunctionCallsCount > 0
+        staticFunctionCallsCount > 0
     }
+
     static var staticFunctionReceived: String?
     static var staticFunctionReceivedInvocations: [String] = []
     static var staticFunctionReturnValue: String!
@@ -679,25 +693,25 @@ class StaticMethodProtocolMock: StaticMethodProtocol {
 
     static func staticFunction(_: String) -> String {
         staticFunctionCallsCount += 1
-        staticFunctionReceived = 
-        staticFunctionReceivedInvocations.append()
-        if let staticFunctionClosure = staticFunctionClosure {
+        staticFunctionReceived =
+            staticFunctionReceivedInvocations.append()
+        if let staticFunctionClosure {
             return staticFunctionClosure()
         } else {
             return staticFunctionReturnValue
         }
     }
-
 }
-class ThrowableProtocolMock: ThrowableProtocol {
 
-    //MARK: - doOrThrow
+class ThrowableProtocolMock: ThrowableProtocol {
+    // MARK: - doOrThrow
 
     var doOrThrowThrowableError: Error?
     var doOrThrowCallsCount = 0
     var doOrThrowCalled: Bool {
-        return doOrThrowCallsCount > 0
+        doOrThrowCallsCount > 0
     }
+
     var doOrThrowReturnValue: String!
     var doOrThrowClosure: (() throws -> String)?
 
@@ -706,20 +720,21 @@ class ThrowableProtocolMock: ThrowableProtocol {
             throw error
         }
         doOrThrowCallsCount += 1
-        if let doOrThrowClosure = doOrThrowClosure {
+        if let doOrThrowClosure {
             return try doOrThrowClosure()
         } else {
             return doOrThrowReturnValue
         }
     }
 
-    //MARK: - doOrThrowVoid
+    // MARK: - doOrThrowVoid
 
     var doOrThrowVoidThrowableError: Error?
     var doOrThrowVoidCallsCount = 0
     var doOrThrowVoidCalled: Bool {
-        return doOrThrowVoidCallsCount > 0
+        doOrThrowVoidCallsCount > 0
     }
+
     var doOrThrowVoidClosure: (() throws -> Void)?
 
     func doOrThrowVoid() throws {
@@ -729,12 +744,12 @@ class ThrowableProtocolMock: ThrowableProtocol {
         doOrThrowVoidCallsCount += 1
         try doOrThrowVoidClosure?()
     }
-
 }
+
 class ThrowingVariablesProtocolMock: ThrowingVariablesProtocol {
     var titleCallsCount = 0
     var titleCalled: Bool {
-        return titleCallsCount > 0
+        titleCallsCount > 0
     }
 
     var title: String? {
@@ -743,19 +758,20 @@ class ThrowingVariablesProtocolMock: ThrowingVariablesProtocol {
                 throw error
             }
             titleCallsCount += 1
-            if let titleClosure = titleClosure {
+            if let titleClosure {
                 return try titleClosure()
             } else {
                 return underlyingTitle
             }
         }
     }
+
     var underlyingTitle: String?
     var titleThrowableError: Error?
     var titleClosure: (() throws -> String?)?
     var firstNameCallsCount = 0
     var firstNameCalled: Bool {
-        return firstNameCallsCount > 0
+        firstNameCallsCount > 0
     }
 
     var firstName: String {
@@ -764,31 +780,33 @@ class ThrowingVariablesProtocolMock: ThrowingVariablesProtocol {
                 throw error
             }
             firstNameCallsCount += 1
-            if let firstNameClosure = firstNameClosure {
+            if let firstNameClosure {
                 return try firstNameClosure()
             } else {
                 return underlyingFirstName
             }
         }
     }
+
     var underlyingFirstName: String!
     var firstNameThrowableError: Error?
     var firstNameClosure: (() throws -> String)?
-
 }
+
 class VariablesProtocolMock: VariablesProtocol {
     var company: String?
     var name: String {
-        get { return underlyingName }
+        get { underlyingName }
         set(value) { underlyingName = value }
     }
+
     var underlyingName: String!
     var age: Int {
-        get { return underlyingAge }
+        get { underlyingAge }
         set(value) { underlyingAge = value }
     }
+
     var underlyingAge: Int!
     var kids: [String] = []
     var universityMarks: [String: Int] = [:]
-
 }

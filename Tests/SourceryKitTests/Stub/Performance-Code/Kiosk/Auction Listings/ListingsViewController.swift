@@ -1,9 +1,9 @@
-import UIKit
-import SystemConfiguration
 import ARAnalytics
-import RxSwift
 import ARCollectionViewMasonryLayout
 import NSObject_Rx
+import RxSwift
+import SystemConfiguration
+import UIKit
 
 let HorizontalMargins = 65
 let VerticalMargins = 26
@@ -13,38 +13,36 @@ let TableCellIdentifier = "TableCell"
 class ListingsViewController: UIViewController {
     var allowAnimations = true
 
-    var downloadImage: ListingsCollectionViewCell.DownloadImageClosure = { (url, imageView) -> () in
-        if let url = url {
+    var downloadImage: ListingsCollectionViewCell.DownloadImageClosure = { url, imageView in
+        if let url {
             imageView.sd_setImage(with: url as URL!)
         } else {
             imageView.image = nil
         }
     }
-    var cancelDownloadImage: ListingsCollectionViewCell.CancelDownloadImageClosure = { (imageView) -> () in
+
+    var cancelDownloadImage: ListingsCollectionViewCell.CancelDownloadImageClosure = { imageView in
         imageView.sd_cancelCurrentImageLoad()
     }
 
     var provider: Networking!
 
-    lazy var viewModel: ListingsViewModelType = {
-        return ListingsViewModel(provider:
-            self.provider,
-            selectedIndex: self.switchView.selectedIndex,
-            showDetails: applyUnowned(self, ListingsViewController.showDetails),
-            presentModal: applyUnowned(self, ListingsViewController.presentModalForSaleArtwork)
-        )
-    }()
+    lazy var viewModel: ListingsViewModelType = ListingsViewModel(
+        provider:
+        self.provider,
+        selectedIndex: self.switchView.selectedIndex,
+        showDetails: applyUnowned(self, ListingsViewController.showDetails),
+        presentModal: applyUnowned(self, ListingsViewController.presentModalForSaleArtwork)
+    )
 
     var cellIdentifier = Variable(MasonryCellIdentifier)
 
     @IBOutlet var stagingFlag: UIImageView!
     @IBOutlet var loadingSpinner: Spinner!
 
-    lazy var collectionView: UICollectionView = { return .listingsCollectionViewWithDelegateDatasource(self) }()
+    lazy var collectionView: UICollectionView = .listingsCollectionViewWithDelegateDatasource(self)
 
-    lazy var switchView: SwitchView = {
-        return SwitchView(buttonTitles: ListingsViewModel.SwitchValues.allSwitchValueNames())
-    }()
+    lazy var switchView: SwitchView = .init(buttonTitles: ListingsViewModel.SwitchValues.allSwitchValueNames())
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -81,9 +79,9 @@ class ListingsViewController: UIViewController {
             .gridSelected
             .map { gridSelected -> String in
                 if gridSelected {
-                    return MasonryCellIdentifier
+                    MasonryCellIdentifier
                 } else {
-                    return TableCellIdentifier
+                    TableCellIdentifier
                 }
             }
             .bindTo(cellIdentifier)
@@ -112,9 +110,9 @@ class ListingsViewController: UIViewController {
             .map { [weak self] gridSelected -> UICollectionViewLayout in
                 switch gridSelected {
                 case true:
-                    return ListingsViewController.masonryLayout()
+                    ListingsViewController.masonryLayout()
                 default:
-                    return ListingsViewController.tableLayout(width: (self?.switchView.frame ?? CGRect.zero).width)
+                    ListingsViewController.tableLayout(width: (self?.switchView.frame ?? CGRect.zero).width)
                 }
             }
             .subscribe(onNext: { [weak self] layout in
@@ -134,11 +132,11 @@ class ListingsViewController: UIViewController {
         }
     }
 
-    override func viewWillAppear(_ animated: Bool) {
+    override func viewWillAppear(_: Bool) {
         let switchHeightPredicate = "\(switchView.intrinsicContentSize.height)"
 
         switchView.constrainHeight(switchHeightPredicate)
-        switchView.alignTop("\(64+VerticalMargins)", leading: "\(HorizontalMargins)", bottom: nil, trailing: "-\(HorizontalMargins)", to: view)
+        switchView.alignTop("\(64 + VerticalMargins)", leading: "\(HorizontalMargins)", bottom: nil, trailing: "-\(HorizontalMargins)", to: view)
         collectionView.constrainTopSpace(to: switchView, predicate: "0")
         collectionView.alignTop(nil, leading: "0", bottom: "0", trailing: "0", to: view)
         collectionView.contentInset = UIEdgeInsets(top: 40, left: 0, bottom: 80, right: 0)
@@ -147,23 +145,21 @@ class ListingsViewController: UIViewController {
 
 extension ListingsViewController {
     class func instantiateFromStoryboard(_ storyboard: UIStoryboard) -> ListingsViewController {
-        return storyboard.viewController(withID: .AuctionListings) as! ListingsViewController
+        storyboard.viewController(withID: .AuctionListings) as! ListingsViewController
     }
 }
 
 // MARK: - Collection View
 
 extension ListingsViewController: UICollectionViewDataSource, UICollectionViewDelegate, ARCollectionViewMasonryLayoutDelegate {
-
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return viewModel.numberOfSaleArtworks
+    func collectionView(_: UICollectionView, numberOfItemsInSection _: Int) -> Int {
+        viewModel.numberOfSaleArtworks
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellIdentifier.value, for: indexPath)
 
         if let listingsCell = cell as? ListingsCollectionViewCell {
-
             listingsCell.downloadImage = downloadImage
             listingsCell.cancelDownloadImage = cancelDownloadImage
 
@@ -188,7 +184,7 @@ extension ListingsViewController: UICollectionViewDataSource, UICollectionViewDe
         return cell
     }
 
-    func collectionView(_ collectionView: UICollectionView!, layout collectionViewLayout: ARCollectionViewMasonryLayout!, variableDimensionForItemAt indexPath: IndexPath!) -> CGFloat {
+    func collectionView(_: UICollectionView!, layout _: ARCollectionViewMasonryLayout!, variableDimensionForItemAt indexPath: IndexPath!) -> CGFloat {
         let aspectRatio = viewModel.imageAspectRatioForSaleArtwork(atIndexPath: indexPath)
         let hasEstimate = viewModel.hasEstimateForSaleArtwork(atIndexPath: indexPath)
         return MasonryCollectionViewCell.heightForCellWithImageAspectRatio(aspectRatio, hasEstimate: hasEstimate)
@@ -198,15 +194,13 @@ extension ListingsViewController: UICollectionViewDataSource, UICollectionViewDe
 // MARK: Private Methods
 
 private extension ListingsViewController {
-
     func showDetails(forSaleArtwork saleArtwork: SaleArtwork) {
-
         ARAnalytics.event("Artwork Details Tapped", withProperties: ["id": saleArtwork.artwork.id])
-        self.performSegue(withIdentifier: SegueIdentifier.ShowSaleArtworkDetails.rawValue, sender: saleArtwork)
+        performSegue(withIdentifier: SegueIdentifier.ShowSaleArtworkDetails.rawValue, sender: saleArtwork)
     }
 
     func presentModalForSaleArtwork(_ saleArtwork: SaleArtwork) {
-        bid(auctionID: viewModel.auctionID, saleArtwork: saleArtwork, allowAnimations: self.allowAnimations, provider: provider)
+        bid(auctionID: viewModel.auctionID, saleArtwork: saleArtwork, allowAnimations: allowAnimations, provider: provider)
     }
 
     // MARK: Class methods
@@ -216,7 +210,7 @@ private extension ListingsViewController {
         layout?.itemMargins = CGSize(width: 65, height: 20)
         layout?.dimensionLength = CGFloat(MasonryCollectionViewCellWidth)
         layout?.rank = 3
-        layout?.contentInset = UIEdgeInsetsMake(0.0, 0.0, CGFloat(VerticalMargins), 0.0)
+        layout?.contentInset = UIEdgeInsets(top: 0.0, left: 0.0, bottom: CGFloat(VerticalMargins), right: 0.0)
 
         return layout!
     }
@@ -234,7 +228,6 @@ private extension ListingsViewController {
 // MARK: Collection view setup
 
 extension UICollectionView {
-
     class func listingsCollectionViewWithDelegateDatasource(_ delegateDatasource: ListingsViewController) -> UICollectionView {
         let collectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: ListingsViewController.masonryLayout())
         collectionView.backgroundColor = .clear

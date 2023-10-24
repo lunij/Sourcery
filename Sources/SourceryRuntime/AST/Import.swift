@@ -15,8 +15,8 @@ import Foundation
     }
 
     /// Full import value e.g. `import struct Module.StructName`
-    public override var description: String {
-        if let kind = kind {
+    override public var description: String {
+        if let kind {
             return "\(kind) \(path)"
         }
 
@@ -27,12 +27,12 @@ import Foundation
     public var moduleName: String {
         if kind != nil {
             if let idx = path.lastIndex(of: ".") {
-                return String(path[..<idx])
+                String(path[..<idx])
             } else {
-                return path
+                path
             }
         } else {
-            return path
+            path
         }
     }
 

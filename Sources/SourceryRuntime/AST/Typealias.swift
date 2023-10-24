@@ -29,9 +29,9 @@ import Foundation
 
     public var name: String {
         if let parentName = parent?.name {
-            return "\(module != nil ? "\(module!)." : "")\(parentName).\(aliasName)"
+            "\(module != nil ? "\(module!)." : "")\(parentName).\(aliasName)"
         } else {
-            return "\(module != nil ? "\(module!)." : "")\(aliasName)"
+            "\(module != nil ? "\(module!)." : "")\(aliasName)"
         }
     }
 
@@ -40,7 +40,7 @@ import Foundation
         self.typeName = typeName
         self.accessLevel = accessLevel.rawValue
         self.parent = parent
-        self.parentName = parent?.name
+        parentName = parent?.name
         self.module = module
     }
 

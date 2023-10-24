@@ -1,18 +1,17 @@
-import UIKit
 import RxSwift
+import UIKit
 
 let SwitchViewBorderWidth: CGFloat = 2
 
 class SwitchView: UIView {
-
     fileprivate var _selectedIndex = Variable(0)
 
-    var selectedIndex: Observable<Int> { return _selectedIndex.asObservable() }
+    var selectedIndex: Observable<Int> { _selectedIndex.asObservable() }
 
     var shouldAnimate = true
     var animationDuration: TimeInterval = AnimationDuration.Short
 
-    fileprivate let buttons: Array<UIButton>
+    fileprivate let buttons: [UIButton]
     fileprivate let selectionIndicator: UIView
     fileprivate let topSelectionIndicator: UIView
     fileprivate let bottomSelectionIndicator: UIView
@@ -22,7 +21,7 @@ class SwitchView: UIView {
 
     var selectionConstraint: NSLayoutConstraint!
 
-    init(buttonTitles: Array<String>) {
+    init(buttonTitles: [String]) {
         buttons = buttonTitles.map { (buttonTitle: String) -> UIButton in
             let button = UIButton(type: .custom)
 
@@ -59,12 +58,12 @@ class SwitchView: UIView {
         bottomBar.frame = rect
     }
 
-    required convenience init(coder aDecoder: NSCoder) {
+    required convenience init(coder _: NSCoder) {
         self.init(buttonTitles: [])
     }
 
     override var intrinsicContentSize: CGSize {
-        return CGSize(width: UIViewNoIntrinsicMetric, height: 46)
+        CGSize(width: UIViewNoIntrinsicMetric, height: 46)
     }
 
     func selectedButton(_ button: UIButton!) {
@@ -73,12 +72,10 @@ class SwitchView: UIView {
     }
 
     subscript(index: Int) -> UIButton? {
-        get {
-            if index >= 0 && index < buttons.count {
-                return buttons[index]
-            }
-            return nil
+        if index >= 0, index < buttons.count {
+            return buttons[index]
         }
+        return nil
     }
 }
 
@@ -93,15 +90,15 @@ private extension SwitchView {
         for i in 0 ..< buttons.count {
             let button = buttons[i]
 
-            self.addSubview(button)
+            addSubview(button)
             button.addTarget(self, action: #selector(SwitchView.selectedButton(_:)), for: .touchUpInside)
 
             button.constrainWidth(to: self, predicate: widthPredicateMultiplier)
 
-            if (i == 0) {
+            if i == 0 {
                 button.alignLeadingEdge(with: self, predicate: nil)
             } else {
-                button.constrainLeadingSpace(to: buttons[i-1], predicate: nil)
+                button.constrainLeadingSpace(to: buttons[i - 1], predicate: nil)
             }
 
             button.alignTop("\(SwitchViewBorderWidth)", bottom: "\(-SwitchViewBorderWidth)", to: self)
@@ -132,7 +129,7 @@ private extension SwitchView {
     }
 
     func widthMultiplier() -> Float {
-        return 1.0 / Float(buttons.count)
+        1.0 / Float(buttons.count)
     }
 
     func setSelectedIndex(_ index: Int) {
@@ -163,6 +160,6 @@ private extension SwitchView {
             self.layoutIfNeeded()
         }
 
-        self._selectedIndex.value = index
+        _selectedIndex.value = index
     }
 }

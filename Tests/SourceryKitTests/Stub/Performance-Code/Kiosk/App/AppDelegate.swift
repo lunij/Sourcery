@@ -1,24 +1,22 @@
-import UIKit
 import ARAnalytics
-import SDWebImage
-import RxSwift
 import Keys
+import RxSwift
+import SDWebImage
 import Stripe
+import UIKit
 
-@UIApplicationMain
+@main
 class AppDelegate: UIResponder, UIApplicationDelegate {
-
     let helpViewController = Variable<HelpViewController?>(nil)
     var helpButton: UIButton!
 
     weak var webViewController: UIViewController?
 
-    var window: UIWindow? = UIWindow(frame:CGRect(x: 0, y: 0, width: UIScreen.main.bounds.height, height: UIScreen.main.bounds.width))
+    var window: UIWindow? = UIWindow(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.height, height: UIScreen.main.bounds.width))
 
     fileprivate(set) var provider = Networking.newDefaultNetworking()
 
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-
+    func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Disable sleep timer
         UIApplication.shared.isIdleTimerDisabled = true
 
@@ -30,7 +28,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // I couldn't figure how to swizzle this out like we do in objc.
         if let _ = NSClassFromString("XCTest") { return true }
 
-        // Clear possible old contents from cache and defaults. 
+        // Clear possible old contents from cache and defaults.
         let imageCache = SDImageCache.shared()
         imageCache?.clearDisk()
 
@@ -56,7 +54,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         ARAnalytics.setup(withAnalytics: [
             ARHockeyAppBetaID: keys.hockeyBetaSecret(),
-            ARHockeyAppLiveID: keys.hockeyProductionSecret(),
+            ARHockeyAppLiveID: keys.hockeyProductionSecret()
 //            ARMixpanelToken: mixpanelToken // TODO: Restore mixpanel
         ])
 

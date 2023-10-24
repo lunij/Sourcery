@@ -156,7 +156,7 @@ private extension Path {
     }
 
     func validateWritablity() throws {
-        if exists && !isWritable {
+        if exists, !isWritable {
             throw ConfigurationValidationError.outputNotWritable(self)
         }
     }

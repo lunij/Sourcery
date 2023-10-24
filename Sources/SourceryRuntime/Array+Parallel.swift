@@ -2,11 +2,11 @@ import Foundation
 
 public extension Array {
     func parallelFlatMap<T>(transform: (Element) -> [T]) -> [T] {
-        return parallelMap(transform: transform).flatMap { $0 }
+        parallelMap(transform: transform).flatMap { $0 }
     }
 
     func parallelCompactMap<T>(transform: (Element) -> T?) -> [T] {
-        return parallelMap(transform: transform).compactMap { $0 }
+        parallelMap(transform: transform).compactMap { $0 }
     }
 
     func parallelMap<T>(transform: (Element) -> T) -> [T] {

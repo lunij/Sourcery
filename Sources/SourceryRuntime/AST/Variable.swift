@@ -18,10 +18,10 @@ public typealias SourceryVariable = Variable
 
     /// Whether variable is computed and not stored
     public let isComputed: Bool
-    
+
     /// Whether variable is async
     public let isAsync: Bool
-    
+
     /// Whether variable throws
     public let `throws`: Bool
 
@@ -43,7 +43,7 @@ public typealias SourceryVariable = Variable
 
     /// Whether variable is mutable or not
     public var isMutable: Bool {
-        return writeAccess != AccessLevel.none.rawValue
+        writeAccess != AccessLevel.none.rawValue
     }
 
     /// Variable default value expression
@@ -62,12 +62,12 @@ public typealias SourceryVariable = Variable
 
     /// Whether variable is final or not
     public var isFinal: Bool {
-        return modifiers.contains { $0.name == "final" }
+        modifiers.contains { $0.name == "final" }
     }
 
     /// Whether variable is lazy or not
     public var isLazy: Bool {
-        return modifiers.contains { $0.name == "lazy" }
+        modifiers.contains { $0.name == "lazy" }
     }
 
     /// Reference to type name where the variable is defined,
@@ -76,7 +76,7 @@ public typealias SourceryVariable = Variable
 
     /// Reference to actual type name where the method is defined if declaration uses typealias, otherwise just a `definedInTypeName`
     public var actualDefinedInTypeName: TypeName? {
-        return definedInTypeName?.actualTypeName ?? definedInTypeName
+        definedInTypeName?.actualTypeName ?? definedInTypeName
     }
 
     // sourcery: skipEquality, skipDescription
@@ -85,31 +85,32 @@ public typealias SourceryVariable = Variable
     public var definedInType: Type?
 
     /// :nodoc:
-    public init(name: String = "",
-                typeName: TypeName,
-                type: Type? = nil,
-                accessLevel: (read: AccessLevel, write: AccessLevel) = (.internal, .internal),
-                isComputed: Bool = false,
-                isAsync: Bool = false,
-                `throws`: Bool = false,
-                isStatic: Bool = false,
-                defaultValue: String? = nil,
-                attributes: AttributeList = [:],
-                modifiers: [SourceryModifier] = [],
-                annotations: [String: NSObject] = [:],
-                documentation: [String] = [],
-                definedInTypeName: TypeName? = nil) {
-
+    public init(
+        name: String = "",
+        typeName: TypeName,
+        type: Type? = nil,
+        accessLevel: (read: AccessLevel, write: AccessLevel) = (.internal, .internal),
+        isComputed: Bool = false,
+        isAsync: Bool = false,
+        throws: Bool = false,
+        isStatic: Bool = false,
+        defaultValue: String? = nil,
+        attributes: AttributeList = [:],
+        modifiers: [SourceryModifier] = [],
+        annotations: [String: NSObject] = [:],
+        documentation: [String] = [],
+        definedInTypeName: TypeName? = nil
+    ) {
         self.name = name
         self.typeName = typeName
         self.type = type
         self.isComputed = isComputed
         self.isAsync = isAsync
-        self.`throws` = `throws`
+        self.throws = `throws`
         self.isStatic = isStatic
         self.defaultValue = defaultValue
-        self.readAccess = accessLevel.read.rawValue
-        self.writeAccess = accessLevel.write.rawValue
+        readAccess = accessLevel.read.rawValue
+        writeAccess = accessLevel.write.rawValue
         self.attributes = attributes
         self.modifiers = modifiers
         self.annotations = annotations

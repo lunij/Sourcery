@@ -1,23 +1,22 @@
-import UIKit
-import Artsy_UILabels
 import Artsy_UIButtons
+import Artsy_UILabels
 import RxCocoa
 import RxSwift
+import UIKit
 
 class YourBiddingDetailsViewController: UIViewController {
-
     var provider: Networking!
     @IBOutlet dynamic var bidderNumberLabel: UILabel!
     @IBOutlet dynamic var pinNumberLabel: UILabel!
 
-    @IBOutlet weak var confirmationImageView: UIImageView!
-    @IBOutlet weak var subtitleLabel: ARSerifLabel!
-    @IBOutlet weak var bodyLabel: ARSerifLabel!
-    @IBOutlet weak var notificationLabel: ARSerifLabel!
+    @IBOutlet var confirmationImageView: UIImageView!
+    @IBOutlet var subtitleLabel: ARSerifLabel!
+    @IBOutlet var bodyLabel: ARSerifLabel!
+    @IBOutlet var notificationLabel: ARSerifLabel!
 
     var confirmationImage: UIImage?
 
-    lazy var bidDetails: BidDetails! = { (self.navigationController as! FulfillmentNavigationController).bidDetails }()
+    lazy var bidDetails: BidDetails! = (self.navigationController as! FulfillmentNavigationController).bidDetails
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,11 +46,11 @@ class YourBiddingDetailsViewController: UIViewController {
             .addDisposableTo(rx_disposeBag)
     }
 
-    @IBAction func confirmButtonTapped(_ sender: AnyObject) {
+    @IBAction func confirmButtonTapped(_: AnyObject) {
         fulfillmentContainer()?.closeFulfillmentModal()
     }
 
     class func instantiateFromStoryboard(_ storyboard: UIStoryboard) -> YourBiddingDetailsViewController {
-        return storyboard.viewController(withID: .YourBidderDetails) as! YourBiddingDetailsViewController
+        storyboard.viewController(withID: .YourBidderDetails) as! YourBiddingDetailsViewController
     }
 }

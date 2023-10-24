@@ -27,7 +27,7 @@ extension NSCoder {
         maybeDecode(forKey: forKey) as E?
     }
 
-    fileprivate func maybeDecode<E>(forKey: String) -> E? {
+    private func maybeDecode<E>(forKey: String) -> E? {
         guard let object = decodeObject(forKey: forKey) else {
             return nil
         }
@@ -45,13 +45,11 @@ extension Attribute: NSCoding {}
 
 extension BytesRange: NSCoding {}
 
-
 extension ClosureParameter: NSCoding {}
 
 extension ClosureType: NSCoding {}
 
 extension DictionaryType: NSCoding {}
-
 
 extension EnumCase: NSCoding {}
 
@@ -71,9 +69,6 @@ extension MethodParameter: NSCoding {}
 
 extension Modifier: NSCoding {}
 
-
-
-
 extension Subscript: NSCoding {}
 
 extension TupleElement: NSCoding {}
@@ -89,4 +84,3 @@ extension Typealias: NSCoding {}
 extension Types: NSCoding {}
 
 extension Variable: NSCoding {}
-

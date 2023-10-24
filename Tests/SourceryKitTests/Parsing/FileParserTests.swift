@@ -28,7 +28,7 @@ class FileParserTests: XCTestCase {
             ["skipEquality": NSNumber(value: true), "extraAnnotation": NSNumber(value: Float(2))],
             [:]
         ]
-        let expectedVariables = (1...3)
+        let expectedVariables = (1 ... 3)
             .map { Variable(name: "property\($0)", typeName: TypeName(name: "Int"), annotations: annotations[$0 - 1], definedInTypeName: TypeName(name: "Foo")) }
         let expectedType = Class(name: "Foo", variables: expectedVariables, annotations: ["skipEquality": NSNumber(value: true)])
 
@@ -52,7 +52,7 @@ class FileParserTests: XCTestCase {
             ["fileAnnotation": NSNumber(value: true), "skipEquality": NSNumber(value: true), "extraAnnotation": NSNumber(value: Float(2))],
             ["fileAnnotation": NSNumber(value: true)]
         ]
-        let expectedVariables = (1...3)
+        let expectedVariables = (1 ... 3)
             .map { Variable(name: "property\($0)", typeName: TypeName(name: "Int"), annotations: annotations[$0 - 1], definedInTypeName: TypeName(name: "Foo")) }
         let expectedType = Class(name: "Foo", variables: expectedVariables, annotations: ["fileAnnotation": NSNumber(value: true), "skipEquality": NSNumber(value: true)])
 
@@ -466,100 +466,109 @@ class FileParserTests: XCTestCase {
     }
 
     func test_enum_parsesCasesWithInlineAnnotations() {
-        XCTAssertEqual("""
-        enum Foo {
-            //sourcery:begin: block
-            /* sourcery: first, second = \"value\" */ case optionA(/* sourcery: first, second = \"value\" */Int);
-            /* sourcery: third */ case optionB
-            case optionC
-            //sourcery:end
-        }
-        """.parse().types.first, Enum(
-            name: "Foo",
-            cases: [
-                EnumCase(name: "optionA", associatedValues: [
-                    AssociatedValue(name: nil, typeName: TypeName(name: "Int"), annotations: [
+        XCTAssertEqual(
+            """
+            enum Foo {
+                //sourcery:begin: block
+                /* sourcery: first, second = \"value\" */ case optionA(/* sourcery: first, second = \"value\" */Int);
+                /* sourcery: third */ case optionB
+                case optionC
+                //sourcery:end
+            }
+            """.parse().types.first,
+            Enum(
+                name: "Foo",
+                cases: [
+                    EnumCase(name: "optionA", associatedValues: [
+                        AssociatedValue(name: nil, typeName: TypeName(name: "Int"), annotations: [
+                            "first": NSNumber(value: true),
+                            "second": "value" as NSString,
+                            "block": NSNumber(value: true)
+                        ])
+                    ], annotations: [
+                        "block": NSNumber(value: true),
                         "first": NSNumber(value: true),
-                        "second": "value" as NSString,
+                        "second": "value" as NSString
+                    ]),
+                    EnumCase(name: "optionB", annotations: [
+                        "block": NSNumber(value: true),
+                        "third": NSNumber(value: true)
+                    ]),
+                    EnumCase(name: "optionC", annotations: [
                         "block": NSNumber(value: true)
                     ])
-                ], annotations: [
-                    "block": NSNumber(value: true),
-                    "first": NSNumber(value: true),
-                    "second": "value" as NSString
-                ]),
-                EnumCase(name: "optionB", annotations: [
-                    "block": NSNumber(value: true),
-                    "third": NSNumber(value: true)
-                ]),
-                EnumCase(name: "optionC", annotations: [
-                    "block": NSNumber(value: true)
-                ])
-            ])
+                ]
+            )
         )
     }
 
     func test_enum_parsesOneLineCasesWithInlineAnnotations() {
-        XCTAssertEqual("""
-        enum Foo {
-            //sourcery:begin: block
-            case /* sourcery: first, second = \"value\" */ optionA(Int), /* sourcery: third, fourth = \"value\" */ optionB, optionC
-            //sourcery:end
-        }
-        """.parse().types.first, Enum(
-            name: "Foo",
-            cases: [
-                EnumCase(name: "optionA", associatedValues: [
-                    AssociatedValue(name: nil, typeName: TypeName(name: "Int"), annotations: [
+        XCTAssertEqual(
+            """
+            enum Foo {
+                //sourcery:begin: block
+                case /* sourcery: first, second = \"value\" */ optionA(Int), /* sourcery: third, fourth = \"value\" */ optionB, optionC
+                //sourcery:end
+            }
+            """.parse().types.first,
+            Enum(
+                name: "Foo",
+                cases: [
+                    EnumCase(name: "optionA", associatedValues: [
+                        AssociatedValue(name: nil, typeName: TypeName(name: "Int"), annotations: [
+                            "block": NSNumber(value: true)
+                        ])
+                    ], annotations: [
+                        "block": NSNumber(value: true),
+                        "first": NSNumber(value: true),
+                        "second": "value" as NSString
+                    ]),
+                    EnumCase(name: "optionB", annotations: [
+                        "block": NSNumber(value: true),
+                        "third": NSNumber(value: true),
+                        "fourth": "value" as NSString
+                    ]),
+                    EnumCase(name: "optionC", annotations: [
                         "block": NSNumber(value: true)
                     ])
-                ], annotations: [
-                    "block": NSNumber(value: true),
-                    "first": NSNumber(value: true),
-                    "second": "value" as NSString
-                ]),
-                EnumCase(name: "optionB", annotations: [
-                    "block": NSNumber(value: true),
-                    "third": NSNumber(value: true),
-                    "fourth": "value" as NSString
-                ]),
-                EnumCase(name: "optionC", annotations: [
-                    "block": NSNumber(value: true)
-                ])
-            ])
+                ]
+            )
         )
     }
 
     func test_enum_parsesCasesWithAnnotationsAndComputedVariables() {
-        XCTAssertEqual("""
-        enum Foo {
-            // sourcery: var
-            var first: Int { return 0 }
-            // sourcery: first, second=\"value\"
-            case optionA(Int)
-            // sourcery: var
-            var second: Int { return 0 }
-            // sourcery: third
-            case optionB
-            case optionC
-        }
-        """.parse().types.first, Enum(
-            name: "Foo",
-            cases: [
-                EnumCase(name: "optionA", associatedValues: [
-                    AssociatedValue(name: nil, typeName: TypeName(name: "Int"))
-                ], annotations: [
-                    "first": NSNumber(value: true),
-                    "second": "value" as NSString
-                ]),
-                EnumCase(name: "optionB", annotations: [
-                    "third": NSNumber(value: true)
-                ]),
-                EnumCase(name: "optionC")
-            ], variables: [
-                Variable(name: "first", typeName: TypeName(name: "Int"), accessLevel: (.internal, .none), isComputed: true, annotations: [ "var": NSNumber(value: true) ], definedInTypeName: TypeName(name: "Foo")),
-                Variable(name: "second", typeName: TypeName(name: "Int"), accessLevel: (.internal, .none), isComputed: true, annotations: [ "var": NSNumber(value: true) ], definedInTypeName: TypeName(name: "Foo"))
-            ])
+        XCTAssertEqual(
+            """
+            enum Foo {
+                // sourcery: var
+                var first: Int { return 0 }
+                // sourcery: first, second=\"value\"
+                case optionA(Int)
+                // sourcery: var
+                var second: Int { return 0 }
+                // sourcery: third
+                case optionB
+                case optionC
+            }
+            """.parse().types.first,
+            Enum(
+                name: "Foo",
+                cases: [
+                    EnumCase(name: "optionA", associatedValues: [
+                        AssociatedValue(name: nil, typeName: TypeName(name: "Int"))
+                    ], annotations: [
+                        "first": NSNumber(value: true),
+                        "second": "value" as NSString
+                    ]),
+                    EnumCase(name: "optionB", annotations: [
+                        "third": NSNumber(value: true)
+                    ]),
+                    EnumCase(name: "optionC")
+                ], variables: [
+                    Variable(name: "first", typeName: TypeName(name: "Int"), accessLevel: (.internal, .none), isComputed: true, annotations: ["var": NSNumber(value: true)], definedInTypeName: TypeName(name: "Foo")),
+                    Variable(name: "second", typeName: TypeName(name: "Int"), accessLevel: (.internal, .none), isComputed: true, annotations: ["var": NSNumber(value: true)], definedInTypeName: TypeName(name: "Foo"))
+                ]
+            )
         )
     }
 
@@ -613,7 +622,6 @@ class FileParserTests: XCTestCase {
             )
         ])
     }
-
 
     func test_enum_parsesInheritedType() {
         XCTAssertEqual("enum Foo: SomeProtocol { case optionA }; protocol SomeProtocol {}".parse().types, [
@@ -695,21 +703,21 @@ class FileParserTests: XCTestCase {
             ])
         ])
         XCTAssertEqual("""
-            enum Foo {
-                /// Option A
-                case optionA
-                /// Option B
-                case optionB
-                /// Option C
-                indirect case optionC(Foo)
-            }
-            """.parse(parseDocumentation: true).types, [
-                Enum(name: "Foo", accessLevel: .internal, isExtension: false, inheritedTypes: [], cases: [
-                    EnumCase(name: "optionA", documentation: ["Option A"], indirect: false),
-                    EnumCase(name: "optionB", documentation: ["Option B"]),
-                    EnumCase(name: "optionC", associatedValues: [AssociatedValue(typeName: TypeName(name: "Foo"))], documentation: ["Option C"], indirect: true)
-                ])
+        enum Foo {
+            /// Option A
+            case optionA
+            /// Option B
+            case optionB
+            /// Option C
+            indirect case optionC(Foo)
+        }
+        """.parse(parseDocumentation: true).types, [
+            Enum(name: "Foo", accessLevel: .internal, isExtension: false, inheritedTypes: [], cases: [
+                EnumCase(name: "optionA", documentation: ["Option A"], indirect: false),
+                EnumCase(name: "optionB", documentation: ["Option B"]),
+                EnumCase(name: "optionC", associatedValues: [AssociatedValue(typeName: TypeName(name: "Foo"))], documentation: ["Option C"], indirect: true)
             ])
+        ])
     }
 
     func test_enum_parsesEnumsWithVoidAssociatedType() {
@@ -741,35 +749,44 @@ class FileParserTests: XCTestCase {
         protocol SomeGenericProtocol: GenericProtocol {}
         """.parse().types.first, Protocol(name: "SomeGenericProtocol", inheritedTypes: ["GenericProtocol"]))
 
-        XCTAssertEqual("""
-        protocol SomeGenericProtocol: GenericProtocol where LeftType == RightType {}
-        """.parse().types.first, Protocol(
-            name: "SomeGenericProtocol",
-            inheritedTypes: ["GenericProtocol"],
-            genericRequirements: [
-                GenericRequirement(leftType: .init(name: "LeftType"), rightType: .init(typeName: .init("RightType")), relationship: .equals)
-            ])
+        XCTAssertEqual(
+            """
+            protocol SomeGenericProtocol: GenericProtocol where LeftType == RightType {}
+            """.parse().types.first,
+            Protocol(
+                name: "SomeGenericProtocol",
+                inheritedTypes: ["GenericProtocol"],
+                genericRequirements: [
+                    GenericRequirement(leftType: .init(name: "LeftType"), rightType: .init(typeName: .init("RightType")), relationship: .equals)
+                ]
+            )
         )
 
-        XCTAssertEqual("""
-        protocol SomeGenericProtocol: GenericProtocol where LeftType: RightType {}
-        """.parse().types.first, Protocol(
-            name: "SomeGenericProtocol",
-            inheritedTypes: ["GenericProtocol"],
-            genericRequirements: [
-                GenericRequirement(leftType: .init(name: "LeftType"), rightType: .init(typeName: .init("RightType")), relationship: .conformsTo)
-            ])
+        XCTAssertEqual(
+            """
+            protocol SomeGenericProtocol: GenericProtocol where LeftType: RightType {}
+            """.parse().types.first,
+            Protocol(
+                name: "SomeGenericProtocol",
+                inheritedTypes: ["GenericProtocol"],
+                genericRequirements: [
+                    GenericRequirement(leftType: .init(name: "LeftType"), rightType: .init(typeName: .init("RightType")), relationship: .conformsTo)
+                ]
+            )
         )
 
-        XCTAssertEqual("""
-        protocol SomeGenericProtocol: GenericProtocol where LeftType == RightType, LeftType2: RightType2 {}
-        """.parse().types.first, Protocol(
-            name: "SomeGenericProtocol",
-            inheritedTypes: ["GenericProtocol"],
-            genericRequirements: [
-                GenericRequirement(leftType: .init(name: "LeftType"), rightType: .init(typeName: .init("RightType")), relationship: .equals),
-                GenericRequirement(leftType: .init(name: "LeftType2"), rightType: .init(typeName: .init("RightType2")), relationship: .conformsTo)
-            ])
+        XCTAssertEqual(
+            """
+            protocol SomeGenericProtocol: GenericProtocol where LeftType == RightType, LeftType2: RightType2 {}
+            """.parse().types.first,
+            Protocol(
+                name: "SomeGenericProtocol",
+                inheritedTypes: ["GenericProtocol"],
+                genericRequirements: [
+                    GenericRequirement(leftType: .init(name: "LeftType"), rightType: .init(typeName: .init("RightType")), relationship: .equals),
+                    GenericRequirement(leftType: .init(name: "LeftType2"), rightType: .init(typeName: .init("RightType2")), relationship: .conformsTo)
+                ]
+            )
         )
     }
 

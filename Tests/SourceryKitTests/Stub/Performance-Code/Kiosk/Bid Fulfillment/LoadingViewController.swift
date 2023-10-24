@@ -1,44 +1,40 @@
-import UIKit
-import Artsy_UILabels
 import ARAnalytics
+import Artsy_UILabels
 import RxSwift
+import UIKit
 
 class LoadingViewController: UIViewController {
-
     var provider: Networking!
 
-    @IBOutlet weak var titleLabel: ARSerifLabel!
+    @IBOutlet var titleLabel: ARSerifLabel!
     @IBOutlet var bidDetailsPreviewView: BidDetailsPreviewView!
 
-    @IBOutlet weak var statusMessage: ARSerifLabel!
-    @IBOutlet weak var spinner: Spinner!
-    @IBOutlet weak var bidConfirmationImageView: UIImageView!
+    @IBOutlet var statusMessage: ARSerifLabel!
+    @IBOutlet var spinner: Spinner!
+    @IBOutlet var bidConfirmationImageView: UIImageView!
 
     var placingBid = true
 
     var animate = true
 
-    @IBOutlet weak var backToAuctionButton: SecondaryActionButton!
-    @IBOutlet weak var placeHigherBidButton: ActionButton!
+    @IBOutlet var backToAuctionButton: SecondaryActionButton!
+    @IBOutlet var placeHigherBidButton: ActionButton!
 
     fileprivate let _viewWillDisappear = PublishSubject<Void>()
     var viewWillDisappear: Observable<Void> {
-        return self._viewWillDisappear.asObserver()
+        self._viewWillDisappear.asObserver()
     }
 
-    lazy var viewModel: LoadingViewModelType = {
-        return LoadingViewModel(
-            provider: self.provider,
-            bidNetworkModel: BidderNetworkModel(provider: self.provider, bidDetails: self.fulfillmentNav().bidDetails),
-            placingBid: self.placingBid,
-            actionsComplete: self.viewWillDisappear
-        )
-    }()
+    lazy var viewModel: LoadingViewModelType = LoadingViewModel(
+        provider: self.provider,
+        bidNetworkModel: BidderNetworkModel(provider: self.provider, bidDetails: self.fulfillmentNav().bidDetails),
+        placingBid: self.placingBid,
+        actionsComplete: self.viewWillDisappear
+    )
 
     lazy var recognizer = UITapGestureRecognizer()
     lazy var closeSelf: () -> Void = { [weak self] in
         self?.fulfillmentContainer()?.closeFulfillmentModal()
-        return
     }
 
     override func viewDidLoad() {
@@ -63,7 +59,8 @@ class LoadingViewController: UIViewController {
 
         // The view model will perform actions like registering a user if necessary,
         // placing a bid if requested, and polling for results.
-        viewModel.performActions().subscribe(onNext: nil,
+        viewModel.performActions().subscribe(
+            onNext: nil,
             onError: { [weak self] error in
                 logger.log("Bidder error \(error)")
                 self?.bidderError(error as NSError)
@@ -75,8 +72,9 @@ class LoadingViewController: UIViewController {
             onDisposed: { [weak self] in
                 // Regardless of error or completion. hide the spinner.
                 self?.spinner.isHidden = true
-            })
-            .addDisposableTo(rx_disposeBag)
+            }
+        )
+        .addDisposableTo(rx_disposeBag)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -84,7 +82,7 @@ class LoadingViewController: UIViewController {
         _viewWillDisappear.onNext()
     }
 
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+    override func prepare(for segue: UIStoryboardSegue, sender _: Any?) {
         if segue == .PushtoRegisterConfirmed {
             let detailsVC = segue.destination as! YourBiddingDetailsViewController
             detailsVC.confirmationImage = bidConfirmationImageView.image
@@ -100,7 +98,6 @@ class LoadingViewController: UIViewController {
 }
 
 extension LoadingViewController {
-
     func finishUp() {
         let reserveNotMet = viewModel.reserveNotMet.value
         let isHighestBidder = viewModel.isHighestBidder.value
@@ -110,10 +107,9 @@ extension LoadingViewController {
         logger.log("Bidding process result: reserveNotMet \(reserveNotMet), isHighestBidder \(isHighestBidder), bidIsResolved \(bidIsResolved), createdNewbidder \(createdNewBidder)")
 
         if placingBid {
-            ARAnalytics.event("Placed a bid", withProperties: ["top_bidder" : isHighestBidder, "sale_artwork": viewModel.bidDetails.saleArtwork?.artwork.id ?? ""])
+            ARAnalytics.event("Placed a bid", withProperties: ["top_bidder": isHighestBidder, "sale_artwork": viewModel.bidDetails.saleArtwork?.artwork.id ?? ""])
 
             if bidIsResolved {
-
                 if reserveNotMet {
                     handleReserveNotMet()
                 } else if isHighestBidder {
@@ -218,15 +214,19 @@ extension LoadingViewController {
     }
 
     func handleRegistrationFailed(error: NSError) {
-        handleError(withTitle: "Registration Failed",
+        handleError(
+            withTitle: "Registration Failed",
             message: "There was a problem registering for the auction. Please speak to an Artsy representative.",
-            error: error)
+            error: error
+        )
     }
 
     func bidPlacementFailed(error: NSError) {
-        handleError(withTitle: "Bid Failed",
+        handleError(
+            withTitle: "Bid Failed",
             message: "There was a problem placing your bid. Please speak to an Artsy representative.",
-            error: error)
+            error: error
+        )
     }
 
     func handleError(withTitle title: String, message: String, error: NSError) {
@@ -241,14 +241,14 @@ extension LoadingViewController {
         }
     }
 
-    @IBAction func placeHigherBidTapped(_ sender: AnyObject) {
-        self.fulfillmentNav().bidDetails.bidAmountCents.value = 0
-        self.performSegue(.PlaceaHigherBidAfterNotBeingHighestBidder)
+    @IBAction func placeHigherBidTapped(_: AnyObject) {
+        fulfillmentNav().bidDetails.bidAmountCents.value = 0
+        performSegue(.PlaceaHigherBidAfterNotBeingHighestBidder)
     }
 
-    @IBAction func backToAuctionTapped(_ sender: AnyObject) {
+    @IBAction func backToAuctionTapped(_: AnyObject) {
         if viewModel.createdNewBidder.value {
-            self.performSegue(.PushtoRegisterConfirmed)
+            performSegue(.PushtoRegisterConfirmed)
         } else {
             closeSelf()
         }

@@ -27,4 +27,3 @@ func == (lhs: FooSubclass, rhs: FooSubclass) -> Bool {
 
     return true
 }
-

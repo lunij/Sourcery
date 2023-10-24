@@ -1,7 +1,7 @@
 import Foundation
 import PathKit
-import XcodeProj
 import SourceryRuntime
+import XcodeProj
 
 private struct UnableToAddSourceFile: Error {
     var targetName: String
@@ -9,19 +9,18 @@ private struct UnableToAddSourceFile: Error {
 }
 
 extension XcodeProj {
-
     func target(named targetName: String) -> PBXTarget? {
-        return pbxproj.targets(named: targetName).first
+        pbxproj.targets(named: targetName).first
     }
 
-    func fullPath<E: PBXFileElement>(fileElement: E, sourceRoot: Path) -> Path? {
-        return try? fileElement.fullPath(sourceRoot: sourceRoot)
+    func fullPath(fileElement: some PBXFileElement, sourceRoot: Path) -> Path? {
+        try? fileElement.fullPath(sourceRoot: sourceRoot)
     }
 
     func sourceFilesPaths(target: PBXTarget, sourceRoot: Path) -> [Path] {
         let sourceFiles = (try? target.sourceFiles()) ?? []
         return sourceFiles
-            .compactMap({ fullPath(fileElement: $0, sourceRoot: sourceRoot) })
+            .compactMap { fullPath(fileElement: $0, sourceRoot: sourceRoot) }
     }
 
     var rootGroup: PBXGroup? {
@@ -54,13 +53,12 @@ extension XcodeProj {
     }
 
     func createGroupIfNeeded(named group: String? = nil, sourceRoot: Path) -> PBXGroup? {
-
-        guard let rootGroup = rootGroup else {
+        guard let rootGroup else {
             logger.warning("Unable to find rootGroup for the project")
             return nil
         }
 
-        guard let group = group else {
+        guard let group else {
             return rootGroup
         }
 
@@ -90,10 +88,11 @@ extension XcodeProj {
             groupName = group
         }
 
-        if let groupName = groupName {
+        if let groupName {
             do {
                 if let addedGroup = addGroup(named: groupName, to: parentGroup),
-                   let groupPath = fullPath(fileElement: addedGroup, sourceRoot: sourceRoot) {
+                   let groupPath = fullPath(fileElement: addedGroup, sourceRoot: sourceRoot)
+                {
                     fileGroup = addedGroup
                     try groupPath.mkpath()
                 }
@@ -103,27 +102,24 @@ extension XcodeProj {
         }
         return fileGroup
     }
-    
 }
 
 private extension XcodeProj {
-    
     func findGroup(in group: PBXGroup, components: [String]) -> (group: PBXGroup?, components: [String]) {
         let existingGroup = findGroup(in: group, components: components, validate: { $0?.path == $1 })
-        
+
         if existingGroup.group?.path != nil {
             return existingGroup
         }
-        
+
         return findGroup(in: group, components: components, validate: { $0?.name == $1 })
     }
-    
+
     func findGroup(in group: PBXGroup, components: [String], validate: (PBXFileElement?, String?) -> Bool) -> (group: PBXGroup?, components: [String]) {
-        return components.reduce((group: group as PBXGroup?, components: components)) { current, name in
+        components.reduce((group: group as PBXGroup?, components: components)) { current, name in
             let first = current.group?.children.first { validate($0, name) } as? PBXGroup
             let result = first ?? current.group
             return (result, current.components.filter { !validate(result, $0) })
         }
     }
-    
 }

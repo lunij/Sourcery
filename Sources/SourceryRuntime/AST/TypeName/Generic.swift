@@ -16,12 +16,12 @@ import Foundation
 
     public var asSource: String {
         let arguments = typeParameters
-          .map({ $0.typeName.asSource })
-          .joined(separator: ", ")
+            .map(\.typeName.asSource)
+            .joined(separator: ", ")
         return "\(name)<\(arguments)>"
     }
 
-    public override var description: String {
+    override public var description: String {
         asSource
     }
 
@@ -44,7 +44,6 @@ import Foundation
 
 /// Descibes Swift generic type parameter
 @objcMembers public final class GenericTypeParameter: NSObject, SourceryModel {
-
     /// Generic parameter type name
     public var typeName: TypeName
 

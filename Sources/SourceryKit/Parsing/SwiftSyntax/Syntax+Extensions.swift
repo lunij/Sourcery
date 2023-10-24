@@ -13,12 +13,12 @@ public extension TriviaPiece {
              .carriageReturnLineFeeds,
              .unexpectedText,
              .shebang:
-            return nil
-        case .lineComment(let comment),
-             .blockComment(let comment),
-             .docLineComment(let comment),
-             .docBlockComment(let comment):
-            return comment
+            nil
+        case let .lineComment(comment),
+             let .blockComment(comment),
+             let .docLineComment(comment),
+             let .docBlockComment(comment):
+            comment
         }
     }
 }
@@ -40,7 +40,6 @@ public protocol AsyncReThrowsFixup {
     var fixedThrowsOrRethrowsKeyword: TokenSyntax? { get }
 }
 
-
 public extension AsyncThrowsFixup {
     var fixedAsyncKeyword: TokenSyntax? {
         if asyncKeyword?.tokenKind == .throwsKeyword {
@@ -51,10 +50,10 @@ public extension AsyncThrowsFixup {
     }
 
     var fixedThrowsKeyword: TokenSyntax? {
-        if asyncKeyword?.tokenKind == .throwsKeyword && throwsKeyword == nil {
-            return asyncKeyword
+        if asyncKeyword?.tokenKind == .throwsKeyword, throwsKeyword == nil {
+            asyncKeyword
         } else {
-            return throwsKeyword
+            throwsKeyword
         }
     }
 }
@@ -69,13 +68,14 @@ public extension AsyncReThrowsFixup {
     }
 
     var fixedThrowsOrRethrowsKeyword: TokenSyntax? {
-        if asyncKeyword?.tokenKind == .throwsKeyword && throwsOrRethrowsKeyword == nil {
-            return asyncKeyword
+        if asyncKeyword?.tokenKind == .throwsKeyword, throwsOrRethrowsKeyword == nil {
+            asyncKeyword
         } else {
-            return throwsOrRethrowsKeyword
+            throwsOrRethrowsKeyword
         }
     }
 }
+
 extension AccessorListSyntax.Element: AsyncThrowsFixup {}
 extension FunctionTypeSyntax: AsyncReThrowsFixup {}
 

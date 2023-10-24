@@ -1,5 +1,5 @@
-import UIKit
 import RxSwift
+import UIKit
 
 protocol RegistrationSubController {
     // I know, leaky abstraction, but the amount
@@ -9,7 +9,6 @@ protocol RegistrationSubController {
 }
 
 class RegisterViewController: UIViewController {
-
     @IBOutlet var flowView: RegisterFlowView!
     @IBOutlet var bidDetailsPreviewView: BidDetailsPreviewView!
     @IBOutlet var confirmButton: UIButton!
@@ -22,19 +21,19 @@ class RegisterViewController: UIViewController {
 
     fileprivate let _viewWillDisappear = PublishSubject<Void>()
     var viewWillDisappear: Observable<Void> {
-        return self._viewWillDisappear.asObserver()
+        _viewWillDisappear.asObserver()
     }
 
     func internalNavController() -> UINavigationController? {
-        return self.childViewControllers.first as? UINavigationController
+        childViewControllers.first as? UINavigationController
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        coordinator.storyboard = self.storyboard!
+        coordinator.storyboard = storyboard!
         let registerIndex = coordinator.currentIndex.asObservable()
-        let indexIsConfirmed = registerIndex.map { return ($0 == RegistrationIndex.confirmVC.toInt()) }
+        let indexIsConfirmed = registerIndex.map { $0 == RegistrationIndex.confirmVC.toInt() }
 
         indexIsConfirmed
             .not()
@@ -45,7 +44,7 @@ class RegisterViewController: UIViewController {
             .bindTo(flowView.highlightedIndex)
             .addDisposableTo(rx_disposeBag)
 
-        let details = self.fulfillmentNav().bidDetails
+        let details = fulfillmentNav().bidDetails
         flowView.details = details
         bidDetailsPreviewView.bidDetails = details
 
@@ -53,7 +52,7 @@ class RegisterViewController: UIViewController {
             .highlightedIndex
             .asObservable()
             .distinctUntilChanged()
-            .subscribe(onNext: { [weak self] (index) in
+            .subscribe(onNext: { [weak self] index in
                 if let _ = self?.fulfillmentNav() {
                     let registrationIndex = RegistrationIndex.fromInt(index)
 
@@ -77,7 +76,7 @@ class RegisterViewController: UIViewController {
     }
 
     func goToViewController(_ controller: UIViewController) {
-        self.internalNavController()!.viewControllers = [controller]
+        internalNavController()!.viewControllers = [controller]
 
         if let subscribableVC = controller as? RegistrationSubController {
             subscribableVC
@@ -94,8 +93,7 @@ class RegisterViewController: UIViewController {
         }
     }
 
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-
+    override func prepare(for segue: UIStoryboardSegue, sender _: Any?) {
         if segue == .ShowLoadingView {
             let nextViewController = segue.destination as! LoadingViewController
             nextViewController.placingBid = placingBid

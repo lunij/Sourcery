@@ -1,10 +1,9 @@
-import UIKit
+import Action
 import Moya
 import RxSwift
-import Action
+import UIKit
 
 class ConfirmYourBidPINViewController: UIViewController {
-
     fileprivate var _pin = Variable("")
 
     @IBOutlet var keypadContainer: KeypadContainerView!
@@ -12,14 +11,14 @@ class ConfirmYourBidPINViewController: UIViewController {
     @IBOutlet var confirmButton: Button!
     @IBOutlet var bidDetailsPreviewView: BidDetailsPreviewView!
 
-    lazy var pin: Observable<String> = { self.keypadContainer.stringValue }()
+    lazy var pin: Observable<String> = self.keypadContainer.stringValue
     lazy var networkModel: AdminCCBypassNetworkModelType = AdminCCBypassNetworkModel()
 
     var provider: Networking!
 
     // TODO: These all need to be changed.
     class func instantiateFromStoryboard(_ storyboard: UIStoryboard) -> ConfirmYourBidPINViewController {
-        return storyboard.viewController(withID: .ConfirmYourBidPIN) as! ConfirmYourBidPINViewController
+        storyboard.viewController(withID: .ConfirmYourBidPIN) as! ConfirmYourBidPINViewController
     }
 
     override func viewDidLoad() {
@@ -38,10 +37,10 @@ class ConfirmYourBidPINViewController: UIViewController {
             .bindTo(fulfillmentNav().bidDetails.bidderPIN)
             .addDisposableTo(rx_disposeBag)
 
-        let pinExists = pin.map { $0.isNotEmpty }
+        let pinExists = pin.map(\.isNotEmpty)
 
         let bidDetails = fulfillmentNav().bidDetails
-        let provider = self.provider
+        let provider = provider
 
         bidDetailsPreviewView.bidDetails = bidDetails
         /// verify if we can connect with number & pin
@@ -56,19 +55,19 @@ class ConfirmYourBidPINViewController: UIViewController {
                     loggedInProvider = provider
                 }
                 .flatMap { provider -> Observable<AuthorizedNetworking> in
-                    return provider
+                    provider
                         .request(ArtsyAuthenticatedAPI.me)
                         .filterSuccessfulStatusCodes()
                         .mapReplace(with: provider)
                 }
                 .flatMap { provider -> Observable<AuthorizedNetworking> in
-                    return me
+                    me
                         .fulfillmentNav()
                         .updateUserCredentials(loggedInProvider: loggedInProvider)
                         .mapReplace(with: provider)
                 }
                 .flatMap { provider -> Observable<Void> in
-                    return me
+                    me
                         .networkModel
                         .checkForAdminCCBypass(bidDetails.auctionID, authorizedNetworking: provider)
                         .flatMap { result -> Observable<Void> in
@@ -110,17 +109,17 @@ class ConfirmYourBidPINViewController: UIViewController {
         }
     }
 
-    @IBAction func forgotPINTapped(_ sender: AnyObject) {
+    @IBAction func forgotPINTapped(_: AnyObject) {
         let auctionID = fulfillmentNav().auctionID ?? ""
         let number = fulfillmentNav().bidDetails.newUser.phoneNumber.value ?? ""
-        let endpoint: ArtsyAPI = ArtsyAPI.bidderDetailsNotification(auctionID: auctionID, identifier: number)
+        let endpoint = ArtsyAPI.bidderDetailsNotification(auctionID: auctionID, identifier: number)
 
         let alertController = UIAlertController(title: "Forgot PIN", message: "We have sent your bidder details to your device.", preferredStyle: .alert)
 
-        let cancelAction = UIAlertAction(title: "Back", style: .cancel) { (_) in }
+        let cancelAction = UIAlertAction(title: "Back", style: .cancel) { _ in }
         alertController.addAction(cancelAction)
 
-        self.present(alertController, animated: true) {}
+        present(alertController, animated: true) {}
 
         provider.request(endpoint)
             .filterSuccessfulStatusCodes()
@@ -155,7 +154,7 @@ class ConfirmYourBidPINViewController: UIViewController {
 }
 
 private extension ConfirmYourBidPINViewController {
-    @IBAction func dev_loggedInTapped(_ sender: AnyObject) {
-        self.performSegue(.PINConfirmedhasCard)
+    @IBAction func dev_loggedInTapped(_: AnyObject) {
+        performSegue(.PINConfirmedhasCard)
     }
 }

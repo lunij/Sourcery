@@ -1,9 +1,8 @@
+import Artsy_UIFonts
 import Foundation
 import XNGMarkdownParser
-import Artsy_UIFonts
 
 class MarkdownParser: XNGMarkdownParser {
-
     override init() {
         super.init()
 

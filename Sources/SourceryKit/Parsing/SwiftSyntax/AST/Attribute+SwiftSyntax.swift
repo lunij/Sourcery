@@ -6,20 +6,20 @@ extension Attribute {
     convenience init(_ attribute: AttributeSyntax) {
         var arguments = [String: NSObject]()
         attribute.argument?.description
-          .split(separator: ",")
-          .enumerated()
-          .forEach { (idx, part) in
-              let components = part.split(separator: ":", maxSplits: 1)
-              switch components.count {
-              case 2:
-                  arguments[components[0].trimmed] = components[1].replacingOccurrences(of: "\"", with: "").trimmed as NSString
-              case 1:
-                  arguments["\(idx)"] = components[0].replacingOccurrences(of: "\"", with: "").trimmed as NSString
-              default:
-                  logger.astError("Unrecognized attribute format \(attribute.argument?.description ?? "")")
-                  return
-              }
-          }
+            .split(separator: ",")
+            .enumerated()
+            .forEach { idx, part in
+                let components = part.split(separator: ":", maxSplits: 1)
+                switch components.count {
+                case 2:
+                    arguments[components[0].trimmed] = components[1].replacingOccurrences(of: "\"", with: "").trimmed as NSString
+                case 1:
+                    arguments["\(idx)"] = components[0].replacingOccurrences(of: "\"", with: "").trimmed as NSString
+                default:
+                    logger.astError("Unrecognized attribute format \(attribute.argument?.description ?? "")")
+                    return
+                }
+            }
 
         self.init(name: attribute.attributeName.text.trimmed, arguments: arguments, description: attribute.withoutTrivia().description.trimmed)
     }
@@ -43,15 +43,15 @@ extension Attribute {
 
     static func from(_ attributes: AttributeListSyntax?) -> AttributeList {
         let array = attributes?
-          .compactMap { syntax -> Attribute? in
-            if let syntax = syntax.as(AttributeSyntax.self) {
-                return Attribute(syntax)
-            } else if let syntax = syntax.as(CustomAttributeSyntax.self) {
-                return Attribute(syntax)
-            } else {
-                return nil
-            }
-          } ?? []
+            .compactMap { syntax -> Attribute? in
+                if let syntax = syntax.as(AttributeSyntax.self) {
+                    Attribute(syntax)
+                } else if let syntax = syntax.as(CustomAttributeSyntax.self) {
+                    Attribute(syntax)
+                } else {
+                    nil
+                }
+            } ?? []
 
         var final = AttributeList()
         array.forEach { attribute in
@@ -68,18 +68,18 @@ private extension TokenKind {
     var isIdentifier: Bool {
         switch self {
         case .identifier:
-            return true
+            true
         default:
-            return false
+            false
         }
     }
 
     var isComma: Bool {
         switch self {
         case .comma:
-            return true
+            true
         default:
-            return false
+            false
         }
     }
 }
@@ -92,7 +92,8 @@ private extension TupleExprElementSyntax {
         if let argumentLabelToken = iterator.next(),
            let colonToken = iterator.next(),
            case let .identifier(argumentLabel) = argumentLabelToken.tokenKind,
-           colonToken.tokenKind == .colon {
+           colonToken.tokenKind == .colon
+        {
             // This argument has a label
             let valueText = getConcatenatedTokenText(iterator: &iterator)
             return (argumentLabel.trimmed, valueText)
@@ -113,7 +114,7 @@ private extension TupleExprElementSyntax {
         }
 
         valueText = valueText.replacingOccurrences(of: "\"", with: "").trimmed
-        if lastTokenWasComma && valueText.hasSuffix(",") {
+        if lastTokenWasComma, valueText.hasSuffix(",") {
             valueText.remove(at: valueText.index(before: valueText.endIndex))
         }
         return valueText

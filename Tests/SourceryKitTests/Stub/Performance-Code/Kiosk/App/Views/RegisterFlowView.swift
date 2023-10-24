@@ -1,9 +1,8 @@
-import UIKit
 import ORStackView
 import RxSwift
+import UIKit
 
 class RegisterFlowView: ORStackView {
-
     let highlightedIndex = Variable(0)
 
     lazy var appSetup: AppSetup = .sharedState
@@ -24,17 +23,15 @@ class RegisterFlowView: ORStackView {
 
     fileprivate struct SubViewParams {
         let title: String
-        let getters: Array<(NewUser) -> String?>
+        let getters: [(NewUser) -> String?]
     }
 
-    fileprivate lazy var subViewParams: Array<SubViewParams> = {
-        return [
-            [SubViewParams(title: "Mobile", getters: [ { $0.phoneNumber.value }])],
-            [SubViewParams(title: "Email", getters: [ { $0.email.value }])],
-            [SubViewParams(title: "Postal/Zip", getters: [ { $0.zipCode.value }])].filter { _ in self.appSetup.needsZipCode },
-            [SubViewParams(title: "Credit Card", getters: [ { $0.creditCardName.value }, { $0.creditCardType.value }])]
-        ].flatMap {$0}
-    }()
+    fileprivate lazy var subViewParams: [SubViewParams] = [
+        [SubViewParams(title: "Mobile", getters: [{ $0.phoneNumber.value }])],
+        [SubViewParams(title: "Email", getters: [{ $0.email.value }])],
+        [SubViewParams(title: "Postal/Zip", getters: [{ $0.zipCode.value }])].filter { _ in self.appSetup.needsZipCode },
+        [SubViewParams(title: "Credit Card", getters: [{ $0.creditCardName.value }, { $0.creditCardType.value }])]
+    ].flatMap { $0 }
 
     func update() {
         let user = details!.newUser
@@ -74,7 +71,6 @@ class RegisterFlowView: ORStackView {
     }
 
     class ItemView: UIView {
-
         var titleLabel: UILabel?
 
         func highlight() {
@@ -118,7 +114,6 @@ class RegisterFlowView: ORStackView {
             button.constrainHeight("36")
 
             return button
-
         }
     }
 }

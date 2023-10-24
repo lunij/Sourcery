@@ -49,23 +49,23 @@ final class Image: NSObject, JSONAbleType {
         let maxTiledWidth = json["max_tiled_width"].int ?? 1
         let isDefault = json["is_default"].bool ?? false
 
-        let dimension = max( maxTiledWidth, maxTiledHeight)
-        let logD = logf( Float(dimension) )
+        let dimension = max(maxTiledWidth, maxTiledHeight)
+        let logD = logf(Float(dimension))
         let log2 = Float(logf(2))
 
-        let maxLevel = Int( ceilf( logD / log2) )
+        let maxLevel = Int(ceilf(logD / log2))
 
         return Image(id: id, imageFormatString: imageFormatString, imageVersions: imageVersions, imageSize: imageSize, aspectRatio: aspectRatio, baseURL: baseURL, tileSize: tileSize, maxTiledHeight: maxTiledHeight, maxTiledWidth: maxTiledWidth, maxLevel: maxLevel, isDefault: isDefault)
     }
 
     func thumbnailURL() -> URL? {
-        let preferredVersions = { () -> Array<String> in
+        let preferredVersions = { () -> [String] in
             // For very tall images, the "medium" version looks terribad.
             // In the long-term, we have an issue to fix this for good: https://github.com/artsy/eidolon/issues/396
             if ["57be35d7a09a6711ab004fa5", "57be1fb4cd530e65fe000862"].contains(self.id) {
-                return ["large", "larger"]
+                ["large", "larger"]
             } else {
-                return ["medium", "large", "larger"]
+                ["medium", "large", "larger"]
             }
         }()
 
@@ -73,12 +73,12 @@ final class Image: NSObject, JSONAbleType {
     }
 
     func fullsizeURL() -> URL? {
-        return urlFromPreferenceList(["larger", "large", "medium"])
+        urlFromPreferenceList(["larger", "large", "medium"])
     }
 
-    fileprivate func urlFromPreferenceList(_ preferenceList: Array<String>) -> URL? {
+    fileprivate func urlFromPreferenceList(_ preferenceList: [String]) -> URL? {
         if let format = preferenceList.filter({ self.imageVersions.contains($0) }).first {
-            let path = NSString(string: self.imageFormatString).replacingOccurrences(of: ":version", with: format)
+            let path = NSString(string: imageFormatString).replacingOccurrences(of: ":version", with: format)
             return URL(string: path)
         }
         return nil

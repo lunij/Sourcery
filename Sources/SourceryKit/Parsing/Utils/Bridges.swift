@@ -1,31 +1,31 @@
 import Foundation
 
-extension Array {
-    public func bridge() -> NSArray {
-        return self as NSArray
+public extension Array {
+    func bridge() -> NSArray {
+        self as NSArray
     }
 }
 
-extension CharacterSet {
-    public func bridge() -> NSCharacterSet {
-        return self as NSCharacterSet
+public extension CharacterSet {
+    func bridge() -> NSCharacterSet {
+        self as NSCharacterSet
     }
 }
 
-extension Dictionary {
-    public func bridge() -> NSDictionary {
-        return self as NSDictionary
+public extension Dictionary {
+    func bridge() -> NSDictionary {
+        self as NSDictionary
     }
 }
 
-extension NSString {
-    public func bridge() -> String {
-        return self as String
+public extension NSString {
+    func bridge() -> String {
+        self as String
     }
 }
 
-extension String {
-    public func bridge() -> NSString {
-        return self as NSString
+public extension String {
+    func bridge() -> NSString {
+        self as NSString
     }
 }

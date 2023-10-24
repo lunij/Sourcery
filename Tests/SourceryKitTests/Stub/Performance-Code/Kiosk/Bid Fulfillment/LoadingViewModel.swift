@@ -1,9 +1,8 @@
-import Foundation
 import ARAnalytics
+import Foundation
 import RxSwift
 
 protocol LoadingViewModelType {
-
     var createdNewBidder: Variable<Bool> { get }
     var bidIsResolved: Variable<Bool> { get }
     var isHighestBidder: Variable<Bool> { get }
@@ -18,12 +17,9 @@ class LoadingViewModel: NSObject, LoadingViewModelType {
     let placingBid: Bool
     let bidderNetworkModel: BidderNetworkModelType
 
-    lazy var placeBidNetworkModel: PlaceBidNetworkModelType = {
-        return PlaceBidNetworkModel(bidDetails: self.bidderNetworkModel.bidDetails)
-    }()
-    lazy var bidCheckingModel: BidCheckingNetworkModelType = {
-        return BidCheckingNetworkModel(provider: self.provider, bidDetails: self.bidderNetworkModel.bidDetails)
-    }()
+    lazy var placeBidNetworkModel: PlaceBidNetworkModelType = PlaceBidNetworkModel(bidDetails: self.bidderNetworkModel.bidDetails)
+
+    lazy var bidCheckingModel: BidCheckingNetworkModelType = BidCheckingNetworkModel(provider: self.provider, bidDetails: self.bidderNetworkModel.bidDetails)
 
     let provider: Networking
     let createdNewBidder = Variable(false)
@@ -32,12 +28,12 @@ class LoadingViewModel: NSObject, LoadingViewModelType {
     let reserveNotMet = Variable(false)
 
     var bidDetails: BidDetails {
-        return bidderNetworkModel.bidDetails
+        bidderNetworkModel.bidDetails
     }
 
     init(provider: Networking, bidNetworkModel: BidderNetworkModelType, placingBid: Bool, actionsComplete: Observable<Void>) {
         self.provider = provider
-        self.bidderNetworkModel = bidNetworkModel
+        bidderNetworkModel = bidNetworkModel
         self.placingBid = placingBid
 
         super.init()
@@ -61,7 +57,7 @@ class LoadingViewModel: NSObject, LoadingViewModelType {
     /// - Placing bids for users
     /// - Polling for bid results
     func performActions() -> Observable<Void> {
-        return bidderNetworkModel
+        bidderNetworkModel
             .createOrGetBidder()
             .flatMap { [weak self] provider -> Observable<(String, AuthorizedNetworking)> in
                 guard let me = self else { return .empty() }
@@ -76,7 +72,7 @@ class LoadingViewModel: NSObject, LoadingViewModelType {
                 return me
                     .placeBidNetworkModel
                     .bid(provider)
-                    .map { return ($0, provider) }
+                    .map { ($0, provider) }
             }
             .flatMap { [weak self] tuple -> Observable<Void> in
                 guard let me = self else { return .empty() }

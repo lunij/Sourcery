@@ -2,7 +2,6 @@ import Foundation
 
 /// Describes subscript
 @objcMembers public final class Subscript: NSObject, SourceryModel, Annotated, Documented, Definition {
-
     /// Method parameters
     public var parameters: [MethodParameter]
 
@@ -11,7 +10,7 @@ import Foundation
 
     /// Actual return value type name if declaration uses typealias, otherwise just a `returnTypeName`
     public var actualReturnTypeName: TypeName {
-        return returnTypeName.actualTypeName ?? returnTypeName
+        returnTypeName.actualTypeName ?? returnTypeName
     }
 
     // sourcery: skipEquality, skipDescription
@@ -21,19 +20,19 @@ import Foundation
     // sourcery: skipEquality, skipDescription
     /// Whether return value type is optional
     public var isOptionalReturnType: Bool {
-        return returnTypeName.isOptional
+        returnTypeName.isOptional
     }
 
     // sourcery: skipEquality, skipDescription
     /// Whether return value type is implicitly unwrapped optional
     public var isImplicitlyUnwrappedOptionalReturnType: Bool {
-        return returnTypeName.isImplicitlyUnwrappedOptional
+        returnTypeName.isImplicitlyUnwrappedOptional
     }
 
     // sourcery: skipEquality, skipDescription
     /// Return value type name without attributes and optional type information
     public var unwrappedReturnTypeName: String {
-        return returnTypeName.unwrappedTypeName
+        returnTypeName.unwrappedTypeName
     }
 
     /// Whether method is final
@@ -50,7 +49,7 @@ import Foundation
 
     /// Whether variable is mutable or not
     public var isMutable: Bool {
-        return writeAccess != AccessLevel.none.rawValue
+        writeAccess != AccessLevel.none.rawValue
     }
 
     /// Annotations, that were created with // sourcery: annotation1, other = "annotation value", alterantive = 2
@@ -64,7 +63,7 @@ import Foundation
 
     /// Reference to actual type name where the method is defined if declaration uses typealias, otherwise just a `definedInTypeName`
     public var actualDefinedInTypeName: TypeName? {
-        return definedInTypeName?.actualTypeName ?? definedInTypeName
+        definedInTypeName?.actualTypeName ?? definedInTypeName
     }
 
     // sourcery: skipEquality, skipDescription
@@ -84,19 +83,20 @@ import Foundation
     public var __parserData: Any?
 
     /// :nodoc:
-    public init(parameters: [MethodParameter] = [],
-                returnTypeName: TypeName,
-                accessLevel: (read: AccessLevel, write: AccessLevel) = (.internal, .internal),
-                attributes: AttributeList = [:],
-                modifiers: [SourceryModifier] = [],
-                annotations: [String: NSObject] = [:],
-                documentation: [String] = [],
-                definedInTypeName: TypeName? = nil) {
-
+    public init(
+        parameters: [MethodParameter] = [],
+        returnTypeName: TypeName,
+        accessLevel: (read: AccessLevel, write: AccessLevel) = (.internal, .internal),
+        attributes: AttributeList = [:],
+        modifiers: [SourceryModifier] = [],
+        annotations: [String: NSObject] = [:],
+        documentation: [String] = [],
+        definedInTypeName: TypeName? = nil
+    ) {
         self.parameters = parameters
         self.returnTypeName = returnTypeName
-        self.readAccess = accessLevel.read.rawValue
-        self.writeAccess = accessLevel.write.rawValue
+        readAccess = accessLevel.read.rawValue
+        writeAccess = accessLevel.write.rawValue
         self.attributes = attributes
         self.modifiers = modifiers
         self.annotations = annotations

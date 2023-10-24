@@ -1,6 +1,6 @@
 import Foundation
-import SwiftSyntax
 import SourceryRuntime
+import SwiftSyntax
 
 /// modifier can be thing like `private`, `class`, `nonmutating`
 /// if a declaration has modifier like `private(set)` it's name will be `private` and detail will be `set`
@@ -32,13 +32,12 @@ extension SourceryModifier {
     }
 }
 
-extension Array where Element == Modifier {
+extension [Modifier] {
     func baseModifiers(parent: Type?) -> (readAccess: AccessLevel, writeAccess: AccessLevel, isStatic: Bool, isClass: Bool) {
-
         var readAccess: AccessLevel = .none
         var writeAccess: AccessLevel = .none
-        var isStatic: Bool = false
-        var isClass: Bool = false
+        var isStatic = false
+        var isClass = false
 
         forEach { modifier in
             if modifier.tokenKind == .staticKeyword {

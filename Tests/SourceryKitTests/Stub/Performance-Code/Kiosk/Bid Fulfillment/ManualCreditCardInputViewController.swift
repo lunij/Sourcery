@@ -1,26 +1,26 @@
-import UIKit
-import RxSwift
 import Keys
+import RxSwift
+import UIKit
 
 class ManualCreditCardInputViewController: UIViewController, RegistrationSubController {
     let finished = PublishSubject<Void>()
 
-    @IBOutlet weak var cardNumberTextField: TextField!
-    @IBOutlet weak var expirationMonthTextField: TextField!
-    @IBOutlet weak var expirationYearTextField: TextField!
-    @IBOutlet weak var securitycodeTextField: TextField!
-    @IBOutlet weak var billingZipTextField: TextField!
+    @IBOutlet var cardNumberTextField: TextField!
+    @IBOutlet var expirationMonthTextField: TextField!
+    @IBOutlet var expirationYearTextField: TextField!
+    @IBOutlet var securitycodeTextField: TextField!
+    @IBOutlet var billingZipTextField: TextField!
 
-    @IBOutlet weak var cardNumberWrapperView: UIView!
-    @IBOutlet weak var expirationDateWrapperView: UIView!
-    @IBOutlet weak var securityCodeWrapperView: UIView!
-    @IBOutlet weak var billingZipWrapperView: UIView!
-    @IBOutlet weak var billingZipErrorLabel: UILabel!
+    @IBOutlet var cardNumberWrapperView: UIView!
+    @IBOutlet var expirationDateWrapperView: UIView!
+    @IBOutlet var securityCodeWrapperView: UIView!
+    @IBOutlet var billingZipWrapperView: UIView!
+    @IBOutlet var billingZipErrorLabel: UILabel!
 
-    @IBOutlet weak var cardConfirmButton: ActionButton!
-    @IBOutlet weak var dateConfirmButton: ActionButton!
-    @IBOutlet weak var securityCodeConfirmButton: ActionButton!
-    @IBOutlet weak var billingZipConfirmButton: ActionButton!
+    @IBOutlet var cardConfirmButton: ActionButton!
+    @IBOutlet var dateConfirmButton: ActionButton!
+    @IBOutlet var securityCodeConfirmButton: ActionButton!
+    @IBOutlet var billingZipConfirmButton: ActionButton!
 
     lazy var keys = EidolonKeys()
 
@@ -89,11 +89,11 @@ class ManualCreditCardInputViewController: UIViewController, RegistrationSubCont
         cardNumberTextField.becomeFirstResponder()
     }
 
-    func textField(_ textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
-        return viewModel.isEntryValid(string)
+    func textField(_: UITextField, shouldChangeCharactersInRange _: NSRange, replacementString string: String) -> Bool {
+        viewModel.isEntryValid(string)
     }
 
-    @IBAction func cardNumberconfirmTapped(_ sender: AnyObject) {
+    @IBAction func cardNumberconfirmTapped(_: AnyObject) {
         cardNumberWrapperView.isHidden = true
         expirationDateWrapperView.isHidden = false
         securityCodeWrapperView.isHidden = true
@@ -104,7 +104,7 @@ class ManualCreditCardInputViewController: UIViewController, RegistrationSubCont
         expirationMonthTextField.becomeFirstResponder()
     }
 
-    @IBAction func expirationDateConfirmTapped(_ sender: AnyObject) {
+    @IBAction func expirationDateConfirmTapped(_: AnyObject) {
         cardNumberWrapperView.isHidden = true
         expirationDateWrapperView.isHidden = true
         securityCodeWrapperView.isHidden = false
@@ -115,7 +115,7 @@ class ManualCreditCardInputViewController: UIViewController, RegistrationSubCont
         securitycodeTextField.becomeFirstResponder()
     }
 
-    @IBAction func securityCodeConfirmTapped(_ sender: AnyObject) {
+    @IBAction func securityCodeConfirmTapped(_: AnyObject) {
         cardNumberWrapperView.isHidden = true
         expirationDateWrapperView.isHidden = true
         securityCodeWrapperView.isHidden = true
@@ -126,7 +126,7 @@ class ManualCreditCardInputViewController: UIViewController, RegistrationSubCont
         billingZipTextField.becomeFirstResponder()
     }
 
-    @IBAction func backToCardNumber(_ sender: AnyObject) {
+    @IBAction func backToCardNumber(_: AnyObject) {
         cardNumberWrapperView.isHidden = false
         expirationDateWrapperView.isHidden = true
         securityCodeWrapperView.isHidden = true
@@ -135,7 +135,7 @@ class ManualCreditCardInputViewController: UIViewController, RegistrationSubCont
         cardNumberTextField.becomeFirstResponder()
     }
 
-    @IBAction func backToExpirationDate(_ sender: AnyObject) {
+    @IBAction func backToExpirationDate(_: AnyObject) {
         cardNumberWrapperView.isHidden = true
         expirationDateWrapperView.isHidden = false
         securityCodeWrapperView.isHidden = true
@@ -144,7 +144,7 @@ class ManualCreditCardInputViewController: UIViewController, RegistrationSubCont
         expirationMonthTextField.becomeFirstResponder()
     }
 
-    @IBAction func backToSecurityCode(_ sender: AnyObject) {
+    @IBAction func backToSecurityCode(_: AnyObject) {
         cardNumberWrapperView.isHidden = true
         expirationDateWrapperView.isHidden = true
         securityCodeWrapperView.isHidden = false
@@ -154,7 +154,7 @@ class ManualCreditCardInputViewController: UIViewController, RegistrationSubCont
     }
 
     class func instantiateFromStoryboard(_ storyboard: UIStoryboard) -> ManualCreditCardInputViewController {
-        return storyboard.viewController(withID: .ManualCardDetailsInput) as! ManualCreditCardInputViewController
+        storyboard.viewController(withID: .ManualCardDetailsInput) as! ManualCreditCardInputViewController
     }
 }
 
@@ -179,11 +179,11 @@ private extension ManualCreditCardInputViewController {
         billingZipTextField.sendActions(for: .touchUpInside)
     }
 
-    @IBAction func dev_creditCardOKTapped(_ sender: AnyObject) {
+    @IBAction func dev_creditCardOKTapped(_: AnyObject) {
         applyCardWithSuccess(true)
     }
 
-    @IBAction func dev_creditCardFailTapped(_ sender: AnyObject) {
+    @IBAction func dev_creditCardFailTapped(_: AnyObject) {
         applyCardWithSuccess(false)
     }
 }

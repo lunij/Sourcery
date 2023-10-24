@@ -11,6 +11,4 @@ class FooSubclass: Foo, AutoEquatable {
     var other: String = ""
 }
 
-func performFoo(value: Foo) {
-
-}
+func performFoo(value _: Foo) {}

@@ -2,10 +2,10 @@ import Foundation
 
 /// :nodoc:
 public enum AccessLevel: String {
-    case `internal` = "internal"
-    case `private` = "private"
-    case `fileprivate` = "fileprivate"
-    case `public` = "public"
-    case `open` = "open"
+    case `internal`
+    case `private`
+    case `fileprivate`
+    case `public`
+    case open
     case none = ""
 }

@@ -1,11 +1,10 @@
-import UIKit
-import ORStackView
-import FLKAutoLayout
-import Artsy_UIFonts
 import Artsy_UIButtons
+import Artsy_UIFonts
+import FLKAutoLayout
+import ORStackView
+import UIKit
 
 class ChooseAuctionViewController: UIViewController {
-
     var auctions: [Sale]!
     let provider = appDelegate().provider
 
@@ -15,7 +14,7 @@ class ChooseAuctionViewController: UIViewController {
         stackScrollView.bottomMarginHeight = CGFloat(NSNotFound)
         stackScrollView.updateConstraints()
 
-        let endpoint: ArtsyAPI = ArtsyAPI.activeAuctions
+        let endpoint = ArtsyAPI.activeAuctions
 
         provider.request(endpoint)
             .filterSuccessfulStatusCodes()
@@ -32,24 +31,23 @@ class ChooseAuctionViewController: UIViewController {
                     button.setTitle(title, for: .normal)
                     button.setTitleColor(.black, for: .normal)
                     button.tag = i
-                    button.rx.tap.subscribe(onNext: { (_) in
+                    button.rx.tap.subscribe(onNext: { _ in
                         let defaults = UserDefaults.standard
                         defaults.set(sale.id, forKey: "KioskAuctionID")
                         defaults.synchronize()
                         exit(1)
-                        })
-                        .addDisposableTo(self.rx_disposeBag)
+                    })
+                    .addDisposableTo(self.rx_disposeBag)
 
                     self.stackScrollView.addSubview(button, withTopMargin: "12", sideMargin: "0")
                     button.constrainHeight("50")
                 }
             })
             .addDisposableTo(rx_disposeBag)
-
     }
 
-    @IBOutlet weak var stackScrollView: ORStackView!
-    @IBAction func backButtonTapped(_ sender: AnyObject) {
-        _ = self.navigationController?.popViewController(animated: true)
+    @IBOutlet var stackScrollView: ORStackView!
+    @IBAction func backButtonTapped(_: AnyObject) {
+        _ = navigationController?.popViewController(animated: true)
     }
 }

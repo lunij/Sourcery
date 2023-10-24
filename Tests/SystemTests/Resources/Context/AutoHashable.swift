@@ -5,7 +5,7 @@ protocol AutoHashable {}
 /// General protocol
 protocol AutoHashableProtocol: AutoHashable {
     var width: Double { get }
-    var height: Double { get}
+    var height: Double { get }
     static var name: String { get }
 }
 
@@ -16,7 +16,7 @@ enum AutoHashableEnum: AutoHashable {
     case three(bar: Int)
 
     func allValue() -> [AutoHashableEnum] {
-        return [.one, .two(first: "a", second: "b"), .three(bar: 42)]
+        [.one, .two(first: "a", second: "b"), .three(bar: 42)]
     }
 }
 
@@ -43,7 +43,7 @@ struct AutoHashableStruct: AutoHashable {
         self.parents = parents
         self.laptopModel = laptopModel
         self.phoneModel = phoneModel
-        self.universityGrades = ["Math": 5, "Geometry": 3]
+        universityGrades = ["Math": 5, "Geometry": 3]
     }
 
     // Arrays
@@ -68,12 +68,12 @@ struct AutoHashableStruct: AutoHashable {
 
     // Method with return value
     func greeting(for name: String) -> String {
-        return "Hi \(name)"
+        "Hi \(name)"
     }
 
     // Method with optional return value
-    func books(sharedWith name: String) -> String? {
-        return nil
+    func books(sharedWith _: String) -> String? {
+        nil
     }
 }
 
@@ -100,7 +100,7 @@ class AutoHashableClass: AutoHashable {
         self.parents = parents
         self.laptopModel = laptopModel
         self.phoneModel = phoneModel
-        self.universityGrades = ["Math": 5, "Geometry": 3]
+        universityGrades = ["Math": 5, "Geometry": 3]
     }
 
     // Arrays
@@ -125,12 +125,12 @@ class AutoHashableClass: AutoHashable {
 
     // Method with return value
     func greeting(for name: String) -> String {
-        return "Hi \(name)"
+        "Hi \(name)"
     }
 
     // Method with optional return value
-    func books(sharedWith name: String) -> String? {
-        return nil
+    func books(sharedWith _: String) -> String? {
+        nil
     }
 }
 
@@ -190,11 +190,11 @@ class HashableClass: Hashable {
     }
 
     static func == (lhs: HashableClass, rhs: HashableClass) -> Bool {
-        return lhs.firstName == rhs.firstName
+        lhs.firstName == rhs.firstName
     }
 
     func hash(into hasher: inout Hasher) {
-        self.firstName.hash(into: &hasher)
+        firstName.hash(into: &hasher)
     }
 }
 

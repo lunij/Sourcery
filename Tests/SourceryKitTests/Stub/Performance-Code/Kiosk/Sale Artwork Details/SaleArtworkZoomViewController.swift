@@ -1,5 +1,5 @@
-import Foundation
 import ARTiledImageView
+import Foundation
 
 class SaleArtworkZoomViewController: UIViewController {
     var dataSource: TiledImageDataSourceWithImage!
@@ -10,9 +10,9 @@ class SaleArtworkZoomViewController: UIViewController {
         super.viewDidLoad()
 
         let image = saleArtwork.artwork.defaultImage!
-        dataSource = TiledImageDataSourceWithImage(image:image)
+        dataSource = TiledImageDataSourceWithImage(image: image)
 
-        let tiledView = ARTiledImageScrollView(frame:view.bounds)
+        let tiledView = ARTiledImageScrollView(frame: view.bounds)
         tiledView.decelerationRate = UIScrollViewDecelerationRateFast
         tiledView.showsHorizontalScrollIndicator = false
         tiledView.showsVerticalScrollIndicator = false
@@ -20,7 +20,7 @@ class SaleArtworkZoomViewController: UIViewController {
         tiledView.dataSource = dataSource
         tiledView.backgroundImageURL = image.fullsizeURL() as URL!
 
-        view.insertSubview(tiledView, at:0)
+        view.insertSubview(tiledView, at: 0)
         tiledImageView = tiledView
     }
 
@@ -30,7 +30,7 @@ class SaleArtworkZoomViewController: UIViewController {
         tiledImageView.zoom(toFit: false)
     }
 
-    @IBAction func backButtonTapped(_ sender: AnyObject) {
-        _ = self.navigationController?.popViewController(animated: true)
+    @IBAction func backButtonTapped(_: AnyObject) {
+        _ = navigationController?.popViewController(animated: true)
     }
 }

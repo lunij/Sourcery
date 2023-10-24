@@ -2,7 +2,6 @@ import Foundation
 import SwiftyJSON
 
 final class User: NSObject, JSONAbleType {
-
     dynamic let id: String
     dynamic let email: String
     dynamic let name: String
@@ -34,6 +33,6 @@ final class User: NSObject, JSONAbleType {
             location = Location.fromJSON(bidDictionary)
         }
 
-        return User(id: id, email: email, name: name, paddleNumber: paddleNumber, phoneNumber: phoneNumber, location:location)
+        return User(id: id, email: email, name: name, paddleNumber: paddleNumber, phoneNumber: phoneNumber, location: location)
     }
 }

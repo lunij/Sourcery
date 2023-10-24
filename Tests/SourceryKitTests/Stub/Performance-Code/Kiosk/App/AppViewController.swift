@@ -1,6 +1,6 @@
-import UIKit
-import RxSwift
 import Action
+import RxSwift
+import UIKit
 
 class AppViewController: UIViewController, UINavigationControllerDelegate {
     var allowAnimations = true
@@ -8,28 +8,22 @@ class AppViewController: UIViewController, UINavigationControllerDelegate {
 
     @IBOutlet var countdownManager: ListingsCountdownManager!
     @IBOutlet var offlineBlockingView: UIView!
-    @IBOutlet weak var registerToBidButton: ActionButton!
+    @IBOutlet var registerToBidButton: ActionButton!
 
     var provider: Networking!
 
-    lazy var _apiPinger: APIPingManager = {
-        return APIPingManager(provider: self.provider)
-    }()
+    lazy var _apiPinger: APIPingManager = .init(provider: self.provider)
 
-    lazy var reachability: Observable<Bool> = {
-        [connectedToInternetOrStubbing(), self.apiPinger].combineLatestAnd()
-    }()
+    lazy var reachability: Observable<Bool> = [connectedToInternetOrStubbing(), self.apiPinger].combineLatestAnd()
 
-    lazy var apiPinger: Observable<Bool> = {
-        self._apiPinger.letOnline
-    }()
+    lazy var apiPinger: Observable<Bool> = self._apiPinger.letOnline
 
     var registerToBidCommand = { () -> CocoaAction in
         appDelegate().registerToBidCommand()
     }
 
     class func instantiate(from storyboard: UIStoryboard) -> AppViewController {
-        return storyboard.viewController(withID: .AppViewController) as! AppViewController
+        storyboard.viewController(withID: .AppViewController) as! AppViewController
     }
 
     var sale = Variable(Sale(id: "", name: "", isAuction: true, startDate: Date(), endDate: Date(), artworkCount: 0, state: ""))
@@ -63,7 +57,7 @@ class AppViewController: UIViewController, UINavigationControllerDelegate {
         }
     }
 
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+    override func prepare(for segue: UIStoryboardSegue, sender _: Any?) {
         // This is the embed segue
         guard let navigtionController = segue.destination as? UINavigationController else { return }
         guard let listingsViewController = navigtionController.topViewController as? ListingsViewController else { return }
@@ -75,7 +69,7 @@ class AppViewController: UIViewController, UINavigationControllerDelegate {
         countdownManager.invalidate()
     }
 
-    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+    func navigationController(_: UINavigationController, willShow viewController: UIViewController, animated _: Bool) {
         let hide = (viewController as? SaleArtworkZoomViewController != nil)
         countdownManager.setLabelsHiddenIfSynced(hide)
         registerToBidButton.isHidden = hide
@@ -83,7 +77,6 @@ class AppViewController: UIViewController, UINavigationControllerDelegate {
 }
 
 extension AppViewController {
-
     @IBAction func longPressForAdmin(_ sender: UIGestureRecognizer) {
         if sender.state != .began {
             return
@@ -91,13 +84,12 @@ extension AppViewController {
 
         let passwordVC = PasswordAlertViewController.alertView { [weak self] in
             self?.performSegue(.ShowAdminOptions)
-            return
         }
-        self.present(passwordVC, animated: true) {}
+        present(passwordVC, animated: true) {}
     }
 
     func auctionRequest(_ provider: Networking, auctionID: String) -> Observable<Sale> {
-        let auctionEndpoint: ArtsyAPI = ArtsyAPI.auctionInfo(auctionID: auctionID)
+        let auctionEndpoint = ArtsyAPI.auctionInfo(auctionID: auctionID)
 
         return provider.request(auctionEndpoint)
             .filterSuccessfulStatusCodes()

@@ -1,4 +1,3 @@
-
 import Foundation
 
 protocol AutoLenses {}
@@ -24,6 +23,6 @@ struct Rectangle: AutoLenses {
     let y: Int
 
     var area: Int {
-        return x*y
+        x * y
     }
 }

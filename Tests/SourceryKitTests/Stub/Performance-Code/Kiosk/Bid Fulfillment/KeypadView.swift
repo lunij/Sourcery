@@ -1,16 +1,17 @@
-import UIKit
-import RxSwift
 import Action
+import RxSwift
+import UIKit
 
 class KeypadView: UIView {
     var leftAction: CocoaAction? {
         didSet {
-            self.leftButton.rx.action = leftAction
+            leftButton.rx.action = leftAction
         }
     }
+
     var rightAction: CocoaAction? {
         didSet {
-            self.rightButton.rx.action = rightAction
+            rightButton.rx.action = rightAction
         }
     }
 

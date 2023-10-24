@@ -1,7 +1,6 @@
 import Foundation
 
 public enum TemplateAnnotationsParser {
-
     public typealias AnnotatedRanges = [String: [(range: NSRange, indentation: String)]]
 
     private static func regex(annotation: String) throws -> NSRegularExpression {
@@ -22,19 +21,19 @@ public enum TemplateAnnotationsParser {
             .sorted(by: { $0.location > $1.location })
             .forEach {
                 bridged = bridged.replacingCharacters(in: $0, with: String(repeating: " ", count: strigView.NSRangeToByteRange($0)!.length.value)) as NSString
-        }
+            }
         return (bridged as String, annotatedRanges)
     }
 
     public static func annotationRanges(_ annotation: String, contents: String, aggregate: Bool = false, forceParse: [String]) -> (annotatedRanges: AnnotatedRanges, rangesToReplace: Set<NSRange>) {
         let bridged = contents.bridge()
-        let regex = try? self.regex(annotation: annotation)
+        let regex = try? regex(annotation: annotation)
 
         var rangesToReplace = Set<NSRange>()
         var annotatedRanges = AnnotatedRanges()
 
         regex?.enumerateMatches(in: contents, options: [], range: bridged.entireRange) { result, _, _ in
-            guard let result = result, result.numberOfRanges == 6 else {
+            guard let result, result.numberOfRanges == 6 else {
                 return
             }
 
@@ -66,12 +65,12 @@ public enum TemplateAnnotationsParser {
 
     public static func removingEmptyAnnotations(from content: String) -> String {
         var bridged = content.bridge()
-        let regex = try? self.regex(annotation: "\\S*")
+        let regex = try? regex(annotation: "\\S*")
 
         var rangesToReplace = [NSRange]()
 
         regex?.enumerateMatches(in: content, options: [], range: bridged.entireRange) { result, _, _ in
-            guard let result = result, result.numberOfRanges == 6 else {
+            guard let result, result.numberOfRanges == 6 else {
                 return
             }
 
@@ -90,9 +89,8 @@ public enum TemplateAnnotationsParser {
             .reversed()
             .forEach {
                 bridged = bridged.replacingCharacters(in: $0, with: "") as NSString
-        }
+            }
 
         return bridged as String
     }
-
 }

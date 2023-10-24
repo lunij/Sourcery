@@ -2,7 +2,6 @@ import Foundation
 
 /// Describes tuple type
 @objcMembers public final class TupleType: NSObject, SourceryModel {
-
     /// Type name used in declaration
     public var name: String
 
@@ -17,7 +16,7 @@ import Foundation
 
     /// :nodoc:
     public init(elements: [TupleElement]) {
-        self.name = elements.asSource
+        name = elements.asSource
         self.elements = elements
     }
 
@@ -39,7 +38,6 @@ import Foundation
 
 /// Describes tuple type element
 @objcMembers public final class TupleElement: NSObject, SourceryModel, Typed {
-
     /// Tuple element name
     public let name: String?
 
@@ -80,12 +78,12 @@ import Foundation
     // sourcery:end
 }
 
-extension Array where Element == TupleElement {
-    public var asSource: String {
-        "(\(map { $0.asSource }.joined(separator: ", ")))"
+public extension [TupleElement] {
+    var asSource: String {
+        "(\(map(\.asSource).joined(separator: ", ")))"
     }
 
-    public var asTypeName: String {
-        "(\(map { $0.typeName.asSource }.joined(separator: ", ")))"
+    var asTypeName: String {
+        "(\(map(\.typeName.asSource).joined(separator: ", ")))"
     }
 }

@@ -1,8 +1,7 @@
 import UIKit
 
 class CursorView: UIView {
-
-    let cursorLayer: CALayer = CALayer()
+    let cursorLayer: CALayer = .init()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -25,7 +24,7 @@ class CursorView: UIView {
     }
 
     func setupCursorLayer() {
-        cursorLayer.frame = CGRect(x: layer.frame.width/2 - 1, y: 0, width: 2, height: layer.frame.height)
+        cursorLayer.frame = CGRect(x: layer.frame.width / 2 - 1, y: 0, width: 2, height: layer.frame.height)
         cursorLayer.backgroundColor = UIColor.black.cgColor
         cursorLayer.opacity = 0.0
     }
