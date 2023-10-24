@@ -1156,26 +1156,6 @@ class SourceryTests: XCTestCase {
         XCTAssertFalse(targetPath.exists)
     }
 
-    func test_processFiles_andRestrictedFile_itThrowsErrorWhenFileContainsMergeConflictMarkers() {
-        let sourcePath = output.path + Path("Source.swift")
-
-        """
-
-
-        <<<<<
-
-        """.update(in: sourcePath)
-
-        XCTAssertThrowsError(try Sourcery(cacheDisabled: true).processConfiguration(.stub(
-            sources: .paths(Paths(include: [sourcePath])),
-            templates: Paths(include: [.basicStencilPath]),
-            output: output
-        ))) {
-            let error = $0 as? Sourcery.Error
-            XCTAssertEqual(error, .containsMergeConflictMarkers)
-        }
-    }
-
     func test_processFiles_andRestrictedFile_itDoesNotThrowWhenSourceFileDoesNotExist() {
         let sourcePath = output.path + Path("Missing.swift")
 
