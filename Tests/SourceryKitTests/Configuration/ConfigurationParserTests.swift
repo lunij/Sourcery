@@ -15,15 +15,15 @@ class ConfigurationParserTests: XCTestCase {
 
     func test_replacesEnvPlaceholders() throws {
         let yaml = """
-            sources:
-              - "${SOURCE_PATH}"
-            templates:
-              - "Templates"
-            output: "Output"
-            args:
-              serverUrl: ${serverUrl}
-              serverPort: ${serverPort}
-            """
+        sources:
+          - "${SOURCE_PATH}"
+        templates:
+          - "Templates"
+        output: "Output"
+        args:
+          serverUrl: ${serverUrl}
+          serverPort: ${serverPort}
+        """
         let config = try sut.parse(from: yaml, relativePath: relativePath, env: env)
         guard case let .paths(paths) = config.sources else {
             return XCTFail("Config has no source paths")
@@ -36,31 +36,32 @@ class ConfigurationParserTests: XCTestCase {
 
     func test_multipleConfigurations() throws {
         let yaml = """
-            configurations:
-              - sources:
-                  - "${SOURCE_PATH}/0"
-                templates:
-                  - "Templates/0"
-                output: "Output/0"
-                args:
-                  serverUrl: "${serverUrl}/0"
-                  serverPort: "${serverPort}/0"
-              - sources:
-                  - "${SOURCE_PATH}/1"
-                templates:
-                  - "Templates/1"
-                output: "Output/1"
-                args:
-                  serverUrl: "${serverUrl}/1"
-                  serverPort: "${serverPort}1"
-            """
+        configurations:
+          - sources:
+              - "${SOURCE_PATH}/0"
+            templates:
+              - "Templates/0"
+            output: "Output/0"
+            args:
+              serverUrl: "${serverUrl}/0"
+              serverPort: "${serverPort}/0"
+          - sources:
+              - "${SOURCE_PATH}/1"
+            templates:
+              - "Templates/1"
+            output: "Output/1"
+            args:
+              serverUrl: "${serverUrl}/1"
+              serverPort: "${serverPort}1"
+        """
         let configs = try sut.parseConfigurations(from: yaml, relativePath: relativePath, env: env)
 
         XCTAssertEqual(configs.count, 2)
 
         configs.enumerated().forEach { offset, config in
             guard case let .paths(paths) = config.sources,
-                  let path = paths.include.first else {
+                  let path = paths.include.first
+            else {
                 XCTFail("Config has no Source Paths")
                 return
             }

@@ -13,15 +13,16 @@ func printUsage() {
         fatalError("Could not find script path in arguments (\(CommandLine.arguments))")
     }
     guard let lines = (try? String(contentsOfFile: scriptPath, encoding: .utf8))?
-            .components(separatedBy: .newlines) else {
+        .components(separatedBy: .newlines)
+    else {
         fatalError("Could not read the script at path \(scriptPath)")
     }
     let documentationPrefix = "/// "
     lines
-      .filter { $0.hasPrefix(documentationPrefix) }
-      .map { $0.dropFirst(documentationPrefix.count) }
-      .map { $0.replacingOccurrences(of: "$0", with: scriptPath) }
-      .forEach { print("\($0)") }
+        .filter { $0.hasPrefix(documentationPrefix) }
+        .map { $0.dropFirst(documentationPrefix.count) }
+        .map { $0.replacingOccurrences(of: "$0", with: scriptPath) }
+        .forEach { print("\($0)") }
 }
 
 func package(folder folderPath: String) throws {
@@ -35,12 +36,12 @@ func package(folder folderPath: String) throws {
     var files = [URL]()
     for case let fileURL as URL in enumerator {
         do {
-            let fileAttributes = try fileURL.resourceValues(forKeys:[.isRegularFileKey])
+            let fileAttributes = try fileURL.resourceValues(forKeys: [.isRegularFileKey])
             if fileAttributes.isRegularFile!, fileURL.pathExtension == "swift" {
                 files.append(fileURL)
             }
-        } catch { 
-            print(error, fileURL) 
+        } catch {
+            print(error, fileURL)
         }
     }
 

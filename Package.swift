@@ -5,7 +5,7 @@ import PackageDescription
 let package = Package(
     name: "Sourcery",
     platforms: [
-       .macOS(.v13)
+        .macOS(.v13)
     ],
     products: [
         .executable(name: "sourcery", targets: ["sourcery"]),

@@ -3,7 +3,7 @@ import SourceryRuntime
 
 extension TypeName {
     static func buildArray(of elementType: TypeName, useGenericName: Bool = false) -> TypeName {
-        let name = useGenericName ? "Array<\(elementType.asSource)>": "[\(elementType.asSource)]"
+        let name = useGenericName ? "Array<\(elementType.asSource)>" : "[\(elementType.asSource)]"
         let array = ArrayType(name: name, elementTypeName: elementType)
         return TypeName(name: array.name, array: array, generic: array.asGeneric)
     }
@@ -14,7 +14,7 @@ extension TypeName {
     }
 
     static func buildDictionary(key keyTypeName: TypeName, value valueTypeName: TypeName, useGenericName: Bool = false) -> TypeName {
-        let name = useGenericName ? "Dictionary<\(keyTypeName.asSource), \(valueTypeName.asSource)>": "[\(keyTypeName.asSource): \(valueTypeName.asSource)]"
+        let name = useGenericName ? "Dictionary<\(keyTypeName.asSource), \(valueTypeName.asSource)>" : "[\(keyTypeName.asSource): \(valueTypeName.asSource)]"
         let dictionary = DictionaryType(name: name, valueTypeName: valueTypeName, keyTypeName: keyTypeName)
         return TypeName(name: dictionary.name, dictionary: dictionary, generic: dictionary.asGeneric)
     }
@@ -42,28 +42,29 @@ extension TypeName {
     }
 
     static func buildClosure(_ parameters: TypeName..., returnTypeName: TypeName) -> TypeName {
-        let parameters = parameters.map({ ClosureParameter(typeName: $0) })
+        let parameters = parameters.map { ClosureParameter(typeName: $0) }
         let closure = ClosureType(name: "\(parameters.asSource) -> \(returnTypeName)", parameters: parameters, returnTypeName: returnTypeName)
         return TypeName(name: closure.name, closure: closure)
     }
 
     var asOptional: TypeName {
         let type = self
-        return TypeName(name: type.name,
-                        isOptional: true,
-                        isImplicitlyUnwrappedOptional: type.isImplicitlyUnwrappedOptional,
-                        tuple: type.tuple,
-                        array: type.array,
-                        dictionary: type.dictionary,
-                        closure: type.closure,
-                        generic: type.generic
+        return TypeName(
+            name: type.name,
+            isOptional: true,
+            isImplicitlyUnwrappedOptional: type.isImplicitlyUnwrappedOptional,
+            tuple: type.tuple,
+            array: type.array,
+            dictionary: type.dictionary,
+            closure: type.closure,
+            generic: type.generic
         )
     }
 
     static var Void: TypeName {
         TypeName(name: "Void")
     }
-    
+
     static var `Any`: TypeName {
         TypeName(name: "Any")
     }

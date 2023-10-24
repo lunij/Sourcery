@@ -16,7 +16,7 @@ class TemplateMock: Template {
 
     var renderError: Error?
     var renderReturnValue: String?
-    func render(_ context: TemplateContext) throws -> String {
+    func render(_: TemplateContext) throws -> String {
         calls.append(.render)
         if let renderError { throw renderError }
         if let renderReturnValue { return renderReturnValue }

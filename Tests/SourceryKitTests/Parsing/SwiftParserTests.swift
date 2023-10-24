@@ -1,6 +1,6 @@
 import PathKit
-import XCTest
 import SourceryRuntime
+import XCTest
 @testable import SourceryKit
 
 class SwiftParserTests: XCTestCase {

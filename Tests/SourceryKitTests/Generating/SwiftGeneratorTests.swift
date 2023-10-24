@@ -1,5 +1,5 @@
-import XCTest
 import SourceryRuntime
+import XCTest
 @testable import SourceryKit
 
 class SwiftGeneratorTests: XCTestCase {

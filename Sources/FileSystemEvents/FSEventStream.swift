@@ -2,52 +2,52 @@ import CoreServices
 import Foundation
 
 public class FSEventStream {
-	public typealias Callback = ([FSEvent]) -> Void
-	
-	let callback: Callback
+    public typealias Callback = ([FSEvent]) -> Void
+
+    let callback: Callback
     let queue: DispatchQueue
     let eventStream: FSEventStreamRef
-	
-	public convenience init?(
-		path: String,
-		since startId: FSEventStreamEventId = FSEventStreamEventId(kFSEventStreamEventIdSinceNow),
-        updateInterval: CFTimeInterval = 0,
-        options: Options = .fileEvents,
-		queue: DispatchQueue = .global(),
-		callback: @escaping Callback
-	) {
-		self.init(paths: [path], since: startId, updateInterval: updateInterval, options: options, queue: queue, callback: callback)
-	}
 
-	public init?(
-		paths: [String],
-		since startId: FSEventStreamEventId = FSEventStreamEventId(kFSEventStreamEventIdSinceNow),
+    public convenience init?(
+        path: String,
+        since startId: FSEventStreamEventId = FSEventStreamEventId(kFSEventStreamEventIdSinceNow),
         updateInterval: CFTimeInterval = 0,
         options: Options = .fileEvents,
-		queue: DispatchQueue = .global(),
-		callback: @escaping Callback
-	) {
-		self.callback = callback
-		self.queue = queue
+        queue: DispatchQueue = .global(),
+        callback: @escaping Callback
+    ) {
+        self.init(paths: [path], since: startId, updateInterval: updateInterval, options: options, queue: queue, callback: callback)
+    }
+
+    public init?(
+        paths: [String],
+        since startId: FSEventStreamEventId = FSEventStreamEventId(kFSEventStreamEventIdSinceNow),
+        updateInterval: CFTimeInterval = 0,
+        options: Options = .fileEvents,
+        queue: DispatchQueue = .global(),
+        callback: @escaping Callback
+    ) {
+        self.callback = callback
+        self.queue = queue
 
         let flags = options.union(.useCFTypes).rawValue
 
-		let objcWrapper = FSEventStreamObjCWrapper()
-		var context = FSEventStreamContext(
-			version: 0,
-			info: Unmanaged.passUnretained(objcWrapper).toOpaque(),
-			retain: { ptrToRetain in
-				guard let ptrToRetain = ptrToRetain else { return nil }
-				let u = Unmanaged.passRetained(Unmanaged<FSEventStreamObjCWrapper>.fromOpaque(ptrToRetain).takeUnretainedValue())
-				return unsafeBitCast(u.takeUnretainedValue(), to: UnsafeRawPointer.self)
-			},
-			release: { ptrToRelease in
-				guard let ptrToRelease = ptrToRelease else { return }
-				Unmanaged<FSEventStreamObjCWrapper>.fromOpaque(ptrToRelease).release()
-			},
-			copyDescription: nil
-		)
-		guard let eventStream = FSEventStreamCreate(
+        let objcWrapper = FSEventStreamObjCWrapper()
+        var context = FSEventStreamContext(
+            version: 0,
+            info: Unmanaged.passUnretained(objcWrapper).toOpaque(),
+            retain: { ptrToRetain in
+                guard let ptrToRetain else { return nil }
+                let u = Unmanaged.passRetained(Unmanaged<FSEventStreamObjCWrapper>.fromOpaque(ptrToRetain).takeUnretainedValue())
+                return unsafeBitCast(u.takeUnretainedValue(), to: UnsafeRawPointer.self)
+            },
+            release: { ptrToRelease in
+                guard let ptrToRelease else { return }
+                Unmanaged<FSEventStreamObjCWrapper>.fromOpaque(ptrToRelease).release()
+            },
+            copyDescription: nil
+        )
+        guard let eventStream = FSEventStreamCreate(
             kCFAllocatorDefault,
             eventStreamCallback,
             &context,
@@ -56,22 +56,22 @@ public class FSEventStream {
             updateInterval,
             flags
         ) else {
-			return nil
-		}
-		self.eventStream = eventStream
-		
-		FSEventStreamSetDispatchQueue(eventStream, queue)
-		
-		objcWrapper.swiftStream = self
+            return nil
+        }
+        self.eventStream = eventStream
+
+        FSEventStreamSetDispatchQueue(eventStream, queue)
+
+        objcWrapper.swiftStream = self
 
         FSEventStreamStart(eventStream)
-	}
-	
-	deinit {
+    }
+
+    deinit {
         FSEventStreamStop(eventStream)
-		FSEventStreamInvalidate(eventStream)
-		FSEventStreamRelease(eventStream)
-	}
+        FSEventStreamInvalidate(eventStream)
+        FSEventStreamRelease(eventStream)
+    }
 
     public struct Options: OptionSet {
         public let rawValue: FSEventStreamCreateFlags
@@ -95,27 +95,27 @@ public class FSEventStream {
 }
 
 private class FSEventStreamObjCWrapper: NSObject {
-	weak var swiftStream: FSEventStream?
+    weak var swiftStream: FSEventStream?
 }
 
 private func eventStreamCallback(
-	streamRef: ConstFSEventStreamRef,
-	clientCallBackInfo: UnsafeMutableRawPointer?,
-	numEvents: Int,
-	eventPaths: UnsafeMutableRawPointer,
-	eventFlags: UnsafePointer<FSEventStreamEventFlags>,
-	eventIds: UnsafePointer<FSEventStreamEventId>
+    streamRef _: ConstFSEventStreamRef,
+    clientCallBackInfo: UnsafeMutableRawPointer?,
+    numEvents: Int,
+    eventPaths: UnsafeMutableRawPointer,
+    eventFlags: UnsafePointer<FSEventStreamEventFlags>,
+    eventIds: UnsafePointer<FSEventStreamEventId>
 ) {
-	guard 
-        let clientCallBackInfo = clientCallBackInfo,
+    guard
+        let clientCallBackInfo,
         let eventStream = Unmanaged<FSEventStreamObjCWrapper>.fromOpaque(clientCallBackInfo).takeUnretainedValue().swiftStream
-	else {
-		return
-	}
+    else {
+        return
+    }
 
     guard let eventPaths = unsafeBitCast(eventPaths, to: CFArray.self) as? [String] else {
-		return
-	}
+        return
+    }
 
     let events = (0 ..< numEvents).compactMap { index in
         FSEvent(

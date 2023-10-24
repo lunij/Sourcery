@@ -18,14 +18,14 @@ public struct Project {
                 guard let framework = frameworkRelativePath.components.last else {
                     throw ConfigurationParser.Error.invalidXCFramework(message: "Framework path invalid. Expected String.")
                 }
-                let `extension` = Path(framework).`extension`
+                let `extension` = Path(framework).extension
                 guard `extension` == "xcframework" else {
                     throw ConfigurationParser.Error.invalidXCFramework(message: "Framework path invalid. Expected path to xcframework file.")
                 }
                 let moduleName = Path(framework).lastComponentWithoutExtension
                 guard
                     let simulatorSlicePath = frameworkRelativePath.glob("*")
-                        .first(where: { $0.lastComponent.contains("simulator") })
+                    .first(where: { $0.lastComponent.contains("simulator") })
                 else {
                     throw ConfigurationParser.Error.invalidXCFramework(path: frameworkRelativePath, message: "Framework path invalid. Expected to find simulator slice.")
                 }
@@ -34,8 +34,8 @@ public struct Project {
                 else {
                     throw ConfigurationParser.Error.invalidXCFramework(path: frameworkRelativePath, message: "Framework path invalid. Expected to find .swiftinterface.")
                 }
-                self.path = frameworkRelativePath
-                self.swiftInterfacePath = interfacePath
+                path = frameworkRelativePath
+                swiftInterfacePath = interfacePath
             }
         }
 
@@ -47,6 +47,6 @@ public struct Project {
 
 extension Project: Equatable {
     public static func == (lhs: Project, rhs: Project) -> Bool {
-        return lhs.root == rhs.root
+        lhs.root == rhs.root
     }
 }

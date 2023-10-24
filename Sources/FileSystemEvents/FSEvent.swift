@@ -11,7 +11,7 @@ public struct FSEvent: Equatable, Sendable {
         public init(rawValue: FSEventStreamEventFlags) {
             self.rawValue = rawValue
         }
-        
+
         public init(_ value: Int) {
             self.init(rawValue: FSEventStreamEventFlags(value))
         }
@@ -42,12 +42,12 @@ public struct FSEvent: Equatable, Sendable {
             if contains(.isHardlink) { flags.append("isHardlink") }
             if contains(.isLastHardlink) { flags.append("isLastHardlink") }
             if contains(.isSymlink) { flags.append("isSymlink") }
-            
+
             if contains(.created) { flags.append("created") }
             if contains(.modified) { flags.append("modified") }
             if contains(.removed) { flags.append("removed") }
             if contains(.renamed) { flags.append("renamed") }
-            
+
             if contains(.changeOwner) { flags.append("changeOwner") }
             if contains(.finderInfoModified) { flags.append("finderInfoModified") }
             if contains(.inodeMetaModified) { flags.append("inodeMetaModified") }

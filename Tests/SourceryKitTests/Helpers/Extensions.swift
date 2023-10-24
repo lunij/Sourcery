@@ -15,12 +15,12 @@ extension Path {
 
 extension String {
     var withoutWhitespaces: String {
-        return components(separatedBy: .whitespacesAndNewlines).joined(separator: "")
+        components(separatedBy: .whitespacesAndNewlines).joined(separator: "")
     }
 }
 
-extension Type {
-    public func asUnknownException() -> Self {
+public extension Type {
+    func asUnknownException() -> Self {
         isUnknownExtension = true
         return self
     }

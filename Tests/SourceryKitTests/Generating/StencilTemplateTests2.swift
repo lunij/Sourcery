@@ -232,7 +232,7 @@ class StencilTemplateTests2: XCTestCase {
     }
 }
 
-private func beforeEachGenerate() -> ([Type], [String: NSObject]){
+private func beforeEachGenerate() -> ([Type], [String: NSObject]) {
     let fooType = Class(name: "Foo", variables: [Variable(name: "intValue", typeName: TypeName(name: "Int"))], inheritedTypes: ["NSObject", "Decodable", "AlternativeProtocol"])
     let fooSubclassType = Class(name: "FooSubclass", inheritedTypes: ["Foo", "ProtocolBasedOnKnownProtocol"], annotations: ["foo": NSNumber(value: 2), "smth": ["bar": NSNumber(value: 2)] as NSObject])
     let barType = Struct(name: "Bar", inheritedTypes: ["KnownProtocol", "Decodable"], annotations: ["bar": NSNumber(value: true)])
@@ -268,17 +268,17 @@ private func beforeEachGenerate() -> ([Type], [String: NSObject]){
 
     let knownProtocol = Protocol(name: "KnownProtocol", variables: [
         Variable(name: "protocolVariable", typeName: TypeName(name: "Int"), isComputed: true, definedInTypeName: TypeName(name: "KnownProtocol"))
-        ], methods: [
-            Method(name: "foo(some: String)", selectorName: "foo(some:)", parameters: [MethodParameter(name: "some", typeName: TypeName(name: "String"))], accessLevel: .public, definedInTypeName: TypeName(name: "KnownProtocol"))
-        ])
+    ], methods: [
+        Method(name: "foo(some: String)", selectorName: "foo(some:)", parameters: [MethodParameter(name: "some", typeName: TypeName(name: "String"))], accessLevel: .public, definedInTypeName: TypeName(name: "KnownProtocol"))
+    ])
 
     let innerOptionsType = Type(name: "InnerOptions", accessLevel: .public, variables: [
         Variable(name: "fooInnerOptions", typeName: TypeName(name: "Int"), accessLevel: (read: .public, write: .public), isComputed: false, definedInTypeName: TypeName(name: "InnerOptions"))
-        ])
+    ])
     innerOptionsType.variables.forEach { $0.definedInType = innerOptionsType }
     let optionsType = Enum(name: "Options", accessLevel: .public, inheritedTypes: ["KnownProtocol"], cases: [EnumCase(name: "optionA"), EnumCase(name: "optionB")], variables: [
         Variable(name: "optionVar", typeName: TypeName(name: "String"), accessLevel: (read: .public, write: .public), isComputed: false, definedInTypeName: TypeName(name: "Options"))
-        ], containedTypes: [innerOptionsType])
+    ], containedTypes: [innerOptionsType])
 
     let types = [
         fooType,

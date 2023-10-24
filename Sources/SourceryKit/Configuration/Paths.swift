@@ -7,7 +7,7 @@ public struct Paths: Equatable {
     public let allPaths: [Path]
 
     public var isEmpty: Bool {
-        return allPaths.isEmpty
+        allPaths.isEmpty
     }
 
     public init(include: [Path], exclude: [Path] = []) {
@@ -17,16 +17,16 @@ public struct Paths: Equatable {
         let include = self.include.parallelFlatMap { $0.processablePaths }
         let exclude = self.exclude.parallelFlatMap { $0.processablePaths }
 
-        self.allPaths = Array(Set(include).subtracting(Set(exclude))).sorted()
+        allPaths = Array(Set(include).subtracting(Set(exclude))).sorted()
     }
 }
 
 private extension Path {
     var processablePaths: [Path] {
         if isDirectory {
-            return (try? recursiveUnhiddenChildren()) ?? []
+            (try? recursiveUnhiddenChildren()) ?? []
         } else {
-            return [self]
+            [self]
         }
     }
 

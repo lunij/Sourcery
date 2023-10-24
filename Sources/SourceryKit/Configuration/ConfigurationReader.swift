@@ -71,11 +71,11 @@ private extension Path {
 private extension ConfigurationOptions {
     var hasRedundantArguments: Bool {
         !sources.isEmpty ||
-        !excludeSources.isEmpty ||
-        !templates.isEmpty ||
-        !excludeTemplates.isEmpty ||
-        !forceParse.isEmpty ||
-        output != "" ||
-        !args.isEmpty
+            !excludeSources.isEmpty ||
+            !templates.isEmpty ||
+            !excludeTemplates.isEmpty ||
+            !forceParse.isEmpty ||
+            output != "" ||
+            !args.isEmpty
     }
 }

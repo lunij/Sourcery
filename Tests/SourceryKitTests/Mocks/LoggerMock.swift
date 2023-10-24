@@ -20,31 +20,31 @@ class LoggerMock: Logging {
     func astError(_ message: String) {
         calls.append(.astError(message))
     }
-    
+
     func astWarning(_ message: String) {
         calls.append(.astWarning(message))
     }
-    
+
     func benchmark(_ message: String) {
         calls.append(.benchmark(message))
     }
-    
+
     func error(_ message: String) {
         calls.append(.error(message))
     }
-    
+
     func info(_ message: String) {
         calls.append(.info(message))
     }
-    
+
     func verbose(_ message: String) {
         calls.append(.verbose(message))
     }
-    
+
     func warning(_ message: String) {
         calls.append(.warning(message))
     }
-    
+
     func output(_ message: String) {
         calls.append(.output(message))
     }

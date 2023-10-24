@@ -84,7 +84,7 @@ public class SwiftParser {
         for (index, sourcePath) in sources.enumerated() {
             let fileList = sourcePath.isDirectory ? try sourcePath.recursiveChildren() : [sourcePath]
             let parserGenerator: [ParserWrapper] = fileList
-                .filter { $0.isSwiftSourceFile }
+                .filter(\.isSwiftSourceFile)
                 .filter { !excludeSet.contains($0) }
                 .map { path in
                     (path: path, parse: {
@@ -126,11 +126,10 @@ public class SwiftParser {
                 }
             }
 
-            let results: [(changed: Bool, result: FileParserResult)]
-            if serialParse {
-                results = parserGenerator.compactMap(transform)
+            let results: [(changed: Bool, result: FileParserResult)] = if serialParse {
+                parserGenerator.compactMap(transform)
             } else {
-                results = parserGenerator.parallelCompactMap(transform: transform)
+                parserGenerator.parallelCompactMap(transform: transform)
             }
 
             if let error = lastError {
@@ -172,15 +171,14 @@ public class SwiftParser {
         // ! All files have been scanned, time to join extensions with base class
         let (types, functions, typealiases) = Composer.uniqueTypesAndFunctions(parserResult)
 
-
         let filesThatHadToBeParsed = allResults
-            .filter { $0.changed }
-            .compactMap { $0.result.path }
+            .filter(\.changed)
+            .compactMap(\.result.path)
 
         logger.benchmark("\treduce: \(uniqueTypeStart - reduceStart)\n\tcomposer: \(currentTimestamp() - uniqueTypeStart)\n\ttotal: \(currentTimestamp() - startScan)")
         logger.info("Found \(types.count) types in \(allResults.count) files, \(filesThatHadToBeParsed.count) changed from last run.")
 
-        if !filesThatHadToBeParsed.isEmpty, (filesThatHadToBeParsed.count < 50 || logger.level == .verbose) {
+        if !filesThatHadToBeParsed.isEmpty, filesThatHadToBeParsed.count < 50 || logger.level == .verbose {
             let files = filesThatHadToBeParsed
                 .joined(separator: "\n")
             logger.info("Files changed:\n\(files)")
@@ -194,7 +192,7 @@ public class SwiftParser {
     }
 
     private func loadOrParse(parser: ParserWrapper, cachePath: Path?) throws -> (changed: Bool, result: FileParserResult)? {
-        guard let cachePath = cachePath else {
+        guard let cachePath else {
             return try parser.parse().map { (changed: true, result: $0) }
         }
 

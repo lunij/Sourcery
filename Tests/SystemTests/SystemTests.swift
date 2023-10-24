@@ -1,4 +1,3 @@
-
 import PathKit
 import XCTest
 
@@ -88,8 +87,8 @@ private func assert(template name: String, file: StaticString = #filePath, line:
         return XCTFail("File \(expectedFilePath.lastComponent) could not be read\n\(expectedFilePath)", file: file, line: line)
     }
 
-    let emptyLinesFilter: (String) -> Bool = { line in return !line.isEmpty }
-    let commentLinesFilter: (String) -> Bool = { line in return !line.hasPrefix("//") }
+    let emptyLinesFilter: (String) -> Bool = { line in !line.isEmpty }
+    let commentLinesFilter: (String) -> Bool = { line in !line.hasPrefix("//") }
     let generatedFileLines = generatedFileContent.components(separatedBy: .newlines).filter(emptyLinesFilter)
     let generatedFileFilteredLines = generatedFileLines.filter(emptyLinesFilter).filter(commentLinesFilter)
     let expectedFileLines = expectedFileContent.components(separatedBy: .newlines)

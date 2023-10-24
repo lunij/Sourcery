@@ -89,7 +89,7 @@ public class SwiftGenerator {
         return (TemplateAnnotationsParser.removingEmptyAnnotations(from: result), sourceChanges)
     }
 
-    private func processFileRanges(for parsingResult: ParsingResult, in contents: String, config: Configuration) -> String {
+    private func processFileRanges(for _: ParsingResult, in contents: String, config: Configuration) -> String {
         let files = TemplateAnnotationsParser.parseAnnotations("file", contents: contents, aggregate: true, forceParse: config.forceParse)
 
         files
@@ -120,7 +120,7 @@ public class SwiftGenerator {
 
         try annotatedRanges
             .map { (key: $0, range: $1[0].range) }
-            .compactMap { (key, range) -> MappedInlineAnnotations? in
+            .compactMap { key, range -> MappedInlineAnnotations? in
                 let generatedBody = contents.bridge().substring(with: range)
 
                 if let (filePath, inlineRanges, inlineIndentations) = parsingResult.inlineRanges.first(where: { $0.ranges[key] != nil }) {
@@ -141,25 +141,25 @@ public class SwiftGenerator {
                 let autoKey = key[..<autoRange.lowerBound]
                 let autoType = AutoType(rawValue: String(autoKey)) ?? .normal
 
-                let autoTypeName = key[autoRange.upperBound..<key.endIndex].components(separatedBy: ".").dropLast().joined(separator: ".")
+                let autoTypeName = key[autoRange.upperBound ..< key.endIndex].components(separatedBy: ".").dropLast().joined(separator: ".")
                 var toInsert = "\n// sourcery:inline:\(key)\n\(generatedBody)// sourcery:end"
 
                 guard let definition = parsingResult.types.types.first(where: { $0.name == autoTypeName }),
-                    let filePath = definition.path,
-                    let path = definition.path.map({ Path($0) }),
-                    let contents = try? path.read(.utf8),
-                    let bodyRange = bodyRange(for: definition, contentsView: StringView(contents)) else {
-                        rangesToReplace.remove(range)
-                        return nil
+                      let filePath = definition.path,
+                      let path = definition.path.map({ Path($0) }),
+                      let contents = try? path.read(.utf8),
+                      let bodyRange = bodyRange(for: definition, contentsView: StringView(contents))
+                else {
+                    rangesToReplace.remove(range)
+                    return nil
                 }
                 let bodyEndRange = NSRange(location: NSMaxRange(bodyRange), length: 0)
                 let bodyEndLineRange = contents.bridge().lineRange(for: bodyEndRange)
                 let bodyEndLine = contents.bridge().substring(with: bodyEndLineRange)
-                let indentRange: NSRange?
-                if !bodyEndLine.contains("{") {
-                    indentRange = (bodyEndLine as NSString).rangeOfCharacter(from: .whitespacesAndNewlines.inverted)
+                let indentRange: NSRange? = if !bodyEndLine.contains("{") {
+                    (bodyEndLine as NSString).rangeOfCharacter(from: .whitespacesAndNewlines.inverted)
                 } else {
-                    indentRange = nil
+                    nil
                 }
                 let rangeInFile: NSRange
 
@@ -224,7 +224,7 @@ public class SwiftGenerator {
 
             func stringViewForContent(at path: String) -> StringView? {
                 do {
-                    return StringView(try Path(path).read(.utf8))
+                    return try StringView(Path(path).read(.utf8))
                 } catch {
                     return nil
                 }

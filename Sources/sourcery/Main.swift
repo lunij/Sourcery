@@ -1,4 +1,3 @@
-
 import SourceryKit
 
 @main

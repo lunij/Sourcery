@@ -34,7 +34,7 @@ class SourceryTests: XCTestCase {
         var newGeneratedFileModificationDate: Date?
         let expectation = expectation(description: #function)
 
-        DispatchQueue.main.asyncAfter( deadline: DispatchTime.now() + Double(Int64(0.5 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)) { [output] in
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + Double(Int64(0.5 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)) { [output] in
             _ = try? Sourcery(cacheDisabled: true).processConfiguration(.stub(
                 sources: .paths(Paths(include: [sourcePath])),
                 templates: Paths(include: [.otherStencilPath]),
@@ -59,7 +59,7 @@ class SourceryTests: XCTestCase {
         var newGeneratedFileModificationDate: Date?
         let expectation = expectation(description: #function)
 
-        DispatchQueue.main.asyncAfter( deadline: DispatchTime.now() + Double(Int64(1 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)) { [output] in
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + Double(Int64(1 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)) { [output] in
             _ = try? Sourcery(cacheDisabled: true).processConfiguration(.stub(
                 sources: .paths(Paths(include: [sourcePath, anotherSourcePath])),
                 templates: Paths(include: [.otherStencilPath]),
@@ -108,13 +108,13 @@ class SourceryTests: XCTestCase {
         let (sourcePath, _) = try createExistingFilesWithInlineTemplate()
 
         let expectedResult = """
-            class Foo {
-            // sourcery:inline:Foo.Inlined
-            var property = 2
-            // Line Three
-            // sourcery:end
-            }
-            """
+        class Foo {
+        // sourcery:inline:Foo.Inlined
+        var property = 2
+        // Line Three
+        // sourcery:end
+        }
+        """
 
         let result = try sourcePath.read(.utf8)
         XCTAssertEqual(result, expectedResult)
@@ -124,10 +124,10 @@ class SourceryTests: XCTestCase {
         let (_, templatePath) = try createExistingFilesWithInlineTemplate()
 
         let expectedResult = """
-            // Generated using Sourcery
+        // Generated using Sourcery
 
-            // Line One
-            """
+        // Line One
+        """
 
         let generatedPath = output.path.appending(templatePath.generatedFileName)
 
@@ -155,14 +155,14 @@ class SourceryTests: XCTestCase {
         ))
 
         let expectedResult = """
-            // Generated using Sourcery
+        // Generated using Sourcery
 
-            // Line One
-            // sourcery:inline:Foo.Inlined
-            var property = 2
-            // Line Three
-            // sourcery:end
-            """
+        // Line One
+        // sourcery:inline:Foo.Inlined
+        var property = 2
+        // Line Three
+        // sourcery:end
+        """
 
         let generatedPath = output.path.appending(templatePath.generatedFileName)
 
@@ -232,20 +232,20 @@ class SourceryTests: XCTestCase {
         ))
 
         let expectedResult = """
-            class Foo {
-            // sourcery:inline:Foo.Inlined
-            var property = foo
-            // Line Three
-            // sourcery:end
-            }
+        class Foo {
+        // sourcery:inline:Foo.Inlined
+        var property = foo
+        // Line Three
+        // sourcery:end
+        }
 
-            class Bar {
-            // sourcery:inline:Bar.Inlined
-            var property = bar
-            // Line Three
-            // sourcery:end
-            }
-            """
+        class Bar {
+        // sourcery:inline:Bar.Inlined
+        var property = bar
+        // Line Three
+        // sourcery:end
+        }
+        """
 
         let result = try sourcePath.read(.utf8)
         XCTAssertEqual(result, expectedResult)
@@ -293,21 +293,21 @@ class SourceryTests: XCTestCase {
         ))
 
         let expectedResult = """
-            class Foo {
-                // sourcery:inline:Foo.Inlined
-                var property = foo
+        class Foo {
+            // sourcery:inline:Foo.Inlined
+            var property = foo
+            // Line Three
+            // sourcery:end
+
+            class Bar {
+                // sourcery:inline:Bar.Inlined
+                var property = bar
+
                 // Line Three
                 // sourcery:end
-
-                class Bar {
-                    // sourcery:inline:Bar.Inlined
-                    var property = bar
-
-                    // Line Three
-                    // sourcery:end
-                }
             }
-            """
+        }
+        """
 
         let result = try sourcePath.read(.utf8)
         XCTAssertEqual(result, expectedResult)
@@ -333,13 +333,13 @@ class SourceryTests: XCTestCase {
         ))
 
         let expectedResult = """
-            class Foo {
-            // sourcery:inline:auto:Foo.Inlined
-            var property = 2
-            // Line Three
-            // sourcery:end
-            }
-            """
+        class Foo {
+        // sourcery:inline:auto:Foo.Inlined
+        var property = 2
+        // Line Three
+        // sourcery:end
+        }
+        """
 
         let result = try sourcePath.read(.utf8)
         XCTAssertEqual(result, expectedResult)
@@ -371,16 +371,16 @@ class SourceryTests: XCTestCase {
         ))
 
         let expectedResult = """
-            class Foo {
-                struct Inner {
+        class Foo {
+            struct Inner {
 
-                    // sourcery:inline:auto:Foo.Inner.Inlined
-                        var property = 3
-                    // Line Three
-                    // sourcery:end
-                }
+                // sourcery:inline:auto:Foo.Inner.Inlined
+                    var property = 3
+                // Line Three
+                // sourcery:end
             }
-            """
+        }
+        """
 
         let result = try sourcePath.read(.utf8)
         XCTAssertEqual(result, expectedResult)
@@ -404,12 +404,12 @@ class SourceryTests: XCTestCase {
         ))
 
         let expectedResult = """
-            class Foo {}
-            // sourcery:inline:after-auto:Foo.Inlined
-            var property = 2
-            // sourcery:end
-            struct Boo {}
-            """
+        class Foo {}
+        // sourcery:inline:after-auto:Foo.Inlined
+        var property = 2
+        // sourcery:end
+        struct Boo {}
+        """
 
         let result = try sourcePath.read(.utf8)
         XCTAssertEqual(result, expectedResult)
@@ -438,14 +438,14 @@ class SourceryTests: XCTestCase {
         ))
 
         let expectedResult = """
-            class Foo {
+        class Foo {
 
-                // sourcery:inline:auto:Foo.Inlined
-                var property = 2
-                // Line Three
-                // sourcery:end
-                var property = 1 }
-            """
+            // sourcery:inline:auto:Foo.Inlined
+            var property = 2
+            // Line Three
+            // sourcery:end
+            var property = 1 }
+        """
 
         let result = try sourcePath.read(.utf8)
         XCTAssertEqual(result, expectedResult)
@@ -479,16 +479,16 @@ class SourceryTests: XCTestCase {
         ))
 
         let expectedResult = """
-            class A {
-                let 👩‍🚀: String
+        class A {
+            let 👩‍🚀: String
 
-            // sourcery:inline:auto:A.init
-            init(👩‍🚀: String) {
-                self.👩‍🚀 = 👩‍🚀
-            }
-            // sourcery:end
-            }
-            """
+        // sourcery:inline:auto:A.init
+        init(👩‍🚀: String) {
+            self.👩‍🚀 = 👩‍🚀
+        }
+        // sourcery:end
+        }
+        """
 
         let result = try sourcePath.read(.utf8)
         XCTAssertEqual(result, expectedResult)
@@ -532,26 +532,26 @@ class SourceryTests: XCTestCase {
         ))
 
         let expectedResult = """
-            class A {
-                let 👩‍🚀: String
+        class A {
+            let 👩‍🚀: String
 
-                // sourcery:inline:auto:A.init
-                init(👩‍🚀: String) {
-                    self.👩‍🚀 = 👩‍🚀
-                }
-                // sourcery:end
-            }
-
-            class B {
-                let 👩‍🚀: String
-
-            // sourcery:inline:auto:B.init
+            // sourcery:inline:auto:A.init
             init(👩‍🚀: String) {
                 self.👩‍🚀 = 👩‍🚀
             }
             // sourcery:end
-            }
-            """
+        }
+
+        class B {
+            let 👩‍🚀: String
+
+        // sourcery:inline:auto:B.init
+        init(👩‍🚀: String) {
+            self.👩‍🚀 = 👩‍🚀
+        }
+        // sourcery:end
+        }
+        """
 
         let result = try sourcePath.read(.utf8)
         XCTAssertEqual(result, expectedResult)
@@ -587,20 +587,20 @@ class SourceryTests: XCTestCase {
         ))
 
         let expectedResult = """
-            class Foo {
-            // sourcery:inline:auto:Foo.Inlined
-            var property = foo
-            // Line Three
-            // sourcery:end
-            }
+        class Foo {
+        // sourcery:inline:auto:Foo.Inlined
+        var property = foo
+        // Line Three
+        // sourcery:end
+        }
 
-            class Bar {
-            // sourcery:inline:auto:Bar.Inlined
-            var property = bar
-            // Line Three
-            // sourcery:end
-            }
-            """
+        class Bar {
+        // sourcery:inline:auto:Bar.Inlined
+        var property = bar
+        // Line Three
+        // sourcery:end
+        }
+        """
 
         let result = try sourcePath.read(.utf8)
         XCTAssertEqual(result, expectedResult)
@@ -635,20 +635,20 @@ class SourceryTests: XCTestCase {
         ))
 
         let expectedResult = """
-            class Foo {
-            // sourcery:inline:auto:Foo.fake
-            var property = bar
-            // Line Three
-            // sourcery:end
-            }
+        class Foo {
+        // sourcery:inline:auto:Foo.fake
+        var property = bar
+        // Line Three
+        // sourcery:end
+        }
 
-            class Bar {
-            // sourcery:inline:auto:Bar.fake
-            var property = bar
-            // Line Three
-            // sourcery:end
-            }
-            """
+        class Bar {
+        // sourcery:inline:auto:Bar.fake
+        var property = bar
+        // Line Three
+        // sourcery:end
+        }
+        """
 
         let result = try sourcePath.read(.utf8)
         XCTAssertEqual(result, expectedResult)
@@ -678,15 +678,15 @@ class SourceryTests: XCTestCase {
         ))
 
         let expectedResult = """
-            class Foo {
-                class Bar {
-            // sourcery:inline:auto:Foo.Bar.AutoInlined
-            var property = bar
-            // Line Three
-            // sourcery:end
-            }
-            }
-            """
+        class Foo {
+            class Bar {
+        // sourcery:inline:auto:Foo.Bar.AutoInlined
+        var property = bar
+        // Line Three
+        // sourcery:end
+        }
+        }
+        """
 
         let result = try sourcePath.read(.utf8)
         XCTAssertEqual(result, expectedResult)
@@ -718,17 +718,17 @@ class SourceryTests: XCTestCase {
         ))
 
         let expectedResult = """
-            class Foo {}
+        class Foo {}
 
-            extension Foo {
-                class Bar {
-            // sourcery:inline:auto:Foo.Bar.AutoInlined
-            var property = bar
-            // Line Three
-            // sourcery:end
-            }
-            }
-            """
+        extension Foo {
+            class Bar {
+        // sourcery:inline:auto:Foo.Bar.AutoInlined
+        var property = bar
+        // Line Three
+        // sourcery:end
+        }
+        }
+        """
 
         let result = try sourcePath.read(.utf8)
         XCTAssertEqual(result, expectedResult)
@@ -764,22 +764,22 @@ class SourceryTests: XCTestCase {
         ))
 
         let expectedResult = """
-            class Foo {
-            // sourcery:inline:auto:Foo.AutoInlined
-            var property = foo
-            // Line Three
-            // sourcery:end
-            }
+        class Foo {
+        // sourcery:inline:auto:Foo.AutoInlined
+        var property = foo
+        // Line Three
+        // sourcery:end
+        }
 
-            extension Foo {
-                class Bar {
-            // sourcery:inline:auto:Foo.Bar.AutoInlined
-            var property = bar
-            // Line Three
-            // sourcery:end
-            }
-            }
-            """
+        extension Foo {
+            class Bar {
+        // sourcery:inline:auto:Foo.Bar.AutoInlined
+        var property = bar
+        // Line Three
+        // sourcery:end
+        }
+        }
+        """
 
         let result = try sourcePath.read(.utf8)
         XCTAssertEqual(result, expectedResult)
@@ -814,17 +814,17 @@ class SourceryTests: XCTestCase {
         ))
 
         let expectedResult = """
-            class Foo {
-            // sourcery:inline:auto:Foo.fake
-            var property = 2
-            // Line Three
-            // sourcery:end
+        class Foo {
+        // sourcery:inline:auto:Foo.fake
+        var property = 2
+        // Line Three
+        // sourcery:end
 
-            // sourcery:inline:auto:Foo.otherFake
-            // Line Four
-            // sourcery:end
-            }
-            """
+        // sourcery:inline:auto:Foo.otherFake
+        // Line Four
+        // sourcery:end
+        }
+        """
 
         let result = try sourcePath.read(.utf8)
         XCTAssertEqual(result, expectedResult)
@@ -883,20 +883,20 @@ class SourceryTests: XCTestCase {
         ))
 
         let expectedResult = """
-            class ClassWithMultipleInlineAnnotations {
-            // sourcery:inline:ClassWithMultipleInlineAnnotations.A
-            var a0: Int
-            var a1: Int
-            var a2: Int
-            // sourcery:end
+        class ClassWithMultipleInlineAnnotations {
+        // sourcery:inline:ClassWithMultipleInlineAnnotations.A
+        var a0: Int
+        var a1: Int
+        var a2: Int
+        // sourcery:end
 
-            // sourcery:inline:ClassWithMultipleInlineAnnotations.B
-            var b0: Int
-            var b1: Int
-            var b2: Int
-            // sourcery:end
-            }
-            """
+        // sourcery:inline:ClassWithMultipleInlineAnnotations.B
+        var b0: Int
+        var b1: Int
+        var b2: Int
+        // sourcery:end
+        }
+        """
 
         let result = try sourcePath.read(.utf8)
         XCTAssertEqual(result, expectedResult)
@@ -950,21 +950,21 @@ class SourceryTests: XCTestCase {
         ))
 
         let expectedResult = """
-            class ClassWithMultipleInlineAnnotations {
-            // sourcery:inline:ClassWithMultipleInlineAnnotations.A
-            var a0: Int
-            var a1: Int
-            var a2: Int
-            // sourcery:end
+        class ClassWithMultipleInlineAnnotations {
+        // sourcery:inline:ClassWithMultipleInlineAnnotations.A
+        var a0: Int
+        var a1: Int
+        var a2: Int
+        // sourcery:end
 
-            // sourcery:inline:auto:ClassWithMultipleInlineAnnotations.B
-            var b0: Int
-            var b1: Int
-            var b2: Int
-            // sourcery:end
-            }
-            // the last line of the file
-            """
+        // sourcery:inline:auto:ClassWithMultipleInlineAnnotations.B
+        var b0: Int
+        var b1: Int
+        var b2: Int
+        // sourcery:end
+        }
+        // the last line of the file
+        """
 
         let result = try sourcePath.read(.utf8)
         XCTAssertEqual(result, expectedResult)
@@ -1000,13 +1000,13 @@ class SourceryTests: XCTestCase {
         ))
 
         let expectedResult = """
-            class Foo {
-            // sourcery:inline:auto:Foo.Inlined
-            var property = 2
-            // Line Three
-            // sourcery:end
-            }
-            """
+        class Foo {
+        // sourcery:inline:auto:Foo.Inlined
+        var property = 2
+        // Line Three
+        // sourcery:end
+        }
+        """
 
         let result = try sourcePath.read(.utf8)
         XCTAssertEqual(result, expectedResult)
@@ -1045,14 +1045,14 @@ class SourceryTests: XCTestCase {
         _ = try createGivenFiles3()
 
         let expectedResult = """
-            // Generated using Sourcery
+        // Generated using Sourcery
 
-            extension Foo {
-            var property = 2
-            // Line Three
-            }
+        extension Foo {
+        var property = 2
+        // Line Three
+        }
 
-            """
+        """
 
         let generatedPath = output.path + Path("Generated/Foo.generated.swift")
 
@@ -1064,11 +1064,11 @@ class SourceryTests: XCTestCase {
         let (_, templatePath) = try createGivenFiles3()
 
         let expectedResult = """
-            // Generated using Sourcery
+        // Generated using Sourcery
 
-            // Line One
+        // Line One
 
-            """
+        """
 
         let generatedPath = output.path.appending(templatePath.generatedFileName)
 
@@ -1116,17 +1116,17 @@ class SourceryTests: XCTestCase {
         """.update(in: templatePath)
 
         let expectedResult = """
-            // Generated using Sourcery
+        // Generated using Sourcery
 
-            extension Foo {
-            var property1 = 1
-            }
+        extension Foo {
+        var property1 = 1
+        }
 
-            extension Foo {
-            var property2 = 2
-            }
+        extension Foo {
+        var property2 = 2
+        }
 
-            """
+        """
 
         try Sourcery(cacheDisabled: true).processConfiguration(.stub(
             sources: .paths(Paths(include: [sourcePath])),
@@ -1354,8 +1354,8 @@ private struct ProjectScenario {
 
     func createOutput(at path: Path) throws -> Output {
         let projectPath = projectPath + "TestProject.xcodeproj"
-        return Output(path, linkTo: .init(
-            project: try XcodeProj(path: projectPath), 
+        return try Output(path, linkTo: .init(
+            project: XcodeProj(path: projectPath),
             projectPath: projectPath,
             targets: ["TestProject"],
             group: nil
