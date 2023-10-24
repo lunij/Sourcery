@@ -18,7 +18,7 @@ class TemplateLoader: TemplateLoading {
             templates = try config.templates.allPaths.filter(\.isTemplateFile).map {
                 if $0.extension == "swifttemplate" {
                     let cachePath = cacheDisabled ? nil : Path.cachesDir(sourcePath: $0, basePath: config.cacheBasePath)
-                    return try SwiftTemplate(path: $0, cachePath: cachePath, version: Sourcery.version, buildPath: buildPath)
+                    return try SwiftTemplate(path: $0, buildPath: buildPath, cachePath: cachePath)
                 } else {
                     return try StencilTemplate(path: $0)
                 }

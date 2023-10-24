@@ -10,27 +10,15 @@ private struct ProcessResult {
 
 open class SwiftTemplate {
     public let path: Path
-    let buildPath: Path?
+    let buildPath: Path
     let cachePath: Path?
     let code: String
-    let version: String?
     let includedFiles: [Path]
 
-    private lazy var buildDir: Path = {
-        let path = "SwiftTemplate" + (version.map { "/\($0)" } ?? "")
-
-        if let buildPath {
-            return (buildPath + path).absolute()
-        }
-
-        return Path(FileManager.default.temporaryDirectory.appendingPathComponent(path).path)
-    }()
-
-    public init(path: Path, cachePath: Path? = nil, version: String? = nil, buildPath: Path? = nil) throws {
+    public init(path: Path, buildPath: Path? = nil, cachePath: Path? = nil) throws {
         self.path = path
-        self.buildPath = buildPath
+        self.buildPath = buildPath ?? .createBuildPath(suffixed: path.lastComponentWithoutExtension)
         self.cachePath = cachePath
-        self.version = version
         (code, includedFiles) = try SwiftTemplate.renderGeneratorCode(sourcePath: path)
     }
 
@@ -95,10 +83,10 @@ open class SwiftTemplate {
             try binaryPath = build()
         }
 
-        let serializedContextPath = buildDir + "context.bin"
+        let serializedContextPath = buildPath + "context.bin"
         let data = try NSKeyedArchiver.archivedData(withRootObject: context, requiringSecureCoding: false)
-        if !buildDir.exists {
-            try buildDir.mkpath()
+        if !buildPath.exists {
+            try buildPath.mkpath()
         }
         try serializedContextPath.write(data)
 
@@ -111,10 +99,10 @@ open class SwiftTemplate {
     }
 
     func build() throws -> Path {
-        let sourcesDir = buildDir + Path("Sources")
+        let sourcesDir = buildPath + Path("Sources")
         let templateFilesDir = sourcesDir + Path("SwiftTemplate")
         let mainFile = templateFilesDir + Path("main.swift")
-        let manifestFile = buildDir + Path("Package.swift")
+        let manifestFile = buildPath + Path("Package.swift")
 
         try sourcesDir.mkpath()
         try? templateFilesDir.delete()
@@ -126,7 +114,7 @@ open class SwiftTemplate {
         }
         try mainFile.write(code)
 
-        let binaryFile = buildDir + Path(".build/release/SwiftTemplate")
+        let binaryFile = buildPath + Path(".build/release/SwiftTemplate")
 
         try includedFiles.forEach { includedFile in
             try includedFile.copy(templateFilesDir + Path(includedFile.lastComponent))
@@ -143,7 +131,7 @@ open class SwiftTemplate {
         ]
         let compilationResult = try Process.runCommand(path: "/usr/bin/env",
                                                        arguments: arguments,
-                                                       currentDirectoryPath: buildDir)
+                                                       currentDirectoryPath: buildPath)
 
         if compilationResult.exitCode != EXIT_SUCCESS {
             throw Error.compilationFailed(output: compilationResult.output, error: compilationResult.error)
@@ -176,7 +164,7 @@ open class SwiftTemplate {
         var contents = code
 
         // For every included file, make sure that the path and modification date are included in the key
-        let files = (includedFiles + buildDir.allPaths).map { $0.absolute() }.sorted(by: { $0.string < $1.string })
+        let files = (includedFiles + buildPath.allPaths).map { $0.absolute() }.sorted(by: { $0.string < $1.string })
         for file in files {
             let hash = (try? file.read().sha256().base64EncodedString()) ?? ""
             contents += "\n// \(file.string)-\(hash)"
@@ -294,5 +282,11 @@ struct FolderSynchronizer {
             let filePath = dir + Path(file.name)
             try filePath.write(file.content)
         }
+    }
+}
+
+private extension Path {
+    static func createBuildPath(suffixed suffix: String) -> Path {
+        Path(FileManager.default.temporaryDirectory.appending(path: "Sourcery-SwiftTemplate/\(suffix)").path)
     }
 }

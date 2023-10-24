@@ -132,14 +132,14 @@ class SwiftTemplateTests: XCTestCase {
     func test_rethrowsTemplateParsingErrors() {
         let templatePath = Stubs.swiftTemplates + Path("Invalid.swifttemplate")
         XCTAssertThrowsError(
-            try SwiftTemplate(path: templatePath, version: "version").render(.init(
+            try SwiftTemplate(path: templatePath).render(.init(
                 parserResult: .init(path: nil, module: nil, types: [], functions: []),
                 types: Types(types: []),
                 functions: [],
                 arguments: [:]
             ))
         ) { error in
-            let path = try! Path.createTestDirectory(suffixed: "build").parent() + "SwiftTemplate/version/Sources/SwiftTemplate/main.swift"
+            let path = try! Path.createTestDirectory(suffixed: "build").parent() + "Sourcery-SwiftTemplate/Invalid/Sources/SwiftTemplate/main.swift"
             XCTAssertTrue("\(error)".contains("\(path):10:10: error: missing argument for parameter #1 in call\nprint(\"\\()\", terminator: \"\")\n         ^\n"))
         }
     }
@@ -219,7 +219,7 @@ class SwiftTemplateTests: XCTestCase {
         let utilsPath = output.path + "Utils.swift"
         try utilsPath.write(#"let foo = "bar""#)
 
-        let template = try SwiftTemplate(path: templatePath, cachePath: nil, version: "1.0.0")
+        let template = try SwiftTemplate(path: templatePath, cachePath: nil)
         let originalKey = template.cacheKey
         let keyBeforeModification = template.cacheKey
 
