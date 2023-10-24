@@ -53,8 +53,6 @@ public struct CustomMethodsCodable: AutoCodable {
     func encodeComputedPropertyToEncode(to container: inout KeyedEncodingContainer<CodingKeys>) {
         try? container.encode(computedPropertyToEncode, forKey: .computedPropertyToEncode)
     }
-
-    func encodeAdditionalValues(to _: Encoder) throws {}
 }
 
 public struct CustomContainerCodable: AutoCodable {

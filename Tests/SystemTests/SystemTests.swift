@@ -87,14 +87,21 @@ private func assert(template name: String, file: StaticString = #filePath, line:
         return XCTFail("File \(expectedFilePath.lastComponent) could not be read\n\(expectedFilePath)", file: file, line: line)
     }
 
-    let emptyLinesFilter: (String) -> Bool = { line in !line.isEmpty }
-    let commentLinesFilter: (String) -> Bool = { line in !line.hasPrefix("//") }
-    let generatedFileLines = generatedFileContent.components(separatedBy: .newlines).filter(emptyLinesFilter)
-    let generatedFileFilteredLines = generatedFileLines.filter(emptyLinesFilter).filter(commentLinesFilter)
-    let expectedFileLines = expectedFileContent.components(separatedBy: .newlines)
-    let expectedFileFilteredLines = expectedFileLines.filter(emptyLinesFilter).filter(commentLinesFilter)
+    let generatedLines = generatedFileContent.components(separatedBy: .newlines)
+    let expectedLines = expectedFileContent.components(separatedBy: .newlines)
+    let generatedLinesCount = generatedLines.count
+    let expectedLinesCount = expectedLines.count
 
-    XCTAssertEqual(generatedFileFilteredLines, expectedFileFilteredLines, file: file, line: line)
+    XCTAssertTrue(generatedLinesCount == expectedLinesCount, "Line count \(generatedLinesCount) does not match expected \(expectedLinesCount)", file: file, line: line)
+
+    for (index, expectedLine) in expectedLines.enumerated() {
+        let lineNumber = index + 1
+        guard let generatedLine = generatedLines[safe: index] else {
+            XCTFail("Line \(lineNumber) is missing. expected: \"\(expectedLine)\"", file: file, line: line)
+            break
+        }
+        XCTAssertEqual(generatedLine, expectedLine, "line: \(lineNumber)", file: file, line: line)
+    }
 }
 
 private extension Bundle {
@@ -139,5 +146,11 @@ private final class SourceryRunner {
         let error = String(data: errorPipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? ""
 
         return (exitCode, output, error)
+    }
+}
+
+private extension Collection {
+    subscript(safe index: Index) -> Element? {
+        indices.contains(index) ? self[index] : nil
     }
 }

@@ -1,3 +1,5 @@
+// Generated using Sourcery
+
 // swiftlint:disable all
 
 // MARK: - AutoHashable for classes, protocols, structs

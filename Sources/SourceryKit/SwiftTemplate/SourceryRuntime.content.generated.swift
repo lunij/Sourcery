@@ -7,11 +7,11 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
         /// :nodoc:
         public enum AccessLevel: String {
-            case `internal` = "internal"
-            case `private` = "private"
-            case `fileprivate` = "fileprivate"
-            case `public` = "public"
-            case `open` = "open"
+            case `internal`
+            case `private`
+            case `fileprivate`
+            case `public`
+            case open
             case none = ""
         }
 
@@ -27,29 +27,31 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
         /// Descibes Swift actor
         @objc(SwiftActor) @objcMembers public final class Actor: Type {
             /// Returns "actor"
-            public override var kind: String { return "actor" }
+            override public var kind: String { "actor" }
 
             /// Whether type is final
             public var isFinal: Bool {
-                return modifiers.contains { $0.name == "final" }
+                modifiers.contains { $0.name == "final" }
             }
 
             /// :nodoc:
-            public override init(name: String = "",
-                                 parent: Type? = nil,
-                                 accessLevel: AccessLevel = .internal,
-                                 isExtension: Bool = false,
-                                 variables: [Variable] = [],
-                                 methods: [Method] = [],
-                                 subscripts: [Subscript] = [],
-                                 inheritedTypes: [String] = [],
-                                 containedTypes: [Type] = [],
-                                 typealiases: [Typealias] = [],
-                                 attributes: AttributeList = [:],
-                                 modifiers: [SourceryModifier] = [],
-                                 annotations: [String: NSObject] = [:],
-                                 documentation: [String] = [],
-                                 isGeneric: Bool = false) {
+            override public init(
+                name: String = "",
+                parent: Type? = nil,
+                accessLevel: AccessLevel = .internal,
+                isExtension: Bool = false,
+                variables: [Variable] = [],
+                methods: [Method] = [],
+                subscripts: [Subscript] = [],
+                inheritedTypes: [String] = [],
+                containedTypes: [Type] = [],
+                typealiases: [Typealias] = [],
+                attributes: AttributeList = [:],
+                modifiers: [SourceryModifier] = [],
+                annotations: [String: NSObject] = [:],
+                documentation: [String] = [],
+                isGeneric: Bool = false
+            ) {
                 super.init(
                     name: name,
                     parent: parent,
@@ -96,23 +98,23 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
         /// Describes annotated declaration, i.e. type, method, variable, enum case
         public protocol Annotated {
             /**
-             All annotations of declaration stored by their name. Value can be `bool`, `String`, float `NSNumber`
-             or array of those types if you use several annotations with the same name.
+              All annotations of declaration stored by their name. Value can be `bool`, `String`, float `NSNumber`
+              or array of those types if you use several annotations with the same name.
 
-             **Example:**
+              **Example:**
 
-             ```
-             //sourcery: booleanAnnotation
-             //sourcery: stringAnnotation = "value"
-             //sourcery: numericAnnotation = 0.5
+              ```
+              //sourcery: booleanAnnotation
+              //sourcery: stringAnnotation = "value"
+              //sourcery: numericAnnotation = 0.5
 
-             [
-              "booleanAnnotation": true,
-              "stringAnnotation": "value",
-              "numericAnnotation": 0.5
-             ]
-             ```
-            */
+              [
+               "booleanAnnotation": true,
+               "stringAnnotation": "value",
+               "numericAnnotation": 0.5
+              ]
+              ```
+             */
             var annotations: Annotations { get }
         }
 
@@ -126,11 +128,11 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
         public extension Array {
             func parallelFlatMap<T>(transform: (Element) -> [T]) -> [T] {
-                return parallelMap(transform: transform).flatMap { $0 }
+                parallelMap(transform: transform).flatMap { $0 }
             }
 
             func parallelCompactMap<T>(transform: (Element) -> T?) -> [T] {
-                return parallelMap(transform: transform).compactMap { $0 }
+                parallelMap(transform: transform).compactMap { $0 }
             }
 
             func parallelMap<T>(transform: (Element) -> T) -> [T] {
@@ -160,7 +162,6 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
         /// Describes array type
         @objcMembers public final class ArrayType: NSObject, SourceryModel {
-
             /// Type name used in declaration
             public var name: String
 
@@ -262,7 +263,6 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
         /// Describes Swift attribute
         @objcMembers public class Attribute: NSObject, AutoCoding, AutoEquatable, AutoDiffable, AutoJSExport {
-
             /// Attribute name
             public let name: String
 
@@ -280,17 +280,17 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             public init(name: String, arguments: [String: NSObject] = [:], description: String? = nil) {
                 self.name = name
                 self.arguments = arguments
-                self._description = description ?? "@\(name)"
+                _description = description ?? "@\(name)"
             }
 
-            /// TODO: unify `asSource` / `description`?
+            // TODO: unify `asSource` / `description`?
             public var asSource: String {
                 description
             }
 
             /// Attribute description that can be used in a template.
-            public override var description: String {
-                return _description
+            override public var description: String {
+                _description
             }
 
             /// :nodoc:
@@ -317,10 +317,10 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 case final
                 case open
                 case lazy
-                case `public` = "public"
-                case `internal` = "internal"
-                case `private` = "private"
-                case `fileprivate` = "fileprivate"
+                case `public`
+                case `internal`
+                case `private`
+                case `fileprivate`
                 case publicSetter = "setter_access.public"
                 case internalSetter = "setter_access.internal"
                 case privateSetter = "setter_access.private"
@@ -379,7 +379,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 }
 
                 public var description: String {
-                    return hasAtPrefix ? "@\(name)" : name
+                    hasAtPrefix ? "@\(name)" : name
                 }
 
                 public var hasAtPrefix: Bool {
@@ -435,7 +435,6 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
         /// :nodoc:
         @objcMembers public final class BytesRange: NSObject, SourceryModel {
-
             public let offset: Int64
             public let length: Int64
 
@@ -448,20 +447,20 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 self.init(offset: range.offset, length: range.length)
             }
 
-        // sourcery:inline:BytesRange.AutoCoding
+            // sourcery:inline:BytesRange.AutoCoding
 
-        /// :nodoc:
-        public required init?(coder aDecoder: NSCoder) {
-            offset = aDecoder.decodeInt64(forKey: "offset")
-            length = aDecoder.decodeInt64(forKey: "length")
-        }
+            /// :nodoc:
+            public required init?(coder aDecoder: NSCoder) {
+                offset = aDecoder.decodeInt64(forKey: "offset")
+                length = aDecoder.decodeInt64(forKey: "length")
+            }
 
-        /// :nodoc:
-        public func encode(with aCoder: NSCoder) {
-            aCoder.encode(offset, forKey: "offset")
-            aCoder.encode(length, forKey: "length")
-        }
-        // sourcery:end
+            /// :nodoc:
+            public func encode(with aCoder: NSCoder) {
+                aCoder.encode(offset, forKey: "offset")
+                aCoder.encode(length, forKey: "length")
+            }
+            // sourcery:end
         }
 
         """#
@@ -475,29 +474,31 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
         /// Descibes Swift class
         @objc(SwiftClass) @objcMembers public final class Class: Type {
             /// Returns "class"
-            public override var kind: String { return "class" }
+            override public var kind: String { "class" }
 
             /// Whether type is final
             public var isFinal: Bool {
-                return modifiers.contains { $0.name == "final" }
+                modifiers.contains { $0.name == "final" }
             }
 
             /// :nodoc:
-            public override init(name: String = "",
-                                 parent: Type? = nil,
-                                 accessLevel: AccessLevel = .internal,
-                                 isExtension: Bool = false,
-                                 variables: [Variable] = [],
-                                 methods: [Method] = [],
-                                 subscripts: [Subscript] = [],
-                                 inheritedTypes: [String] = [],
-                                 containedTypes: [Type] = [],
-                                 typealiases: [Typealias] = [],
-                                 attributes: AttributeList = [:],
-                                 modifiers: [SourceryModifier] = [],
-                                 annotations: [String: NSObject] = [:],
-                                 documentation: [String] = [],
-                                 isGeneric: Bool = false) {
+            override public init(
+                name: String = "",
+                parent: Type? = nil,
+                accessLevel: AccessLevel = .internal,
+                isExtension: Bool = false,
+                variables: [Variable] = [],
+                methods: [Method] = [],
+                subscripts: [Subscript] = [],
+                inheritedTypes: [String] = [],
+                containedTypes: [Type] = [],
+                typealiases: [Typealias] = [],
+                attributes: AttributeList = [:],
+                modifiers: [SourceryModifier] = [],
+                annotations: [String: NSObject] = [:],
+                documentation: [String] = [],
+                isGeneric: Bool = false
+            ) {
                 super.init(
                     name: name,
                     parent: parent,
@@ -541,7 +542,6 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
         /// Describes closure type
         @objcMembers public final class ClosureType: NSObject, SourceryModel {
-
             /// Type name used in declaration with stripped whitespaces and new lines
             public let name: String
 
@@ -553,7 +553,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
             /// Actual return value type name if declaration uses typealias, otherwise just a `returnTypeName`
             public var actualReturnTypeName: TypeName {
-                return returnTypeName.actualTypeName ?? returnTypeName
+                returnTypeName.actualTypeName ?? returnTypeName
             }
 
             // sourcery: skipEquality, skipDescription
@@ -563,19 +563,19 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             // sourcery: skipEquality, skipDescription
             /// Whether return value type is optional
             public var isOptionalReturnType: Bool {
-                return returnTypeName.isOptional
+                returnTypeName.isOptional
             }
 
             // sourcery: skipEquality, skipDescription
             /// Whether return value type is implicitly unwrapped optional
             public var isImplicitlyUnwrappedOptionalReturnType: Bool {
-                return returnTypeName.isImplicitlyUnwrappedOptional
+                returnTypeName.isImplicitlyUnwrappedOptional
             }
 
             // sourcery: skipEquality, skipDescription
             /// Return value type name without attributes and optional type information
             public var unwrappedReturnTypeName: String {
-                return returnTypeName.unwrappedTypeName
+                returnTypeName.unwrappedTypeName
             }
 
             /// Whether method is async method
@@ -597,9 +597,9 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 self.returnTypeName = returnTypeName
                 self.returnType = returnType
                 self.asyncKeyword = asyncKeyword
-                self.isAsync = asyncKeyword != nil
+                isAsync = asyncKeyword != nil
                 self.throwsOrRethrowsKeyword = throwsOrRethrowsKeyword
-                self.`throws` = throwsOrRethrowsKeyword != nil
+                self.throws = throwsOrRethrowsKeyword != nil
             }
 
             public var asSource: String {
@@ -616,7 +616,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 returnType = aDecoder.decode(forKey: "returnType")
                 isAsync = aDecoder.decode(forKey: "isAsync")
                 asyncKeyword = aDecoder.decode(forKey: "asyncKeyword")
-                `throws` = aDecoder.decode(forKey: "`throws`")
+                self.throws = aDecoder.decode(forKey: "`throws`")
                 throwsOrRethrowsKeyword = aDecoder.decode(forKey: "throwsOrRethrowsKeyword")
             }
 
@@ -628,7 +628,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 aCoder.encode(returnType, forKey: "returnType")
                 aCoder.encode(isAsync, forKey: "isAsync")
                 aCoder.encode(asyncKeyword, forKey: "asyncKeyword")
-                aCoder.encode(`throws`, forKey: "`throws`")
+                aCoder.encode(self.throws, forKey: "`throws`")
                 aCoder.encode(throwsOrRethrowsKeyword, forKey: "throwsOrRethrowsKeyword")
             }
             // sourcery:end
@@ -669,7 +669,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 maybeDecode(forKey: forKey) as E?
             }
 
-            fileprivate func maybeDecode<E>(forKey: String) -> E? {
+            private func maybeDecode<E>(forKey: String) -> E? {
                 guard let object = decodeObject(forKey: forKey) else {
                     return nil
                 }
@@ -687,13 +687,11 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
         extension BytesRange: NSCoding {}
 
-
         extension ClosureParameter: NSCoding {}
 
         extension ClosureType: NSCoding {}
 
         extension DictionaryType: NSCoding {}
-
 
         extension EnumCase: NSCoding {}
 
@@ -713,9 +711,6 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
         extension Modifier: NSCoding {}
 
-
-
-
         extension Subscript: NSCoding {}
 
         extension TupleElement: NSCoding {}
@@ -732,7 +727,6 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
         extension Variable: NSCoding {}
 
-
         """#
     ),
     .init(
@@ -742,12 +736,11 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
         import Foundation
 
         private func currentTimestamp() -> TimeInterval {
-            return CFAbsoluteTimeGetCurrent()
+            CFAbsoluteTimeGetCurrent()
         }
 
         /// Responsible for composing results of `FileParser`.
         public enum Composer {
-
             /// Performs final processing of discovered types:
             /// - extends types with their corresponding extensions;
             /// - replaces typealiases with actual types
@@ -760,7 +753,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 let composed = ParserResultsComposed(parserResult: parserResult)
 
                 let resolveType = { (typeName: TypeName, containingType: Type?) -> Type? in
-                    return composed.resolveType(typeName: typeName, containingType: containingType)
+                    composed.resolveType(typeName: typeName, containingType: containingType)
                 }
 
                 composed.types.parallelPerform { type in
@@ -814,7 +807,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             }
 
             private static func resolveSubscriptTypes(_ subscript: Subscript, of type: Type, resolve: TypeResolver) {
-                `subscript`.parameters.forEach { (parameter) in
+                `subscript`.parameters.forEach { parameter in
                     parameter.type = resolve(parameter.typeName, type)
                 }
 
@@ -878,7 +871,8 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 } else if let rawTypeName = enumeration.inheritedTypes.first {
                     // enums with no cases or enums with cases that contain associated values can't have raw type
                     guard !enumeration.cases.isEmpty,
-                          !enumeration.hasAssociatedValues else {
+                          !enumeration.hasAssociatedValues
+                    else {
                         return enumeration.rawTypeName = nil
                     }
 
@@ -902,7 +896,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             }
 
             private static func resolveProtocolTypes(_ sourceryProtocol: SourceryProtocol, resolve: TypeResolver) {
-                sourceryProtocol.associatedTypes.forEach { (_, value) in
+                sourceryProtocol.associatedTypes.forEach { _, value in
                     guard let typeName = value.typeName,
                           let type = resolve(typeName, sourceryProtocol)
                     else { return }
@@ -1014,139 +1008,149 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
         // swiftlint:disable vertical_whitespace
 
+        public extension Actor {
+            /// :nodoc:
+            override var description: String {
+                var string = super.description
+                string += ", "
+                string += "kind = \(String(describing: kind)), "
+                string += "isFinal = \(String(describing: isFinal))"
+                return string
+            }
+        }
 
-        extension Actor {
+        public extension ArrayType {
             /// :nodoc:
-            override public var description: String {
+            override var description: String {
+                var string = "\(Swift.type(of: self)): "
+                string += "name = \(String(describing: name)), "
+                string += "elementTypeName = \(String(describing: elementTypeName)), "
+                string += "asGeneric = \(String(describing: asGeneric)), "
+                string += "asSource = \(String(describing: asSource))"
+                return string
+            }
+        }
+
+        public extension AssociatedType {
+            /// :nodoc:
+            override var description: String {
+                var string = "\(Swift.type(of: self)): "
+                string += "name = \(String(describing: name)), "
+                string += "typeName = \(String(describing: typeName))"
+                return string
+            }
+        }
+
+        public extension AssociatedValue {
+            /// :nodoc:
+            override var description: String {
+                var string = "\(Swift.type(of: self)): "
+                string += "localName = \(String(describing: localName)), "
+                string += "externalName = \(String(describing: externalName)), "
+                string += "typeName = \(String(describing: typeName)), "
+                string += "defaultValue = \(String(describing: defaultValue)), "
+                string += "annotations = \(String(describing: annotations))"
+                return string
+            }
+        }
+
+        public extension BytesRange {
+            /// :nodoc:
+            override var description: String {
+                var string = "\(Swift.type(of: self)): "
+                string += "offset = \(String(describing: offset)), "
+                string += "length = \(String(describing: length))"
+                return string
+            }
+        }
+
+        public extension Class {
+            /// :nodoc:
+            override var description: String {
                 var string = super.description
                 string += ", "
-                string += "kind = \(String(describing: self.kind)), "
-                string += "isFinal = \(String(describing: self.isFinal))"
+                string += "kind = \(String(describing: kind)), "
+                string += "isFinal = \(String(describing: isFinal))"
                 return string
             }
         }
-        extension ArrayType {
+
+        public extension ClosureParameter {
             /// :nodoc:
-            override public var description: String {
+            override var description: String {
                 var string = "\(Swift.type(of: self)): "
-                string += "name = \(String(describing: self.name)), "
-                string += "elementTypeName = \(String(describing: self.elementTypeName)), "
-                string += "asGeneric = \(String(describing: self.asGeneric)), "
-                string += "asSource = \(String(describing: self.asSource))"
+                string += "argumentLabel = \(String(describing: argumentLabel)), "
+                string += "name = \(String(describing: name)), "
+                string += "typeName = \(String(describing: typeName)), "
+                string += "`inout` = \(String(describing: self.inout)), "
+                string += "typeAttributes = \(String(describing: typeAttributes)), "
+                string += "defaultValue = \(String(describing: defaultValue)), "
+                string += "annotations = \(String(describing: annotations)), "
+                string += "asSource = \(String(describing: asSource))"
                 return string
             }
         }
-        extension AssociatedType {
+
+        public extension ClosureType {
             /// :nodoc:
-            override public var description: String {
+            override var description: String {
                 var string = "\(Swift.type(of: self)): "
-                string += "name = \(String(describing: self.name)), "
-                string += "typeName = \(String(describing: self.typeName))"
+                string += "name = \(String(describing: name)), "
+                string += "parameters = \(String(describing: parameters)), "
+                string += "returnTypeName = \(String(describing: returnTypeName)), "
+                string += "actualReturnTypeName = \(String(describing: actualReturnTypeName)), "
+                string += "isAsync = \(String(describing: isAsync)), "
+                string += "asyncKeyword = \(String(describing: asyncKeyword)), "
+                string += "`throws` = \(String(describing: self.throws)), "
+                string += "throwsOrRethrowsKeyword = \(String(describing: throwsOrRethrowsKeyword)), "
+                string += "asSource = \(String(describing: asSource))"
                 return string
             }
         }
-        extension AssociatedValue {
+
+        public extension DictionaryType {
             /// :nodoc:
-            override public var description: String {
+            override var description: String {
                 var string = "\(Swift.type(of: self)): "
-                string += "localName = \(String(describing: self.localName)), "
-                string += "externalName = \(String(describing: self.externalName)), "
-                string += "typeName = \(String(describing: self.typeName)), "
-                string += "defaultValue = \(String(describing: self.defaultValue)), "
-                string += "annotations = \(String(describing: self.annotations))"
+                string += "name = \(String(describing: name)), "
+                string += "valueTypeName = \(String(describing: valueTypeName)), "
+                string += "keyTypeName = \(String(describing: keyTypeName)), "
+                string += "asGeneric = \(String(describing: asGeneric)), "
+                string += "asSource = \(String(describing: asSource))"
                 return string
             }
         }
-        extension BytesRange {
+
+        public extension Enum {
             /// :nodoc:
-            override public var description: String {
-                var string = "\(Swift.type(of: self)): "
-                string += "offset = \(String(describing: self.offset)), "
-                string += "length = \(String(describing: self.length))"
-                return string
-            }
-        }
-        extension Class {
-            /// :nodoc:
-            override public var description: String {
+            override var description: String {
                 var string = super.description
                 string += ", "
-                string += "kind = \(String(describing: self.kind)), "
-                string += "isFinal = \(String(describing: self.isFinal))"
+                string += "cases = \(String(describing: cases)), "
+                string += "rawTypeName = \(String(describing: rawTypeName)), "
+                string += "hasAssociatedValues = \(String(describing: hasAssociatedValues))"
                 return string
             }
         }
-        extension ClosureParameter {
+
+        public extension EnumCase {
             /// :nodoc:
-            override public var description: String {
+            override var description: String {
                 var string = "\(Swift.type(of: self)): "
-                string += "argumentLabel = \(String(describing: self.argumentLabel)), "
-                string += "name = \(String(describing: self.name)), "
-                string += "typeName = \(String(describing: self.typeName)), "
-                string += "`inout` = \(String(describing: self.`inout`)), "
-                string += "typeAttributes = \(String(describing: self.typeAttributes)), "
-                string += "defaultValue = \(String(describing: self.defaultValue)), "
-                string += "annotations = \(String(describing: self.annotations)), "
-                string += "asSource = \(String(describing: self.asSource))"
+                string += "name = \(String(describing: name)), "
+                string += "rawValue = \(String(describing: rawValue)), "
+                string += "associatedValues = \(String(describing: associatedValues)), "
+                string += "annotations = \(String(describing: annotations)), "
+                string += "documentation = \(String(describing: documentation)), "
+                string += "indirect = \(String(describing: indirect)), "
+                string += "hasAssociatedValue = \(String(describing: hasAssociatedValue))"
                 return string
             }
         }
-        extension ClosureType {
+
+        public extension FileParserResult {
             /// :nodoc:
-            override public var description: String {
-                var string = "\(Swift.type(of: self)): "
-                string += "name = \(String(describing: self.name)), "
-                string += "parameters = \(String(describing: self.parameters)), "
-                string += "returnTypeName = \(String(describing: self.returnTypeName)), "
-                string += "actualReturnTypeName = \(String(describing: self.actualReturnTypeName)), "
-                string += "isAsync = \(String(describing: self.isAsync)), "
-                string += "asyncKeyword = \(String(describing: self.asyncKeyword)), "
-                string += "`throws` = \(String(describing: self.`throws`)), "
-                string += "throwsOrRethrowsKeyword = \(String(describing: self.throwsOrRethrowsKeyword)), "
-                string += "asSource = \(String(describing: self.asSource))"
-                return string
-            }
-        }
-        extension DictionaryType {
-            /// :nodoc:
-            override public var description: String {
-                var string = "\(Swift.type(of: self)): "
-                string += "name = \(String(describing: self.name)), "
-                string += "valueTypeName = \(String(describing: self.valueTypeName)), "
-                string += "keyTypeName = \(String(describing: self.keyTypeName)), "
-                string += "asGeneric = \(String(describing: self.asGeneric)), "
-                string += "asSource = \(String(describing: self.asSource))"
-                return string
-            }
-        }
-        extension Enum {
-            /// :nodoc:
-            override public var description: String {
-                var string = super.description
-                string += ", "
-                string += "cases = \(String(describing: self.cases)), "
-                string += "rawTypeName = \(String(describing: self.rawTypeName)), "
-                string += "hasAssociatedValues = \(String(describing: self.hasAssociatedValues))"
-                return string
-            }
-        }
-        extension EnumCase {
-            /// :nodoc:
-            override public var description: String {
-                var string = "\(Swift.type(of: self)): "
-                string += "name = \(String(describing: self.name)), "
-                string += "rawValue = \(String(describing: self.rawValue)), "
-                string += "associatedValues = \(String(describing: self.associatedValues)), "
-                string += "annotations = \(String(describing: self.annotations)), "
-                string += "documentation = \(String(describing: self.documentation)), "
-                string += "indirect = \(String(describing: self.indirect)), "
-                string += "hasAssociatedValue = \(String(describing: self.hasAssociatedValue))"
-                return string
-            }
-        }
-        extension FileParserResult {
-            /// :nodoc:
-            override public var description: String {
+            override var description: String {
                 var string = "\(Swift.type(of: self)): "
                 string += "path = \(String(describing: self.path)), "
                 string += "module = \(String(describing: self.module)), "
@@ -1160,229 +1164,244 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 return string
             }
         }
-        extension GenericRequirement {
+
+        public extension GenericRequirement {
             /// :nodoc:
-            override public var description: String {
+            override var description: String {
                 var string = "\(Swift.type(of: self)): "
-                string += "leftType = \(String(describing: self.leftType)), "
-                string += "rightType = \(String(describing: self.rightType)), "
-                string += "relationship = \(String(describing: self.relationship)), "
-                string += "relationshipSyntax = \(String(describing: self.relationshipSyntax))"
+                string += "leftType = \(String(describing: leftType)), "
+                string += "rightType = \(String(describing: rightType)), "
+                string += "relationship = \(String(describing: relationship)), "
+                string += "relationshipSyntax = \(String(describing: relationshipSyntax))"
                 return string
             }
         }
-        extension GenericTypeParameter {
+
+        public extension GenericTypeParameter {
             /// :nodoc:
-            override public var description: String {
+            override var description: String {
                 var string = "\(Swift.type(of: self)): "
-                string += "typeName = \(String(describing: self.typeName))"
+                string += "typeName = \(String(describing: typeName))"
                 return string
             }
         }
-        extension Method {
+
+        public extension Method {
             /// :nodoc:
-            override public var description: String {
+            override var description: String {
                 var string = "\(Swift.type(of: self)): "
-                string += "name = \(String(describing: self.name)), "
-                string += "selectorName = \(String(describing: self.selectorName)), "
-                string += "parameters = \(String(describing: self.parameters)), "
-                string += "returnTypeName = \(String(describing: self.returnTypeName)), "
-                string += "isAsync = \(String(describing: self.isAsync)), "
-                string += "`throws` = \(String(describing: self.`throws`)), "
-                string += "`rethrows` = \(String(describing: self.`rethrows`)), "
-                string += "accessLevel = \(String(describing: self.accessLevel)), "
-                string += "isStatic = \(String(describing: self.isStatic)), "
-                string += "isClass = \(String(describing: self.isClass)), "
-                string += "isFailableInitializer = \(String(describing: self.isFailableInitializer)), "
-                string += "annotations = \(String(describing: self.annotations)), "
-                string += "documentation = \(String(describing: self.documentation)), "
-                string += "definedInTypeName = \(String(describing: self.definedInTypeName)), "
-                string += "attributes = \(String(describing: self.attributes)), "
-                string += "modifiers = \(String(describing: self.modifiers))"
+                string += "name = \(String(describing: name)), "
+                string += "selectorName = \(String(describing: selectorName)), "
+                string += "parameters = \(String(describing: parameters)), "
+                string += "returnTypeName = \(String(describing: returnTypeName)), "
+                string += "isAsync = \(String(describing: isAsync)), "
+                string += "`throws` = \(String(describing: self.throws)), "
+                string += "`rethrows` = \(String(describing: self.rethrows)), "
+                string += "accessLevel = \(String(describing: accessLevel)), "
+                string += "isStatic = \(String(describing: isStatic)), "
+                string += "isClass = \(String(describing: isClass)), "
+                string += "isFailableInitializer = \(String(describing: isFailableInitializer)), "
+                string += "annotations = \(String(describing: annotations)), "
+                string += "documentation = \(String(describing: documentation)), "
+                string += "definedInTypeName = \(String(describing: definedInTypeName)), "
+                string += "attributes = \(String(describing: attributes)), "
+                string += "modifiers = \(String(describing: modifiers))"
                 return string
             }
         }
-        extension MethodParameter {
+
+        public extension MethodParameter {
             /// :nodoc:
-            override public var description: String {
+            override var description: String {
                 var string = "\(Swift.type(of: self)): "
-                string += "argumentLabel = \(String(describing: self.argumentLabel)), "
-                string += "name = \(String(describing: self.name)), "
-                string += "typeName = \(String(describing: self.typeName)), "
-                string += "`inout` = \(String(describing: self.`inout`)), "
-                string += "isVariadic = \(String(describing: self.isVariadic)), "
-                string += "typeAttributes = \(String(describing: self.typeAttributes)), "
-                string += "defaultValue = \(String(describing: self.defaultValue)), "
-                string += "annotations = \(String(describing: self.annotations)), "
-                string += "asSource = \(String(describing: self.asSource))"
+                string += "argumentLabel = \(String(describing: argumentLabel)), "
+                string += "name = \(String(describing: name)), "
+                string += "typeName = \(String(describing: typeName)), "
+                string += "`inout` = \(String(describing: self.inout)), "
+                string += "isVariadic = \(String(describing: isVariadic)), "
+                string += "typeAttributes = \(String(describing: typeAttributes)), "
+                string += "defaultValue = \(String(describing: defaultValue)), "
+                string += "annotations = \(String(describing: annotations)), "
+                string += "asSource = \(String(describing: asSource))"
                 return string
             }
         }
-        extension Protocol {
+
+        public extension Protocol {
             /// :nodoc:
-            override public var description: String {
+            override var description: String {
                 var string = super.description
                 string += ", "
-                string += "kind = \(String(describing: self.kind)), "
-                string += "associatedTypes = \(String(describing: self.associatedTypes)), "
-                string += "genericRequirements = \(String(describing: self.genericRequirements))"
+                string += "kind = \(String(describing: kind)), "
+                string += "associatedTypes = \(String(describing: associatedTypes)), "
+                string += "genericRequirements = \(String(describing: genericRequirements))"
                 return string
             }
         }
-        extension ProtocolComposition {
+
+        public extension ProtocolComposition {
             /// :nodoc:
-            override public var description: String {
+            override var description: String {
                 var string = super.description
                 string += ", "
-                string += "kind = \(String(describing: self.kind)), "
-                string += "composedTypeNames = \(String(describing: self.composedTypeNames))"
+                string += "kind = \(String(describing: kind)), "
+                string += "composedTypeNames = \(String(describing: composedTypeNames))"
                 return string
             }
         }
-        extension Struct {
+
+        public extension Struct {
             /// :nodoc:
-            override public var description: String {
+            override var description: String {
                 var string = super.description
                 string += ", "
-                string += "kind = \(String(describing: self.kind))"
+                string += "kind = \(String(describing: kind))"
                 return string
             }
         }
-        extension Subscript {
+
+        public extension Subscript {
             /// :nodoc:
-            override public var description: String {
+            override var description: String {
                 var string = "\(Swift.type(of: self)): "
-                string += "parameters = \(String(describing: self.parameters)), "
-                string += "returnTypeName = \(String(describing: self.returnTypeName)), "
-                string += "actualReturnTypeName = \(String(describing: self.actualReturnTypeName)), "
-                string += "isFinal = \(String(describing: self.isFinal)), "
-                string += "readAccess = \(String(describing: self.readAccess)), "
-                string += "writeAccess = \(String(describing: self.writeAccess)), "
-                string += "isMutable = \(String(describing: self.isMutable)), "
-                string += "annotations = \(String(describing: self.annotations)), "
-                string += "documentation = \(String(describing: self.documentation)), "
-                string += "definedInTypeName = \(String(describing: self.definedInTypeName)), "
-                string += "actualDefinedInTypeName = \(String(describing: self.actualDefinedInTypeName)), "
-                string += "attributes = \(String(describing: self.attributes)), "
-                string += "modifiers = \(String(describing: self.modifiers))"
+                string += "parameters = \(String(describing: parameters)), "
+                string += "returnTypeName = \(String(describing: returnTypeName)), "
+                string += "actualReturnTypeName = \(String(describing: actualReturnTypeName)), "
+                string += "isFinal = \(String(describing: isFinal)), "
+                string += "readAccess = \(String(describing: readAccess)), "
+                string += "writeAccess = \(String(describing: writeAccess)), "
+                string += "isMutable = \(String(describing: isMutable)), "
+                string += "annotations = \(String(describing: annotations)), "
+                string += "documentation = \(String(describing: documentation)), "
+                string += "definedInTypeName = \(String(describing: definedInTypeName)), "
+                string += "actualDefinedInTypeName = \(String(describing: actualDefinedInTypeName)), "
+                string += "attributes = \(String(describing: attributes)), "
+                string += "modifiers = \(String(describing: modifiers))"
                 return string
             }
         }
-        extension TemplateContext {
+
+        public extension TemplateContext {
             /// :nodoc:
-            override public var description: String {
+            override var description: String {
                 var string = "\(Swift.type(of: self)): "
-                string += "parserResult = \(String(describing: self.parserResult)), "
-                string += "functions = \(String(describing: self.functions)), "
-                string += "types = \(String(describing: self.types)), "
-                string += "argument = \(String(describing: self.argument)), "
-                string += "stencilContext = \(String(describing: self.stencilContext))"
+                string += "parserResult = \(String(describing: parserResult)), "
+                string += "functions = \(String(describing: functions)), "
+                string += "types = \(String(describing: types)), "
+                string += "argument = \(String(describing: argument)), "
+                string += "stencilContext = \(String(describing: stencilContext))"
                 return string
             }
         }
-        extension TupleElement {
+
+        public extension TupleElement {
             /// :nodoc:
-            override public var description: String {
+            override var description: String {
                 var string = "\(Swift.type(of: self)): "
-                string += "name = \(String(describing: self.name)), "
-                string += "typeName = \(String(describing: self.typeName)), "
-                string += "asSource = \(String(describing: self.asSource))"
+                string += "name = \(String(describing: name)), "
+                string += "typeName = \(String(describing: typeName)), "
+                string += "asSource = \(String(describing: asSource))"
                 return string
             }
         }
-        extension TupleType {
+
+        public extension TupleType {
             /// :nodoc:
-            override public var description: String {
+            override var description: String {
                 var string = "\(Swift.type(of: self)): "
-                string += "name = \(String(describing: self.name)), "
-                string += "elements = \(String(describing: self.elements))"
+                string += "name = \(String(describing: name)), "
+                string += "elements = \(String(describing: elements))"
                 return string
             }
         }
-        extension Type {
+
+        public extension Type {
             /// :nodoc:
-            override public var description: String {
+            override var description: String {
                 var string = "\(Swift.type(of: self)): "
-                string += "module = \(String(describing: self.module)), "
-                string += "imports = \(String(describing: self.imports)), "
-                string += "allImports = \(String(describing: self.allImports)), "
-                string += "typealiases = \(String(describing: self.typealiases)), "
-                string += "isExtension = \(String(describing: self.isExtension)), "
-                string += "kind = \(String(describing: self.kind)), "
-                string += "accessLevel = \(String(describing: self.accessLevel)), "
-                string += "name = \(String(describing: self.name)), "
-                string += "isUnknownExtension = \(String(describing: self.isUnknownExtension)), "
-                string += "isGeneric = \(String(describing: self.isGeneric)), "
-                string += "localName = \(String(describing: self.localName)), "
-                string += "rawVariables = \(String(describing: self.rawVariables)), "
-                string += "rawMethods = \(String(describing: self.rawMethods)), "
-                string += "rawSubscripts = \(String(describing: self.rawSubscripts)), "
-                string += "initializers = \(String(describing: self.initializers)), "
-                string += "annotations = \(String(describing: self.annotations)), "
-                string += "documentation = \(String(describing: self.documentation)), "
-                string += "staticVariables = \(String(describing: self.staticVariables)), "
-                string += "staticMethods = \(String(describing: self.staticMethods)), "
-                string += "classMethods = \(String(describing: self.classMethods)), "
-                string += "instanceVariables = \(String(describing: self.instanceVariables)), "
-                string += "instanceMethods = \(String(describing: self.instanceMethods)), "
-                string += "computedVariables = \(String(describing: self.computedVariables)), "
-                string += "storedVariables = \(String(describing: self.storedVariables)), "
-                string += "inheritedTypes = \(String(describing: self.inheritedTypes)), "
-                string += "inherits = \(String(describing: self.inherits)), "
-                string += "containedTypes = \(String(describing: self.containedTypes)), "
-                string += "parentName = \(String(describing: self.parentName)), "
-                string += "parentTypes = \(String(describing: self.parentTypes)), "
-                string += "attributes = \(String(describing: self.attributes)), "
-                string += "modifiers = \(String(describing: self.modifiers)), "
-                string += "fileName = \(String(describing: self.fileName))"
+                string += "module = \(String(describing: module)), "
+                string += "imports = \(String(describing: imports)), "
+                string += "allImports = \(String(describing: allImports)), "
+                string += "typealiases = \(String(describing: typealiases)), "
+                string += "isExtension = \(String(describing: isExtension)), "
+                string += "kind = \(String(describing: kind)), "
+                string += "accessLevel = \(String(describing: accessLevel)), "
+                string += "name = \(String(describing: name)), "
+                string += "isUnknownExtension = \(String(describing: isUnknownExtension)), "
+                string += "isGeneric = \(String(describing: isGeneric)), "
+                string += "localName = \(String(describing: localName)), "
+                string += "rawVariables = \(String(describing: rawVariables)), "
+                string += "rawMethods = \(String(describing: rawMethods)), "
+                string += "rawSubscripts = \(String(describing: rawSubscripts)), "
+                string += "initializers = \(String(describing: initializers)), "
+                string += "annotations = \(String(describing: annotations)), "
+                string += "documentation = \(String(describing: documentation)), "
+                string += "staticVariables = \(String(describing: staticVariables)), "
+                string += "staticMethods = \(String(describing: staticMethods)), "
+                string += "classMethods = \(String(describing: classMethods)), "
+                string += "instanceVariables = \(String(describing: instanceVariables)), "
+                string += "instanceMethods = \(String(describing: instanceMethods)), "
+                string += "computedVariables = \(String(describing: computedVariables)), "
+                string += "storedVariables = \(String(describing: storedVariables)), "
+                string += "inheritedTypes = \(String(describing: inheritedTypes)), "
+                string += "inherits = \(String(describing: inherits)), "
+                string += "containedTypes = \(String(describing: containedTypes)), "
+                string += "parentName = \(String(describing: parentName)), "
+                string += "parentTypes = \(String(describing: parentTypes)), "
+                string += "attributes = \(String(describing: attributes)), "
+                string += "modifiers = \(String(describing: modifiers)), "
+                string += "fileName = \(String(describing: fileName))"
                 return string
             }
         }
-        extension Typealias {
+
+        public extension Typealias {
             /// :nodoc:
-            override public var description: String {
+            override var description: String {
                 var string = "\(Swift.type(of: self)): "
-                string += "aliasName = \(String(describing: self.aliasName)), "
-                string += "typeName = \(String(describing: self.typeName)), "
-                string += "module = \(String(describing: self.module)), "
-                string += "accessLevel = \(String(describing: self.accessLevel)), "
-                string += "parentName = \(String(describing: self.parentName)), "
-                string += "name = \(String(describing: self.name))"
+                string += "aliasName = \(String(describing: aliasName)), "
+                string += "typeName = \(String(describing: typeName)), "
+                string += "module = \(String(describing: module)), "
+                string += "accessLevel = \(String(describing: accessLevel)), "
+                string += "parentName = \(String(describing: parentName)), "
+                string += "name = \(String(describing: name))"
                 return string
             }
         }
-        extension Types {
+
+        public extension Types {
             /// :nodoc:
-            override public var description: String {
+            override var description: String {
                 var string = "\(Swift.type(of: self)): "
-                string += "types = \(String(describing: self.types)), "
-                string += "typealiases = \(String(describing: self.typealiases))"
+                string += "types = \(String(describing: types)), "
+                string += "typealiases = \(String(describing: typealiases))"
                 return string
             }
         }
-        extension Variable {
+
+        public extension Variable {
             /// :nodoc:
-            override public var description: String {
+            override var description: String {
                 var string = "\(Swift.type(of: self)): "
-                string += "name = \(String(describing: self.name)), "
-                string += "typeName = \(String(describing: self.typeName)), "
-                string += "isComputed = \(String(describing: self.isComputed)), "
-                string += "isAsync = \(String(describing: self.isAsync)), "
-                string += "`throws` = \(String(describing: self.`throws`)), "
-                string += "isStatic = \(String(describing: self.isStatic)), "
-                string += "readAccess = \(String(describing: self.readAccess)), "
-                string += "writeAccess = \(String(describing: self.writeAccess)), "
-                string += "accessLevel = \(String(describing: self.accessLevel)), "
-                string += "isMutable = \(String(describing: self.isMutable)), "
-                string += "defaultValue = \(String(describing: self.defaultValue)), "
-                string += "annotations = \(String(describing: self.annotations)), "
-                string += "documentation = \(String(describing: self.documentation)), "
-                string += "attributes = \(String(describing: self.attributes)), "
-                string += "modifiers = \(String(describing: self.modifiers)), "
-                string += "isFinal = \(String(describing: self.isFinal)), "
-                string += "isLazy = \(String(describing: self.isLazy)), "
-                string += "definedInTypeName = \(String(describing: self.definedInTypeName)), "
-                string += "actualDefinedInTypeName = \(String(describing: self.actualDefinedInTypeName))"
+                string += "name = \(String(describing: name)), "
+                string += "typeName = \(String(describing: typeName)), "
+                string += "isComputed = \(String(describing: isComputed)), "
+                string += "isAsync = \(String(describing: isAsync)), "
+                string += "`throws` = \(String(describing: self.throws)), "
+                string += "isStatic = \(String(describing: isStatic)), "
+                string += "readAccess = \(String(describing: readAccess)), "
+                string += "writeAccess = \(String(describing: writeAccess)), "
+                string += "accessLevel = \(String(describing: accessLevel)), "
+                string += "isMutable = \(String(describing: isMutable)), "
+                string += "defaultValue = \(String(describing: defaultValue)), "
+                string += "annotations = \(String(describing: annotations)), "
+                string += "documentation = \(String(describing: documentation)), "
+                string += "attributes = \(String(describing: attributes)), "
+                string += "modifiers = \(String(describing: modifiers)), "
+                string += "isFinal = \(String(describing: isFinal)), "
+                string += "isLazy = \(String(describing: isLazy)), "
+                string += "definedInTypeName = \(String(describing: definedInTypeName)), "
+                string += "actualDefinedInTypeName = \(String(describing: actualDefinedInTypeName))"
                 return string
             }
         }
@@ -1467,8 +1486,8 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
         import Foundation
 
-        extension Actor {
-            override public func diffAgainst(_ object: Any?) -> DiffableResult {
+        public extension Actor {
+            override func diffAgainst(_ object: Any?) -> DiffableResult {
                 let results = DiffableResult()
                 guard let castObject = object as? Actor else {
                     results.append("Incorrect type <expected: Actor, received: \(Swift.type(of: object))>")
@@ -1478,6 +1497,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 return results
             }
         }
+
         extension ArrayType: Diffable {
             @objc public func diffAgainst(_ object: Any?) -> DiffableResult {
                 let results = DiffableResult()
@@ -1485,11 +1505,12 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                     results.append("Incorrect type <expected: ArrayType, received: \(Swift.type(of: object))>")
                     return results
                 }
-                results.append(contentsOf: DiffableResult(identifier: "name").trackDifference(actual: self.name, expected: castObject.name))
-                results.append(contentsOf: DiffableResult(identifier: "elementTypeName").trackDifference(actual: self.elementTypeName, expected: castObject.elementTypeName))
+                results.append(contentsOf: DiffableResult(identifier: "name").trackDifference(actual: name, expected: castObject.name))
+                results.append(contentsOf: DiffableResult(identifier: "elementTypeName").trackDifference(actual: elementTypeName, expected: castObject.elementTypeName))
                 return results
             }
         }
+
         extension AssociatedType: Diffable {
             @objc public func diffAgainst(_ object: Any?) -> DiffableResult {
                 let results = DiffableResult()
@@ -1497,11 +1518,12 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                     results.append("Incorrect type <expected: AssociatedType, received: \(Swift.type(of: object))>")
                     return results
                 }
-                results.append(contentsOf: DiffableResult(identifier: "name").trackDifference(actual: self.name, expected: castObject.name))
-                results.append(contentsOf: DiffableResult(identifier: "typeName").trackDifference(actual: self.typeName, expected: castObject.typeName))
+                results.append(contentsOf: DiffableResult(identifier: "name").trackDifference(actual: name, expected: castObject.name))
+                results.append(contentsOf: DiffableResult(identifier: "typeName").trackDifference(actual: typeName, expected: castObject.typeName))
                 return results
             }
         }
+
         extension AssociatedValue: Diffable {
             @objc public func diffAgainst(_ object: Any?) -> DiffableResult {
                 let results = DiffableResult()
@@ -1509,14 +1531,15 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                     results.append("Incorrect type <expected: AssociatedValue, received: \(Swift.type(of: object))>")
                     return results
                 }
-                results.append(contentsOf: DiffableResult(identifier: "localName").trackDifference(actual: self.localName, expected: castObject.localName))
-                results.append(contentsOf: DiffableResult(identifier: "externalName").trackDifference(actual: self.externalName, expected: castObject.externalName))
-                results.append(contentsOf: DiffableResult(identifier: "typeName").trackDifference(actual: self.typeName, expected: castObject.typeName))
-                results.append(contentsOf: DiffableResult(identifier: "defaultValue").trackDifference(actual: self.defaultValue, expected: castObject.defaultValue))
-                results.append(contentsOf: DiffableResult(identifier: "annotations").trackDifference(actual: self.annotations, expected: castObject.annotations))
+                results.append(contentsOf: DiffableResult(identifier: "localName").trackDifference(actual: localName, expected: castObject.localName))
+                results.append(contentsOf: DiffableResult(identifier: "externalName").trackDifference(actual: externalName, expected: castObject.externalName))
+                results.append(contentsOf: DiffableResult(identifier: "typeName").trackDifference(actual: typeName, expected: castObject.typeName))
+                results.append(contentsOf: DiffableResult(identifier: "defaultValue").trackDifference(actual: defaultValue, expected: castObject.defaultValue))
+                results.append(contentsOf: DiffableResult(identifier: "annotations").trackDifference(actual: annotations, expected: castObject.annotations))
                 return results
             }
         }
+
         extension Attribute: Diffable {
             @objc public func diffAgainst(_ object: Any?) -> DiffableResult {
                 let results = DiffableResult()
@@ -1524,12 +1547,13 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                     results.append("Incorrect type <expected: Attribute, received: \(Swift.type(of: object))>")
                     return results
                 }
-                results.append(contentsOf: DiffableResult(identifier: "name").trackDifference(actual: self.name, expected: castObject.name))
-                results.append(contentsOf: DiffableResult(identifier: "arguments").trackDifference(actual: self.arguments, expected: castObject.arguments))
-                results.append(contentsOf: DiffableResult(identifier: "_description").trackDifference(actual: self._description, expected: castObject._description))
+                results.append(contentsOf: DiffableResult(identifier: "name").trackDifference(actual: name, expected: castObject.name))
+                results.append(contentsOf: DiffableResult(identifier: "arguments").trackDifference(actual: arguments, expected: castObject.arguments))
+                results.append(contentsOf: DiffableResult(identifier: "_description").trackDifference(actual: _description, expected: castObject._description))
                 return results
             }
         }
+
         extension BytesRange: Diffable {
             @objc public func diffAgainst(_ object: Any?) -> DiffableResult {
                 let results = DiffableResult()
@@ -1537,13 +1561,14 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                     results.append("Incorrect type <expected: BytesRange, received: \(Swift.type(of: object))>")
                     return results
                 }
-                results.append(contentsOf: DiffableResult(identifier: "offset").trackDifference(actual: self.offset, expected: castObject.offset))
-                results.append(contentsOf: DiffableResult(identifier: "length").trackDifference(actual: self.length, expected: castObject.length))
+                results.append(contentsOf: DiffableResult(identifier: "offset").trackDifference(actual: offset, expected: castObject.offset))
+                results.append(contentsOf: DiffableResult(identifier: "length").trackDifference(actual: length, expected: castObject.length))
                 return results
             }
         }
-        extension Class {
-            override public func diffAgainst(_ object: Any?) -> DiffableResult {
+
+        public extension Class {
+            override func diffAgainst(_ object: Any?) -> DiffableResult {
                 let results = DiffableResult()
                 guard let castObject = object as? Class else {
                     results.append("Incorrect type <expected: Class, received: \(Swift.type(of: object))>")
@@ -1553,6 +1578,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 return results
             }
         }
+
         extension ClosureType: Diffable {
             @objc public func diffAgainst(_ object: Any?) -> DiffableResult {
                 let results = DiffableResult()
@@ -1560,16 +1586,17 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                     results.append("Incorrect type <expected: ClosureType, received: \(Swift.type(of: object))>")
                     return results
                 }
-                results.append(contentsOf: DiffableResult(identifier: "name").trackDifference(actual: self.name, expected: castObject.name))
-                results.append(contentsOf: DiffableResult(identifier: "parameters").trackDifference(actual: self.parameters, expected: castObject.parameters))
-                results.append(contentsOf: DiffableResult(identifier: "returnTypeName").trackDifference(actual: self.returnTypeName, expected: castObject.returnTypeName))
-                results.append(contentsOf: DiffableResult(identifier: "isAsync").trackDifference(actual: self.isAsync, expected: castObject.isAsync))
-                results.append(contentsOf: DiffableResult(identifier: "asyncKeyword").trackDifference(actual: self.asyncKeyword, expected: castObject.asyncKeyword))
-                results.append(contentsOf: DiffableResult(identifier: "`throws`").trackDifference(actual: self.`throws`, expected: castObject.`throws`))
-                results.append(contentsOf: DiffableResult(identifier: "throwsOrRethrowsKeyword").trackDifference(actual: self.throwsOrRethrowsKeyword, expected: castObject.throwsOrRethrowsKeyword))
+                results.append(contentsOf: DiffableResult(identifier: "name").trackDifference(actual: name, expected: castObject.name))
+                results.append(contentsOf: DiffableResult(identifier: "parameters").trackDifference(actual: parameters, expected: castObject.parameters))
+                results.append(contentsOf: DiffableResult(identifier: "returnTypeName").trackDifference(actual: returnTypeName, expected: castObject.returnTypeName))
+                results.append(contentsOf: DiffableResult(identifier: "isAsync").trackDifference(actual: isAsync, expected: castObject.isAsync))
+                results.append(contentsOf: DiffableResult(identifier: "asyncKeyword").trackDifference(actual: asyncKeyword, expected: castObject.asyncKeyword))
+                results.append(contentsOf: DiffableResult(identifier: "`throws`").trackDifference(actual: self.throws, expected: castObject.throws))
+                results.append(contentsOf: DiffableResult(identifier: "throwsOrRethrowsKeyword").trackDifference(actual: throwsOrRethrowsKeyword, expected: castObject.throwsOrRethrowsKeyword))
                 return results
             }
         }
+
         extension DictionaryType: Diffable {
             @objc public func diffAgainst(_ object: Any?) -> DiffableResult {
                 let results = DiffableResult()
@@ -1577,25 +1604,27 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                     results.append("Incorrect type <expected: DictionaryType, received: \(Swift.type(of: object))>")
                     return results
                 }
-                results.append(contentsOf: DiffableResult(identifier: "name").trackDifference(actual: self.name, expected: castObject.name))
-                results.append(contentsOf: DiffableResult(identifier: "valueTypeName").trackDifference(actual: self.valueTypeName, expected: castObject.valueTypeName))
-                results.append(contentsOf: DiffableResult(identifier: "keyTypeName").trackDifference(actual: self.keyTypeName, expected: castObject.keyTypeName))
+                results.append(contentsOf: DiffableResult(identifier: "name").trackDifference(actual: name, expected: castObject.name))
+                results.append(contentsOf: DiffableResult(identifier: "valueTypeName").trackDifference(actual: valueTypeName, expected: castObject.valueTypeName))
+                results.append(contentsOf: DiffableResult(identifier: "keyTypeName").trackDifference(actual: keyTypeName, expected: castObject.keyTypeName))
                 return results
             }
         }
-        extension Enum {
-            override public func diffAgainst(_ object: Any?) -> DiffableResult {
+
+        public extension Enum {
+            override func diffAgainst(_ object: Any?) -> DiffableResult {
                 let results = DiffableResult()
                 guard let castObject = object as? Enum else {
                     results.append("Incorrect type <expected: Enum, received: \(Swift.type(of: object))>")
                     return results
                 }
-                results.append(contentsOf: DiffableResult(identifier: "cases").trackDifference(actual: self.cases, expected: castObject.cases))
-                results.append(contentsOf: DiffableResult(identifier: "rawTypeName").trackDifference(actual: self.rawTypeName, expected: castObject.rawTypeName))
+                results.append(contentsOf: DiffableResult(identifier: "cases").trackDifference(actual: cases, expected: castObject.cases))
+                results.append(contentsOf: DiffableResult(identifier: "rawTypeName").trackDifference(actual: rawTypeName, expected: castObject.rawTypeName))
                 results.append(contentsOf: super.diffAgainst(castObject))
                 return results
             }
         }
+
         extension EnumCase: Diffable {
             @objc public func diffAgainst(_ object: Any?) -> DiffableResult {
                 let results = DiffableResult()
@@ -1603,15 +1632,16 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                     results.append("Incorrect type <expected: EnumCase, received: \(Swift.type(of: object))>")
                     return results
                 }
-                results.append(contentsOf: DiffableResult(identifier: "name").trackDifference(actual: self.name, expected: castObject.name))
-                results.append(contentsOf: DiffableResult(identifier: "rawValue").trackDifference(actual: self.rawValue, expected: castObject.rawValue))
-                results.append(contentsOf: DiffableResult(identifier: "associatedValues").trackDifference(actual: self.associatedValues, expected: castObject.associatedValues))
-                results.append(contentsOf: DiffableResult(identifier: "annotations").trackDifference(actual: self.annotations, expected: castObject.annotations))
-                results.append(contentsOf: DiffableResult(identifier: "documentation").trackDifference(actual: self.documentation, expected: castObject.documentation))
-                results.append(contentsOf: DiffableResult(identifier: "indirect").trackDifference(actual: self.indirect, expected: castObject.indirect))
+                results.append(contentsOf: DiffableResult(identifier: "name").trackDifference(actual: name, expected: castObject.name))
+                results.append(contentsOf: DiffableResult(identifier: "rawValue").trackDifference(actual: rawValue, expected: castObject.rawValue))
+                results.append(contentsOf: DiffableResult(identifier: "associatedValues").trackDifference(actual: associatedValues, expected: castObject.associatedValues))
+                results.append(contentsOf: DiffableResult(identifier: "annotations").trackDifference(actual: annotations, expected: castObject.annotations))
+                results.append(contentsOf: DiffableResult(identifier: "documentation").trackDifference(actual: documentation, expected: castObject.documentation))
+                results.append(contentsOf: DiffableResult(identifier: "indirect").trackDifference(actual: indirect, expected: castObject.indirect))
                 return results
             }
         }
+
         extension FileParserResult: Diffable {
             @objc public func diffAgainst(_ object: Any?) -> DiffableResult {
                 let results = DiffableResult()
@@ -1630,6 +1660,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 return results
             }
         }
+
         extension GenericRequirement: Diffable {
             @objc public func diffAgainst(_ object: Any?) -> DiffableResult {
                 let results = DiffableResult()
@@ -1637,13 +1668,14 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                     results.append("Incorrect type <expected: GenericRequirement, received: \(Swift.type(of: object))>")
                     return results
                 }
-                results.append(contentsOf: DiffableResult(identifier: "leftType").trackDifference(actual: self.leftType, expected: castObject.leftType))
-                results.append(contentsOf: DiffableResult(identifier: "rightType").trackDifference(actual: self.rightType, expected: castObject.rightType))
-                results.append(contentsOf: DiffableResult(identifier: "relationship").trackDifference(actual: self.relationship, expected: castObject.relationship))
-                results.append(contentsOf: DiffableResult(identifier: "relationshipSyntax").trackDifference(actual: self.relationshipSyntax, expected: castObject.relationshipSyntax))
+                results.append(contentsOf: DiffableResult(identifier: "leftType").trackDifference(actual: leftType, expected: castObject.leftType))
+                results.append(contentsOf: DiffableResult(identifier: "rightType").trackDifference(actual: rightType, expected: castObject.rightType))
+                results.append(contentsOf: DiffableResult(identifier: "relationship").trackDifference(actual: relationship, expected: castObject.relationship))
+                results.append(contentsOf: DiffableResult(identifier: "relationshipSyntax").trackDifference(actual: relationshipSyntax, expected: castObject.relationshipSyntax))
                 return results
             }
         }
+
         extension GenericType: Diffable {
             @objc public func diffAgainst(_ object: Any?) -> DiffableResult {
                 let results = DiffableResult()
@@ -1651,11 +1683,12 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                     results.append("Incorrect type <expected: GenericType, received: \(Swift.type(of: object))>")
                     return results
                 }
-                results.append(contentsOf: DiffableResult(identifier: "name").trackDifference(actual: self.name, expected: castObject.name))
-                results.append(contentsOf: DiffableResult(identifier: "typeParameters").trackDifference(actual: self.typeParameters, expected: castObject.typeParameters))
+                results.append(contentsOf: DiffableResult(identifier: "name").trackDifference(actual: name, expected: castObject.name))
+                results.append(contentsOf: DiffableResult(identifier: "typeParameters").trackDifference(actual: typeParameters, expected: castObject.typeParameters))
                 return results
             }
         }
+
         extension GenericTypeParameter: Diffable {
             @objc public func diffAgainst(_ object: Any?) -> DiffableResult {
                 let results = DiffableResult()
@@ -1663,10 +1696,11 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                     results.append("Incorrect type <expected: GenericTypeParameter, received: \(Swift.type(of: object))>")
                     return results
                 }
-                results.append(contentsOf: DiffableResult(identifier: "typeName").trackDifference(actual: self.typeName, expected: castObject.typeName))
+                results.append(contentsOf: DiffableResult(identifier: "typeName").trackDifference(actual: typeName, expected: castObject.typeName))
                 return results
             }
         }
+
         extension Import: Diffable {
             @objc public func diffAgainst(_ object: Any?) -> DiffableResult {
                 let results = DiffableResult()
@@ -1674,11 +1708,12 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                     results.append("Incorrect type <expected: Import, received: \(Swift.type(of: object))>")
                     return results
                 }
-                results.append(contentsOf: DiffableResult(identifier: "kind").trackDifference(actual: self.kind, expected: castObject.kind))
-                results.append(contentsOf: DiffableResult(identifier: "path").trackDifference(actual: self.path, expected: castObject.path))
+                results.append(contentsOf: DiffableResult(identifier: "kind").trackDifference(actual: kind, expected: castObject.kind))
+                results.append(contentsOf: DiffableResult(identifier: "path").trackDifference(actual: path, expected: castObject.path))
                 return results
             }
         }
+
         extension Method: Diffable {
             @objc public func diffAgainst(_ object: Any?) -> DiffableResult {
                 let results = DiffableResult()
@@ -1686,25 +1721,26 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                     results.append("Incorrect type <expected: Method, received: \(Swift.type(of: object))>")
                     return results
                 }
-                results.append(contentsOf: DiffableResult(identifier: "name").trackDifference(actual: self.name, expected: castObject.name))
-                results.append(contentsOf: DiffableResult(identifier: "selectorName").trackDifference(actual: self.selectorName, expected: castObject.selectorName))
-                results.append(contentsOf: DiffableResult(identifier: "parameters").trackDifference(actual: self.parameters, expected: castObject.parameters))
-                results.append(contentsOf: DiffableResult(identifier: "returnTypeName").trackDifference(actual: self.returnTypeName, expected: castObject.returnTypeName))
-                results.append(contentsOf: DiffableResult(identifier: "isAsync").trackDifference(actual: self.isAsync, expected: castObject.isAsync))
-                results.append(contentsOf: DiffableResult(identifier: "`throws`").trackDifference(actual: self.`throws`, expected: castObject.`throws`))
-                results.append(contentsOf: DiffableResult(identifier: "`rethrows`").trackDifference(actual: self.`rethrows`, expected: castObject.`rethrows`))
-                results.append(contentsOf: DiffableResult(identifier: "accessLevel").trackDifference(actual: self.accessLevel, expected: castObject.accessLevel))
-                results.append(contentsOf: DiffableResult(identifier: "isStatic").trackDifference(actual: self.isStatic, expected: castObject.isStatic))
-                results.append(contentsOf: DiffableResult(identifier: "isClass").trackDifference(actual: self.isClass, expected: castObject.isClass))
-                results.append(contentsOf: DiffableResult(identifier: "isFailableInitializer").trackDifference(actual: self.isFailableInitializer, expected: castObject.isFailableInitializer))
-                results.append(contentsOf: DiffableResult(identifier: "annotations").trackDifference(actual: self.annotations, expected: castObject.annotations))
-                results.append(contentsOf: DiffableResult(identifier: "documentation").trackDifference(actual: self.documentation, expected: castObject.documentation))
-                results.append(contentsOf: DiffableResult(identifier: "definedInTypeName").trackDifference(actual: self.definedInTypeName, expected: castObject.definedInTypeName))
-                results.append(contentsOf: DiffableResult(identifier: "attributes").trackDifference(actual: self.attributes, expected: castObject.attributes))
-                results.append(contentsOf: DiffableResult(identifier: "modifiers").trackDifference(actual: self.modifiers, expected: castObject.modifiers))
+                results.append(contentsOf: DiffableResult(identifier: "name").trackDifference(actual: name, expected: castObject.name))
+                results.append(contentsOf: DiffableResult(identifier: "selectorName").trackDifference(actual: selectorName, expected: castObject.selectorName))
+                results.append(contentsOf: DiffableResult(identifier: "parameters").trackDifference(actual: parameters, expected: castObject.parameters))
+                results.append(contentsOf: DiffableResult(identifier: "returnTypeName").trackDifference(actual: returnTypeName, expected: castObject.returnTypeName))
+                results.append(contentsOf: DiffableResult(identifier: "isAsync").trackDifference(actual: isAsync, expected: castObject.isAsync))
+                results.append(contentsOf: DiffableResult(identifier: "`throws`").trackDifference(actual: self.throws, expected: castObject.throws))
+                results.append(contentsOf: DiffableResult(identifier: "`rethrows`").trackDifference(actual: self.rethrows, expected: castObject.rethrows))
+                results.append(contentsOf: DiffableResult(identifier: "accessLevel").trackDifference(actual: accessLevel, expected: castObject.accessLevel))
+                results.append(contentsOf: DiffableResult(identifier: "isStatic").trackDifference(actual: isStatic, expected: castObject.isStatic))
+                results.append(contentsOf: DiffableResult(identifier: "isClass").trackDifference(actual: isClass, expected: castObject.isClass))
+                results.append(contentsOf: DiffableResult(identifier: "isFailableInitializer").trackDifference(actual: isFailableInitializer, expected: castObject.isFailableInitializer))
+                results.append(contentsOf: DiffableResult(identifier: "annotations").trackDifference(actual: annotations, expected: castObject.annotations))
+                results.append(contentsOf: DiffableResult(identifier: "documentation").trackDifference(actual: documentation, expected: castObject.documentation))
+                results.append(contentsOf: DiffableResult(identifier: "definedInTypeName").trackDifference(actual: definedInTypeName, expected: castObject.definedInTypeName))
+                results.append(contentsOf: DiffableResult(identifier: "attributes").trackDifference(actual: attributes, expected: castObject.attributes))
+                results.append(contentsOf: DiffableResult(identifier: "modifiers").trackDifference(actual: modifiers, expected: castObject.modifiers))
                 return results
             }
         }
+
         extension MethodParameter: Diffable {
             @objc public func diffAgainst(_ object: Any?) -> DiffableResult {
                 let results = DiffableResult()
@@ -1712,16 +1748,17 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                     results.append("Incorrect type <expected: MethodParameter, received: \(Swift.type(of: object))>")
                     return results
                 }
-                results.append(contentsOf: DiffableResult(identifier: "argumentLabel").trackDifference(actual: self.argumentLabel, expected: castObject.argumentLabel))
-                results.append(contentsOf: DiffableResult(identifier: "name").trackDifference(actual: self.name, expected: castObject.name))
-                results.append(contentsOf: DiffableResult(identifier: "typeName").trackDifference(actual: self.typeName, expected: castObject.typeName))
-                results.append(contentsOf: DiffableResult(identifier: "`inout`").trackDifference(actual: self.`inout`, expected: castObject.`inout`))
-                results.append(contentsOf: DiffableResult(identifier: "isVariadic").trackDifference(actual: self.isVariadic, expected: castObject.isVariadic))
-                results.append(contentsOf: DiffableResult(identifier: "defaultValue").trackDifference(actual: self.defaultValue, expected: castObject.defaultValue))
-                results.append(contentsOf: DiffableResult(identifier: "annotations").trackDifference(actual: self.annotations, expected: castObject.annotations))
+                results.append(contentsOf: DiffableResult(identifier: "argumentLabel").trackDifference(actual: argumentLabel, expected: castObject.argumentLabel))
+                results.append(contentsOf: DiffableResult(identifier: "name").trackDifference(actual: name, expected: castObject.name))
+                results.append(contentsOf: DiffableResult(identifier: "typeName").trackDifference(actual: typeName, expected: castObject.typeName))
+                results.append(contentsOf: DiffableResult(identifier: "`inout`").trackDifference(actual: self.inout, expected: castObject.inout))
+                results.append(contentsOf: DiffableResult(identifier: "isVariadic").trackDifference(actual: isVariadic, expected: castObject.isVariadic))
+                results.append(contentsOf: DiffableResult(identifier: "defaultValue").trackDifference(actual: defaultValue, expected: castObject.defaultValue))
+                results.append(contentsOf: DiffableResult(identifier: "annotations").trackDifference(actual: annotations, expected: castObject.annotations))
                 return results
             }
         }
+
         extension Modifier: Diffable {
             @objc public func diffAgainst(_ object: Any?) -> DiffableResult {
                 let results = DiffableResult()
@@ -1729,38 +1766,41 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                     results.append("Incorrect type <expected: Modifier, received: \(Swift.type(of: object))>")
                     return results
                 }
-                results.append(contentsOf: DiffableResult(identifier: "name").trackDifference(actual: self.name, expected: castObject.name))
-                results.append(contentsOf: DiffableResult(identifier: "detail").trackDifference(actual: self.detail, expected: castObject.detail))
+                results.append(contentsOf: DiffableResult(identifier: "name").trackDifference(actual: name, expected: castObject.name))
+                results.append(contentsOf: DiffableResult(identifier: "detail").trackDifference(actual: detail, expected: castObject.detail))
                 return results
             }
         }
-        extension Protocol {
-            override public func diffAgainst(_ object: Any?) -> DiffableResult {
+
+        public extension Protocol {
+            override func diffAgainst(_ object: Any?) -> DiffableResult {
                 let results = DiffableResult()
                 guard let castObject = object as? Protocol else {
                     results.append("Incorrect type <expected: Protocol, received: \(Swift.type(of: object))>")
                     return results
                 }
-                results.append(contentsOf: DiffableResult(identifier: "associatedTypes").trackDifference(actual: self.associatedTypes, expected: castObject.associatedTypes))
-                results.append(contentsOf: DiffableResult(identifier: "genericRequirements").trackDifference(actual: self.genericRequirements, expected: castObject.genericRequirements))
+                results.append(contentsOf: DiffableResult(identifier: "associatedTypes").trackDifference(actual: associatedTypes, expected: castObject.associatedTypes))
+                results.append(contentsOf: DiffableResult(identifier: "genericRequirements").trackDifference(actual: genericRequirements, expected: castObject.genericRequirements))
                 results.append(contentsOf: super.diffAgainst(castObject))
                 return results
             }
         }
-        extension ProtocolComposition {
-            override public func diffAgainst(_ object: Any?) -> DiffableResult {
+
+        public extension ProtocolComposition {
+            override func diffAgainst(_ object: Any?) -> DiffableResult {
                 let results = DiffableResult()
                 guard let castObject = object as? ProtocolComposition else {
                     results.append("Incorrect type <expected: ProtocolComposition, received: \(Swift.type(of: object))>")
                     return results
                 }
-                results.append(contentsOf: DiffableResult(identifier: "composedTypeNames").trackDifference(actual: self.composedTypeNames, expected: castObject.composedTypeNames))
+                results.append(contentsOf: DiffableResult(identifier: "composedTypeNames").trackDifference(actual: composedTypeNames, expected: castObject.composedTypeNames))
                 results.append(contentsOf: super.diffAgainst(castObject))
                 return results
             }
         }
-        extension Struct {
-            override public func diffAgainst(_ object: Any?) -> DiffableResult {
+
+        public extension Struct {
+            override func diffAgainst(_ object: Any?) -> DiffableResult {
                 let results = DiffableResult()
                 guard let castObject = object as? Struct else {
                     results.append("Incorrect type <expected: Struct, received: \(Swift.type(of: object))>")
@@ -1770,6 +1810,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 return results
             }
         }
+
         extension Subscript: Diffable {
             @objc public func diffAgainst(_ object: Any?) -> DiffableResult {
                 let results = DiffableResult()
@@ -1777,18 +1818,19 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                     results.append("Incorrect type <expected: Subscript, received: \(Swift.type(of: object))>")
                     return results
                 }
-                results.append(contentsOf: DiffableResult(identifier: "parameters").trackDifference(actual: self.parameters, expected: castObject.parameters))
-                results.append(contentsOf: DiffableResult(identifier: "returnTypeName").trackDifference(actual: self.returnTypeName, expected: castObject.returnTypeName))
-                results.append(contentsOf: DiffableResult(identifier: "readAccess").trackDifference(actual: self.readAccess, expected: castObject.readAccess))
-                results.append(contentsOf: DiffableResult(identifier: "writeAccess").trackDifference(actual: self.writeAccess, expected: castObject.writeAccess))
-                results.append(contentsOf: DiffableResult(identifier: "annotations").trackDifference(actual: self.annotations, expected: castObject.annotations))
-                results.append(contentsOf: DiffableResult(identifier: "documentation").trackDifference(actual: self.documentation, expected: castObject.documentation))
-                results.append(contentsOf: DiffableResult(identifier: "definedInTypeName").trackDifference(actual: self.definedInTypeName, expected: castObject.definedInTypeName))
-                results.append(contentsOf: DiffableResult(identifier: "attributes").trackDifference(actual: self.attributes, expected: castObject.attributes))
-                results.append(contentsOf: DiffableResult(identifier: "modifiers").trackDifference(actual: self.modifiers, expected: castObject.modifiers))
+                results.append(contentsOf: DiffableResult(identifier: "parameters").trackDifference(actual: parameters, expected: castObject.parameters))
+                results.append(contentsOf: DiffableResult(identifier: "returnTypeName").trackDifference(actual: returnTypeName, expected: castObject.returnTypeName))
+                results.append(contentsOf: DiffableResult(identifier: "readAccess").trackDifference(actual: readAccess, expected: castObject.readAccess))
+                results.append(contentsOf: DiffableResult(identifier: "writeAccess").trackDifference(actual: writeAccess, expected: castObject.writeAccess))
+                results.append(contentsOf: DiffableResult(identifier: "annotations").trackDifference(actual: annotations, expected: castObject.annotations))
+                results.append(contentsOf: DiffableResult(identifier: "documentation").trackDifference(actual: documentation, expected: castObject.documentation))
+                results.append(contentsOf: DiffableResult(identifier: "definedInTypeName").trackDifference(actual: definedInTypeName, expected: castObject.definedInTypeName))
+                results.append(contentsOf: DiffableResult(identifier: "attributes").trackDifference(actual: attributes, expected: castObject.attributes))
+                results.append(contentsOf: DiffableResult(identifier: "modifiers").trackDifference(actual: modifiers, expected: castObject.modifiers))
                 return results
             }
         }
+
         extension TemplateContext: Diffable {
             @objc public func diffAgainst(_ object: Any?) -> DiffableResult {
                 let results = DiffableResult()
@@ -1796,13 +1838,14 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                     results.append("Incorrect type <expected: TemplateContext, received: \(Swift.type(of: object))>")
                     return results
                 }
-                results.append(contentsOf: DiffableResult(identifier: "parserResult").trackDifference(actual: self.parserResult, expected: castObject.parserResult))
-                results.append(contentsOf: DiffableResult(identifier: "functions").trackDifference(actual: self.functions, expected: castObject.functions))
-                results.append(contentsOf: DiffableResult(identifier: "types").trackDifference(actual: self.types, expected: castObject.types))
-                results.append(contentsOf: DiffableResult(identifier: "argument").trackDifference(actual: self.argument, expected: castObject.argument))
+                results.append(contentsOf: DiffableResult(identifier: "parserResult").trackDifference(actual: parserResult, expected: castObject.parserResult))
+                results.append(contentsOf: DiffableResult(identifier: "functions").trackDifference(actual: functions, expected: castObject.functions))
+                results.append(contentsOf: DiffableResult(identifier: "types").trackDifference(actual: types, expected: castObject.types))
+                results.append(contentsOf: DiffableResult(identifier: "argument").trackDifference(actual: argument, expected: castObject.argument))
                 return results
             }
         }
+
         extension TupleElement: Diffable {
             @objc public func diffAgainst(_ object: Any?) -> DiffableResult {
                 let results = DiffableResult()
@@ -1810,11 +1853,12 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                     results.append("Incorrect type <expected: TupleElement, received: \(Swift.type(of: object))>")
                     return results
                 }
-                results.append(contentsOf: DiffableResult(identifier: "name").trackDifference(actual: self.name, expected: castObject.name))
-                results.append(contentsOf: DiffableResult(identifier: "typeName").trackDifference(actual: self.typeName, expected: castObject.typeName))
+                results.append(contentsOf: DiffableResult(identifier: "name").trackDifference(actual: name, expected: castObject.name))
+                results.append(contentsOf: DiffableResult(identifier: "typeName").trackDifference(actual: typeName, expected: castObject.typeName))
                 return results
             }
         }
+
         extension TupleType: Diffable {
             @objc public func diffAgainst(_ object: Any?) -> DiffableResult {
                 let results = DiffableResult()
@@ -1822,11 +1866,12 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                     results.append("Incorrect type <expected: TupleType, received: \(Swift.type(of: object))>")
                     return results
                 }
-                results.append(contentsOf: DiffableResult(identifier: "name").trackDifference(actual: self.name, expected: castObject.name))
-                results.append(contentsOf: DiffableResult(identifier: "elements").trackDifference(actual: self.elements, expected: castObject.elements))
+                results.append(contentsOf: DiffableResult(identifier: "name").trackDifference(actual: name, expected: castObject.name))
+                results.append(contentsOf: DiffableResult(identifier: "elements").trackDifference(actual: elements, expected: castObject.elements))
                 return results
             }
         }
+
         extension Type: Diffable {
             @objc public func diffAgainst(_ object: Any?) -> DiffableResult {
                 let results = DiffableResult()
@@ -1834,29 +1879,30 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                     results.append("Incorrect type <expected: Type, received: \(Swift.type(of: object))>")
                     return results
                 }
-                results.append(contentsOf: DiffableResult(identifier: "module").trackDifference(actual: self.module, expected: castObject.module))
-                results.append(contentsOf: DiffableResult(identifier: "imports").trackDifference(actual: self.imports, expected: castObject.imports))
-                results.append(contentsOf: DiffableResult(identifier: "typealiases").trackDifference(actual: self.typealiases, expected: castObject.typealiases))
-                results.append(contentsOf: DiffableResult(identifier: "isExtension").trackDifference(actual: self.isExtension, expected: castObject.isExtension))
-                results.append(contentsOf: DiffableResult(identifier: "accessLevel").trackDifference(actual: self.accessLevel, expected: castObject.accessLevel))
-                results.append(contentsOf: DiffableResult(identifier: "isUnknownExtension").trackDifference(actual: self.isUnknownExtension, expected: castObject.isUnknownExtension))
-                results.append(contentsOf: DiffableResult(identifier: "isGeneric").trackDifference(actual: self.isGeneric, expected: castObject.isGeneric))
-                results.append(contentsOf: DiffableResult(identifier: "localName").trackDifference(actual: self.localName, expected: castObject.localName))
-                results.append(contentsOf: DiffableResult(identifier: "rawVariables").trackDifference(actual: self.rawVariables, expected: castObject.rawVariables))
-                results.append(contentsOf: DiffableResult(identifier: "rawMethods").trackDifference(actual: self.rawMethods, expected: castObject.rawMethods))
-                results.append(contentsOf: DiffableResult(identifier: "rawSubscripts").trackDifference(actual: self.rawSubscripts, expected: castObject.rawSubscripts))
-                results.append(contentsOf: DiffableResult(identifier: "annotations").trackDifference(actual: self.annotations, expected: castObject.annotations))
-                results.append(contentsOf: DiffableResult(identifier: "documentation").trackDifference(actual: self.documentation, expected: castObject.documentation))
-                results.append(contentsOf: DiffableResult(identifier: "inheritedTypes").trackDifference(actual: self.inheritedTypes, expected: castObject.inheritedTypes))
-                results.append(contentsOf: DiffableResult(identifier: "inherits").trackDifference(actual: self.inherits, expected: castObject.inherits))
-                results.append(contentsOf: DiffableResult(identifier: "containedTypes").trackDifference(actual: self.containedTypes, expected: castObject.containedTypes))
-                results.append(contentsOf: DiffableResult(identifier: "parentName").trackDifference(actual: self.parentName, expected: castObject.parentName))
-                results.append(contentsOf: DiffableResult(identifier: "attributes").trackDifference(actual: self.attributes, expected: castObject.attributes))
-                results.append(contentsOf: DiffableResult(identifier: "modifiers").trackDifference(actual: self.modifiers, expected: castObject.modifiers))
-                results.append(contentsOf: DiffableResult(identifier: "fileName").trackDifference(actual: self.fileName, expected: castObject.fileName))
+                results.append(contentsOf: DiffableResult(identifier: "module").trackDifference(actual: module, expected: castObject.module))
+                results.append(contentsOf: DiffableResult(identifier: "imports").trackDifference(actual: imports, expected: castObject.imports))
+                results.append(contentsOf: DiffableResult(identifier: "typealiases").trackDifference(actual: typealiases, expected: castObject.typealiases))
+                results.append(contentsOf: DiffableResult(identifier: "isExtension").trackDifference(actual: isExtension, expected: castObject.isExtension))
+                results.append(contentsOf: DiffableResult(identifier: "accessLevel").trackDifference(actual: accessLevel, expected: castObject.accessLevel))
+                results.append(contentsOf: DiffableResult(identifier: "isUnknownExtension").trackDifference(actual: isUnknownExtension, expected: castObject.isUnknownExtension))
+                results.append(contentsOf: DiffableResult(identifier: "isGeneric").trackDifference(actual: isGeneric, expected: castObject.isGeneric))
+                results.append(contentsOf: DiffableResult(identifier: "localName").trackDifference(actual: localName, expected: castObject.localName))
+                results.append(contentsOf: DiffableResult(identifier: "rawVariables").trackDifference(actual: rawVariables, expected: castObject.rawVariables))
+                results.append(contentsOf: DiffableResult(identifier: "rawMethods").trackDifference(actual: rawMethods, expected: castObject.rawMethods))
+                results.append(contentsOf: DiffableResult(identifier: "rawSubscripts").trackDifference(actual: rawSubscripts, expected: castObject.rawSubscripts))
+                results.append(contentsOf: DiffableResult(identifier: "annotations").trackDifference(actual: annotations, expected: castObject.annotations))
+                results.append(contentsOf: DiffableResult(identifier: "documentation").trackDifference(actual: documentation, expected: castObject.documentation))
+                results.append(contentsOf: DiffableResult(identifier: "inheritedTypes").trackDifference(actual: inheritedTypes, expected: castObject.inheritedTypes))
+                results.append(contentsOf: DiffableResult(identifier: "inherits").trackDifference(actual: inherits, expected: castObject.inherits))
+                results.append(contentsOf: DiffableResult(identifier: "containedTypes").trackDifference(actual: containedTypes, expected: castObject.containedTypes))
+                results.append(contentsOf: DiffableResult(identifier: "parentName").trackDifference(actual: parentName, expected: castObject.parentName))
+                results.append(contentsOf: DiffableResult(identifier: "attributes").trackDifference(actual: attributes, expected: castObject.attributes))
+                results.append(contentsOf: DiffableResult(identifier: "modifiers").trackDifference(actual: modifiers, expected: castObject.modifiers))
+                results.append(contentsOf: DiffableResult(identifier: "fileName").trackDifference(actual: fileName, expected: castObject.fileName))
                 return results
             }
         }
+
         extension TypeName: Diffable {
             @objc public func diffAgainst(_ object: Any?) -> DiffableResult {
                 let results = DiffableResult()
@@ -1864,18 +1910,19 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                     results.append("Incorrect type <expected: TypeName, received: \(Swift.type(of: object))>")
                     return results
                 }
-                results.append(contentsOf: DiffableResult(identifier: "name").trackDifference(actual: self.name, expected: castObject.name))
-                results.append(contentsOf: DiffableResult(identifier: "generic").trackDifference(actual: self.generic, expected: castObject.generic))
-                results.append(contentsOf: DiffableResult(identifier: "isProtocolComposition").trackDifference(actual: self.isProtocolComposition, expected: castObject.isProtocolComposition))
-                results.append(contentsOf: DiffableResult(identifier: "attributes").trackDifference(actual: self.attributes, expected: castObject.attributes))
-                results.append(contentsOf: DiffableResult(identifier: "modifiers").trackDifference(actual: self.modifiers, expected: castObject.modifiers))
-                results.append(contentsOf: DiffableResult(identifier: "tuple").trackDifference(actual: self.tuple, expected: castObject.tuple))
-                results.append(contentsOf: DiffableResult(identifier: "array").trackDifference(actual: self.array, expected: castObject.array))
-                results.append(contentsOf: DiffableResult(identifier: "dictionary").trackDifference(actual: self.dictionary, expected: castObject.dictionary))
-                results.append(contentsOf: DiffableResult(identifier: "closure").trackDifference(actual: self.closure, expected: castObject.closure))
+                results.append(contentsOf: DiffableResult(identifier: "name").trackDifference(actual: name, expected: castObject.name))
+                results.append(contentsOf: DiffableResult(identifier: "generic").trackDifference(actual: generic, expected: castObject.generic))
+                results.append(contentsOf: DiffableResult(identifier: "isProtocolComposition").trackDifference(actual: isProtocolComposition, expected: castObject.isProtocolComposition))
+                results.append(contentsOf: DiffableResult(identifier: "attributes").trackDifference(actual: attributes, expected: castObject.attributes))
+                results.append(contentsOf: DiffableResult(identifier: "modifiers").trackDifference(actual: modifiers, expected: castObject.modifiers))
+                results.append(contentsOf: DiffableResult(identifier: "tuple").trackDifference(actual: tuple, expected: castObject.tuple))
+                results.append(contentsOf: DiffableResult(identifier: "array").trackDifference(actual: array, expected: castObject.array))
+                results.append(contentsOf: DiffableResult(identifier: "dictionary").trackDifference(actual: dictionary, expected: castObject.dictionary))
+                results.append(contentsOf: DiffableResult(identifier: "closure").trackDifference(actual: closure, expected: castObject.closure))
                 return results
             }
         }
+
         extension Typealias: Diffable {
             @objc public func diffAgainst(_ object: Any?) -> DiffableResult {
                 let results = DiffableResult()
@@ -1883,14 +1930,15 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                     results.append("Incorrect type <expected: Typealias, received: \(Swift.type(of: object))>")
                     return results
                 }
-                results.append(contentsOf: DiffableResult(identifier: "aliasName").trackDifference(actual: self.aliasName, expected: castObject.aliasName))
-                results.append(contentsOf: DiffableResult(identifier: "typeName").trackDifference(actual: self.typeName, expected: castObject.typeName))
-                results.append(contentsOf: DiffableResult(identifier: "module").trackDifference(actual: self.module, expected: castObject.module))
-                results.append(contentsOf: DiffableResult(identifier: "accessLevel").trackDifference(actual: self.accessLevel, expected: castObject.accessLevel))
-                results.append(contentsOf: DiffableResult(identifier: "parentName").trackDifference(actual: self.parentName, expected: castObject.parentName))
+                results.append(contentsOf: DiffableResult(identifier: "aliasName").trackDifference(actual: aliasName, expected: castObject.aliasName))
+                results.append(contentsOf: DiffableResult(identifier: "typeName").trackDifference(actual: typeName, expected: castObject.typeName))
+                results.append(contentsOf: DiffableResult(identifier: "module").trackDifference(actual: module, expected: castObject.module))
+                results.append(contentsOf: DiffableResult(identifier: "accessLevel").trackDifference(actual: accessLevel, expected: castObject.accessLevel))
+                results.append(contentsOf: DiffableResult(identifier: "parentName").trackDifference(actual: parentName, expected: castObject.parentName))
                 return results
             }
         }
+
         extension Types: Diffable {
             @objc public func diffAgainst(_ object: Any?) -> DiffableResult {
                 let results = DiffableResult()
@@ -1898,11 +1946,12 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                     results.append("Incorrect type <expected: Types, received: \(Swift.type(of: object))>")
                     return results
                 }
-                results.append(contentsOf: DiffableResult(identifier: "types").trackDifference(actual: self.types, expected: castObject.types))
-                results.append(contentsOf: DiffableResult(identifier: "typealiases").trackDifference(actual: self.typealiases, expected: castObject.typealiases))
+                results.append(contentsOf: DiffableResult(identifier: "types").trackDifference(actual: types, expected: castObject.types))
+                results.append(contentsOf: DiffableResult(identifier: "typealiases").trackDifference(actual: typealiases, expected: castObject.typealiases))
                 return results
             }
         }
+
         extension Variable: Diffable {
             @objc public func diffAgainst(_ object: Any?) -> DiffableResult {
                 let results = DiffableResult()
@@ -1910,20 +1959,20 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                     results.append("Incorrect type <expected: Variable, received: \(Swift.type(of: object))>")
                     return results
                 }
-                results.append(contentsOf: DiffableResult(identifier: "name").trackDifference(actual: self.name, expected: castObject.name))
-                results.append(contentsOf: DiffableResult(identifier: "typeName").trackDifference(actual: self.typeName, expected: castObject.typeName))
-                results.append(contentsOf: DiffableResult(identifier: "isComputed").trackDifference(actual: self.isComputed, expected: castObject.isComputed))
-                results.append(contentsOf: DiffableResult(identifier: "isAsync").trackDifference(actual: self.isAsync, expected: castObject.isAsync))
-                results.append(contentsOf: DiffableResult(identifier: "`throws`").trackDifference(actual: self.`throws`, expected: castObject.`throws`))
-                results.append(contentsOf: DiffableResult(identifier: "isStatic").trackDifference(actual: self.isStatic, expected: castObject.isStatic))
-                results.append(contentsOf: DiffableResult(identifier: "readAccess").trackDifference(actual: self.readAccess, expected: castObject.readAccess))
-                results.append(contentsOf: DiffableResult(identifier: "writeAccess").trackDifference(actual: self.writeAccess, expected: castObject.writeAccess))
-                results.append(contentsOf: DiffableResult(identifier: "defaultValue").trackDifference(actual: self.defaultValue, expected: castObject.defaultValue))
-                results.append(contentsOf: DiffableResult(identifier: "annotations").trackDifference(actual: self.annotations, expected: castObject.annotations))
-                results.append(contentsOf: DiffableResult(identifier: "documentation").trackDifference(actual: self.documentation, expected: castObject.documentation))
-                results.append(contentsOf: DiffableResult(identifier: "attributes").trackDifference(actual: self.attributes, expected: castObject.attributes))
-                results.append(contentsOf: DiffableResult(identifier: "modifiers").trackDifference(actual: self.modifiers, expected: castObject.modifiers))
-                results.append(contentsOf: DiffableResult(identifier: "definedInTypeName").trackDifference(actual: self.definedInTypeName, expected: castObject.definedInTypeName))
+                results.append(contentsOf: DiffableResult(identifier: "name").trackDifference(actual: name, expected: castObject.name))
+                results.append(contentsOf: DiffableResult(identifier: "typeName").trackDifference(actual: typeName, expected: castObject.typeName))
+                results.append(contentsOf: DiffableResult(identifier: "isComputed").trackDifference(actual: isComputed, expected: castObject.isComputed))
+                results.append(contentsOf: DiffableResult(identifier: "isAsync").trackDifference(actual: isAsync, expected: castObject.isAsync))
+                results.append(contentsOf: DiffableResult(identifier: "`throws`").trackDifference(actual: self.throws, expected: castObject.throws))
+                results.append(contentsOf: DiffableResult(identifier: "isStatic").trackDifference(actual: isStatic, expected: castObject.isStatic))
+                results.append(contentsOf: DiffableResult(identifier: "readAccess").trackDifference(actual: readAccess, expected: castObject.readAccess))
+                results.append(contentsOf: DiffableResult(identifier: "writeAccess").trackDifference(actual: writeAccess, expected: castObject.writeAccess))
+                results.append(contentsOf: DiffableResult(identifier: "defaultValue").trackDifference(actual: defaultValue, expected: castObject.defaultValue))
+                results.append(contentsOf: DiffableResult(identifier: "annotations").trackDifference(actual: annotations, expected: castObject.annotations))
+                results.append(contentsOf: DiffableResult(identifier: "documentation").trackDifference(actual: documentation, expected: castObject.documentation))
+                results.append(contentsOf: DiffableResult(identifier: "attributes").trackDifference(actual: attributes, expected: castObject.attributes))
+                results.append(contentsOf: DiffableResult(identifier: "modifiers").trackDifference(actual: modifiers, expected: castObject.modifiers))
+                results.append(contentsOf: DiffableResult(identifier: "definedInTypeName").trackDifference(actual: definedInTypeName, expected: castObject.definedInTypeName))
                 return results
             }
         }
@@ -1937,7 +1986,6 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
         import Foundation
 
         public protocol Diffable {
-
             /// Returns `DiffableResult` for the given objects.
             ///
             /// - Parameter object: Object to diff against.
@@ -1949,7 +1997,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
         extension NSRange: Diffable {
             /// :nodoc:
             public static func == (lhs: NSRange, rhs: NSRange) -> Bool {
-                return NSEqualRanges(lhs, rhs)
+                NSEqualRanges(lhs, rhs)
             }
 
             public func diffAgainst(_ object: Any?) -> DiffableResult {
@@ -1958,8 +2006,8 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                     results.append("Incorrect type <expected: FileParserResult, received: \(type(of: object))>")
                     return results
                 }
-                results.append(contentsOf: DiffableResult(identifier: "location").trackDifference(actual: self.location, expected: rhs.location))
-                results.append(contentsOf: DiffableResult(identifier: "length").trackDifference(actual: self.length, expected: rhs.length))
+                results.append(contentsOf: DiffableResult(identifier: "location").trackDifference(actual: location, expected: rhs.location))
+                results.append(contentsOf: DiffableResult(identifier: "length").trackDifference(actual: length, expected: rhs.length))
                 return results
             }
         }
@@ -1984,18 +2032,17 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 }
             }
 
-            var isEmpty: Bool { return results.isEmpty }
+            var isEmpty: Bool { results.isEmpty }
 
-            public override var description: String {
+            override public var description: String {
                 guard !results.isEmpty else { return "" }
                 return "\(identifier.flatMap { "\($0) " } ?? "")" + results.joined(separator: "\n")
             }
         }
 
         public extension DiffableResult {
-
-        #if swift(>=4.1)
-        #else
+            #if swift(>=4.1)
+            #else
             /// :nodoc:
             @discardableResult func trackDifference<T: Equatable>(actual: T, expected: T) -> DiffableResult {
                 if actual != expected {
@@ -2004,12 +2051,12 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 }
                 return self
             }
-        #endif
+            #endif
 
             /// :nodoc:
             @discardableResult func trackDifference<T: Equatable>(actual: T?, expected: T?) -> DiffableResult {
                 if actual != expected {
-                    let result = DiffableResult(results: ["<expected: \(expected.map({ "\($0)" }) ?? "nil"), received: \(actual.map({ "\($0)" }) ?? "nil")>"])
+                    let result = DiffableResult(results: ["<expected: \(expected.map { "\($0)" } ?? "nil"), received: \(actual.map { "\($0)" } ?? "nil")>"])
                     append(contentsOf: result)
                 }
                 return self
@@ -2098,7 +2145,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 return self
             }
 
-        // MARK: - NSObject diffing
+            // MARK: - NSObject diffing
 
             /// :nodoc:
             @discardableResult func trackDifference<K, T: NSObjectProtocol>(actual: [K: T], expected: [K: T]) -> DiffableResult {
@@ -2111,8 +2158,8 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                     if expected.count > actual.count {
                         let missingKeys = Array(expected.keys.filter {
                             actual[$0] == nil
-                            }.map {
-                                String(describing: $0)
+                        }.map {
+                            String(describing: $0)
                         })
                         diffResult.append("Missing keys: \(missingKeys.joined(separator: ", "))")
                     }
@@ -2159,7 +2206,6 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
         /// Defines enum case associated value
         @objcMembers public final class AssociatedValue: NSObject, SourceryModel, AutoDescription, Typed, Annotated {
-
             /// Associated value local name.
             /// This is a name to be used to construct enum case value
             public let localName: String?
@@ -2221,7 +2267,6 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
         /// Defines enum case
         @objcMembers public final class EnumCase: NSObject, SourceryModel, AutoDescription, Annotated, Documented {
-
             /// Enum case name
             public let name: String
 
@@ -2241,7 +2286,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
             /// Whether enum case has associated value
             public var hasAssociatedValue: Bool {
-                return !associatedValues.isEmpty
+                !associatedValues.isEmpty
             }
 
             // Underlying parser data, never to be used by anything else
@@ -2285,10 +2330,9 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
         /// Defines Swift enum
         @objcMembers public final class Enum: Type {
-
             // sourcery: skipDescription
             /// Returns "enum"
-            public override var kind: String { return "enum" }
+            override public var kind: String { "enum" }
 
             /// Enum cases
             public var cases: [EnumCase]
@@ -2325,7 +2369,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
             // sourcery: skipEquality, skipDescription, skipCoding
             /// Names of types or protocols this type inherits from, including unknown (not scanned) types
-            public override var based: [String: String] {
+            override public var based: [String: String] {
                 didSet {
                     if let rawTypeName = rawTypeName, based[rawTypeName.name] != nil {
                         based[rawTypeName.name] = nil
@@ -2335,30 +2379,31 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
             /// Whether enum contains any associated values
             public var hasAssociatedValues: Bool {
-                return cases.contains(where: { $0.hasAssociatedValue })
+                cases.contains(where: \.hasAssociatedValue)
             }
 
             /// :nodoc:
-            public init(name: String = "",
-                        parent: Type? = nil,
-                        accessLevel: AccessLevel = .internal,
-                        isExtension: Bool = false,
-                        inheritedTypes: [String] = [],
-                        rawTypeName: TypeName? = nil,
-                        cases: [EnumCase] = [],
-                        variables: [Variable] = [],
-                        methods: [Method] = [],
-                        containedTypes: [Type] = [],
-                        typealiases: [Typealias] = [],
-                        attributes: AttributeList = [:],
-                        modifiers: [SourceryModifier] = [],
-                        annotations: [String: NSObject] = [:],
-                        documentation: [String] = [],
-                        isGeneric: Bool = false) {
-
+            public init(
+                name: String = "",
+                parent: Type? = nil,
+                accessLevel: AccessLevel = .internal,
+                isExtension: Bool = false,
+                inheritedTypes: [String] = [],
+                rawTypeName: TypeName? = nil,
+                cases: [EnumCase] = [],
+                variables: [Variable] = [],
+                methods: [Method] = [],
+                containedTypes: [Type] = [],
+                typealiases: [Typealias] = [],
+                attributes: AttributeList = [:],
+                modifiers: [SourceryModifier] = [],
+                annotations: [String: NSObject] = [:],
+                documentation: [String] = [],
+                isGeneric: Bool = false
+            ) {
                 self.cases = cases
                 self.rawTypeName = rawTypeName
-                self.hasRawType = rawTypeName != nil || !inheritedTypes.isEmpty
+                hasRawType = rawTypeName != nil || !inheritedTypes.isEmpty
 
                 super.init(name: name, parent: parent, accessLevel: accessLevel, isExtension: isExtension, variables: variables, methods: methods, inheritedTypes: inheritedTypes, containedTypes: containedTypes, typealiases: typealiases, attributes: attributes, modifiers: modifiers, annotations: annotations, documentation: documentation, isGeneric: isGeneric)
 
@@ -2399,140 +2444,152 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
         // swiftlint:disable vertical_whitespace
 
-
-        extension Actor {
+        public extension Actor {
             /// :nodoc:
-            public override func isEqual(_ object: Any?) -> Bool {
+            override func isEqual(_ object: Any?) -> Bool {
                 guard let rhs = object as? Actor else { return false }
                 return super.isEqual(rhs)
             }
         }
-        extension ArrayType {
+
+        public extension ArrayType {
             /// :nodoc:
-            public override func isEqual(_ object: Any?) -> Bool {
+            override func isEqual(_ object: Any?) -> Bool {
                 guard let rhs = object as? ArrayType else { return false }
-                if self.name != rhs.name { return false }
-                if self.elementTypeName != rhs.elementTypeName { return false }
+                if name != rhs.name { return false }
+                if elementTypeName != rhs.elementTypeName { return false }
                 return true
             }
         }
-        extension AssociatedType {
+
+        public extension AssociatedType {
             /// :nodoc:
-            public override func isEqual(_ object: Any?) -> Bool {
+            override func isEqual(_ object: Any?) -> Bool {
                 guard let rhs = object as? AssociatedType else { return false }
-                if self.name != rhs.name { return false }
-                if self.typeName != rhs.typeName { return false }
+                if name != rhs.name { return false }
+                if typeName != rhs.typeName { return false }
                 return true
             }
         }
-        extension AssociatedValue {
+
+        public extension AssociatedValue {
             /// :nodoc:
-            public override func isEqual(_ object: Any?) -> Bool {
+            override func isEqual(_ object: Any?) -> Bool {
                 guard let rhs = object as? AssociatedValue else { return false }
-                if self.localName != rhs.localName { return false }
-                if self.externalName != rhs.externalName { return false }
-                if self.typeName != rhs.typeName { return false }
-                if self.defaultValue != rhs.defaultValue { return false }
-                if self.annotations != rhs.annotations { return false }
+                if localName != rhs.localName { return false }
+                if externalName != rhs.externalName { return false }
+                if typeName != rhs.typeName { return false }
+                if defaultValue != rhs.defaultValue { return false }
+                if annotations != rhs.annotations { return false }
                 return true
             }
         }
-        extension Attribute {
+
+        public extension Attribute {
             /// :nodoc:
-            public override func isEqual(_ object: Any?) -> Bool {
+            override func isEqual(_ object: Any?) -> Bool {
                 guard let rhs = object as? Attribute else { return false }
-                if self.name != rhs.name { return false }
-                if self.arguments != rhs.arguments { return false }
-                if self._description != rhs._description { return false }
+                if name != rhs.name { return false }
+                if arguments != rhs.arguments { return false }
+                if _description != rhs._description { return false }
                 return true
             }
         }
-        extension BytesRange {
+
+        public extension BytesRange {
             /// :nodoc:
-            public override func isEqual(_ object: Any?) -> Bool {
+            override func isEqual(_ object: Any?) -> Bool {
                 guard let rhs = object as? BytesRange else { return false }
-                if self.offset != rhs.offset { return false }
-                if self.length != rhs.length { return false }
+                if offset != rhs.offset { return false }
+                if length != rhs.length { return false }
                 return true
             }
         }
-        extension Class {
+
+        public extension Class {
             /// :nodoc:
-            public override func isEqual(_ object: Any?) -> Bool {
+            override func isEqual(_ object: Any?) -> Bool {
                 guard let rhs = object as? Class else { return false }
                 return super.isEqual(rhs)
             }
         }
-        extension ClosureParameter {
+
+        public extension ClosureParameter {
             /// :nodoc:
-            public override func isEqual(_ object: Any?) -> Bool {
+            override func isEqual(_ object: Any?) -> Bool {
                 guard let rhs = object as? ClosureParameter else { return false }
-                if self.argumentLabel != rhs.argumentLabel { return false }
-                if self.name != rhs.name { return false }
-                if self.typeName != rhs.typeName { return false }
-                if self.`inout` != rhs.`inout` { return false }
-                if self.defaultValue != rhs.defaultValue { return false }
-                if self.annotations != rhs.annotations { return false }
+                if argumentLabel != rhs.argumentLabel { return false }
+                if name != rhs.name { return false }
+                if typeName != rhs.typeName { return false }
+                if self.inout != rhs.inout { return false }
+                if defaultValue != rhs.defaultValue { return false }
+                if annotations != rhs.annotations { return false }
                 return true
             }
         }
-        extension ClosureType {
+
+        public extension ClosureType {
             /// :nodoc:
-            public override func isEqual(_ object: Any?) -> Bool {
+            override func isEqual(_ object: Any?) -> Bool {
                 guard let rhs = object as? ClosureType else { return false }
-                if self.name != rhs.name { return false }
-                if self.parameters != rhs.parameters { return false }
-                if self.returnTypeName != rhs.returnTypeName { return false }
-                if self.isAsync != rhs.isAsync { return false }
-                if self.asyncKeyword != rhs.asyncKeyword { return false }
-                if self.`throws` != rhs.`throws` { return false }
-                if self.throwsOrRethrowsKeyword != rhs.throwsOrRethrowsKeyword { return false }
+                if name != rhs.name { return false }
+                if parameters != rhs.parameters { return false }
+                if returnTypeName != rhs.returnTypeName { return false }
+                if isAsync != rhs.isAsync { return false }
+                if asyncKeyword != rhs.asyncKeyword { return false }
+                if self.throws != rhs.throws { return false }
+                if throwsOrRethrowsKeyword != rhs.throwsOrRethrowsKeyword { return false }
                 return true
             }
         }
-        extension DictionaryType {
+
+        public extension DictionaryType {
             /// :nodoc:
-            public override func isEqual(_ object: Any?) -> Bool {
+            override func isEqual(_ object: Any?) -> Bool {
                 guard let rhs = object as? DictionaryType else { return false }
-                if self.name != rhs.name { return false }
-                if self.valueTypeName != rhs.valueTypeName { return false }
-                if self.keyTypeName != rhs.keyTypeName { return false }
+                if name != rhs.name { return false }
+                if valueTypeName != rhs.valueTypeName { return false }
+                if keyTypeName != rhs.keyTypeName { return false }
                 return true
             }
         }
-        extension DiffableResult {
+
+        public extension DiffableResult {
             /// :nodoc:
-            public override func isEqual(_ object: Any?) -> Bool {
+            override func isEqual(_ object: Any?) -> Bool {
                 guard let rhs = object as? DiffableResult else { return false }
-                if self.identifier != rhs.identifier { return false }
+                if identifier != rhs.identifier { return false }
                 return true
             }
         }
-        extension Enum {
+
+        public extension Enum {
             /// :nodoc:
-            public override func isEqual(_ object: Any?) -> Bool {
+            override func isEqual(_ object: Any?) -> Bool {
                 guard let rhs = object as? Enum else { return false }
-                if self.cases != rhs.cases { return false }
-                if self.rawTypeName != rhs.rawTypeName { return false }
+                if cases != rhs.cases { return false }
+                if rawTypeName != rhs.rawTypeName { return false }
                 return super.isEqual(rhs)
             }
         }
-        extension EnumCase {
+
+        public extension EnumCase {
             /// :nodoc:
-            public override func isEqual(_ object: Any?) -> Bool {
+            override func isEqual(_ object: Any?) -> Bool {
                 guard let rhs = object as? EnumCase else { return false }
-                if self.name != rhs.name { return false }
-                if self.rawValue != rhs.rawValue { return false }
-                if self.associatedValues != rhs.associatedValues { return false }
-                if self.annotations != rhs.annotations { return false }
-                if self.documentation != rhs.documentation { return false }
-                if self.indirect != rhs.indirect { return false }
+                if name != rhs.name { return false }
+                if rawValue != rhs.rawValue { return false }
+                if associatedValues != rhs.associatedValues { return false }
+                if annotations != rhs.annotations { return false }
+                if documentation != rhs.documentation { return false }
+                if indirect != rhs.indirect { return false }
                 return true
             }
         }
-        extension FileParserResult {
+
+        public extension FileParserResult {
             /// :nodoc:
-            public override func isEqual(_ object: Any?) -> Bool {
+            override func isEqual(_ object: Any?) -> Bool {
                 guard let rhs = object as? FileParserResult else { return false }
                 if self.path != rhs.path { return false }
                 if self.module != rhs.module { return false }
@@ -2545,381 +2602,427 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 return true
             }
         }
-        extension GenericRequirement {
+
+        public extension GenericRequirement {
             /// :nodoc:
-            public override func isEqual(_ object: Any?) -> Bool {
+            override func isEqual(_ object: Any?) -> Bool {
                 guard let rhs = object as? GenericRequirement else { return false }
-                if self.leftType != rhs.leftType { return false }
-                if self.rightType != rhs.rightType { return false }
-                if self.relationship != rhs.relationship { return false }
-                if self.relationshipSyntax != rhs.relationshipSyntax { return false }
+                if leftType != rhs.leftType { return false }
+                if rightType != rhs.rightType { return false }
+                if relationship != rhs.relationship { return false }
+                if relationshipSyntax != rhs.relationshipSyntax { return false }
                 return true
             }
         }
-        extension GenericType {
+
+        public extension GenericType {
             /// :nodoc:
-            public override func isEqual(_ object: Any?) -> Bool {
+            override func isEqual(_ object: Any?) -> Bool {
                 guard let rhs = object as? GenericType else { return false }
-                if self.name != rhs.name { return false }
-                if self.typeParameters != rhs.typeParameters { return false }
+                if name != rhs.name { return false }
+                if typeParameters != rhs.typeParameters { return false }
                 return true
             }
         }
-        extension GenericTypeParameter {
+
+        public extension GenericTypeParameter {
             /// :nodoc:
-            public override func isEqual(_ object: Any?) -> Bool {
+            override func isEqual(_ object: Any?) -> Bool {
                 guard let rhs = object as? GenericTypeParameter else { return false }
-                if self.typeName != rhs.typeName { return false }
+                if typeName != rhs.typeName { return false }
                 return true
             }
         }
-        extension Import {
+
+        public extension Import {
             /// :nodoc:
-            public override func isEqual(_ object: Any?) -> Bool {
+            override func isEqual(_ object: Any?) -> Bool {
                 guard let rhs = object as? Import else { return false }
-                if self.kind != rhs.kind { return false }
-                if self.path != rhs.path { return false }
+                if kind != rhs.kind { return false }
+                if path != rhs.path { return false }
                 return true
             }
         }
-        extension Method {
+
+        public extension Method {
             /// :nodoc:
-            public override func isEqual(_ object: Any?) -> Bool {
+            override func isEqual(_ object: Any?) -> Bool {
                 guard let rhs = object as? Method else { return false }
-                if self.name != rhs.name { return false }
-                if self.selectorName != rhs.selectorName { return false }
-                if self.parameters != rhs.parameters { return false }
-                if self.returnTypeName != rhs.returnTypeName { return false }
-                if self.isAsync != rhs.isAsync { return false }
-                if self.`throws` != rhs.`throws` { return false }
-                if self.`rethrows` != rhs.`rethrows` { return false }
-                if self.accessLevel != rhs.accessLevel { return false }
-                if self.isStatic != rhs.isStatic { return false }
-                if self.isClass != rhs.isClass { return false }
-                if self.isFailableInitializer != rhs.isFailableInitializer { return false }
-                if self.annotations != rhs.annotations { return false }
-                if self.documentation != rhs.documentation { return false }
-                if self.definedInTypeName != rhs.definedInTypeName { return false }
-                if self.attributes != rhs.attributes { return false }
-                if self.modifiers != rhs.modifiers { return false }
+                if name != rhs.name { return false }
+                if selectorName != rhs.selectorName { return false }
+                if parameters != rhs.parameters { return false }
+                if returnTypeName != rhs.returnTypeName { return false }
+                if isAsync != rhs.isAsync { return false }
+                if self.throws != rhs.throws { return false }
+                if self.rethrows != rhs.rethrows { return false }
+                if accessLevel != rhs.accessLevel { return false }
+                if isStatic != rhs.isStatic { return false }
+                if isClass != rhs.isClass { return false }
+                if isFailableInitializer != rhs.isFailableInitializer { return false }
+                if annotations != rhs.annotations { return false }
+                if documentation != rhs.documentation { return false }
+                if definedInTypeName != rhs.definedInTypeName { return false }
+                if attributes != rhs.attributes { return false }
+                if modifiers != rhs.modifiers { return false }
                 return true
             }
         }
-        extension MethodParameter {
+
+        public extension MethodParameter {
             /// :nodoc:
-            public override func isEqual(_ object: Any?) -> Bool {
+            override func isEqual(_ object: Any?) -> Bool {
                 guard let rhs = object as? MethodParameter else { return false }
-                if self.argumentLabel != rhs.argumentLabel { return false }
-                if self.name != rhs.name { return false }
-                if self.typeName != rhs.typeName { return false }
-                if self.`inout` != rhs.`inout` { return false }
-                if self.isVariadic != rhs.isVariadic { return false }
-                if self.defaultValue != rhs.defaultValue { return false }
-                if self.annotations != rhs.annotations { return false }
+                if argumentLabel != rhs.argumentLabel { return false }
+                if name != rhs.name { return false }
+                if typeName != rhs.typeName { return false }
+                if self.inout != rhs.inout { return false }
+                if isVariadic != rhs.isVariadic { return false }
+                if defaultValue != rhs.defaultValue { return false }
+                if annotations != rhs.annotations { return false }
                 return true
             }
         }
-        extension Modifier {
+
+        public extension Modifier {
             /// :nodoc:
-            public override func isEqual(_ object: Any?) -> Bool {
+            override func isEqual(_ object: Any?) -> Bool {
                 guard let rhs = object as? Modifier else { return false }
-                if self.name != rhs.name { return false }
-                if self.detail != rhs.detail { return false }
+                if name != rhs.name { return false }
+                if detail != rhs.detail { return false }
                 return true
             }
         }
-        extension Protocol {
+
+        public extension Protocol {
             /// :nodoc:
-            public override func isEqual(_ object: Any?) -> Bool {
+            override func isEqual(_ object: Any?) -> Bool {
                 guard let rhs = object as? Protocol else { return false }
-                if self.associatedTypes != rhs.associatedTypes { return false }
-                if self.genericRequirements != rhs.genericRequirements { return false }
+                if associatedTypes != rhs.associatedTypes { return false }
+                if genericRequirements != rhs.genericRequirements { return false }
                 return super.isEqual(rhs)
             }
         }
-        extension ProtocolComposition {
+
+        public extension ProtocolComposition {
             /// :nodoc:
-            public override func isEqual(_ object: Any?) -> Bool {
+            override func isEqual(_ object: Any?) -> Bool {
                 guard let rhs = object as? ProtocolComposition else { return false }
-                if self.composedTypeNames != rhs.composedTypeNames { return false }
+                if composedTypeNames != rhs.composedTypeNames { return false }
                 return super.isEqual(rhs)
             }
         }
-        extension Struct {
+
+        public extension Struct {
             /// :nodoc:
-            public override func isEqual(_ object: Any?) -> Bool {
+            override func isEqual(_ object: Any?) -> Bool {
                 guard let rhs = object as? Struct else { return false }
                 return super.isEqual(rhs)
             }
         }
-        extension Subscript {
+
+        public extension Subscript {
             /// :nodoc:
-            public override func isEqual(_ object: Any?) -> Bool {
+            override func isEqual(_ object: Any?) -> Bool {
                 guard let rhs = object as? Subscript else { return false }
-                if self.parameters != rhs.parameters { return false }
-                if self.returnTypeName != rhs.returnTypeName { return false }
-                if self.readAccess != rhs.readAccess { return false }
-                if self.writeAccess != rhs.writeAccess { return false }
-                if self.annotations != rhs.annotations { return false }
-                if self.documentation != rhs.documentation { return false }
-                if self.definedInTypeName != rhs.definedInTypeName { return false }
-                if self.attributes != rhs.attributes { return false }
-                if self.modifiers != rhs.modifiers { return false }
+                if parameters != rhs.parameters { return false }
+                if returnTypeName != rhs.returnTypeName { return false }
+                if readAccess != rhs.readAccess { return false }
+                if writeAccess != rhs.writeAccess { return false }
+                if annotations != rhs.annotations { return false }
+                if documentation != rhs.documentation { return false }
+                if definedInTypeName != rhs.definedInTypeName { return false }
+                if attributes != rhs.attributes { return false }
+                if modifiers != rhs.modifiers { return false }
                 return true
             }
         }
-        extension TemplateContext {
+
+        public extension TemplateContext {
             /// :nodoc:
-            public override func isEqual(_ object: Any?) -> Bool {
+            override func isEqual(_ object: Any?) -> Bool {
                 guard let rhs = object as? TemplateContext else { return false }
-                if self.parserResult != rhs.parserResult { return false }
-                if self.functions != rhs.functions { return false }
-                if self.types != rhs.types { return false }
-                if self.argument != rhs.argument { return false }
+                if parserResult != rhs.parserResult { return false }
+                if functions != rhs.functions { return false }
+                if types != rhs.types { return false }
+                if argument != rhs.argument { return false }
                 return true
             }
         }
-        extension TupleElement {
+
+        public extension TupleElement {
             /// :nodoc:
-            public override func isEqual(_ object: Any?) -> Bool {
+            override func isEqual(_ object: Any?) -> Bool {
                 guard let rhs = object as? TupleElement else { return false }
-                if self.name != rhs.name { return false }
-                if self.typeName != rhs.typeName { return false }
+                if name != rhs.name { return false }
+                if typeName != rhs.typeName { return false }
                 return true
             }
         }
-        extension TupleType {
+
+        public extension TupleType {
             /// :nodoc:
-            public override func isEqual(_ object: Any?) -> Bool {
+            override func isEqual(_ object: Any?) -> Bool {
                 guard let rhs = object as? TupleType else { return false }
-                if self.name != rhs.name { return false }
-                if self.elements != rhs.elements { return false }
+                if name != rhs.name { return false }
+                if elements != rhs.elements { return false }
                 return true
             }
         }
-        extension Type {
+
+        public extension Type {
             /// :nodoc:
-            public override func isEqual(_ object: Any?) -> Bool {
+            override func isEqual(_ object: Any?) -> Bool {
                 guard let rhs = object as? Type else { return false }
-                if self.module != rhs.module { return false }
-                if self.imports != rhs.imports { return false }
-                if self.typealiases != rhs.typealiases { return false }
-                if self.isExtension != rhs.isExtension { return false }
-                if self.accessLevel != rhs.accessLevel { return false }
-                if self.isUnknownExtension != rhs.isUnknownExtension { return false }
-                if self.isGeneric != rhs.isGeneric { return false }
-                if self.localName != rhs.localName { return false }
-                if self.rawVariables != rhs.rawVariables { return false }
-                if self.rawMethods != rhs.rawMethods { return false }
-                if self.rawSubscripts != rhs.rawSubscripts { return false }
-                if self.annotations != rhs.annotations { return false }
-                if self.documentation != rhs.documentation { return false }
-                if self.inheritedTypes != rhs.inheritedTypes { return false }
-                if self.inherits != rhs.inherits { return false }
-                if self.containedTypes != rhs.containedTypes { return false }
-                if self.parentName != rhs.parentName { return false }
-                if self.attributes != rhs.attributes { return false }
-                if self.modifiers != rhs.modifiers { return false }
-                if self.fileName != rhs.fileName { return false }
-                if self.kind != rhs.kind { return false }
+                if module != rhs.module { return false }
+                if imports != rhs.imports { return false }
+                if typealiases != rhs.typealiases { return false }
+                if isExtension != rhs.isExtension { return false }
+                if accessLevel != rhs.accessLevel { return false }
+                if isUnknownExtension != rhs.isUnknownExtension { return false }
+                if isGeneric != rhs.isGeneric { return false }
+                if localName != rhs.localName { return false }
+                if rawVariables != rhs.rawVariables { return false }
+                if rawMethods != rhs.rawMethods { return false }
+                if rawSubscripts != rhs.rawSubscripts { return false }
+                if annotations != rhs.annotations { return false }
+                if documentation != rhs.documentation { return false }
+                if inheritedTypes != rhs.inheritedTypes { return false }
+                if inherits != rhs.inherits { return false }
+                if containedTypes != rhs.containedTypes { return false }
+                if parentName != rhs.parentName { return false }
+                if attributes != rhs.attributes { return false }
+                if modifiers != rhs.modifiers { return false }
+                if fileName != rhs.fileName { return false }
+                if kind != rhs.kind { return false }
                 return true
             }
         }
-        extension TypeName {
+
+        public extension TypeName {
             /// :nodoc:
-            public override func isEqual(_ object: Any?) -> Bool {
+            override func isEqual(_ object: Any?) -> Bool {
                 guard let rhs = object as? TypeName else { return false }
-                if self.name != rhs.name { return false }
-                if self.generic != rhs.generic { return false }
-                if self.isProtocolComposition != rhs.isProtocolComposition { return false }
-                if self.attributes != rhs.attributes { return false }
-                if self.modifiers != rhs.modifiers { return false }
-                if self.tuple != rhs.tuple { return false }
-                if self.array != rhs.array { return false }
-                if self.dictionary != rhs.dictionary { return false }
-                if self.closure != rhs.closure { return false }
+                if name != rhs.name { return false }
+                if generic != rhs.generic { return false }
+                if isProtocolComposition != rhs.isProtocolComposition { return false }
+                if attributes != rhs.attributes { return false }
+                if modifiers != rhs.modifiers { return false }
+                if tuple != rhs.tuple { return false }
+                if array != rhs.array { return false }
+                if dictionary != rhs.dictionary { return false }
+                if closure != rhs.closure { return false }
                 return true
             }
         }
-        extension Typealias {
+
+        public extension Typealias {
             /// :nodoc:
-            public override func isEqual(_ object: Any?) -> Bool {
+            override func isEqual(_ object: Any?) -> Bool {
                 guard let rhs = object as? Typealias else { return false }
-                if self.aliasName != rhs.aliasName { return false }
-                if self.typeName != rhs.typeName { return false }
-                if self.module != rhs.module { return false }
-                if self.accessLevel != rhs.accessLevel { return false }
-                if self.parentName != rhs.parentName { return false }
+                if aliasName != rhs.aliasName { return false }
+                if typeName != rhs.typeName { return false }
+                if module != rhs.module { return false }
+                if accessLevel != rhs.accessLevel { return false }
+                if parentName != rhs.parentName { return false }
                 return true
             }
         }
-        extension Types {
+
+        public extension Types {
             /// :nodoc:
-            public override func isEqual(_ object: Any?) -> Bool {
+            override func isEqual(_ object: Any?) -> Bool {
                 guard let rhs = object as? Types else { return false }
-                if self.types != rhs.types { return false }
-                if self.typealiases != rhs.typealiases { return false }
+                if types != rhs.types { return false }
+                if typealiases != rhs.typealiases { return false }
                 return true
             }
         }
-        extension Variable {
+
+        public extension Variable {
             /// :nodoc:
-            public override func isEqual(_ object: Any?) -> Bool {
+            override func isEqual(_ object: Any?) -> Bool {
                 guard let rhs = object as? Variable else { return false }
-                if self.name != rhs.name { return false }
-                if self.typeName != rhs.typeName { return false }
-                if self.isComputed != rhs.isComputed { return false }
-                if self.isAsync != rhs.isAsync { return false }
-                if self.`throws` != rhs.`throws` { return false }
-                if self.isStatic != rhs.isStatic { return false }
-                if self.readAccess != rhs.readAccess { return false }
-                if self.writeAccess != rhs.writeAccess { return false }
-                if self.defaultValue != rhs.defaultValue { return false }
-                if self.annotations != rhs.annotations { return false }
-                if self.documentation != rhs.documentation { return false }
-                if self.attributes != rhs.attributes { return false }
-                if self.modifiers != rhs.modifiers { return false }
-                if self.definedInTypeName != rhs.definedInTypeName { return false }
+                if name != rhs.name { return false }
+                if typeName != rhs.typeName { return false }
+                if isComputed != rhs.isComputed { return false }
+                if isAsync != rhs.isAsync { return false }
+                if self.throws != rhs.throws { return false }
+                if isStatic != rhs.isStatic { return false }
+                if readAccess != rhs.readAccess { return false }
+                if writeAccess != rhs.writeAccess { return false }
+                if defaultValue != rhs.defaultValue { return false }
+                if annotations != rhs.annotations { return false }
+                if documentation != rhs.documentation { return false }
+                if attributes != rhs.attributes { return false }
+                if modifiers != rhs.modifiers { return false }
+                if definedInTypeName != rhs.definedInTypeName { return false }
                 return true
             }
         }
 
         // MARK: - Actor AutoHashable
-        extension Actor {
-            public override var hash: Int {
+
+        public extension Actor {
+            override var hash: Int {
                 var hasher = Hasher()
                 hasher.combine(super.hash)
                 return hasher.finalize()
             }
         }
+
         // MARK: - ArrayType AutoHashable
-        extension ArrayType {
-            public override var hash: Int {
+
+        public extension ArrayType {
+            override var hash: Int {
                 var hasher = Hasher()
-                hasher.combine(self.name)
-                hasher.combine(self.elementTypeName)
+                hasher.combine(name)
+                hasher.combine(elementTypeName)
                 return hasher.finalize()
             }
         }
+
         // MARK: - AssociatedType AutoHashable
-        extension AssociatedType {
-            public override var hash: Int {
+
+        public extension AssociatedType {
+            override var hash: Int {
                 var hasher = Hasher()
-                hasher.combine(self.name)
-                hasher.combine(self.typeName)
+                hasher.combine(name)
+                hasher.combine(typeName)
                 return hasher.finalize()
             }
         }
+
         // MARK: - AssociatedValue AutoHashable
-        extension AssociatedValue {
-            public override var hash: Int {
+
+        public extension AssociatedValue {
+            override var hash: Int {
                 var hasher = Hasher()
-                hasher.combine(self.localName)
-                hasher.combine(self.externalName)
-                hasher.combine(self.typeName)
-                hasher.combine(self.defaultValue)
-                hasher.combine(self.annotations)
+                hasher.combine(localName)
+                hasher.combine(externalName)
+                hasher.combine(typeName)
+                hasher.combine(defaultValue)
+                hasher.combine(annotations)
                 return hasher.finalize()
             }
         }
+
         // MARK: - Attribute AutoHashable
-        extension Attribute {
-            public override var hash: Int {
+
+        public extension Attribute {
+            override var hash: Int {
                 var hasher = Hasher()
-                hasher.combine(self.name)
-                hasher.combine(self.arguments)
-                hasher.combine(self._description)
+                hasher.combine(name)
+                hasher.combine(arguments)
+                hasher.combine(_description)
                 return hasher.finalize()
             }
         }
+
         // MARK: - BytesRange AutoHashable
-        extension BytesRange {
-            public override var hash: Int {
+
+        public extension BytesRange {
+            override var hash: Int {
                 var hasher = Hasher()
-                hasher.combine(self.offset)
-                hasher.combine(self.length)
+                hasher.combine(offset)
+                hasher.combine(length)
                 return hasher.finalize()
             }
         }
+
         // MARK: - Class AutoHashable
-        extension Class {
-            public override var hash: Int {
+
+        public extension Class {
+            override var hash: Int {
                 var hasher = Hasher()
                 hasher.combine(super.hash)
                 return hasher.finalize()
             }
         }
+
         // MARK: - ClosureParameter AutoHashable
-        extension ClosureParameter {
-            public override var hash: Int {
+
+        public extension ClosureParameter {
+            override var hash: Int {
                 var hasher = Hasher()
-                hasher.combine(self.argumentLabel)
-                hasher.combine(self.name)
-                hasher.combine(self.typeName)
-                hasher.combine(self.`inout`)
-                hasher.combine(self.defaultValue)
-                hasher.combine(self.annotations)
+                hasher.combine(argumentLabel)
+                hasher.combine(name)
+                hasher.combine(typeName)
+                hasher.combine(self.inout)
+                hasher.combine(defaultValue)
+                hasher.combine(annotations)
                 return hasher.finalize()
             }
         }
+
         // MARK: - ClosureType AutoHashable
-        extension ClosureType {
-            public override var hash: Int {
+
+        public extension ClosureType {
+            override var hash: Int {
                 var hasher = Hasher()
-                hasher.combine(self.name)
-                hasher.combine(self.parameters)
-                hasher.combine(self.returnTypeName)
-                hasher.combine(self.isAsync)
-                hasher.combine(self.asyncKeyword)
-                hasher.combine(self.`throws`)
-                hasher.combine(self.throwsOrRethrowsKeyword)
+                hasher.combine(name)
+                hasher.combine(parameters)
+                hasher.combine(returnTypeName)
+                hasher.combine(isAsync)
+                hasher.combine(asyncKeyword)
+                hasher.combine(self.throws)
+                hasher.combine(throwsOrRethrowsKeyword)
                 return hasher.finalize()
             }
         }
+
         // MARK: - DictionaryType AutoHashable
-        extension DictionaryType {
-            public override var hash: Int {
+
+        public extension DictionaryType {
+            override var hash: Int {
                 var hasher = Hasher()
-                hasher.combine(self.name)
-                hasher.combine(self.valueTypeName)
-                hasher.combine(self.keyTypeName)
+                hasher.combine(name)
+                hasher.combine(valueTypeName)
+                hasher.combine(keyTypeName)
                 return hasher.finalize()
             }
         }
+
         // MARK: - DiffableResult AutoHashable
-        extension DiffableResult {
-            public override var hash: Int {
+
+        public extension DiffableResult {
+            override var hash: Int {
                 var hasher = Hasher()
-                hasher.combine(self.identifier)
+                hasher.combine(identifier)
                 return hasher.finalize()
             }
         }
+
         // MARK: - Enum AutoHashable
-        extension Enum {
-            public override var hash: Int {
+
+        public extension Enum {
+            override var hash: Int {
                 var hasher = Hasher()
-                hasher.combine(self.cases)
-                hasher.combine(self.rawTypeName)
+                hasher.combine(cases)
+                hasher.combine(rawTypeName)
                 hasher.combine(super.hash)
                 return hasher.finalize()
             }
         }
+
         // MARK: - EnumCase AutoHashable
-        extension EnumCase {
-            public override var hash: Int {
+
+        public extension EnumCase {
+            override var hash: Int {
                 var hasher = Hasher()
-                hasher.combine(self.name)
-                hasher.combine(self.rawValue)
-                hasher.combine(self.associatedValues)
-                hasher.combine(self.annotations)
-                hasher.combine(self.documentation)
-                hasher.combine(self.indirect)
+                hasher.combine(name)
+                hasher.combine(rawValue)
+                hasher.combine(associatedValues)
+                hasher.combine(annotations)
+                hasher.combine(documentation)
+                hasher.combine(indirect)
                 return hasher.finalize()
             }
         }
+
         // MARK: - FileParserResult AutoHashable
-        extension FileParserResult {
-            public override var hash: Int {
+
+        public extension FileParserResult {
+            override var hash: Int {
                 var hasher = Hasher()
                 hasher.combine(self.path)
                 hasher.combine(self.module)
@@ -2932,244 +3035,282 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 return hasher.finalize()
             }
         }
+
         // MARK: - GenericRequirement AutoHashable
-        extension GenericRequirement {
-            public override var hash: Int {
+
+        public extension GenericRequirement {
+            override var hash: Int {
                 var hasher = Hasher()
-                hasher.combine(self.leftType)
-                hasher.combine(self.rightType)
-                hasher.combine(self.relationship)
-                hasher.combine(self.relationshipSyntax)
+                hasher.combine(leftType)
+                hasher.combine(rightType)
+                hasher.combine(relationship)
+                hasher.combine(relationshipSyntax)
                 return hasher.finalize()
             }
         }
+
         // MARK: - GenericType AutoHashable
-        extension GenericType {
-            public override var hash: Int {
+
+        public extension GenericType {
+            override var hash: Int {
                 var hasher = Hasher()
-                hasher.combine(self.name)
-                hasher.combine(self.typeParameters)
+                hasher.combine(name)
+                hasher.combine(typeParameters)
                 return hasher.finalize()
             }
         }
+
         // MARK: - GenericTypeParameter AutoHashable
-        extension GenericTypeParameter {
-            public override var hash: Int {
+
+        public extension GenericTypeParameter {
+            override var hash: Int {
                 var hasher = Hasher()
-                hasher.combine(self.typeName)
+                hasher.combine(typeName)
                 return hasher.finalize()
             }
         }
+
         // MARK: - Import AutoHashable
-        extension Import {
-            public override var hash: Int {
+
+        public extension Import {
+            override var hash: Int {
                 var hasher = Hasher()
-                hasher.combine(self.kind)
-                hasher.combine(self.path)
+                hasher.combine(kind)
+                hasher.combine(path)
                 return hasher.finalize()
             }
         }
+
         // MARK: - Method AutoHashable
-        extension Method {
-            public override var hash: Int {
+
+        public extension Method {
+            override var hash: Int {
                 var hasher = Hasher()
-                hasher.combine(self.name)
-                hasher.combine(self.selectorName)
-                hasher.combine(self.parameters)
-                hasher.combine(self.returnTypeName)
-                hasher.combine(self.isAsync)
-                hasher.combine(self.`throws`)
-                hasher.combine(self.`rethrows`)
-                hasher.combine(self.accessLevel)
-                hasher.combine(self.isStatic)
-                hasher.combine(self.isClass)
-                hasher.combine(self.isFailableInitializer)
-                hasher.combine(self.annotations)
-                hasher.combine(self.documentation)
-                hasher.combine(self.definedInTypeName)
-                hasher.combine(self.attributes)
-                hasher.combine(self.modifiers)
+                hasher.combine(name)
+                hasher.combine(selectorName)
+                hasher.combine(parameters)
+                hasher.combine(returnTypeName)
+                hasher.combine(isAsync)
+                hasher.combine(self.throws)
+                hasher.combine(self.rethrows)
+                hasher.combine(accessLevel)
+                hasher.combine(isStatic)
+                hasher.combine(isClass)
+                hasher.combine(isFailableInitializer)
+                hasher.combine(annotations)
+                hasher.combine(documentation)
+                hasher.combine(definedInTypeName)
+                hasher.combine(attributes)
+                hasher.combine(modifiers)
                 return hasher.finalize()
             }
         }
+
         // MARK: - MethodParameter AutoHashable
-        extension MethodParameter {
-            public override var hash: Int {
+
+        public extension MethodParameter {
+            override var hash: Int {
                 var hasher = Hasher()
-                hasher.combine(self.argumentLabel)
-                hasher.combine(self.name)
-                hasher.combine(self.typeName)
-                hasher.combine(self.`inout`)
-                hasher.combine(self.isVariadic)
-                hasher.combine(self.defaultValue)
-                hasher.combine(self.annotations)
+                hasher.combine(argumentLabel)
+                hasher.combine(name)
+                hasher.combine(typeName)
+                hasher.combine(self.inout)
+                hasher.combine(isVariadic)
+                hasher.combine(defaultValue)
+                hasher.combine(annotations)
                 return hasher.finalize()
             }
         }
+
         // MARK: - Modifier AutoHashable
-        extension Modifier {
-            public override var hash: Int {
+
+        public extension Modifier {
+            override var hash: Int {
                 var hasher = Hasher()
-                hasher.combine(self.name)
-                hasher.combine(self.detail)
+                hasher.combine(name)
+                hasher.combine(detail)
                 return hasher.finalize()
             }
         }
+
         // MARK: - Protocol AutoHashable
-        extension Protocol {
-            public override var hash: Int {
+
+        public extension Protocol {
+            override var hash: Int {
                 var hasher = Hasher()
-                hasher.combine(self.associatedTypes)
-                hasher.combine(self.genericRequirements)
+                hasher.combine(associatedTypes)
+                hasher.combine(genericRequirements)
                 hasher.combine(super.hash)
                 return hasher.finalize()
             }
         }
+
         // MARK: - ProtocolComposition AutoHashable
-        extension ProtocolComposition {
-            public override var hash: Int {
+
+        public extension ProtocolComposition {
+            override var hash: Int {
                 var hasher = Hasher()
-                hasher.combine(self.composedTypeNames)
+                hasher.combine(composedTypeNames)
                 hasher.combine(super.hash)
                 return hasher.finalize()
             }
         }
+
         // MARK: - Struct AutoHashable
-        extension Struct {
-            public override var hash: Int {
+
+        public extension Struct {
+            override var hash: Int {
                 var hasher = Hasher()
                 hasher.combine(super.hash)
                 return hasher.finalize()
             }
         }
+
         // MARK: - Subscript AutoHashable
-        extension Subscript {
-            public override var hash: Int {
+
+        public extension Subscript {
+            override var hash: Int {
                 var hasher = Hasher()
-                hasher.combine(self.parameters)
-                hasher.combine(self.returnTypeName)
-                hasher.combine(self.readAccess)
-                hasher.combine(self.writeAccess)
-                hasher.combine(self.annotations)
-                hasher.combine(self.documentation)
-                hasher.combine(self.definedInTypeName)
-                hasher.combine(self.attributes)
-                hasher.combine(self.modifiers)
+                hasher.combine(parameters)
+                hasher.combine(returnTypeName)
+                hasher.combine(readAccess)
+                hasher.combine(writeAccess)
+                hasher.combine(annotations)
+                hasher.combine(documentation)
+                hasher.combine(definedInTypeName)
+                hasher.combine(attributes)
+                hasher.combine(modifiers)
                 return hasher.finalize()
             }
         }
+
         // MARK: - TemplateContext AutoHashable
-        extension TemplateContext {
-            public override var hash: Int {
+
+        public extension TemplateContext {
+            override var hash: Int {
                 var hasher = Hasher()
-                hasher.combine(self.parserResult)
-                hasher.combine(self.functions)
-                hasher.combine(self.types)
-                hasher.combine(self.argument)
+                hasher.combine(parserResult)
+                hasher.combine(functions)
+                hasher.combine(types)
+                hasher.combine(argument)
                 return hasher.finalize()
             }
         }
+
         // MARK: - TupleElement AutoHashable
-        extension TupleElement {
-            public override var hash: Int {
+
+        public extension TupleElement {
+            override var hash: Int {
                 var hasher = Hasher()
-                hasher.combine(self.name)
-                hasher.combine(self.typeName)
+                hasher.combine(name)
+                hasher.combine(typeName)
                 return hasher.finalize()
             }
         }
+
         // MARK: - TupleType AutoHashable
-        extension TupleType {
-            public override var hash: Int {
+
+        public extension TupleType {
+            override var hash: Int {
                 var hasher = Hasher()
-                hasher.combine(self.name)
-                hasher.combine(self.elements)
+                hasher.combine(name)
+                hasher.combine(elements)
                 return hasher.finalize()
             }
         }
+
         // MARK: - Type AutoHashable
-        extension Type {
-            public override var hash: Int {
+
+        public extension Type {
+            override var hash: Int {
                 var hasher = Hasher()
-                hasher.combine(self.module)
-                hasher.combine(self.imports)
-                hasher.combine(self.typealiases)
-                hasher.combine(self.isExtension)
-                hasher.combine(self.accessLevel)
-                hasher.combine(self.isUnknownExtension)
-                hasher.combine(self.isGeneric)
-                hasher.combine(self.localName)
-                hasher.combine(self.rawVariables)
-                hasher.combine(self.rawMethods)
-                hasher.combine(self.rawSubscripts)
-                hasher.combine(self.annotations)
-                hasher.combine(self.documentation)
-                hasher.combine(self.inheritedTypes)
-                hasher.combine(self.inherits)
-                hasher.combine(self.containedTypes)
-                hasher.combine(self.parentName)
-                hasher.combine(self.attributes)
-                hasher.combine(self.modifiers)
-                hasher.combine(self.fileName)
+                hasher.combine(module)
+                hasher.combine(imports)
+                hasher.combine(typealiases)
+                hasher.combine(isExtension)
+                hasher.combine(accessLevel)
+                hasher.combine(isUnknownExtension)
+                hasher.combine(isGeneric)
+                hasher.combine(localName)
+                hasher.combine(rawVariables)
+                hasher.combine(rawMethods)
+                hasher.combine(rawSubscripts)
+                hasher.combine(annotations)
+                hasher.combine(documentation)
+                hasher.combine(inheritedTypes)
+                hasher.combine(inherits)
+                hasher.combine(containedTypes)
+                hasher.combine(parentName)
+                hasher.combine(attributes)
+                hasher.combine(modifiers)
+                hasher.combine(fileName)
                 hasher.combine(kind)
                 return hasher.finalize()
             }
         }
+
         // MARK: - TypeName AutoHashable
-        extension TypeName {
-            public override var hash: Int {
+
+        public extension TypeName {
+            override var hash: Int {
                 var hasher = Hasher()
-                hasher.combine(self.name)
-                hasher.combine(self.generic)
-                hasher.combine(self.isProtocolComposition)
-                hasher.combine(self.attributes)
-                hasher.combine(self.modifiers)
-                hasher.combine(self.tuple)
-                hasher.combine(self.array)
-                hasher.combine(self.dictionary)
-                hasher.combine(self.closure)
+                hasher.combine(name)
+                hasher.combine(generic)
+                hasher.combine(isProtocolComposition)
+                hasher.combine(attributes)
+                hasher.combine(modifiers)
+                hasher.combine(tuple)
+                hasher.combine(array)
+                hasher.combine(dictionary)
+                hasher.combine(closure)
                 return hasher.finalize()
             }
         }
+
         // MARK: - Typealias AutoHashable
-        extension Typealias {
-            public override var hash: Int {
+
+        public extension Typealias {
+            override var hash: Int {
                 var hasher = Hasher()
-                hasher.combine(self.aliasName)
-                hasher.combine(self.typeName)
-                hasher.combine(self.module)
-                hasher.combine(self.accessLevel)
-                hasher.combine(self.parentName)
+                hasher.combine(aliasName)
+                hasher.combine(typeName)
+                hasher.combine(module)
+                hasher.combine(accessLevel)
+                hasher.combine(parentName)
                 return hasher.finalize()
             }
         }
+
         // MARK: - Types AutoHashable
-        extension Types {
-            public override var hash: Int {
+
+        public extension Types {
+            override var hash: Int {
                 var hasher = Hasher()
-                hasher.combine(self.types)
-                hasher.combine(self.typealiases)
+                hasher.combine(types)
+                hasher.combine(typealiases)
                 return hasher.finalize()
             }
         }
+
         // MARK: - Variable AutoHashable
-        extension Variable {
-            public override var hash: Int {
+
+        public extension Variable {
+            override var hash: Int {
                 var hasher = Hasher()
-                hasher.combine(self.name)
-                hasher.combine(self.typeName)
-                hasher.combine(self.isComputed)
-                hasher.combine(self.isAsync)
-                hasher.combine(self.`throws`)
-                hasher.combine(self.isStatic)
-                hasher.combine(self.readAccess)
-                hasher.combine(self.writeAccess)
-                hasher.combine(self.defaultValue)
-                hasher.combine(self.annotations)
-                hasher.combine(self.documentation)
-                hasher.combine(self.attributes)
-                hasher.combine(self.modifiers)
-                hasher.combine(self.definedInTypeName)
+                hasher.combine(name)
+                hasher.combine(typeName)
+                hasher.combine(isComputed)
+                hasher.combine(isAsync)
+                hasher.combine(self.throws)
+                hasher.combine(isStatic)
+                hasher.combine(readAccess)
+                hasher.combine(writeAccess)
+                hasher.combine(defaultValue)
+                hasher.combine(annotations)
+                hasher.combine(documentation)
+                hasher.combine(attributes)
+                hasher.combine(modifiers)
+                hasher.combine(definedInTypeName)
                 return hasher.finalize()
             }
         }
@@ -3185,12 +3326,11 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
         public extension StringProtocol {
             /// Trimms leading and trailing whitespaces and newlines
             var trimmed: String {
-                self.trimmingCharacters(in: .whitespacesAndNewlines)
+                trimmingCharacters(in: .whitespacesAndNewlines)
             }
         }
 
         public extension String {
-
             /// Returns nil if string is empty
             var nilIfEmpty: String? {
                 if isEmpty {
@@ -3240,51 +3380,51 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             /// :nodoc:
             /// Returns a copy of str with leading and trailing whitespace removed.
             func stripped() -> String {
-                return String(self.trimmingCharacters(in: .whitespaces))
+                String(trimmingCharacters(in: .whitespaces))
             }
 
             /// :nodoc:
             @discardableResult
             mutating func trimPrefix(_ prefix: String) -> Bool {
                 guard hasPrefix(prefix) else { return false }
-                self = String(self.suffix(self.count - prefix.count))
+                self = String(suffix(count - prefix.count))
                 return true
             }
 
             /// :nodoc:
             func trimmingPrefix(_ prefix: String) -> String {
                 guard hasPrefix(prefix) else { return self }
-                return String(self.suffix(self.count - prefix.count))
+                return String(suffix(count - prefix.count))
             }
 
             /// :nodoc:
             @discardableResult
             mutating func trimSuffix(_ suffix: String) -> Bool {
                 guard hasSuffix(suffix) else { return false }
-                self = String(self.prefix(self.count - suffix.count))
+                self = String(prefix(count - suffix.count))
                 return true
             }
 
             /// :nodoc:
             func trimmingSuffix(_ suffix: String) -> String {
                 guard hasSuffix(suffix) else { return self }
-                return String(self.prefix(self.count - suffix.count))
+                return String(prefix(count - suffix.count))
             }
 
             /// :nodoc:
             func dropFirstAndLast(_ n: Int = 1) -> String {
-                return drop(first: n, last: n)
+                drop(first: n, last: n)
             }
 
             /// :nodoc:
             func drop(first: Int, last: Int) -> String {
-                return String(self.dropFirst(first).dropLast(last))
+                String(dropFirst(first).dropLast(last))
             }
 
             /// :nodoc:
             /// Wraps brackets if needed to make a valid type name
             func bracketsBalancing() -> String {
-                if hasPrefix("(") && hasSuffix(")") {
+                if hasPrefix("("), hasSuffix(")") {
                     let unwrapped = dropFirstAndLast()
                     return unwrapped.commaSeparated().count == 1 ? unwrapped.bracketsBalancing() : self
                 } else {
@@ -3296,7 +3436,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             /// :nodoc:
             /// Returns true if given string can represent a valid tuple type name
             func isValidTupleName() -> Bool {
-                guard hasPrefix("(") && hasSuffix(")") else { return false }
+                guard hasPrefix("("), hasSuffix(")") else { return false }
                 let trimmedBracketsName = dropFirstAndLast()
                 return trimmedBracketsName.isBracketsBalanced() && trimmedBracketsName.commaSeparated().count > 1
             }
@@ -3304,7 +3444,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             /// :nodoc:
             func isValidArrayName() -> Bool {
                 if hasPrefix("Array<") { return true }
-                if hasPrefix("[") && hasSuffix("]") {
+                if hasPrefix("["), hasSuffix("]") {
                     return dropFirstAndLast().colonSeparated().count == 1
                 }
                 return false
@@ -3313,7 +3453,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             /// :nodoc:
             func isValidDictionaryName() -> Bool {
                 if hasPrefix("Dictionary<") { return true }
-                if hasPrefix("[") && contains(":") && hasSuffix("]") {
+                if hasPrefix("["), contains(":"), hasSuffix("]") {
                     return dropFirstAndLast().colonSeparated().count == 2
                 }
                 return false
@@ -3321,13 +3461,13 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
             /// :nodoc:
             func isValidClosureName() -> Bool {
-                return components(separatedBy: "->", excludingDelimiterBetween: (["(", "<"], [")", ">"])).count > 1
+                components(separatedBy: "->", excludingDelimiterBetween: (["(", "<"], [")", ">"])).count > 1
             }
 
             /// :nodoc:
             /// Returns true if all opening brackets are balanced with closed brackets.
             func isBracketsBalanced() -> Bool {
-                var bracketsCount: Int = 0
+                var bracketsCount = 0
                 for char in self {
                     if char == "(" { bracketsCount += 1 } else if char == ")" { bracketsCount -= 1 }
                     if bracketsCount < 0 { return false }
@@ -3338,40 +3478,40 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             /// :nodoc:
             /// Returns components separated with a comma respecting nested types
             func commaSeparated() -> [String] {
-                return components(separatedBy: ",", excludingDelimiterBetween: ("<[({", "})]>"))
+                components(separatedBy: ",", excludingDelimiterBetween: ("<[({", "})]>"))
             }
 
             /// :nodoc:
             /// Returns components separated with colon respecting nested types
             func colonSeparated() -> [String] {
-                return components(separatedBy: ":", excludingDelimiterBetween: ("<[({", "})]>"))
+                components(separatedBy: ":", excludingDelimiterBetween: ("<[({", "})]>"))
             }
 
             /// :nodoc:
             /// Returns components separated with semicolon respecting nested contexts
             func semicolonSeparated() -> [String] {
-                return components(separatedBy: ";", excludingDelimiterBetween: ("{", "}"))
+                components(separatedBy: ";", excludingDelimiterBetween: ("{", "}"))
             }
 
             /// :nodoc:
             func components(separatedBy delimiter: String, excludingDelimiterBetween between: (open: String, close: String)) -> [String] {
-                return self.components(separatedBy: delimiter, excludingDelimiterBetween: (between.open.map { String($0) }, between.close.map { String($0) }))
+                components(separatedBy: delimiter, excludingDelimiterBetween: (between.open.map { String($0) }, between.close.map { String($0) }))
             }
 
             /// :nodoc:
             func components(separatedBy delimiter: String, excludingDelimiterBetween between: (open: [String], close: [String])) -> [String] {
-                var boundingCharactersCount: Int = 0
-                var quotesCount: Int = 0
+                var boundingCharactersCount = 0
+                var quotesCount = 0
                 var item = ""
                 var items = [String]()
 
-                var i = self.startIndex
-                while i < self.endIndex {
+                var i = startIndex
+                while i < endIndex {
                     var offset = 1
                     defer {
                         i = self.index(i, offsetBy: offset)
                     }
-                    let currentlyScanned = self[i..<(self.index(i, offsetBy: delimiter.count, limitedBy: self.endIndex) ?? self.endIndex)]
+                    let currentlyScanned = self[i ..< (index(i, offsetBy: delimiter.count, limitedBy: endIndex) ?? endIndex)]
                     if let openString = between.open.first(where: { String(self[i...]).starts(with: $0) }) {
                         if !(boundingCharactersCount == 0 && String(self[i]) == delimiter) {
                             boundingCharactersCount += 1
@@ -3388,12 +3528,12 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                         quotesCount += 1
                     }
 
-                    if currentlyScanned == delimiter && boundingCharactersCount == 0 && quotesCount % 2 == 0 {
+                    if currentlyScanned == delimiter, boundingCharactersCount == 0, quotesCount % 2 == 0 {
                         items.append(item)
                         item = ""
-                        i = self.index(i, offsetBy: delimiter.count - 1)
+                        i = index(i, offsetBy: delimiter.count - 1)
                     } else {
-                        item += self[i..<self.index(i, offsetBy: offset)]
+                        item += self[i ..< index(i, offsetBy: offset)]
                     }
                 }
                 items.append(item)
@@ -3404,7 +3544,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
         public extension NSString {
             /// :nodoc:
             var entireRange: NSRange {
-                return NSRange(location: 0, length: self.length)
+                NSRange(location: 0, length: length)
             }
         }
 
@@ -3429,6 +3569,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                     }
                 }
             }
+
             public var functions = [SourceryMethod]()
             public var typealiases = [Typealias]()
             public var inlineRanges = [String: NSRange]()
@@ -3457,7 +3598,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 }
             }
 
-        // sourcery:inline:FileParserResult.AutoCoding
+            // sourcery:inline:FileParserResult.AutoCoding
 
         /// :nodoc:
         public required init?(coder aDecoder: NSCoder) {
@@ -3481,8 +3622,6 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             aCoder.encode(inlineRanges, forKey: "inlineRanges")
             aCoder.encode(inlineIndentations, forKey: "inlineIndentations")
             aCoder.encode(modifiedDate, forKey: "modifiedDate")
-        }
-        // sourcery:end
         }
 
         """#
@@ -3509,12 +3648,12 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
             public var asSource: String {
                 let arguments = typeParameters
-                  .map({ $0.typeName.asSource })
-                  .joined(separator: ", ")
+                    .map(\.typeName.asSource)
+                    .joined(separator: ", ")
                 return "\(name)<\(arguments)>"
             }
 
-            public override var description: String {
+            override public var description: String {
                 asSource
             }
 
@@ -3537,7 +3676,6 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
         /// Descibes Swift generic type parameter
         @objcMembers public final class GenericTypeParameter: NSObject, SourceryModel {
-
             /// Generic parameter type name
             public var typeName: TypeName
 
@@ -3579,7 +3717,6 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
         /// modifier can be thing like `private`, `class`, `nonmutating`
         /// if a declaration has modifier like `private(set)` it's name will be `private` and detail will be `set`
         @objcMembers public class GenericRequirement: NSObject, SourceryModel {
-
             public enum Relationship: String {
                 case equals
                 case conformsTo
@@ -3607,7 +3744,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 self.leftType = leftType
                 self.rightType = rightType
                 self.relationship = relationship.rawValue
-                self.relationshipSyntax = relationship.syntax
+                relationshipSyntax = relationship.syntax
             }
 
             // sourcery:inline:GenericRequirement.AutoCoding
@@ -3653,7 +3790,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             }
 
             /// Full import value e.g. `import struct Module.StructName`
-            public override var description: String {
+            override public var description: String {
                 if let kind = kind {
                     return "\(kind) \(path)"
                 }
@@ -3700,24 +3837,13 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
         import Darwin
         import Foundation
 
-        public var logger: Logging = Logger()
-
-        public protocol Logging {
-            var level: LogLevel { get }
-
-            func astError(_ message: String)
-            func astWarning(_ message: String)
-            func benchmark(_ message: String)
-            func error(_ message: String)
-            func info(_ message: String)
-            func verbose(_ message: String)
-            func warning(_ message: String)
-            func output(_ message: String)
-        }
-
-        public extension Logging {
-            func error(_ error: Error) {
-                self.error(String(describing: error))
+        /// :nodoc:
+        public enum Log {
+            public enum Level: Int {
+                case errors
+                case warnings
+                case info
+                case verbose
             }
 
             func warning(_ error: Error) {
@@ -3732,46 +3858,26 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             case verbose
         }
 
-        public class Logger: Logging {
-            public let level: LogLevel
-
-            public let logAST: Bool
-            public let logBenchmarks: Bool
-
-            public init(
-                level: LogLevel = .warning,
-                logAST: Bool = false,
-                logBenchmarks: Bool = false
-            ) {
-                self.level = level
-                self.logAST = logAST
-                self.logBenchmarks = logBenchmarks
-            }
-
-            public func output(_ message: String) {
-                print(message)
-            }
-
-            public func error(_ message: String) {
-                log(level: .error, "error: \(message)")
+            public static func error(_ message: Any) {
+                log(level: .errors, "error: \(message)")
                 // to return error when running swift templates which is done in a different process
                 if ProcessInfo().processName != "Sourcery" {
                     fputs("\(message)", stderr)
                 }
             }
 
-            public func warning(_ message: String) {
-                log(level: .warning, "warning: \(message)")
+            public static func warning(_ message: Any) {
+                log(level: .warnings, "warning: \(message)")
             }
 
             public func astWarning(_ message: String) {
                 guard logAST else { return }
-                log(level: .warning, "ast warning: \(message)")
+                log(level: .warnings, "ast warning: \(message)")
             }
 
             public func astError(_ message: String) {
                 guard logAST else { return }
-                log(level: .error, "ast error: \(message)")
+                log(level: .errors, "ast error: \(message)")
             }
 
             public func verbose(_ message: String) {
@@ -3784,14 +3890,24 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
             public func benchmark(_ message: String) {
                 guard logBenchmarks else { return }
-                print(message)
+                if stackMessages {
+                    messagesStack.append("\(message)")
+                } else {
+                    print(message)
+                }
             }
 
-            func log(level: LogLevel, _ message: String) {
-                guard level.rawValue <= self.level.rawValue else { return }
-                print(message)
+            private static func log(level logLevel: Level, _ message: Any) {
+                guard logLevel.rawValue <= Log.level.rawValue else { return }
+                if stackMessages {
+                    messagesStack.append("\(message)")
+                } else {
+                    print(message)
+                }
             }
         }
+
+        extension String: Error {}
 
         """#
     ),
@@ -3829,7 +3945,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
             /// Parameter type attributes, i.e. `@escaping`
             public var typeAttributes: AttributeList {
-                return typeName.attributes
+                typeName.attributes
             }
 
             /// Method parameter default value expression
@@ -3846,19 +3962,19 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 self.type = type
                 self.defaultValue = defaultValue
                 self.annotations = annotations
-                self.`inout` = isInout
+                self.inout = isInout
                 self.isVariadic = isVariadic
             }
 
             /// :nodoc:
             public init(name: String = "", typeName: TypeName, type: Type? = nil, defaultValue: String? = nil, annotations: [String: NSObject] = [:], isInout: Bool = false, isVariadic: Bool = false) {
                 self.typeName = typeName
-                self.argumentLabel = name
+                argumentLabel = name
                 self.name = name
                 self.type = type
                 self.defaultValue = defaultValue
                 self.annotations = annotations
-                self.`inout` = isInout
+                self.inout = isInout
                 self.isVariadic = isVariadic
             }
 
@@ -3869,8 +3985,8 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 }
 
                 let labels = [argumentLabel ?? "_", name.nilIfEmpty]
-                  .compactMap { $0 }
-                  .joined(separator: " ")
+                    .compactMap { $0 }
+                    .joined(separator: " ")
 
                 return (labels.nilIfEmpty ?? "_") + typeSuffix
             }
@@ -3882,7 +3998,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 argumentLabel = aDecoder.decode(forKey: "argumentLabel")
                 guard let name: String = aDecoder.decode(forKey: "name") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["name"])); fatalError() }; self.name = name
                 guard let typeName: TypeName = aDecoder.decode(forKey: "typeName") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["typeName"])); fatalError() }; self.typeName = typeName
-                `inout` = aDecoder.decode(forKey: "`inout`")
+                self.inout = aDecoder.decode(forKey: "`inout`")
                 isVariadic = aDecoder.decode(forKey: "isVariadic")
                 type = aDecoder.decode(forKey: "type")
                 defaultValue = aDecoder.decode(forKey: "defaultValue")
@@ -3894,7 +4010,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 aCoder.encode(argumentLabel, forKey: "argumentLabel")
                 aCoder.encode(name, forKey: "name")
                 aCoder.encode(typeName, forKey: "typeName")
-                aCoder.encode(`inout`, forKey: "`inout`")
+                aCoder.encode(self.inout, forKey: "`inout`")
                 aCoder.encode(isVariadic, forKey: "isVariadic")
                 aCoder.encode(type, forKey: "type")
                 aCoder.encode(defaultValue, forKey: "defaultValue")
@@ -3903,9 +4019,9 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             // sourcery:end
         }
 
-        extension Array where Element == MethodParameter {
-            public var asSource: String {
-                "(\(map { $0.asSource }.joined(separator: ", ")))"
+        public extension Array where Element == MethodParameter {
+            var asSource: String {
+                "(\(map(\.asSource).joined(separator: ", ")))"
             }
         }
 
@@ -3929,7 +4045,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
             /// Parameter type attributes, i.e. `@escaping`
             public var typeAttributes: AttributeList {
-                return typeName.attributes
+                typeName.attributes
             }
 
             /// Method parameter default value expression
@@ -3939,15 +4055,22 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             public var annotations: Annotations = [:]
 
             /// :nodoc:
-            public init(argumentLabel: String? = nil, name: String? = nil, typeName: TypeName, type: Type? = nil,
-                        defaultValue: String? = nil, annotations: [String: NSObject] = [:], isInout: Bool = false) {
+            public init(
+                argumentLabel: String? = nil,
+                name: String? = nil,
+                typeName: TypeName,
+                type: Type? = nil,
+                defaultValue: String? = nil,
+                annotations: [String: NSObject] = [:],
+                isInout: Bool = false
+            ) {
                 self.typeName = typeName
                 self.argumentLabel = argumentLabel
                 self.name = name
                 self.type = type
                 self.defaultValue = defaultValue
                 self.annotations = annotations
-                self.`inout` = isInout
+                self.inout = isInout
             }
 
             public var asSource: String {
@@ -3962,8 +4085,8 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 }
 
                 let labels = [argumentLabel ?? "_", name?.nilIfEmpty]
-                  .compactMap { $0 }
-                  .joined(separator: " ")
+                    .compactMap { $0 }
+                    .joined(separator: " ")
 
                 return (labels.nilIfEmpty ?? "_") + typeSuffix
             }
@@ -3975,7 +4098,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 argumentLabel = aDecoder.decode(forKey: "argumentLabel")
                 name = aDecoder.decode(forKey: "name")
                 guard let typeName: TypeName = aDecoder.decode(forKey: "typeName") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["typeName"])); fatalError() }; self.typeName = typeName
-                `inout` = aDecoder.decode(forKey: "`inout`")
+                self.inout = aDecoder.decode(forKey: "`inout`")
                 type = aDecoder.decode(forKey: "type")
                 defaultValue = aDecoder.decode(forKey: "defaultValue")
                 guard let annotations: Annotations = aDecoder.decode(forKey: "annotations") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["annotations"])); fatalError() }; self.annotations = annotations
@@ -3986,7 +4109,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 aCoder.encode(argumentLabel, forKey: "argumentLabel")
                 aCoder.encode(name, forKey: "name")
                 aCoder.encode(typeName, forKey: "typeName")
-                aCoder.encode(`inout`, forKey: "`inout`")
+                aCoder.encode(self.inout, forKey: "`inout`")
                 aCoder.encode(type, forKey: "type")
                 aCoder.encode(defaultValue, forKey: "defaultValue")
                 aCoder.encode(annotations, forKey: "annotations")
@@ -3995,15 +4118,14 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             // sourcery:end
         }
 
-        extension Array where Element == ClosureParameter {
-            public var asSource: String {
-                "(\(map { $0.asSource }.joined(separator: ", ")))"
+        public extension Array where Element == ClosureParameter {
+            var asSource: String {
+                "(\(map(\.asSource).joined(separator: ", ")))"
             }
         }
 
         /// Describes method
         @objc(SwiftMethod) @objcMembers public final class Method: NSObject, SourceryModel, Annotated, Documented, Definition {
-
             /// Full method name, including generic constraints, i.e. `foo<T>(bar: T)`
             public let name: String
 
@@ -4013,13 +4135,13 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             // sourcery: skipEquality, skipDescription
             /// Method name without arguments names and parenthesis, i.e. `foo<T>`
             public var shortName: String {
-                return name.range(of: "(").map({ String(name[..<$0.lowerBound]) }) ?? name
+                name.range(of: "(").map { String(name[..<$0.lowerBound]) } ?? name
             }
 
             // sourcery: skipEquality, skipDescription
             /// Method name without arguments names, parenthesis and generic types, i.e. `foo` (can be used to generate code for method call)
             public var callName: String {
-                return shortName.range(of: "<").map({ String(shortName[..<$0.lowerBound]) }) ?? shortName
+                shortName.range(of: "<").map { String(shortName[..<$0.lowerBound]) } ?? shortName
             }
 
             /// Method parameters
@@ -4031,7 +4153,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             // sourcery: skipEquality, skipDescription
             /// Actual return value type name if declaration uses typealias, otherwise just a `returnTypeName`
             public var actualReturnTypeName: TypeName {
-                return returnTypeName.actualTypeName ?? returnTypeName
+                returnTypeName.actualTypeName ?? returnTypeName
             }
 
             // sourcery: skipEquality, skipDescription
@@ -4041,19 +4163,19 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             // sourcery: skipEquality, skipDescription
             /// Whether return value type is optional
             public var isOptionalReturnType: Bool {
-                return returnTypeName.isOptional || isFailableInitializer
+                returnTypeName.isOptional || isFailableInitializer
             }
 
             // sourcery: skipEquality, skipDescription
             /// Whether return value type is implicitly unwrapped optional
             public var isImplicitlyUnwrappedOptionalReturnType: Bool {
-                return returnTypeName.isImplicitlyUnwrappedOptional
+                returnTypeName.isImplicitlyUnwrappedOptional
             }
 
             // sourcery: skipEquality, skipDescription
             /// Return value type name without attributes and optional type information
             public var unwrappedReturnTypeName: String {
-                return returnTypeName.unwrappedTypeName
+                returnTypeName.unwrappedTypeName
             }
 
             /// Whether method is async method
@@ -4077,13 +4199,13 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             // sourcery: skipEquality, skipDescription
             /// Whether method is an initializer
             public var isInitializer: Bool {
-                return selectorName.hasPrefix("init(") || selectorName == "init"
+                selectorName.hasPrefix("init(") || selectorName == "init"
             }
 
             // sourcery: skipEquality, skipDescription
             /// Whether method is an deinitializer
             public var isDeinitializer: Bool {
-                return selectorName == "deinit"
+                selectorName == "deinit"
             }
 
             /// Whether method is a failable initializer
@@ -4143,7 +4265,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             // sourcery: skipEquality, skipDescription
             /// Reference to actual type name where the method is defined if declaration uses typealias, otherwise just a `definedInTypeName`
             public var actualDefinedInTypeName: TypeName? {
-                return definedInTypeName?.actualTypeName ?? definedInTypeName
+                definedInTypeName?.actualTypeName ?? definedInTypeName
             }
 
             // sourcery: skipEquality, skipDescription
@@ -4163,23 +4285,24 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             public var __parserData: Any?
 
             /// :nodoc:
-            public init(name: String,
-                        selectorName: String? = nil,
-                        parameters: [MethodParameter] = [],
-                        returnTypeName: TypeName = TypeName(name: "Void"),
-                        isAsync: Bool = false,
-                        throws: Bool = false,
-                        rethrows: Bool = false,
-                        accessLevel: AccessLevel = .internal,
-                        isStatic: Bool = false,
-                        isClass: Bool = false,
-                        isFailableInitializer: Bool = false,
-                        attributes: AttributeList = [:],
-                        modifiers: [SourceryModifier] = [],
-                        annotations: [String: NSObject] = [:],
-                        documentation: [String] = [],
-                        definedInTypeName: TypeName? = nil) {
-
+            public init(
+                name: String,
+                selectorName: String? = nil,
+                parameters: [MethodParameter] = [],
+                returnTypeName: TypeName = TypeName(name: "Void"),
+                isAsync: Bool = false,
+                throws: Bool = false,
+                rethrows: Bool = false,
+                accessLevel: AccessLevel = .internal,
+                isStatic: Bool = false,
+                isClass: Bool = false,
+                isFailableInitializer: Bool = false,
+                attributes: AttributeList = [:],
+                modifiers: [SourceryModifier] = [],
+                annotations: [String: NSObject] = [:],
+                documentation: [String] = [],
+                definedInTypeName: TypeName? = nil
+            ) {
                 self.name = name
                 self.selectorName = selectorName ?? name
                 self.parameters = parameters
@@ -4208,8 +4331,8 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 guard let returnTypeName: TypeName = aDecoder.decode(forKey: "returnTypeName") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["returnTypeName"])); fatalError() }; self.returnTypeName = returnTypeName
                 returnType = aDecoder.decode(forKey: "returnType")
                 isAsync = aDecoder.decode(forKey: "isAsync")
-                `throws` = aDecoder.decode(forKey: "`throws`")
-                `rethrows` = aDecoder.decode(forKey: "`rethrows`")
+                self.throws = aDecoder.decode(forKey: "`throws`")
+                self.rethrows = aDecoder.decode(forKey: "`rethrows`")
                 guard let accessLevel: String = aDecoder.decode(forKey: "accessLevel") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["accessLevel"])); fatalError() }; self.accessLevel = accessLevel
                 isStatic = aDecoder.decode(forKey: "isStatic")
                 isClass = aDecoder.decode(forKey: "isClass")
@@ -4230,8 +4353,8 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 aCoder.encode(returnTypeName, forKey: "returnTypeName")
                 aCoder.encode(returnType, forKey: "returnType")
                 aCoder.encode(isAsync, forKey: "isAsync")
-                aCoder.encode(`throws`, forKey: "`throws`")
-                aCoder.encode(`rethrows`, forKey: "`rethrows`")
+                aCoder.encode(self.throws, forKey: "`throws`")
+                aCoder.encode(self.rethrows, forKey: "`rethrows`")
                 aCoder.encode(accessLevel, forKey: "accessLevel")
                 aCoder.encode(isStatic, forKey: "isStatic")
                 aCoder.encode(isClass, forKey: "isClass")
@@ -4258,7 +4381,6 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
         /// modifier can be thing like `private`, `class`, `nonmutating`
         /// if a declaration has modifier like `private(set)` it's name will be `private` and detail will be `set`
         @objcMembers public class Modifier: NSObject, AutoCoding, AutoEquatable, AutoDiffable, AutoJSExport {
-
             /// The declaration modifier name.
             public let name: String
 
@@ -4336,7 +4458,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 // TODO: This logic should really be more complicated
                 // For any resolution we need to be looking at accessLevel and module boundaries
                 // e.g. there might be a typealias `private typealias Something = MyType` in one module and same name in another with public modifier, one could be accessed and the other could not
-                self.functions = parserResult.functions
+                functions = parserResult.functions
                 let aliases = Self.typealiases(parserResult)
                 resolvedTypealiases = aliases.resolved
                 unresolvedTypealiases = aliases.unresolved
@@ -4395,7 +4517,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             private mutating func unifyTypes() -> [Type] {
                 /// Resolve actual names of extensions, as they could have been done on typealias and note updated child names in uniques if needed
                 parsedTypes
-                    .filter { $0.isExtension }
+                    .filter(\.isExtension)
                     .forEach {
                         let oldName = $0.globalName
 
@@ -4450,7 +4572,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                         let inheritanceClause = type.inheritedTypes.isEmpty ? "" :
                             ": \(type.inheritedTypes.joined(separator: ", "))"
 
-                        logger.astWarning("Found \"extension \(type.name)\(inheritanceClause)\" of type for which there is no original type declaration information.")
+                        Log.astWarning("Found \"extension \(type.name)\(inheritanceClause)\" of type for which there is no original type declaration information.")
                         return
                     }
 
@@ -4462,12 +4584,12 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
                 let values = typeMap.values
                 var processed = Set<String>(minimumCapacity: values.count)
-                return typeMap.values.filter({
+                return typeMap.values.filter {
                     let name = $0.globalName
                     let wasProcessed = processed.contains(name)
                     processed.insert(name)
                     return !wasProcessed
-                })
+                }
             }
 
             /// returns typealiases map to their full names, with `resolved` removing intermediate
@@ -4476,11 +4598,11 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 var typealiasesByNames = [String: Typealias]()
                 parserResult.typealiases.forEach { typealiasesByNames[$0.name] = $0 }
                 parserResult.types.forEach { type in
-                    type.typealiases.forEach({ (_, alias) in
+                    type.typealiases.forEach { _, alias in
                         // TODO: should I deal with the fact that alias.name depends on type name but typenames might be updated later on
                         // maybe just handle non extension case here and extension aliases after resolving them?
                         typealiasesByNames[alias.name] = alias
-                    })
+                    }
                 }
 
                 let unresolved = typealiasesByNames
@@ -4502,11 +4624,13 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             }
 
             /// Resolves type identifier for name
-            func resolveGlobalName(for type: String,
-                                   containingType: Type? = nil,
-                                   unique: [String: Type]? = nil,
-                                   modules: [String: [String: Type]],
-                                   typealiases: [String: Typealias]) -> (name: String, typealias: Typealias?)? {
+            func resolveGlobalName(
+                for type: String,
+                containingType: Type? = nil,
+                unique: [String: Type]? = nil,
+                modules: [String: [String: Type]],
+                typealiases: [String: Typealias]
+            ) -> (name: String, typealias: Typealias?)? {
                 // if the type exists for this name and isn't an extension just return it's name
                 // if it's extension we need to check if there aren't other options TODO: verify
                 if let realType = unique?[type], realType.isExtension == false {
@@ -4557,19 +4681,19 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 }
 
                 func type(for module: String) -> Type? {
-                    return modules[module]?[typeIdentifier]
+                    modules[module]?[typeIdentifier]
                 }
 
                 func ambiguousErrorMessage(from types: [Type]) -> String? {
-                    logger.astWarning("Ambiguous type \(typeIdentifier), found \(types.map { $0.globalName }.joined(separator: ", ")). Specify module name at declaration site to disambiguate.")
+                    Log.astWarning("Ambiguous type \(typeIdentifier), found \(types.map(\.globalName).joined(separator: ", ")). Specify module name at declaration site to disambiguate.")
                     return nil
                 }
 
                 let explicitModulesAtDeclarationSite: [String] = [
-                    containedInType?.module.map { [$0] } ?? [],    // main module for this typename
-                    containedInType?.imports.map { $0.moduleName } ?? []    // imported modules
+                    containedInType?.module.map { [$0] } ?? [], // main module for this typename
+                    containedInType?.imports.map(\.moduleName) ?? [] // imported modules
                 ]
-                    .flatMap { $0 }
+                .flatMap { $0 }
 
                 let remainingModules = Set(modules.keys).subtracting(explicitModulesAtDeclarationSite)
 
@@ -4614,7 +4738,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
             func resolveType(typeName: TypeName, containingType: Type?) -> Type? {
                 let resolveTypeWithName = { (typeName: TypeName) -> Type? in
-                    return self.resolveType(typeName: typeName, containingType: containingType)
+                    resolveType(typeName: typeName, containingType: containingType)
                 }
 
                 let unique = typeMap
@@ -4646,14 +4770,15 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                         tupleCopy.name = tupleCopy.elements.asTypeName
 
                         typeName.tuple = tupleCopy // TODO: really don't like this old behaviour
-                        typeName.actualTypeName = TypeName(name: tupleCopy.name,
-                                                           isOptional: typeName.isOptional,
-                                                           isImplicitlyUnwrappedOptional: typeName.isImplicitlyUnwrappedOptional,
-                                                           tuple: tupleCopy,
-                                                           array: lookupName.array,
-                                                           dictionary: lookupName.dictionary,
-                                                           closure: lookupName.closure,
-                                                           generic: lookupName.generic
+                        typeName.actualTypeName = TypeName(
+                            name: tupleCopy.name,
+                            isOptional: typeName.isOptional,
+                            isImplicitlyUnwrappedOptional: typeName.isImplicitlyUnwrappedOptional,
+                            tuple: tupleCopy,
+                            array: lookupName.array,
+                            dictionary: lookupName.dictionary,
+                            closure: lookupName.closure,
+                            generic: lookupName.generic
                         )
                     }
                     return nil
@@ -4669,14 +4794,15 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                         typeName.array = array // TODO: really don't like this old behaviour
                         typeName.generic = array.asGeneric // TODO: really don't like this old behaviour
 
-                        typeName.actualTypeName = TypeName(name: array.name,
-                                                           isOptional: typeName.isOptional,
-                                                           isImplicitlyUnwrappedOptional: typeName.isImplicitlyUnwrappedOptional,
-                                                           tuple: lookupName.tuple,
-                                                           array: array,
-                                                           dictionary: lookupName.dictionary,
-                                                           closure: lookupName.closure,
-                                                           generic: typeName.generic
+                        typeName.actualTypeName = TypeName(
+                            name: array.name,
+                            isOptional: typeName.isOptional,
+                            isImplicitlyUnwrappedOptional: typeName.isImplicitlyUnwrappedOptional,
+                            tuple: lookupName.tuple,
+                            array: array,
+                            dictionary: lookupName.dictionary,
+                            closure: lookupName.closure,
+                            generic: typeName.generic
                         )
                     }
                 } else
@@ -4696,14 +4822,15 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                         typeName.dictionary = dictionary // TODO: really don't like this old behaviour
                         typeName.generic = dictionary.asGeneric // TODO: really don't like this old behaviour
 
-                        typeName.actualTypeName = TypeName(name: dictionary.asSource,
-                                                           isOptional: typeName.isOptional,
-                                                           isImplicitlyUnwrappedOptional: typeName.isImplicitlyUnwrappedOptional,
-                                                           tuple: lookupName.tuple,
-                                                           array: lookupName.array,
-                                                           dictionary: dictionary,
-                                                           closure: lookupName.closure,
-                                                           generic: dictionary.asGeneric
+                        typeName.actualTypeName = TypeName(
+                            name: dictionary.asSource,
+                            isOptional: typeName.isOptional,
+                            isImplicitlyUnwrappedOptional: typeName.isImplicitlyUnwrappedOptional,
+                            tuple: lookupName.tuple,
+                            array: lookupName.array,
+                            dictionary: dictionary,
+                            closure: lookupName.closure,
+                            generic: dictionary.asGeneric
                         )
                     }
                 } else
@@ -4721,14 +4848,15 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                     if closure.returnTypeName.actualTypeName != nil || needsUpdate || retrievedName != nil {
                         typeName.closure = closure // TODO: really don't like this old behaviour
 
-                        typeName.actualTypeName = TypeName(name: closure.asSource,
-                                                           isOptional: typeName.isOptional,
-                                                           isImplicitlyUnwrappedOptional: typeName.isImplicitlyUnwrappedOptional,
-                                                           tuple: lookupName.tuple,
-                                                           array: lookupName.array,
-                                                           dictionary: lookupName.dictionary,
-                                                           closure: closure,
-                                                           generic: lookupName.generic
+                        typeName.actualTypeName = TypeName(
+                            name: closure.asSource,
+                            isOptional: typeName.isOptional,
+                            isImplicitlyUnwrappedOptional: typeName.isImplicitlyUnwrappedOptional,
+                            tuple: lookupName.tuple,
+                            array: lookupName.array,
+                            dictionary: lookupName.dictionary,
+                            closure: closure,
+                            generic: lookupName.generic
                         )
                     }
 
@@ -4754,16 +4882,17 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                         typeName.array = lookupName.array // TODO: really don't like this old behaviour
                         typeName.dictionary = lookupName.dictionary // TODO: really don't like this old behaviour
 
-                        let params = generic.typeParameters.map { $0.typeName.asSource }.joined(separator: ", ")
+                        let params = generic.typeParameters.map(\.typeName.asSource).joined(separator: ", ")
 
-                        typeName.actualTypeName = TypeName(name: "\(generic.name)<\(params)>",
-                                                           isOptional: typeName.isOptional,
-                                                           isImplicitlyUnwrappedOptional: typeName.isImplicitlyUnwrappedOptional,
-                                                           tuple: lookupName.tuple,
-                                                           array: lookupName.array, // TODO: asArray
-                                                           dictionary: lookupName.dictionary, // TODO: asDictionary
-                                                           closure: lookupName.closure,
-                                                           generic: generic
+                        typeName.actualTypeName = TypeName(
+                            name: "\(generic.name)<\(params)>",
+                            isOptional: typeName.isOptional,
+                            isImplicitlyUnwrappedOptional: typeName.isImplicitlyUnwrappedOptional,
+                            tuple: lookupName.tuple,
+                            array: lookupName.array, // TODO: asArray
+                            dictionary: lookupName.dictionary, // TODO: asDictionary
+                            closure: lookupName.closure,
+                            generic: generic
                         )
                     }
                 }
@@ -4779,8 +4908,10 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 return unique[resolvedIdentifier]
             }
 
-            private func actualTypeName(for typeName: TypeName,
-                                               containingType: Type? = nil) -> TypeName? {
+            private func actualTypeName(
+                for typeName: TypeName,
+                containingType: Type? = nil
+            ) -> TypeName? {
                 let unique = typeMap
                 let typealiases = resolvedTypealiases
 
@@ -4793,7 +4924,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                     return nil
                 }
 
-                /// TODO: verify
+                // TODO: verify
                 let generic = typeName.generic.map { GenericType(name: $0.name, typeParameters: $0.typeParameters) }
                 generic?.name = aliased.name
                 let dictionary = typeName.dictionary.map { DictionaryType(name: $0.name, valueTypeName: $0.valueTypeName, valueType: $0.valueType, keyTypeName: $0.keyTypeName, keyType: $0.keyType) }
@@ -4801,17 +4932,17 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 let array = typeName.array.map { ArrayType(name: $0.name, elementTypeName: $0.elementTypeName, elementType: $0.elementType) }
                 array?.name = aliased.name
 
-                return TypeName(name: aliased.name,
-                                isOptional: typeName.isOptional,
-                                isImplicitlyUnwrappedOptional: typeName.isImplicitlyUnwrappedOptional,
-                                tuple: aliased.typealias?.typeName.tuple ?? typeName.tuple, // TODO: verify
-                                array: aliased.typealias?.typeName.array ?? array,
-                                dictionary: aliased.typealias?.typeName.dictionary ?? dictionary,
-                                closure: aliased.typealias?.typeName.closure ?? typeName.closure,
-                                generic: aliased.typealias?.typeName.generic ?? generic
+                return TypeName(
+                    name: aliased.name,
+                    isOptional: typeName.isOptional,
+                    isImplicitlyUnwrappedOptional: typeName.isImplicitlyUnwrappedOptional,
+                    tuple: aliased.typealias?.typeName.tuple ?? typeName.tuple, // TODO: verify
+                    array: aliased.typealias?.typeName.array ?? array,
+                    dictionary: aliased.typealias?.typeName.dictionary ?? dictionary,
+                    closure: aliased.typealias?.typeName.closure ?? typeName.closure,
+                    generic: aliased.typealias?.typeName.generic ?? generic
                 )
             }
-
         }
 
         """#
@@ -4854,9 +4985,8 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
         /// Describes Swift protocol
         @objcMembers public final class Protocol: Type {
-
             /// Returns "protocol"
-            public override var kind: String { return "protocol" }
+            override public var kind: String { "protocol" }
 
             /// list of all declared associated types with their names as keys
             public var associatedTypes: [String: AssociatedType] {
@@ -4873,22 +5003,24 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             }
 
             /// :nodoc:
-            public init(name: String = "",
-                        parent: Type? = nil,
-                        accessLevel: AccessLevel = .internal,
-                        isExtension: Bool = false,
-                        variables: [Variable] = [],
-                        methods: [Method] = [],
-                        subscripts: [Subscript] = [],
-                        inheritedTypes: [String] = [],
-                        containedTypes: [Type] = [],
-                        typealiases: [Typealias] = [],
-                        associatedTypes: [String: AssociatedType] = [:],
-                        genericRequirements: [GenericRequirement] = [],
-                        attributes: AttributeList = [:],
-                        modifiers: [SourceryModifier] = [],
-                        annotations: [String: NSObject] = [:],
-                        documentation: [String] = []) {
+            public init(
+                name: String = "",
+                parent: Type? = nil,
+                accessLevel: AccessLevel = .internal,
+                isExtension: Bool = false,
+                variables: [Variable] = [],
+                methods: [Method] = [],
+                subscripts: [Subscript] = [],
+                inheritedTypes: [String] = [],
+                containedTypes: [Type] = [],
+                typealiases: [Typealias] = [],
+                associatedTypes: [String: AssociatedType] = [:],
+                genericRequirements: [GenericRequirement] = [],
+                attributes: AttributeList = [:],
+                modifiers: [SourceryModifier] = [],
+                annotations: [String: NSObject] = [:],
+                documentation: [String] = []
+            ) {
                 self.genericRequirements = genericRequirements
                 self.associatedTypes = associatedTypes
                 super.init(
@@ -4939,9 +5071,8 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
         // sourcery: skipJSExport
         /// Describes a Swift [protocol composition](https://docs.swift.org/swift-book/ReferenceManual/Types.html#ID454).
         @objcMembers public final class ProtocolComposition: Type {
-
             /// Returns "protocolComposition"
-            public override var kind: String { return "protocolComposition" }
+            override public var kind: String { "protocolComposition" }
 
             /// The names of the types composed to form this composition
             public let composedTypeNames: [TypeName]
@@ -4951,21 +5082,23 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             public var composedTypes: [Type]?
 
             /// :nodoc:
-            public init(name: String = "",
-                        parent: Type? = nil,
-                        accessLevel: AccessLevel = .internal,
-                        isExtension: Bool = false,
-                        variables: [Variable] = [],
-                        methods: [Method] = [],
-                        subscripts: [Subscript] = [],
-                        inheritedTypes: [String] = [],
-                        containedTypes: [Type] = [],
-                        typealiases: [Typealias] = [],
-                        attributes: AttributeList = [:],
-                        annotations: [String: NSObject] = [:],
-                        isGeneric: Bool = false,
-                        composedTypeNames: [TypeName] = [],
-                        composedTypes: [Type]? = nil) {
+            public init(
+                name: String = "",
+                parent: Type? = nil,
+                accessLevel: AccessLevel = .internal,
+                isExtension: Bool = false,
+                variables: [Variable] = [],
+                methods: [Method] = [],
+                subscripts: [Subscript] = [],
+                inheritedTypes: [String] = [],
+                containedTypes: [Type] = [],
+                typealiases: [Typealias] = [],
+                attributes _: AttributeList = [:],
+                annotations: [String: NSObject] = [:],
+                isGeneric: Bool = false,
+                composedTypeNames: [TypeName] = [],
+                composedTypes: [Type]? = nil
+            ) {
                 self.composedTypeNames = composedTypeNames
                 self.composedTypes = composedTypes
                 super.init(
@@ -5013,26 +5146,27 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
         // sourcery: skipDescription
         /// Describes Swift struct
         @objcMembers public final class Struct: Type {
-
             /// Returns "struct"
-            public override var kind: String { return "struct" }
+            override public var kind: String { "struct" }
 
             /// :nodoc:
-            public override init(name: String = "",
-                                 parent: Type? = nil,
-                                 accessLevel: AccessLevel = .internal,
-                                 isExtension: Bool = false,
-                                 variables: [Variable] = [],
-                                 methods: [Method] = [],
-                                 subscripts: [Subscript] = [],
-                                 inheritedTypes: [String] = [],
-                                 containedTypes: [Type] = [],
-                                 typealiases: [Typealias] = [],
-                                 attributes: AttributeList = [:],
-                                 modifiers: [SourceryModifier] = [],
-                                 annotations: [String: NSObject] = [:],
-                                 documentation: [String] = [],
-                                 isGeneric: Bool = false) {
+            override public init(
+                name: String = "",
+                parent: Type? = nil,
+                accessLevel: AccessLevel = .internal,
+                isExtension: Bool = false,
+                variables: [Variable] = [],
+                methods: [Method] = [],
+                subscripts: [Subscript] = [],
+                inheritedTypes: [String] = [],
+                containedTypes: [Type] = [],
+                typealiases: [Typealias] = [],
+                attributes: AttributeList = [:],
+                modifiers: [SourceryModifier] = [],
+                annotations: [String: NSObject] = [:],
+                documentation: [String] = [],
+                isGeneric: Bool = false
+            ) {
                 super.init(
                     name: name,
                     parent: parent,
@@ -5076,7 +5210,6 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
         /// Describes subscript
         @objcMembers public final class Subscript: NSObject, SourceryModel, Annotated, Documented, Definition {
-
             /// Method parameters
             public var parameters: [MethodParameter]
 
@@ -5085,7 +5218,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
             /// Actual return value type name if declaration uses typealias, otherwise just a `returnTypeName`
             public var actualReturnTypeName: TypeName {
-                return returnTypeName.actualTypeName ?? returnTypeName
+                returnTypeName.actualTypeName ?? returnTypeName
             }
 
             // sourcery: skipEquality, skipDescription
@@ -5095,19 +5228,19 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             // sourcery: skipEquality, skipDescription
             /// Whether return value type is optional
             public var isOptionalReturnType: Bool {
-                return returnTypeName.isOptional
+                returnTypeName.isOptional
             }
 
             // sourcery: skipEquality, skipDescription
             /// Whether return value type is implicitly unwrapped optional
             public var isImplicitlyUnwrappedOptionalReturnType: Bool {
-                return returnTypeName.isImplicitlyUnwrappedOptional
+                returnTypeName.isImplicitlyUnwrappedOptional
             }
 
             // sourcery: skipEquality, skipDescription
             /// Return value type name without attributes and optional type information
             public var unwrappedReturnTypeName: String {
-                return returnTypeName.unwrappedTypeName
+                returnTypeName.unwrappedTypeName
             }
 
             /// Whether method is final
@@ -5124,7 +5257,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
             /// Whether variable is mutable or not
             public var isMutable: Bool {
-                return writeAccess != AccessLevel.none.rawValue
+                writeAccess != AccessLevel.none.rawValue
             }
 
             /// Annotations, that were created with // sourcery: annotation1, other = "annotation value", alterantive = 2
@@ -5138,7 +5271,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
             /// Reference to actual type name where the method is defined if declaration uses typealias, otherwise just a `definedInTypeName`
             public var actualDefinedInTypeName: TypeName? {
-                return definedInTypeName?.actualTypeName ?? definedInTypeName
+                definedInTypeName?.actualTypeName ?? definedInTypeName
             }
 
             // sourcery: skipEquality, skipDescription
@@ -5158,19 +5291,20 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             public var __parserData: Any?
 
             /// :nodoc:
-            public init(parameters: [MethodParameter] = [],
-                        returnTypeName: TypeName,
-                        accessLevel: (read: AccessLevel, write: AccessLevel) = (.internal, .internal),
-                        attributes: AttributeList = [:],
-                        modifiers: [SourceryModifier] = [],
-                        annotations: [String: NSObject] = [:],
-                        documentation: [String] = [],
-                        definedInTypeName: TypeName? = nil) {
-
+            public init(
+                parameters: [MethodParameter] = [],
+                returnTypeName: TypeName,
+                accessLevel: (read: AccessLevel, write: AccessLevel) = (.internal, .internal),
+                attributes: AttributeList = [:],
+                modifiers: [SourceryModifier] = [],
+                annotations: [String: NSObject] = [:],
+                documentation: [String] = [],
+                definedInTypeName: TypeName? = nil
+            ) {
                 self.parameters = parameters
                 self.returnTypeName = returnTypeName
-                self.readAccess = accessLevel.read.rawValue
-                self.writeAccess = accessLevel.write.rawValue
+                readAccess = accessLevel.read.rawValue
+                writeAccess = accessLevel.write.rawValue
                 self.attributes = attributes
                 self.modifiers = modifiers
                 self.annotations = annotations
@@ -5231,18 +5365,18 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
             // sourcery: skipDescription
             public var type: [String: Type] {
-                return types.typesByName
+                types.typesByName
             }
 
             public init(parserResult: FileParserResult?, types: Types, functions: [SourceryMethod], arguments: [String: NSObject]) {
                 self.parserResult = parserResult
                 self.types = types
                 self.functions = functions
-                self.argument = arguments
+                argument = arguments
             }
 
             /// :nodoc:
-            required public init?(coder aDecoder: NSCoder) {
+            public required init?(coder aDecoder: NSCoder) {
                 guard let parserResult: FileParserResult = aDecoder.decode(forKey: "parserResult") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found. FileParserResults are required for template context that needs persisting.", arguments: getVaList(["parserResult"])); fatalError() }
                 guard let argument: [String: NSObject] = aDecoder.decode(forKey: "argument") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["argument"])); fatalError() }
 
@@ -5251,8 +5385,8 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
         //      fileParserResultCopy = try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(NSKeyedArchiver.archivedData(withRootObject: parserResult)) as? FileParserResult
 
                 let composed = Composer.uniqueTypesAndFunctions(parserResult)
-                self.types = .init(types: composed.types, typealiases: composed.typealiases)
-                self.functions = composed.functions
+                types = .init(types: composed.types, typealiases: composed.typealiases)
+                functions = composed.functions
 
                 self.parserResult = fileParserResultCopy
                 self.argument = argument
@@ -5260,12 +5394,12 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
             /// :nodoc:
             public func encode(with aCoder: NSCoder) {
-                aCoder.encode(self.parserResult, forKey: "parserResult")
-                aCoder.encode(self.argument, forKey: "argument")
+                aCoder.encode(parserResult, forKey: "parserResult")
+                aCoder.encode(argument, forKey: "argument")
             }
 
             public var stencilContext: [String: Any] {
-                return [
+                [
                     "types": types,
                     "functions": functions,
                     "type": types.typesByName,
@@ -5273,28 +5407,29 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 ]
             }
 
-            enum Error: Swift.Error, Equatable {
-                case notAClass(String)
-                case notAProtocol(String)
-                case unknownType(String)
+            // sourcery: skipDescription, skipEquality
+            public var jsContext: [String: Any] {
+                [
+                    "types": [
+                        "all": types.all,
+                        "protocols": types.protocols,
+                        "classes": types.classes,
+                        "structs": types.structs,
+                        "enums": types.enums,
+                        "extensions": types.extensions,
+                        "based": types.based,
+                        "inheriting": types.inheriting,
+                        "implementing": types.implementing
+                    ],
+                    "functions": functions,
+                    "type": types.typesByName,
+                    "argument": argument
+                ]
             }
         }
 
-        extension TemplateContext.Error: CustomStringConvertible {
-            var description: String {
-                switch self {
-                case let .notAClass(typeName):
-                    "\(typeName) is not a class and should be used with `implementing` or `based`"
-                case let .notAProtocol(typeName):
-                    "\(typeName) is a class and should be used with `inheriting` or `based`"
-                case let .unknownType(typeName):
-                    "Unknown type \(typeName), should be used with `based`"
-                }
-            }
-        }
-
-        extension ProcessInfo {
-            public func unarchiveContext() throws -> TemplateContext? {
+        public extension ProcessInfo {
+            func unarchiveContext() throws -> TemplateContext? {
                 let data = try Data(contentsOf: URL(fileURLWithPath: arguments[1]))
                 return try NSKeyedUnarchiver.unarchivedRootObject(ofClass: TemplateContext.self, from: data)
             }
@@ -5303,7 +5438,6 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
         // sourcery: skipJSExport
         /// Collection of scanned types for accessing in templates
         @objcMembers public final class Types: NSObject, SourceryModel {
-
             /// :nodoc:
             public let types: [Type]
 
@@ -5316,24 +5450,24 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 self.typealiases = typealiases
             }
 
-        // sourcery:inline:Types.AutoCoding
+            // sourcery:inline:Types.AutoCoding
 
-        /// :nodoc:
-        public required init?(coder aDecoder: NSCoder) {
-            guard let types: [Type] = aDecoder.decode(forKey: "types") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["types"])); fatalError() }; self.types = types
-            guard let typealiases: [Typealias] = aDecoder.decode(forKey: "typealiases") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["typealiases"])); fatalError() }; self.typealiases = typealiases
-        }
+            /// :nodoc:
+            public required init?(coder aDecoder: NSCoder) {
+                guard let types: [Type] = aDecoder.decode(forKey: "types") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["types"])); fatalError() }; self.types = types
+                guard let typealiases: [Typealias] = aDecoder.decode(forKey: "typealiases") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["typealiases"])); fatalError() }; self.typealiases = typealiases
+            }
 
-        /// :nodoc:
-        public func encode(with aCoder: NSCoder) {
-            aCoder.encode(types, forKey: "types")
-            aCoder.encode(typealiases, forKey: "typealiases")
-        }
-        // sourcery:end
+            /// :nodoc:
+            public func encode(with aCoder: NSCoder) {
+                aCoder.encode(types, forKey: "types")
+                aCoder.encode(typealiases, forKey: "typealiases")
+            }
+            // sourcery:end
 
             // sourcery: skipDescription, skipEquality, skipCoding
             /// :nodoc:
-            public lazy internal(set) var typesByName: [String: Type] = {
+            public internal(set) lazy var typesByName: [String: Type] = {
                 var typesByName = [String: Type]()
                 self.types.forEach { typesByName[$0.globalName] = $0 }
                 return typesByName
@@ -5341,7 +5475,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
             // sourcery: skipDescription, skipEquality, skipCoding
             /// :nodoc:
-            public lazy internal(set) var typesaliasesByName: [String: Typealias] = {
+            public internal(set) lazy var typesaliasesByName: [String: Typealias] = {
                 var typesaliasesByName = [String: Typealias]()
                 self.typealiases.forEach { typesaliasesByName[$0.name] = $0 }
                 return typesaliasesByName
@@ -5349,89 +5483,69 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
             // sourcery: skipDescription, skipEquality, skipCoding
             /// All known types, excluding protocols or protocol compositions.
-            public lazy internal(set) var all: [Type] = {
-                return self.types.filter { !($0 is Protocol || $0 is ProtocolComposition) }
-            }()
+            public internal(set) lazy var all: [Type] = self.types.filter { !($0 is Protocol || $0 is ProtocolComposition) }
 
             // sourcery: skipDescription, skipEquality, skipCoding
             /// All known protocols
-            public lazy internal(set) var protocols: [Protocol] = {
-                return self.types.compactMap { $0 as? Protocol }
-            }()
+            public internal(set) lazy var protocols: [Protocol] = self.types.compactMap { $0 as? Protocol }
 
             // sourcery: skipDescription, skipEquality, skipCoding
             /// All known protocol compositions
-            public lazy internal(set) var protocolCompositions: [ProtocolComposition] = {
-                return self.types.compactMap { $0 as? ProtocolComposition }
-            }()
+            public internal(set) lazy var protocolCompositions: [ProtocolComposition] = self.types.compactMap { $0 as? ProtocolComposition }
 
             // sourcery: skipDescription, skipEquality, skipCoding
             /// All known classes
-            public lazy internal(set) var classes: [Class] = {
-                return self.all.compactMap { $0 as? Class }
-            }()
+            public internal(set) lazy var classes: [Class] = self.all.compactMap { $0 as? Class }
 
             // sourcery: skipDescription, skipEquality, skipCoding
             /// All known structs
-            public lazy internal(set) var structs: [Struct] = {
-                return self.all.compactMap { $0 as? Struct }
-            }()
+            public internal(set) lazy var structs: [Struct] = self.all.compactMap { $0 as? Struct }
 
             // sourcery: skipDescription, skipEquality, skipCoding
             /// All known enums
-            public lazy internal(set) var enums: [Enum] = {
-                return self.all.compactMap { $0 as? Enum }
-            }()
+            public internal(set) lazy var enums: [Enum] = self.all.compactMap { $0 as? Enum }
 
             // sourcery: skipDescription, skipEquality, skipCoding
             /// All known extensions
-            public lazy internal(set) var extensions: [Type] = {
-                return self.all.compactMap { $0.isExtension ? $0 : nil }
-            }()
+            public internal(set) lazy var extensions: [Type] = self.all.compactMap { $0.isExtension ? $0 : nil }
 
             // sourcery: skipDescription, skipEquality, skipCoding
             /// Types based on any other type, grouped by its name, even if they are not known.
             /// `types.based.MyType` returns list of types based on `MyType`
-            public lazy internal(set) var based: TypesCollection = {
-                TypesCollection(
-                    types: self.types,
-                    collection: { Array($0.based.keys) }
-                )
-            }()
+            public internal(set) lazy var based: TypesCollection = .init(
+                types: self.types,
+                collection: { Array($0.based.keys) }
+            )
 
             // sourcery: skipDescription, skipEquality, skipCoding
             /// Classes inheriting from any known class, grouped by its name.
             /// `types.inheriting.MyClass` returns list of types inheriting from `MyClass`
-            public lazy internal(set) var inheriting: TypesCollection = {
-                TypesCollection(
-                    types: self.types,
-                    collection: { Array($0.inherits.keys) },
-                    validate: { type in
-                        guard type is Class else {
-                            throw TemplateContext.Error.notAClass(type.name)
-                        }
-                    })
-            }()
+            public internal(set) lazy var inheriting: TypesCollection = .init(
+                types: self.types,
+                collection: { Array($0.inherits.keys) },
+                validate: { type in
+                    guard type is Class else {
+                        throw "\(type.name) is not a class and should be used with `implementing` or `based`"
+                    }
+                }
+            )
 
             // sourcery: skipDescription, skipEquality, skipCoding
             /// Types implementing known protocol, grouped by its name.
             /// `types.implementing.MyProtocol` returns list of types implementing `MyProtocol`
-            public lazy internal(set) var implementing: TypesCollection = {
-                TypesCollection(
-                    types: self.types,
-                    collection: { Array($0.implements.keys) },
-                    validate: { type in
-                        guard type is Protocol else {
-                            throw TemplateContext.Error.notAProtocol(type.name)
-                        }
+            public internal(set) lazy var implementing: TypesCollection = .init(
+                types: self.types,
+                collection: { Array($0.implements.keys) },
+                validate: { type in
+                    guard type is Protocol else {
+                        throw "\(type.name) is a class and should be used with `inheriting` or `based`"
                     }
-                )
-            }()
+                }
+            )
         }
 
         /// :nodoc:
         @objcMembers public class TypesCollection: NSObject, AutoJSExport {
-
             // sourcery:begin: skipJSExport
             let all: [Type]
             let types: [String: [Type]]
@@ -5439,9 +5553,9 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             // sourcery:end
 
             init(types: [Type], collection: (Type) -> [String], validate: ((Type) throws -> Void)? = nil) {
-                self.all = types
+                all = types
                 var content = [String: [Type]]()
-                self.all.forEach { type in
+                all.forEach { type in
                     collection(type).forEach { name in
                         var list = content[name] ?? [Type]()
                         list.append(type)
@@ -5458,7 +5572,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
                 if let validate = validate {
                     guard let type = all.first(where: { $0.name == key }) else {
-                        throw TemplateContext.Error.unknownType(key)
+                        throw "Unknown type \(key), should be used with `based`"
                     }
 
                     try validate(type)
@@ -5482,7 +5596,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             }
 
             /// :nodoc:
-            public override func value(forKey key: String) -> Any? {
+            override public func value(forKey key: String) -> Any? {
                 do {
                     return try types(forKey: key)
                 } catch {
@@ -5501,8 +5615,8 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 }
             }
 
-            public override func responds(to aSelector: Selector!) -> Bool {
-                return true
+            override public func responds(to _: Selector!) -> Bool {
+                true
             }
         }
 
@@ -5516,7 +5630,6 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
         /// Describes tuple type
         @objcMembers public final class TupleType: NSObject, SourceryModel {
-
             /// Type name used in declaration
             public var name: String
 
@@ -5531,7 +5644,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
             /// :nodoc:
             public init(elements: [TupleElement]) {
-                self.name = elements.asSource
+                name = elements.asSource
                 self.elements = elements
             }
 
@@ -5553,7 +5666,6 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
         /// Describes tuple type element
         @objcMembers public final class TupleElement: NSObject, SourceryModel, Typed {
-
             /// Tuple element name
             public let name: String?
 
@@ -5594,13 +5706,13 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             // sourcery:end
         }
 
-        extension Array where Element == TupleElement {
-            public var asSource: String {
-                "(\(map { $0.asSource }.joined(separator: ", ")))"
+        public extension Array where Element == TupleElement {
+            var asSource: String {
+                "(\(map(\.asSource).joined(separator: ", ")))"
             }
 
-            public var asTypeName: String {
-                "(\(map { $0.typeName.asSource }.joined(separator: ", ")))"
+            var asTypeName: String {
+                "(\(map(\.typeName.asSource).joined(separator: ", ")))"
             }
         }
 
@@ -5617,7 +5729,6 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
         /// Defines Swift type
         @objcMembers public class Type: NSObject, SourceryModel, Annotated, Documented {
-
             /// :nodoc:
             public var module: String?
 
@@ -5627,13 +5738,13 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             // sourcery: skipEquality
             /// Imports existed in all files containing this type and all its super classes/protocols
             public var allImports: [Import] {
-                return self.unique({ $0.gatherAllImports() }, filter: { $0 == $1 })
+                unique({ $0.gatherAllImports() }, filter: { $0 == $1 })
             }
 
             private func gatherAllImports() -> [Import] {
-                var allImports: [Import] = Array(self.imports)
+                var allImports: [Import] = Array(imports)
 
-                self.basedTypes.values.forEach { (basedType) in
+                basedTypes.values.forEach { basedType in
                     allImports.append(contentsOf: basedType.imports)
                 }
                 return allImports
@@ -5654,7 +5765,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
             // sourcery: forceEquality
             /// Kind of type declaration, i.e. `enum`, `struct`, `class`, `protocol` or `extension`
-            public var kind: String { return isExtension ? "extension" : "unknown" }
+            public var kind: String { isExtension ? "extension" : "unknown" }
 
             /// Type access level, i.e. `internal`, `private`, `fileprivate`, `public`, `open`
             public let accessLevel: String
@@ -5697,17 +5808,19 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             /// All variables defined for this type, including variables defined in extensions,
             /// in superclasses (for classes only) and protocols
             public var allVariables: [Variable] {
-                return flattenAll({
-                    return $0.variables
-                },
-                isExtension: { $0.definedInType?.isExtension == true },
-                filter: { all, extracted in
-                    !all.contains(where: { Self.uniqueVariableFilter($0, rhs: extracted) })
-                })
+                flattenAll(
+                    {
+                        $0.variables
+                    },
+                    isExtension: { $0.definedInType?.isExtension == true },
+                    filter: { all, extracted in
+                        !all.contains(where: { Self.uniqueVariableFilter($0, rhs: extracted) })
+                    }
+                )
             }
 
             private static func uniqueVariableFilter(_ lhs: Variable, rhs: Variable) -> Bool {
-                return lhs.name == rhs.name && lhs.isStatic == rhs.isStatic && lhs.typeName == rhs.typeName
+                lhs.name == rhs.name && lhs.isStatic == rhs.isStatic && lhs.typeName == rhs.typeName
             }
 
             // sourcery: skipEquality, skipDescription
@@ -5725,17 +5838,19 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             /// All methods defined for this type, including methods defined in extensions,
             /// in superclasses (for classes only) and protocols
             public var allMethods: [Method] {
-                return flattenAll({
-                    $0.methods
-                },
-                isExtension: { $0.definedInType?.isExtension == true },
-                filter: { all, extracted in
-                    !all.contains(where: { Self.uniqueMethodFilter($0, rhs: extracted) })
-                })
+                flattenAll(
+                    {
+                        $0.methods
+                    },
+                    isExtension: { $0.definedInType?.isExtension == true },
+                    filter: { all, extracted in
+                        !all.contains(where: { Self.uniqueMethodFilter($0, rhs: extracted) })
+                    }
+                )
             }
 
             private static func uniqueMethodFilter(_ lhs: Method, rhs: Method) -> Bool {
-                return lhs.name == rhs.name && lhs.isStatic == rhs.isStatic && lhs.isClass == rhs.isClass && lhs.actualReturnTypeName == rhs.actualReturnTypeName
+                lhs.name == rhs.name && lhs.isStatic == rhs.isStatic && lhs.isClass == rhs.isClass && lhs.actualReturnTypeName == rhs.actualReturnTypeName
             }
 
             // sourcery: skipEquality, skipDescription
@@ -5753,15 +5868,17 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             /// All subscripts defined for this type, including subscripts defined in extensions,
             /// in superclasses (for classes only) and protocols
             public var allSubscripts: [Subscript] {
-                return flattenAll({ $0.subscripts },
+                flattenAll(
+                    { $0.subscripts },
                     isExtension: { $0.definedInType?.isExtension == true },
                     filter: { all, extracted in
                         !all.contains(where: { Self.uniqueSubscriptFilter($0, rhs: extracted) })
-                    })
+                    }
+                )
             }
 
             private static func uniqueSubscriptFilter(_ lhs: Subscript, rhs: Subscript) -> Bool {
-                return lhs.parameters == rhs.parameters && lhs.returnTypeName == rhs.returnTypeName && lhs.readAccess == rhs.readAccess && lhs.writeAccess == rhs.writeAccess
+                lhs.parameters == rhs.parameters && lhs.returnTypeName == rhs.returnTypeName && lhs.readAccess == rhs.readAccess && lhs.writeAccess == rhs.writeAccess
             }
 
             // sourcery: skipEquality, skipDescription, skipJSExport
@@ -5798,7 +5915,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 func filteredExtraction(_ target: Type) -> [T] {
                     // swiftlint:disable:next force_cast
                     let all = all.array as! [T]
-                    let extracted = extraction(target).filter({ filter(all, $0) })
+                    let extracted = extraction(target).filter { filter(all, $0) }
                     return extracted
                 }
 
@@ -5807,7 +5924,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
                 // swiftlint:disable:next force_cast
                 let array = all.array as! [T]
-                all.addObjects(from: extensions.filter({ filter(array, $0) }))
+                all.addObjects(from: extensions.filter { filter(array, $0) })
 
                 return all.array.compactMap { $0 as? T }
             }
@@ -5826,7 +5943,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
             /// All initializers defined in this type
             public var initializers: [Method] {
-                return methods.filter { $0.isInitializer }
+                methods.filter(\.isInitializer)
             }
 
             /// All annotations for this type
@@ -5836,37 +5953,37 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
             /// Static variables defined in this type
             public var staticVariables: [Variable] {
-                return variables.filter { $0.isStatic }
+                variables.filter(\.isStatic)
             }
 
             /// Static methods defined in this type
             public var staticMethods: [Method] {
-                return methods.filter { $0.isStatic }
+                methods.filter(\.isStatic)
             }
 
             /// Class methods defined in this type
             public var classMethods: [Method] {
-                return methods.filter { $0.isClass }
+                methods.filter(\.isClass)
             }
 
             /// Instance variables defined in this type
             public var instanceVariables: [Variable] {
-                return variables.filter { !$0.isStatic }
+                variables.filter { !$0.isStatic }
             }
 
             /// Instance methods defined in this type
             public var instanceMethods: [Method] {
-                return methods.filter { !$0.isStatic && !$0.isClass }
+                methods.filter { !$0.isStatic && !$0.isClass }
             }
 
             /// Computed instance variables defined in this type
             public var computedVariables: [Variable] {
-                return variables.filter { $0.isComputed && !$0.isStatic }
+                variables.filter { $0.isComputed && !$0.isStatic }
             }
 
             /// Stored instance variables defined in this type
             public var storedVariables: [Variable] {
-                return variables.filter { !$0.isComputed && !$0.isStatic }
+                variables.filter { !$0.isComputed && !$0.isStatic }
             }
 
             /// Names of types this type inherits from (for classes only) and protocols it implements, in order of definition
@@ -5952,42 +6069,41 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             /// Directory to file where the type is defined
             // sourcery: skipDescription, skipEquality, skipJSExport
             public var directory: String? {
-                get {
-                    return (path as? NSString)?.deletingLastPathComponent
-                }
+                (path as? NSString)?.deletingLastPathComponent
             }
 
             /// File name where the type was defined
             public var fileName: String?
 
             /// :nodoc:
-            public init(name: String = "",
-                        parent: Type? = nil,
-                        accessLevel: AccessLevel = .internal,
-                        isExtension: Bool = false,
-                        variables: [Variable] = [],
-                        methods: [Method] = [],
-                        subscripts: [Subscript] = [],
-                        inheritedTypes: [String] = [],
-                        containedTypes: [Type] = [],
-                        typealiases: [Typealias] = [],
-                        attributes: AttributeList = [:],
-                        modifiers: [SourceryModifier] = [],
-                        annotations: [String: NSObject] = [:],
-                        documentation: [String] = [],
-                        isGeneric: Bool = false) {
-
-                self.localName = name
+            public init(
+                name: String = "",
+                parent: Type? = nil,
+                accessLevel: AccessLevel = .internal,
+                isExtension: Bool = false,
+                variables: [Variable] = [],
+                methods: [Method] = [],
+                subscripts: [Subscript] = [],
+                inheritedTypes: [String] = [],
+                containedTypes: [Type] = [],
+                typealiases: [Typealias] = [],
+                attributes: AttributeList = [:],
+                modifiers: [SourceryModifier] = [],
+                annotations: [String: NSObject] = [:],
+                documentation: [String] = [],
+                isGeneric: Bool = false
+            ) {
+                localName = name
                 self.accessLevel = accessLevel.rawValue
                 self.isExtension = isExtension
-                self.rawVariables = variables
-                self.rawMethods = methods
-                self.rawSubscripts = subscripts
+                rawVariables = variables
+                rawMethods = methods
+                rawSubscripts = subscripts
                 self.inheritedTypes = inheritedTypes
                 self.containedTypes = containedTypes
                 self.typealiases = [:]
                 self.parent = parent
-                self.parentName = parent?.name
+                parentName = parent?.name
                 self.attributes = attributes
                 self.modifiers = modifiers
                 self.annotations = annotations
@@ -6002,10 +6118,10 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 inheritedTypes.forEach { name in
                     self.based[name] = name
                 }
-                typealiases.forEach({
+                typealiases.forEach {
                     $0.parent = self
                     self.typealiases[$0.aliasName] = $0
-                })
+                }
             }
 
             /// :nodoc:
@@ -6013,12 +6129,12 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 type.annotations.forEach { self.annotations[$0.key] = $0.value }
                 type.inherits.forEach { self.inherits[$0.key] = $0.value }
                 type.implements.forEach { self.implements[$0.key] = $0.value }
-                self.inheritedTypes += type.inheritedTypes
-                self.containedTypes += type.containedTypes
+                inheritedTypes += type.inheritedTypes
+                containedTypes += type.containedTypes
 
-                self.rawVariables += type.rawVariables
-                self.rawMethods += type.rawMethods
-                self.rawSubscripts += type.rawSubscripts
+                rawVariables += type.rawVariables
+                rawMethods += type.rawMethods
+                rawSubscripts += type.rawSubscripts
             }
 
             // sourcery:inline:Type.AutoCoding
@@ -6090,7 +6206,6 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
         }
 
         extension Type {
-
             // sourcery: skipDescription, skipJSExport
             /// :nodoc:
             var isClass: Bool {
@@ -6100,9 +6215,9 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
         }
 
         /// Extends type so that inner types can be accessed via KVC e.g. Parent.Inner.Children
-        extension Type {
+        public extension Type {
             /// :nodoc:
-            override public func value(forUndefinedKey key: String) -> Any? {
+            override func value(forUndefinedKey key: String) -> Any? {
                 if let innerType = containedTypes.lazy.filter({ $0.localName == key }).first {
                     return innerType
                 }
@@ -6122,19 +6237,20 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
         /// Describes name of the type used in typed declaration (variable, method parameter or return value etc.)
         @objcMembers public final class TypeName: NSObject, SourceryModelWithoutDescription, LosslessStringConvertible {
             /// :nodoc:
-            public init(name: String,
-                        actualTypeName: TypeName? = nil,
-                        unwrappedTypeName: String? = nil,
-                        attributes: AttributeList = [:],
-                        isOptional: Bool = false,
-                        isImplicitlyUnwrappedOptional: Bool = false,
-                        tuple: TupleType? = nil,
-                        array: ArrayType? = nil,
-                        dictionary: DictionaryType? = nil,
-                        closure: ClosureType? = nil,
-                        generic: GenericType? = nil,
-                        isProtocolComposition: Bool = false) {
-
+            public init(
+                name: String,
+                actualTypeName: TypeName? = nil,
+                unwrappedTypeName: String? = nil,
+                attributes: AttributeList = [:],
+                isOptional: Bool = false,
+                isImplicitlyUnwrappedOptional: Bool = false,
+                tuple: TupleType? = nil,
+                array: ArrayType? = nil,
+                dictionary: DictionaryType? = nil,
+                closure: ClosureType? = nil,
+                generic: GenericType? = nil,
+                isProtocolComposition: Bool = false
+            ) {
                 let optionalSuffix: String
                 // TODO: TBR
                 if !name.hasPrefix("Optional<") && !name.contains(" where ") {
@@ -6162,7 +6278,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 self.isProtocolComposition = isProtocolComposition
 
                 self.attributes = attributes
-                self.modifiers = []
+                modifiers = []
                 super.init()
             }
 
@@ -6205,7 +6321,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             // sourcery: skipEquality
             /// Whether type is void (`Void` or `()`)
             public var isVoid: Bool {
-                return name == "Void" || name == "()" || unwrappedTypeName == "Void"
+                name == "Void" || name == "()" || unwrappedTypeName == "Void"
             }
 
             /// Whether type is a tuple
@@ -6246,9 +6362,9 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 let specialTreatment = isOptional && name.hasPrefix("Optional<")
 
                 var description = (
-                  attributes.flatMap({ $0.value }).map({ $0.asSource }).sorted() +
-                  modifiers.map({ $0.asSource }) +
-                  [specialTreatment ? name : unwrappedTypeName]
+                    attributes.flatMap(\.value).map(\.asSource).sorted() +
+                        modifiers.map(\.asSource) +
+                        [specialTreatment ? name : unwrappedTypeName]
                 ).joined(separator: " ")
 
                 if let _ = self.dictionary { // array and dictionary cases are covered by the unwrapped type name
@@ -6272,11 +6388,11 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 return description
             }
 
-            public override var description: String {
-               (
-                  attributes.flatMap({ $0.value }).map({ $0.asSource }).sorted() +
-                  modifiers.map({ $0.asSource }) +
-                  [name]
+            override public var description: String {
+                (
+                    attributes.flatMap(\.value).map(\.asSource).sorted() +
+                        modifiers.map(\.asSource) +
+                        [name]
                 ).joined(separator: " ")
             }
 
@@ -6319,8 +6435,8 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
             // sourcery: skipEquality, skipDescription
             /// :nodoc:
-            public override var debugDescription: String {
-                return name
+            override public var debugDescription: String {
+                name
             }
 
             public convenience init(_ description: String) {
@@ -6328,10 +6444,10 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             }
         }
 
-        extension TypeName {
-            public static func unknown(description: String?, attributes: AttributeList = [:]) -> TypeName {
+        public extension TypeName {
+            static func unknown(description: String?, attributes: AttributeList = [:]) -> TypeName {
                 if let description = description {
-                    logger.astWarning("Unknown type, please add type attribution to \(description)")
+                    Log.astWarning("Unknown type, please add type attribution to \(description)")
                 } else {
                     logger.astWarning("Unknown type, please add type attribution")
                 }
@@ -6387,7 +6503,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 self.typeName = typeName
                 self.accessLevel = accessLevel.rawValue
                 self.parent = parent
-                self.parentName = parent?.name
+                parentName = parent?.name
                 self.module = module
             }
 
@@ -6427,114 +6543,118 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
         // swiftlint:disable vertical_whitespace
 
+        public extension AssociatedValue {
+            /// Whether type is optional. Shorthand for `typeName.isOptional`
+            var isOptional: Bool { typeName.isOptional }
+            /// Whether type is implicitly unwrapped optional. Shorthand for `typeName.isImplicitlyUnwrappedOptional`
+            var isImplicitlyUnwrappedOptional: Bool { typeName.isImplicitlyUnwrappedOptional }
+            /// Type name without attributes and optional type information. Shorthand for `typeName.unwrappedTypeName`
+            var unwrappedTypeName: String { typeName.unwrappedTypeName }
+            /// Actual type name if declaration uses typealias, otherwise just a `typeName`. Shorthand for `typeName.actualTypeName`
+            var actualTypeName: TypeName? { typeName.actualTypeName ?? typeName }
+            /// Whether type is a tuple. Shorthand for `typeName.isTuple`
+            var isTuple: Bool { typeName.isTuple }
+            /// Whether type is a closure. Shorthand for `typeName.isClosure`
+            var isClosure: Bool { typeName.isClosure }
+            /// Whether type is an array. Shorthand for `typeName.isArray`
+            var isArray: Bool { typeName.isArray }
+            /// Whether type is a dictionary. Shorthand for `typeName.isDictionary`
+            var isDictionary: Bool { typeName.isDictionary }
+        }
 
-        extension AssociatedValue {
+        public extension ClosureParameter {
             /// Whether type is optional. Shorthand for `typeName.isOptional`
-            public var isOptional: Bool { return typeName.isOptional }
+            var isOptional: Bool { typeName.isOptional }
             /// Whether type is implicitly unwrapped optional. Shorthand for `typeName.isImplicitlyUnwrappedOptional`
-            public var isImplicitlyUnwrappedOptional: Bool { return typeName.isImplicitlyUnwrappedOptional }
+            var isImplicitlyUnwrappedOptional: Bool { typeName.isImplicitlyUnwrappedOptional }
             /// Type name without attributes and optional type information. Shorthand for `typeName.unwrappedTypeName`
-            public var unwrappedTypeName: String { return typeName.unwrappedTypeName }
+            var unwrappedTypeName: String { typeName.unwrappedTypeName }
             /// Actual type name if declaration uses typealias, otherwise just a `typeName`. Shorthand for `typeName.actualTypeName`
-            public var actualTypeName: TypeName? { return typeName.actualTypeName ?? typeName }
+            var actualTypeName: TypeName? { typeName.actualTypeName ?? typeName }
             /// Whether type is a tuple. Shorthand for `typeName.isTuple`
-            public var isTuple: Bool { return typeName.isTuple }
+            var isTuple: Bool { typeName.isTuple }
             /// Whether type is a closure. Shorthand for `typeName.isClosure`
-            public var isClosure: Bool { return typeName.isClosure }
+            var isClosure: Bool { typeName.isClosure }
             /// Whether type is an array. Shorthand for `typeName.isArray`
-            public var isArray: Bool { return typeName.isArray }
+            var isArray: Bool { typeName.isArray }
             /// Whether type is a dictionary. Shorthand for `typeName.isDictionary`
-            public var isDictionary: Bool { return typeName.isDictionary }
+            var isDictionary: Bool { typeName.isDictionary }
         }
-        extension ClosureParameter {
+
+        public extension MethodParameter {
             /// Whether type is optional. Shorthand for `typeName.isOptional`
-            public var isOptional: Bool { return typeName.isOptional }
+            var isOptional: Bool { typeName.isOptional }
             /// Whether type is implicitly unwrapped optional. Shorthand for `typeName.isImplicitlyUnwrappedOptional`
-            public var isImplicitlyUnwrappedOptional: Bool { return typeName.isImplicitlyUnwrappedOptional }
+            var isImplicitlyUnwrappedOptional: Bool { typeName.isImplicitlyUnwrappedOptional }
             /// Type name without attributes and optional type information. Shorthand for `typeName.unwrappedTypeName`
-            public var unwrappedTypeName: String { return typeName.unwrappedTypeName }
+            var unwrappedTypeName: String { typeName.unwrappedTypeName }
             /// Actual type name if declaration uses typealias, otherwise just a `typeName`. Shorthand for `typeName.actualTypeName`
-            public var actualTypeName: TypeName? { return typeName.actualTypeName ?? typeName }
+            var actualTypeName: TypeName? { typeName.actualTypeName ?? typeName }
             /// Whether type is a tuple. Shorthand for `typeName.isTuple`
-            public var isTuple: Bool { return typeName.isTuple }
+            var isTuple: Bool { typeName.isTuple }
             /// Whether type is a closure. Shorthand for `typeName.isClosure`
-            public var isClosure: Bool { return typeName.isClosure }
+            var isClosure: Bool { typeName.isClosure }
             /// Whether type is an array. Shorthand for `typeName.isArray`
-            public var isArray: Bool { return typeName.isArray }
+            var isArray: Bool { typeName.isArray }
             /// Whether type is a dictionary. Shorthand for `typeName.isDictionary`
-            public var isDictionary: Bool { return typeName.isDictionary }
+            var isDictionary: Bool { typeName.isDictionary }
         }
-        extension MethodParameter {
+
+        public extension TupleElement {
             /// Whether type is optional. Shorthand for `typeName.isOptional`
-            public var isOptional: Bool { return typeName.isOptional }
+            var isOptional: Bool { typeName.isOptional }
             /// Whether type is implicitly unwrapped optional. Shorthand for `typeName.isImplicitlyUnwrappedOptional`
-            public var isImplicitlyUnwrappedOptional: Bool { return typeName.isImplicitlyUnwrappedOptional }
+            var isImplicitlyUnwrappedOptional: Bool { typeName.isImplicitlyUnwrappedOptional }
             /// Type name without attributes and optional type information. Shorthand for `typeName.unwrappedTypeName`
-            public var unwrappedTypeName: String { return typeName.unwrappedTypeName }
+            var unwrappedTypeName: String { typeName.unwrappedTypeName }
             /// Actual type name if declaration uses typealias, otherwise just a `typeName`. Shorthand for `typeName.actualTypeName`
-            public var actualTypeName: TypeName? { return typeName.actualTypeName ?? typeName }
+            var actualTypeName: TypeName? { typeName.actualTypeName ?? typeName }
             /// Whether type is a tuple. Shorthand for `typeName.isTuple`
-            public var isTuple: Bool { return typeName.isTuple }
+            var isTuple: Bool { typeName.isTuple }
             /// Whether type is a closure. Shorthand for `typeName.isClosure`
-            public var isClosure: Bool { return typeName.isClosure }
+            var isClosure: Bool { typeName.isClosure }
             /// Whether type is an array. Shorthand for `typeName.isArray`
-            public var isArray: Bool { return typeName.isArray }
+            var isArray: Bool { typeName.isArray }
             /// Whether type is a dictionary. Shorthand for `typeName.isDictionary`
-            public var isDictionary: Bool { return typeName.isDictionary }
+            var isDictionary: Bool { typeName.isDictionary }
         }
-        extension TupleElement {
+
+        public extension Typealias {
             /// Whether type is optional. Shorthand for `typeName.isOptional`
-            public var isOptional: Bool { return typeName.isOptional }
+            var isOptional: Bool { typeName.isOptional }
             /// Whether type is implicitly unwrapped optional. Shorthand for `typeName.isImplicitlyUnwrappedOptional`
-            public var isImplicitlyUnwrappedOptional: Bool { return typeName.isImplicitlyUnwrappedOptional }
+            var isImplicitlyUnwrappedOptional: Bool { typeName.isImplicitlyUnwrappedOptional }
             /// Type name without attributes and optional type information. Shorthand for `typeName.unwrappedTypeName`
-            public var unwrappedTypeName: String { return typeName.unwrappedTypeName }
+            var unwrappedTypeName: String { typeName.unwrappedTypeName }
             /// Actual type name if declaration uses typealias, otherwise just a `typeName`. Shorthand for `typeName.actualTypeName`
-            public var actualTypeName: TypeName? { return typeName.actualTypeName ?? typeName }
+            var actualTypeName: TypeName? { typeName.actualTypeName ?? typeName }
             /// Whether type is a tuple. Shorthand for `typeName.isTuple`
-            public var isTuple: Bool { return typeName.isTuple }
+            var isTuple: Bool { typeName.isTuple }
             /// Whether type is a closure. Shorthand for `typeName.isClosure`
-            public var isClosure: Bool { return typeName.isClosure }
+            var isClosure: Bool { typeName.isClosure }
             /// Whether type is an array. Shorthand for `typeName.isArray`
-            public var isArray: Bool { return typeName.isArray }
+            var isArray: Bool { typeName.isArray }
             /// Whether type is a dictionary. Shorthand for `typeName.isDictionary`
-            public var isDictionary: Bool { return typeName.isDictionary }
+            var isDictionary: Bool { typeName.isDictionary }
         }
-        extension Typealias {
+
+        public extension Variable {
             /// Whether type is optional. Shorthand for `typeName.isOptional`
-            public var isOptional: Bool { return typeName.isOptional }
+            var isOptional: Bool { typeName.isOptional }
             /// Whether type is implicitly unwrapped optional. Shorthand for `typeName.isImplicitlyUnwrappedOptional`
-            public var isImplicitlyUnwrappedOptional: Bool { return typeName.isImplicitlyUnwrappedOptional }
+            var isImplicitlyUnwrappedOptional: Bool { typeName.isImplicitlyUnwrappedOptional }
             /// Type name without attributes and optional type information. Shorthand for `typeName.unwrappedTypeName`
-            public var unwrappedTypeName: String { return typeName.unwrappedTypeName }
+            var unwrappedTypeName: String { typeName.unwrappedTypeName }
             /// Actual type name if declaration uses typealias, otherwise just a `typeName`. Shorthand for `typeName.actualTypeName`
-            public var actualTypeName: TypeName? { return typeName.actualTypeName ?? typeName }
+            var actualTypeName: TypeName? { typeName.actualTypeName ?? typeName }
             /// Whether type is a tuple. Shorthand for `typeName.isTuple`
-            public var isTuple: Bool { return typeName.isTuple }
+            var isTuple: Bool { typeName.isTuple }
             /// Whether type is a closure. Shorthand for `typeName.isClosure`
-            public var isClosure: Bool { return typeName.isClosure }
+            var isClosure: Bool { typeName.isClosure }
             /// Whether type is an array. Shorthand for `typeName.isArray`
-            public var isArray: Bool { return typeName.isArray }
+            var isArray: Bool { typeName.isArray }
             /// Whether type is a dictionary. Shorthand for `typeName.isDictionary`
-            public var isDictionary: Bool { return typeName.isDictionary }
-        }
-        extension Variable {
-            /// Whether type is optional. Shorthand for `typeName.isOptional`
-            public var isOptional: Bool { return typeName.isOptional }
-            /// Whether type is implicitly unwrapped optional. Shorthand for `typeName.isImplicitlyUnwrappedOptional`
-            public var isImplicitlyUnwrappedOptional: Bool { return typeName.isImplicitlyUnwrappedOptional }
-            /// Type name without attributes and optional type information. Shorthand for `typeName.unwrappedTypeName`
-            public var unwrappedTypeName: String { return typeName.unwrappedTypeName }
-            /// Actual type name if declaration uses typealias, otherwise just a `typeName`. Shorthand for `typeName.actualTypeName`
-            public var actualTypeName: TypeName? { return typeName.actualTypeName ?? typeName }
-            /// Whether type is a tuple. Shorthand for `typeName.isTuple`
-            public var isTuple: Bool { return typeName.isTuple }
-            /// Whether type is a closure. Shorthand for `typeName.isClosure`
-            public var isClosure: Bool { return typeName.isClosure }
-            /// Whether type is an array. Shorthand for `typeName.isArray`
-            public var isArray: Bool { return typeName.isArray }
-            /// Whether type is a dictionary. Shorthand for `typeName.isDictionary`
-            public var isDictionary: Bool { return typeName.isDictionary }
+            var isDictionary: Bool { typeName.isDictionary }
         }
 
         """#
@@ -6547,7 +6667,6 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
         /// Descibes typed declaration, i.e. variable, method parameter, tuple element, enum case associated value
         public protocol Typed {
-
             // sourcery: skipEquality, skipDescription
             /// Type, if known
             var type: Type? { get }
@@ -6620,7 +6739,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
             /// Whether variable is mutable or not
             public var isMutable: Bool {
-                return writeAccess != AccessLevel.none.rawValue
+                writeAccess != AccessLevel.none.rawValue
             }
 
             /// Variable default value expression
@@ -6639,12 +6758,12 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
             /// Whether variable is final or not
             public var isFinal: Bool {
-                return modifiers.contains { $0.name == "final" }
+                modifiers.contains { $0.name == "final" }
             }
 
             /// Whether variable is lazy or not
             public var isLazy: Bool {
-                return modifiers.contains { $0.name == "lazy" }
+                modifiers.contains { $0.name == "lazy" }
             }
 
             /// Reference to type name where the variable is defined,
@@ -6653,7 +6772,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
             /// Reference to actual type name where the method is defined if declaration uses typealias, otherwise just a `definedInTypeName`
             public var actualDefinedInTypeName: TypeName? {
-                return definedInTypeName?.actualTypeName ?? definedInTypeName
+                definedInTypeName?.actualTypeName ?? definedInTypeName
             }
 
             // sourcery: skipEquality, skipDescription
@@ -6662,31 +6781,32 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             public var definedInType: Type?
 
             /// :nodoc:
-            public init(name: String = "",
-                        typeName: TypeName,
-                        type: Type? = nil,
-                        accessLevel: (read: AccessLevel, write: AccessLevel) = (.internal, .internal),
-                        isComputed: Bool = false,
-                        isAsync: Bool = false,
-                        `throws`: Bool = false,
-                        isStatic: Bool = false,
-                        defaultValue: String? = nil,
-                        attributes: AttributeList = [:],
-                        modifiers: [SourceryModifier] = [],
-                        annotations: [String: NSObject] = [:],
-                        documentation: [String] = [],
-                        definedInTypeName: TypeName? = nil) {
-
+            public init(
+                name: String = "",
+                typeName: TypeName,
+                type: Type? = nil,
+                accessLevel: (read: AccessLevel, write: AccessLevel) = (.internal, .internal),
+                isComputed: Bool = false,
+                isAsync: Bool = false,
+                throws: Bool = false,
+                isStatic: Bool = false,
+                defaultValue: String? = nil,
+                attributes: AttributeList = [:],
+                modifiers: [SourceryModifier] = [],
+                annotations: [String: NSObject] = [:],
+                documentation: [String] = [],
+                definedInTypeName: TypeName? = nil
+            ) {
                 self.name = name
                 self.typeName = typeName
                 self.type = type
                 self.isComputed = isComputed
                 self.isAsync = isAsync
-                self.`throws` = `throws`
+                self.throws = `throws`
                 self.isStatic = isStatic
                 self.defaultValue = defaultValue
-                self.readAccess = accessLevel.read.rawValue
-                self.writeAccess = accessLevel.write.rawValue
+                readAccess = accessLevel.read.rawValue
+                writeAccess = accessLevel.write.rawValue
                 self.attributes = attributes
                 self.modifiers = modifiers
                 self.annotations = annotations
@@ -6703,7 +6823,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 type = aDecoder.decode(forKey: "type")
                 isComputed = aDecoder.decode(forKey: "isComputed")
                 isAsync = aDecoder.decode(forKey: "isAsync")
-                `throws` = aDecoder.decode(forKey: "`throws`")
+                self.throws = aDecoder.decode(forKey: "`throws`")
                 isStatic = aDecoder.decode(forKey: "isStatic")
                 guard let readAccess: String = aDecoder.decode(forKey: "readAccess") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["readAccess"])); fatalError() }; self.readAccess = readAccess
                 guard let writeAccess: String = aDecoder.decode(forKey: "writeAccess") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["writeAccess"])); fatalError() }; self.writeAccess = writeAccess
@@ -6723,7 +6843,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 aCoder.encode(type, forKey: "type")
                 aCoder.encode(isComputed, forKey: "isComputed")
                 aCoder.encode(isAsync, forKey: "isAsync")
-                aCoder.encode(`throws`, forKey: "`throws`")
+                aCoder.encode(self.throws, forKey: "`throws`")
                 aCoder.encode(isStatic, forKey: "isStatic")
                 aCoder.encode(readAccess, forKey: "readAccess")
                 aCoder.encode(writeAccess, forKey: "writeAccess")

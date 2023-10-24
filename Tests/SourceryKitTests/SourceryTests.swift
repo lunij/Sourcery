@@ -1025,8 +1025,8 @@ class SourceryTests: XCTestCase {
         {% for type in types.all %}
         // sourcery:file:Generated/{{ type.name }}
         extension {{ type.name }} {
-        var property = 2
-        // Line Three
+            var property = 2
+            // Line Three
         }
         // sourcery:end
         {% endfor %}
@@ -1048,8 +1048,8 @@ class SourceryTests: XCTestCase {
         // Generated using Sourcery
 
         extension Foo {
-        var property = 2
-        // Line Three
+            var property = 2
+            // Line Three
         }
 
         """
@@ -1105,12 +1105,12 @@ class SourceryTests: XCTestCase {
         // Line One
         // sourcery:file:Generated/Foo
         extension Foo {
-        var property1 = 1
+            var property1 = 1
         }
         // sourcery:end
         // sourcery:file:Generated/Foo
         extension Foo {
-        var property2 = 2
+            var property2 = 2
         }
         // sourcery:end
         """.update(in: templatePath)
@@ -1119,11 +1119,11 @@ class SourceryTests: XCTestCase {
         // Generated using Sourcery
 
         extension Foo {
-        var property1 = 1
+            var property1 = 1
         }
 
         extension Foo {
-        var property2 = 2
+            var property2 = 2
         }
 
         """

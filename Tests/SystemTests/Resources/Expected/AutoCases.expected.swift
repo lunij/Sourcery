@@ -1,3 +1,5 @@
+// Generated using Sourcery
+
 extension AutoCasesEnum {
     static let count: Int = 4
     static let allCases: [AutoCasesEnum] = [

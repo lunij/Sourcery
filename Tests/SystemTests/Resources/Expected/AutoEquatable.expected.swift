@@ -1,3 +1,5 @@
+// Generated using Sourcery
+
 // swiftlint:disable file_length
 private func compareOptionals<T>(lhs: T?, rhs: T?, compare: (_ lhs: T, _ rhs: T) -> Bool) -> Bool {
     switch (lhs, rhs) {

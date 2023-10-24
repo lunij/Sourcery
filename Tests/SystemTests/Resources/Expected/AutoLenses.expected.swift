@@ -1,3 +1,5 @@
+// Generated using Sourcery
+
 // swiftlint:disable variable_name
 infix operator *~: MultiplicationPrecedence
 infix operator |>: AdditionPrecedence
