@@ -53,29 +53,18 @@ public class Sourcery {
 
     @discardableResult
     public func processConfiguration(_ config: Configuration) throws -> [FSEventStream] {
-        let hasSwiftTemplates = config.templates.allPaths.contains { $0.extension == "swifttemplate" }
-
-        let parserResult = try process(config, hasSwiftTemplates)
-
-        return watcherEnabled ? createWatchers(
-            config: config,
-            parserResult: parserResult,
-            hasSwiftTemplates: hasSwiftTemplates
-        ) : []
+        let parserResult = try process(config)
+        return watcherEnabled ? createWatchers(config: config, parserResult: parserResult) : []
     }
 
-    private func process(_ config: Configuration, _ hasSwiftTemplates: Bool) throws -> ParsingResult {
-        var parsingResult = try swiftParser.parseSources(from: config, requiresFileParserCopy: hasSwiftTemplates, serialParse: serialParse, cacheDisabled: cacheDisabled)
+    private func process(_ config: Configuration) throws -> ParsingResult {
+        var parsingResult = try swiftParser.parseSources(from: config, serialParse: serialParse, cacheDisabled: cacheDisabled)
         let templates = try templateLoader.loadTemplates(from: config, cacheDisabled: cacheDisabled, buildPath: buildPath)
         try swiftGenerator.generate(from: &parsingResult, using: templates, to: config.output, config: config)
         return parsingResult
     }
 
-    private func createWatchers(
-        config: Configuration,
-        parserResult: ParsingResult,
-        hasSwiftTemplates: Bool
-    ) -> [FSEventStream] {
+    private func createWatchers(config: Configuration, parserResult: ParsingResult) -> [FSEventStream] {
         var result = parserResult
 
         let sourcePaths = switch config.sources {
@@ -108,7 +97,7 @@ public class Sourcery {
                 if let path = pathThatForcedRegeneration {
                     do {
                         logger.info("Source changed at \(path.string)")
-                        result = try self.process(config, hasSwiftTemplates)
+                        result = try self.process(config)
                     } catch {
                         logger.error(error)
                     }

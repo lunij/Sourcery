@@ -9,10 +9,11 @@ public class SwiftParser {
 
     func parseSources(
         from config: Configuration,
-        requiresFileParserCopy: Bool,
         serialParse: Bool,
         cacheDisabled: Bool
     ) throws -> ParsingResult {
+        let requiresFileParserCopy = config.templates.allPaths.contains { $0.extension == "swifttemplate" }
+
         switch config.sources {
         case let .paths(paths):
             return try parse(

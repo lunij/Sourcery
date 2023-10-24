@@ -15,7 +15,7 @@ class SwiftParserTests: XCTestCase {
     }
 
     func test_foobar() throws {
-        let parsingResult = try sut.parseSources(from: .stub(), requiresFileParserCopy: false, serialParse: false, cacheDisabled: false)
+        let parsingResult = try sut.parseSources(from: .stub(), serialParse: false, cacheDisabled: false)
 
         XCTAssertEqual(parsingResult.parserResult, nil)
         XCTAssertEqual(parsingResult.functions, [])
@@ -39,7 +39,6 @@ class SwiftParserTests: XCTestCase {
                 templates: Paths(include: [.basicStencilPath]),
                 output: output
             ),
-            requiresFileParserCopy: false,
             serialParse: false,
             cacheDisabled: false
         )) {
