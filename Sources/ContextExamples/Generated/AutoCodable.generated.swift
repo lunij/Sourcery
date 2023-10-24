@@ -1,5 +1,7 @@
 // Generated using Sourcery
 
+
+
 extension AssociatedValuesEnum {
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
@@ -98,6 +100,7 @@ extension AssociatedValuesEnumNoCaseKey {
     }
 }
 
+
 extension CustomCodingWithNotAllDefinedKeys {
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
@@ -122,6 +125,7 @@ public extension CustomContainerCodable {
         try container.encode(value, forKey: .value)
     }
 }
+
 
 public extension CustomMethodsCodable {
     enum CodingKeys: String, CodingKey {
@@ -197,7 +201,6 @@ extension SkipEncodingKeys {
         case value
         case skipValue
     }
-
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(value, forKey: .value)

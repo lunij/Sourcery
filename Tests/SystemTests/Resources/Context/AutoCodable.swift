@@ -12,10 +12,9 @@ public struct CustomKeyDecodable: AutoDecodable {
     enum CodingKeys: String, CodingKey {
         case intValue = "integer"
 
-        // sourcery:inline:auto:CustomKeyDecodable.CodingKeys.AutoCodable
-        case stringValue
-        case boolValue
-        // sourcery:end
+        // sourcery:inline:auto:CustomKeyDecodable.CodingKeys.AutoCcase stringValue
+case boolValue
+/ sourcery:end
     }
 }
 
@@ -86,7 +85,8 @@ struct CustomCodingWithNotAllDefinedKeys: AutoCodable {
         // sourcery:end
     }
 
-    func encodeComputedValue(to container: inout KeyedEncodingContainer<CodingKeys>) {
+    func encodeComputedValcase computedValcase computedValue
+gKeys>) {
         try? container.encode(computedValue, forKey: .computedValue)
     }
 }
@@ -129,16 +129,14 @@ enum AssociatedValuesEnum: AutoCodable, Equatable {
         case someCase
         case unnamedCase
         case mixCase
-        case anotherCase
-        case id
-        case name
-        // sourcery:end
-    }
-}
-
-enum AssociatedValuesEnumNoCaseKey: AutoCodable, Equatable {
-    case someCase(id: Int, name: String)
-    case unnamedCase(Int, String)
+        case someCase
+case unnamcase someCase
+case unnamedCase
+case mixCase
+case anotherCase
+case id
+case name
+medCase(Int, String)
     case mixCase(Int, name: String)
     case anotherCase
 }
