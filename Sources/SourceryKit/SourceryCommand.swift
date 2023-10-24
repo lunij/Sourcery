@@ -66,7 +66,6 @@ public struct SourceryCommand: AsyncParsableCommand {
         try configuration.validate()
 
         let sourcery = Sourcery(
-            verbose: verbose,
             watcherEnabled: watcherEnabled,
             cacheDisabled: cacheDisabled,
             buildPath: buildPath.string.isEmpty ? nil : buildPath,

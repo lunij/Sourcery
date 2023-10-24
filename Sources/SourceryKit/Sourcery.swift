@@ -7,7 +7,6 @@ import XcodeProj
 public class Sourcery {
     public static let version = "2.0.2"
 
-    private let verbose: Bool
     private let watcherEnabled: Bool
     private let cacheDisabled: Bool
     private let buildPath: Path?
@@ -17,7 +16,6 @@ public class Sourcery {
     private let swiftParser: SwiftParser
 
     public init(
-        verbose: Bool = false,
         watcherEnabled: Bool = false,
         cacheDisabled: Bool = false,
         buildPath: Path? = nil,
@@ -25,7 +23,6 @@ public class Sourcery {
         swiftGenerator: SwiftGenerator = SwiftGenerator(),
         swiftParser: SwiftParser = SwiftParser()
     ) {
-        self.verbose = verbose
         self.watcherEnabled = watcherEnabled
         self.cacheDisabled = cacheDisabled
         self.buildPath = buildPath
