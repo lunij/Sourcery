@@ -14,14 +14,33 @@ public class Sourcery {
     
     private let swiftGenerator: SwiftGenerator
     private let swiftParser: SwiftParser
+    private let templateLoader: TemplateLoading
 
-    public init(
+    public convenience init(
+        watcherEnabled: Bool = false,
+        cacheDisabled: Bool = false,
+        buildPath: Path? = nil,
+        serialParse: Bool = false
+    ) {
+        self.init(
+            watcherEnabled: watcherEnabled,
+            cacheDisabled: cacheDisabled,
+            buildPath: buildPath,
+            serialParse: serialParse,
+            swiftGenerator: SwiftGenerator(),
+            swiftParser: SwiftParser(),
+            templateLoader: TemplateLoader()
+        )
+    }
+
+    init(
         watcherEnabled: Bool = false,
         cacheDisabled: Bool = false,
         buildPath: Path? = nil,
         serialParse: Bool = false,
-        swiftGenerator: SwiftGenerator = SwiftGenerator(),
-        swiftParser: SwiftParser = SwiftParser()
+        swiftGenerator: SwiftGenerator,
+        swiftParser: SwiftParser,
+        templateLoader: TemplateLoading
     ) {
         self.watcherEnabled = watcherEnabled
         self.cacheDisabled = cacheDisabled
@@ -29,6 +48,7 @@ public class Sourcery {
         self.serialParse = serialParse
         self.swiftGenerator = swiftGenerator
         self.swiftParser = swiftParser
+        self.templateLoader = templateLoader
     }
 
     @discardableResult
@@ -46,28 +66,9 @@ public class Sourcery {
 
     private func process(_ config: Configuration, _ hasSwiftTemplates: Bool) throws -> ParsingResult {
         var parsingResult = try swiftParser.parseSources(from: config, requiresFileParserCopy: hasSwiftTemplates, serialParse: serialParse, cacheDisabled: cacheDisabled)
-        let templates = try loadTemplates(from: config)
+        let templates = try templateLoader.loadTemplates(from: config, cacheDisabled: cacheDisabled, buildPath: buildPath)
         try swiftGenerator.generate(from: &parsingResult, using: templates, to: config.output, config: config)
         return parsingResult
-    }
-
-    private func loadTemplates(from config: Configuration) throws -> [Template] {
-        let start = currentTimestamp()
-        logger.info("Loading templates...")
-
-        let templates: [Template] = try config.templates.allPaths.filter(\.isTemplateFile).map {
-            if $0.extension == "swifttemplate" {
-                let cachePath = cacheDisabled ? nil : Path.cachesDir(sourcePath: $0, basePath: config.cacheBasePath)
-                return try SwiftTemplate(path: $0, cachePath: cachePath, version: type(of: self).version, buildPath: buildPath)
-            } else {
-                return try StencilTemplate(path: $0)
-            }
-        }
-
-        logger.info("Loaded \(templates.count) templates.")
-        logger.benchmark("\tLoading took \(currentTimestamp() - start)")
-
-        return templates
     }
 
     private func createWatchers(
@@ -118,7 +119,7 @@ public class Sourcery {
         logger.info("Starting watching templates.")
 
         let templateWatchers = topPaths(from: config.templates.allPaths).compactMap { path in
-            FSEventStream(path: path.string) { events in
+            FSEventStream(path: path.string) { [templateLoader, cacheDisabled, buildPath] events in
                 let events = events.filter { $0.flags.contains(.isFile) && Path($0.path).isTemplateFile }
 
                 if events.isEmpty { return }
@@ -129,7 +130,7 @@ public class Sourcery {
                     } else {
                         logger.info("Templates changed: ")
                     }
-                    let templates = try self.loadTemplates(from: config)
+                    let templates = try templateLoader.loadTemplates(from: config, cacheDisabled: cacheDisabled, buildPath: buildPath)
                     try self.swiftGenerator.generate(
                         from: &result,
                         using: templates,
