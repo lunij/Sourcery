@@ -31,7 +31,6 @@ class SwiftGeneratorTests: XCTestCase {
         )
 
         XCTAssertEqual(loggerMock.calls, [
-            .info("Generating code..."),
             .warning("Skipping Generated/Fake.generated.swift as its generated content is empty."),
             .info("Code generation finished in 0.1 seconds")
         ])

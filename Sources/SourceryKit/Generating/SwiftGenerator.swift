@@ -39,8 +39,6 @@ public class SwiftGenerator {
             output = .init(output.path.parent())
         }
 
-        logger.info("Generating code...")
-
         let elapsedTime = try clock.measure {
             for template in templates {
                 let (result, sourceChanges) = try generate(from: parsingResult, using: template, config: config)
@@ -290,25 +288,24 @@ public class SwiftGenerator {
     }
 
     private func write(_ content: String, to outputPath: Path) throws {
-        let resultIsEmpty = content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-        var content = content
-        if !resultIsEmpty, outputPath.extension == "swift" {
-            content = .generatedHeader + content
-        }
-
-        if resultIsEmpty {
+        guard content.trimmingCharacters(in: .whitespacesAndNewlines).isNotEmpty else {
             if outputPath.exists {
                 logger.warning("Removing \(outputPath) as its generated content is empty.")
                 do { try outputPath.delete() } catch { logger.error("\(error)") }
             } else {
                 logger.warning("Skipping \(outputPath) as its generated content is empty.")
             }
-        } else {
-            if !outputPath.parent().exists {
-                try outputPath.parent().mkpath()
-            }
-            try outputPath.writeIfChanged(content)
+            return
         }
+
+        logger.info("Generating \(outputPath)")
+
+        let content = outputPath.extension == "swift" ? .generatedHeader + content : content
+
+        if !outputPath.parent().exists {
+            try outputPath.parent().mkpath()
+        }
+        try outputPath.writeIfChanged(content)
     }
 
     enum Error: Swift.Error, Equatable {
