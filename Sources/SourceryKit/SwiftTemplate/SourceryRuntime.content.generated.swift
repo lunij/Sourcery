@@ -1156,7 +1156,6 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 string += "inlineRanges = \(String(describing: self.inlineRanges)), "
                 string += "inlineIndentations = \(String(describing: self.inlineIndentations)), "
                 string += "modifiedDate = \(String(describing: self.modifiedDate)), "
-                string += "sourceryVersion = \(String(describing: self.sourceryVersion)), "
                 string += "isEmpty = \(String(describing: self.isEmpty))"
                 return string
             }
@@ -1628,7 +1627,6 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 results.append(contentsOf: DiffableResult(identifier: "inlineRanges").trackDifference(actual: self.inlineRanges, expected: castObject.inlineRanges))
                 results.append(contentsOf: DiffableResult(identifier: "inlineIndentations").trackDifference(actual: self.inlineIndentations, expected: castObject.inlineIndentations))
                 results.append(contentsOf: DiffableResult(identifier: "modifiedDate").trackDifference(actual: self.modifiedDate, expected: castObject.modifiedDate))
-                results.append(contentsOf: DiffableResult(identifier: "sourceryVersion").trackDifference(actual: self.sourceryVersion, expected: castObject.sourceryVersion))
                 return results
             }
         }
@@ -2544,7 +2542,6 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 if self.inlineRanges != rhs.inlineRanges { return false }
                 if self.inlineIndentations != rhs.inlineIndentations { return false }
                 if self.modifiedDate != rhs.modifiedDate { return false }
-                if self.sourceryVersion != rhs.sourceryVersion { return false }
                 return true
             }
         }
@@ -2932,7 +2929,6 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 hasher.combine(self.inlineRanges)
                 hasher.combine(self.inlineIndentations)
                 hasher.combine(self.modifiedDate)
-                hasher.combine(self.sourceryVersion)
                 return hasher.finalize()
             }
         }
@@ -3439,13 +3435,12 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             public var inlineIndentations = [String: String]()
 
             public var modifiedDate: Date
-            public var sourceryVersion: String
 
             var isEmpty: Bool {
                 types.isEmpty && functions.isEmpty && typealiases.isEmpty && inlineRanges.isEmpty && inlineIndentations.isEmpty
             }
 
-            public init(path: String?, module: String?, types: [Type], functions: [SourceryMethod], typealiases: [Typealias] = [], inlineRanges: [String: NSRange] = [:], inlineIndentations: [String: String] = [:], modifiedDate: Date = Date(), sourceryVersion: String = "") {
+            public init(path: String?, module: String?, types: [Type], functions: [SourceryMethod], typealiases: [Typealias] = [], inlineRanges: [String: NSRange] = [:], inlineIndentations: [String: String] = [:], modifiedDate: Date = Date()) {
                 self.path = path
                 self.module = module
                 self.types = types
@@ -3454,7 +3449,6 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 self.inlineRanges = inlineRanges
                 self.inlineIndentations = inlineIndentations
                 self.modifiedDate = modifiedDate
-                self.sourceryVersion = sourceryVersion
 
                 super.init()
 
@@ -3475,7 +3469,6 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             guard let inlineRanges: [String: NSRange] = aDecoder.decode(forKey: "inlineRanges") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["inlineRanges"])); fatalError() }; self.inlineRanges = inlineRanges
             guard let inlineIndentations: [String: String] = aDecoder.decode(forKey: "inlineIndentations") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["inlineIndentations"])); fatalError() }; self.inlineIndentations = inlineIndentations
             guard let modifiedDate: Date = aDecoder.decode(forKey: "modifiedDate") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["modifiedDate"])); fatalError() }; self.modifiedDate = modifiedDate
-            guard let sourceryVersion: String = aDecoder.decode(forKey: "sourceryVersion") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["sourceryVersion"])); fatalError() }; self.sourceryVersion = sourceryVersion
         }
 
         /// :nodoc:
@@ -3488,7 +3481,6 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             aCoder.encode(inlineRanges, forKey: "inlineRanges")
             aCoder.encode(inlineIndentations, forKey: "inlineIndentations")
             aCoder.encode(modifiedDate, forKey: "modifiedDate")
-            aCoder.encode(sourceryVersion, forKey: "sourceryVersion")
         }
         // sourcery:end
         }

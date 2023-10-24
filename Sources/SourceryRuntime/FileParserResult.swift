@@ -19,13 +19,12 @@ import Foundation
     public var inlineIndentations = [String: String]()
 
     public var modifiedDate: Date
-    public var sourceryVersion: String
 
     var isEmpty: Bool {
         types.isEmpty && functions.isEmpty && typealiases.isEmpty && inlineRanges.isEmpty && inlineIndentations.isEmpty
     }
 
-    public init(path: String?, module: String?, types: [Type], functions: [SourceryMethod], typealiases: [Typealias] = [], inlineRanges: [String: NSRange] = [:], inlineIndentations: [String: String] = [:], modifiedDate: Date = Date(), sourceryVersion: String = "") {
+    public init(path: String?, module: String?, types: [Type], functions: [SourceryMethod], typealiases: [Typealias] = [], inlineRanges: [String: NSRange] = [:], inlineIndentations: [String: String] = [:], modifiedDate: Date = Date()) {
         self.path = path
         self.module = module
         self.types = types
@@ -34,7 +33,6 @@ import Foundation
         self.inlineRanges = inlineRanges
         self.inlineIndentations = inlineIndentations
         self.modifiedDate = modifiedDate
-        self.sourceryVersion = sourceryVersion
 
         super.init()
 
@@ -55,7 +53,6 @@ public required init?(coder aDecoder: NSCoder) {
     guard let inlineRanges: [String: NSRange] = aDecoder.decode(forKey: "inlineRanges") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["inlineRanges"])); fatalError() }; self.inlineRanges = inlineRanges
     guard let inlineIndentations: [String: String] = aDecoder.decode(forKey: "inlineIndentations") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["inlineIndentations"])); fatalError() }; self.inlineIndentations = inlineIndentations
     guard let modifiedDate: Date = aDecoder.decode(forKey: "modifiedDate") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["modifiedDate"])); fatalError() }; self.modifiedDate = modifiedDate
-    guard let sourceryVersion: String = aDecoder.decode(forKey: "sourceryVersion") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["sourceryVersion"])); fatalError() }; self.sourceryVersion = sourceryVersion
 }
 
 /// :nodoc:
@@ -68,7 +65,6 @@ public func encode(with aCoder: NSCoder) {
     aCoder.encode(inlineRanges, forKey: "inlineRanges")
     aCoder.encode(inlineIndentations, forKey: "inlineIndentations")
     aCoder.encode(modifiedDate, forKey: "modifiedDate")
-    aCoder.encode(sourceryVersion, forKey: "sourceryVersion")
 }
 // sourcery:end
 }

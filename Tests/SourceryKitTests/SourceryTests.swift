@@ -5,8 +5,6 @@ import XCTest
 @testable import SourceryKit
 @testable import SourceryRuntime
 
-private let version = "Major.Minor.Patch"
-
 class SourceryTests: XCTestCase {
     var output: Output!
 

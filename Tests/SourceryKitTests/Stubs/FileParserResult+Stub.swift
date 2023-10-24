@@ -10,8 +10,7 @@ extension FileParserResult {
         typealiases: [Typealias] = [],
         inlineRanges: [String: NSRange] = [:],
         inlineIndentations: [String: String] = [:],
-        modifiedDate: Date = .now,
-        sourceryVersion: String = "fakeVersion"
+        modifiedDate: Date = .now
     ) -> Self {
         .init(
             path: path,
@@ -21,8 +20,7 @@ extension FileParserResult {
             typealiases: typealiases,
             inlineRanges: inlineRanges,
             inlineIndentations: inlineIndentations,
-            modifiedDate: modifiedDate,
-            sourceryVersion: sourceryVersion
+            modifiedDate: modifiedDate
         )
     }
 }

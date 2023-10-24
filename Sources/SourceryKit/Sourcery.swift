@@ -5,7 +5,7 @@ import SourceryRuntime
 import XcodeProj
 
 public class Sourcery {
-    public static let version = SourceryVersion.current.value
+    public static let version = "2.0.2"
 
     private let verbose: Bool
     private let watcherEnabled: Bool

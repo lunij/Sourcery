@@ -144,7 +144,6 @@ extension FileParserResult {
         string += "inlineRanges = \(String(describing: self.inlineRanges)), "
         string += "inlineIndentations = \(String(describing: self.inlineIndentations)), "
         string += "modifiedDate = \(String(describing: self.modifiedDate)), "
-        string += "sourceryVersion = \(String(describing: self.sourceryVersion)), "
         string += "isEmpty = \(String(describing: self.isEmpty))"
         return string
     }

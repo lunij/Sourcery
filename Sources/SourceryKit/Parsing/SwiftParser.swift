@@ -226,7 +226,6 @@ public class SwiftParser {
         guard
             let data = try? path.read(),
             let result = try? NSKeyedUnarchiver.unarchivedRootObject(ofClass: FileParserResult.self, from: data),
-            result.sourceryVersion == Sourcery.version,
             result.modifiedDate == modifiedDate
         else {
             return nil

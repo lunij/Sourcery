@@ -145,7 +145,6 @@ extension FileParserResult {
         if self.inlineRanges != rhs.inlineRanges { return false }
         if self.inlineIndentations != rhs.inlineIndentations { return false }
         if self.modifiedDate != rhs.modifiedDate { return false }
-        if self.sourceryVersion != rhs.sourceryVersion { return false }
         return true
     }
 }
@@ -533,7 +532,6 @@ extension FileParserResult {
         hasher.combine(self.inlineRanges)
         hasher.combine(self.inlineIndentations)
         hasher.combine(self.modifiedDate)
-        hasher.combine(self.sourceryVersion)
         return hasher.finalize()
     }
 }

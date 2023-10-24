@@ -63,8 +63,7 @@ public final class FileParserSyntax: SyntaxVisitor, FileParserType {
           typealiases: collector.typealiases,
           inlineRanges: inlineRanges,
           inlineIndentations: inlineIndentations,
-          modifiedDate: modifiedDate ?? Date(),
-          sourceryVersion: SourceryVersion.current.value
+          modifiedDate: modifiedDate ?? Date()
         )
     }
 
