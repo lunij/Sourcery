@@ -42,7 +42,7 @@ public class SwiftGenerator {
         logger.info("Generating code...")
 
         let elapsedTime = try clock.measure {
-            try templates.forEach { template in
+            for template in templates {
                 let (result, sourceChanges) = try generate(from: parsingResult, using: template, config: config)
                 updateRanges(in: &parsingResult, sourceChanges: sourceChanges)
                 let outputPath = output.path.appending(template.path.generatedFileName)
@@ -55,8 +55,8 @@ public class SwiftGenerator {
                 }
             }
 
-            try fileAnnotatedContent.forEach { path, contents in
-                try write(contents.joined(separator: "\n"), to: path)
+            for (path, content) in fileAnnotatedContent {
+                try write(content.joined(separator: "\n"), to: path)
 
                 if let linkTo = output.linkTo {
                     linkTo.targets.forEach { target in
