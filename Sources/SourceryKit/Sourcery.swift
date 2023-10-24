@@ -60,7 +60,7 @@ public class Sourcery {
 
         let templates: [Template] = try config.templates.allPaths.filter(\.isTemplateFile).map {
             if $0.extension == "swifttemplate" {
-                let cachePath = cachesDir(sourcePath: $0, basePath: config.cacheBasePath)
+                let cachePath = cacheDisabled ? nil : Path.cachesDir(sourcePath: $0, basePath: config.cacheBasePath)
                 return try SwiftTemplate(path: $0, cachePath: cachePath, version: type(of: self).version, buildPath: buildPath)
             } else {
                 return try StencilTemplate(path: $0)
@@ -170,11 +170,5 @@ public class Sourcery {
         }
 
         return top.map { $0.0 }
-    }
-
-    /// This function should be used to retrieve the path to the cache instead of `Path.cachesDir`,
-    /// as it considers the `--cacheDisabled` and `--cacheBasePath` command line parameters.
-    fileprivate func cachesDir(sourcePath: Path, basePath: Path, createIfMissing: Bool = true) -> Path? {
-        cacheDisabled ? nil : .cachesDir(sourcePath: sourcePath, basePath: basePath, createIfMissing: createIfMissing)
     }
 }
