@@ -45,7 +45,7 @@ public class SwiftGenerator {
             try templates.forEach { template in
                 let (result, sourceChanges) = try generate(from: parsingResult, using: template, config: config)
                 updateRanges(in: &parsingResult, sourceChanges: sourceChanges)
-                let outputPath = output.path.appending(template.sourcePath.generatedFileName)
+                let outputPath = output.path.appending(template.path.generatedFileName)
                 try write(result, to: outputPath)
 
                 if let linkTo = output.linkTo {
@@ -298,10 +298,10 @@ public class SwiftGenerator {
 
         if resultIsEmpty {
             if outputPath.exists {
-                logger.verbose("Removing \(outputPath) as its generated content is empty.")
+                logger.warning("Removing \(outputPath) as its generated content is empty.")
                 do { try outputPath.delete() } catch { logger.error("\(error)") }
             } else {
-                logger.verbose("Skipping \(outputPath) as its generated content is empty.")
+                logger.warning("Skipping \(outputPath) as its generated content is empty.")
             }
         } else {
             if !outputPath.parent().exists {

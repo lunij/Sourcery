@@ -6,25 +6,25 @@ import XCTest
 
 class StencilTemplateTests: XCTestCase {
     func test_json_whenDictionary_rendersUnprettyJson() {
-        let result = try? StencilTemplate(templateString: "{{ argument.json | json }}")
+        let result = try? StencilTemplate(content: "{{ argument.json | json }}")
             .render(.fake(arguments: ["json": ["Version": 1] as NSDictionary]))
         XCTAssertEqual(result, "{\"Version\":1}")
     }
 
     func test_json_whenDictionary_rendersPrettyJson() {
-        let result = try? StencilTemplate(templateString: "{{ argument.json | json:true }}")
+        let result = try? StencilTemplate(content: "{{ argument.json | json:true }}")
             .render(.fake(arguments: ["json": ["Version": 1] as NSDictionary]))
         XCTAssertEqual(result, "{\n  \"Version\" : 1\n}")
     }
 
     func test_json_whenArray_rendersUnprettyJson() {
-        let result = try? StencilTemplate(templateString: "{{ argument.json | json }}")
+        let result = try? StencilTemplate(content: "{{ argument.json | json }}")
             .render(.fake(arguments: ["json": ["a", "b"] as NSArray]))
         XCTAssertEqual(result, "[\"a\",\"b\"]")
     }
 
     func test_json_whenArray_rendersPrettyJson() {
-        let result = try? StencilTemplate(templateString: "{{ argument.json | json:true }}")
+        let result = try? StencilTemplate(content: "{{ argument.json | json:true }}")
             .render(.fake(arguments: ["json": ["a", "b"] as NSArray]))
         XCTAssertEqual(result, "[\n  \"a\",\n  \"b\"\n]")
     }
@@ -224,7 +224,7 @@ private func generate(_ template: String) -> String {
     arrayAnnotations.annotations = ["Foo": ["Hello", "beautiful", "World"] as NSArray]
     let singleAnnotation = Variable(name: "annotated2", typeName: TypeName(name: "MyClass"))
     singleAnnotation.annotations = ["Foo": "HelloWorld" as NSString]
-    let result = try? StencilTemplate(templateString: template).render(TemplateContext(
+    let result = try? StencilTemplate(content: template).render(TemplateContext(
         parserResult: nil,
         types: Types(types: [
             Class(name: "MyClass", variables: [

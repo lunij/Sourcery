@@ -9,7 +9,7 @@ private struct ProcessResult {
 }
 
 open class SwiftTemplate {
-    public let sourcePath: Path
+    public let path: Path
     let buildPath: Path?
     let cachePath: Path?
     let code: String
@@ -27,7 +27,7 @@ open class SwiftTemplate {
     }()
 
     public init(path: Path, cachePath: Path? = nil, version: String? = nil, buildPath: Path? = nil) throws {
-        sourcePath = path
+        self.path = path
         self.buildPath = buildPath
         self.cachePath = cachePath
         self.version = version
@@ -105,7 +105,7 @@ open class SwiftTemplate {
         let result = try Process.runCommand(path: binaryPath.description,
                                             arguments: [serializedContextPath.description])
         if !result.error.isEmpty {
-            throw Error.renderingFailed(sourcePath: sourcePath, error: result.error)
+            throw Error.renderingFailed(sourcePath: path, error: result.error)
         }
         return result.output
     }
@@ -192,6 +192,12 @@ open class SwiftTemplate {
     enum Error: Swift.Error, Equatable {
         case compilationFailed(output: String, error: String)
         case renderingFailed(sourcePath: Path, error: String)
+    }
+}
+
+extension SwiftTemplate: Template {
+    public func render(_ context: TemplateContext) throws -> String {
+        return try self.render(context as Any)
     }
 }
 

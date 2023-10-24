@@ -5,22 +5,22 @@ import StencilSwiftKit
 import SourceryRuntime
 
 public final class StencilTemplate: StencilSwiftKit.StencilSwiftTemplate {
-    private(set) public var sourcePath: Path = ""
-    
+    private(set) public var path: Path = ""
+
     /// Trim leading / trailing whitespaces until content or newline tag appears
     public var trimEnabled: Bool = false
 
     public convenience init(path: Path) throws {
-        try self.init(path: path, templateString: try path.read())
+        try self.init(path: path, content: try path.read())
     }
     
-    public convenience init(path: Path, templateString: String) throws {
-        self.init(templateString: templateString, environment: StencilTemplate.sourceryEnvironment(templatePath: path))
-        sourcePath = path
+    public convenience init(path: Path, content: String) throws {
+        self.init(templateString: content, environment: StencilTemplate.sourceryEnvironment(templatePath: path))
+        self.path = path
     }
 
-    public convenience init(templateString: String) {
-        self.init(templateString: templateString, environment: StencilTemplate.sourceryEnvironment())
+    public convenience init(content: String) {
+        self.init(templateString: content, environment: StencilTemplate.sourceryEnvironment())
     }
     
     // swiftlint:disable:next discouraged_optional_collection
@@ -129,15 +129,25 @@ public final class StencilTemplate: StencilSwiftKit.StencilSwiftTemplate {
     }
 
     enum Error: Swift.Error, Equatable {
-        case renderingFailed(sourcePath: Path, error: String)
+        case renderingFailed(path: Path, error: String)
+    }
+}
+
+extension StencilTemplate: Template {
+    public func render(_ context: TemplateContext) throws -> String {
+        do {
+            return try self.render(context.stencilContext)
+        } catch {
+            throw Error.renderingFailed(path: path, error: String(describing: error))
+        }
     }
 }
 
 extension StencilTemplate.Error: CustomStringConvertible {
     var description: String {
         switch self {
-        case let .renderingFailed(sourcePath, error):
-            "\(sourcePath): \(error)"
+        case let .renderingFailed(path, error):
+            "\(path): \(error)"
         }
     }
 }

@@ -304,7 +304,7 @@ private extension String {
     func generate() -> String {
         let (types, arguments) = beforeEachGenerate()
         let (uniqueTypes, _, _) = Composer.uniqueTypesAndFunctions(FileParserResult(path: nil, module: nil, types: types, functions: [], typealiases: []))
-        let result = try? StencilTemplate(templateString: self).render(TemplateContext(
+        let result = try? StencilTemplate(content: self).render(TemplateContext(
             parserResult: nil,
             types: Types(types: uniqueTypes),
             functions: [],

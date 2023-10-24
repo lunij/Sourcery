@@ -17,20 +17,20 @@ class SwiftGeneratorTests: XCTestCase {
         sut = .init(clock: clockMock)
     }
 
-    func test_foobar() throws {
+    func test_warnsAboutSkippedFiles() throws {
         var parsingResult = ParsingResult.stub()
         let config = Configuration.stub(output: .init("Generated"))
 
         try sut.generate(
             from: &parsingResult,
-            using: [StencilTemplate(templateString: "")],
+            using: [StencilTemplate(path: "Templates/Fake.stencil", content: "")],
             to: config.output,
             config: config
         )
 
         XCTAssertEqual(loggerMock.calls, [
             .info("Generating code..."),
-            .verbose("Skipping Generated/.generated.swift as its generated content is empty."),
+            .warning("Skipping Generated/Fake.generated.swift as its generated content is empty."),
             .info("Code generation finished in 0.1 seconds")
         ])
     }
