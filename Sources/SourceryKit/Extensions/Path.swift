@@ -5,6 +5,10 @@ extension Path {
         "\(lastComponentWithoutExtension).generated.swift"
     }
 
+    var unlinked: Path {
+        (try? symlinkDestination()) ?? self
+    }
+
     func appending(_ path: String) -> Path {
         self + Path(path)
     }

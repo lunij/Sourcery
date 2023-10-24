@@ -178,7 +178,7 @@ public class SwiftGenerator {
                 lhs.rangeInFile.location > rhs.rangeInFile.location
             }
             .forEach { _, filePath, rangeInFile, toInsert, indentation in
-                let path = Path(filePath)
+                let path = Path(filePath).unlinked
                 let content = try path.read(.utf8)
                 let newContent = indent(toInsert: toInsert, indentation: indentation)
 
@@ -297,6 +297,8 @@ public class SwiftGenerator {
             }
             return
         }
+
+        let outputPath = outputPath.unlinked
 
         logger.info("Generating \(outputPath)")
 
