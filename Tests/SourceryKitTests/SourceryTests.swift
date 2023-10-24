@@ -975,7 +975,7 @@ class SourceryTests: XCTestCase {
     func test_processFiles_whenSingleTemplate_andAutoInlineGeneration_andCached_itInsertsCodeIfItWasDeleted() throws {
         let (sourcePath, templatePath) = try createExistingFilesWithInlineTemplate()
 
-        Sourcery.removeCache(for: [sourcePath])
+        removeCache(for: [sourcePath])
 
         "class Foo {}".update(in: sourcePath)
 
@@ -1013,7 +1013,7 @@ class SourceryTests: XCTestCase {
         let result = try sourcePath.read(.utf8)
         XCTAssertEqual(result, expectedResult)
 
-        Sourcery.removeCache(for: [sourcePath])
+        removeCache(for: [sourcePath])
     }
 
     private func createGivenFiles3() throws -> (Path, Path) {
@@ -1383,5 +1383,12 @@ private func assertContinuously(
         assertContinuously(repeats: repeats - 1, execute: execute, until: assert, file: file, line: line)
     } catch {
         XCTFail(String(describing: error), file: file, line: line)
+    }
+}
+
+private func removeCache(for sources: [Path], cacheBasePath: Path? = nil) {
+    sources.forEach { path in
+        let cacheDir = Path.cachesDir(sourcePath: path, basePath: cacheBasePath, createIfMissing: false)
+        _ = try? cacheDir.delete()
     }
 }

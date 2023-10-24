@@ -177,18 +177,4 @@ public class Sourcery {
     fileprivate func cachesDir(sourcePath: Path, basePath: Path, createIfMissing: Bool = true) -> Path? {
         cacheDisabled ? nil : .cachesDir(sourcePath: sourcePath, basePath: basePath, createIfMissing: createIfMissing)
     }
-
-    /// Remove the existing cache artifacts if it exists.
-    /// Currently this is only called from tests, and the `--cacheDisabled` and `--cacheBasePath` command line parameters are not considered.
-    ///
-    /// - Parameter sources: paths of the sources you want to delete the
-    static func removeCache(for sources: [Path], cacheDisabled: Bool = false, cacheBasePath: Path? = nil) {
-        if cacheDisabled {
-            return
-        }
-        sources.forEach { path in
-            let cacheDir = Path.cachesDir(sourcePath: path, basePath: cacheBasePath, createIfMissing: false)
-            _ = try? cacheDir.delete()
-        }
-    }
 }
