@@ -18,12 +18,14 @@ class SwiftGeneratorTests: XCTestCase {
     }
 
     func test_warnsAboutSkippedFiles() throws {
+        let templateMock = TemplateMock(path: "Templates/Fake.stencil")
+        templateMock.renderReturnValue = ""
         var parsingResult = ParsingResult.stub()
         let config = Configuration.stub(output: .init("Generated"))
 
         try sut.generate(
             from: &parsingResult,
-            using: [StencilTemplate(path: "Templates/Fake.stencil", content: "")],
+            using: [templateMock],
             to: config.output,
             config: config
         )
@@ -33,15 +35,18 @@ class SwiftGeneratorTests: XCTestCase {
             .warning("Skipping Generated/Fake.generated.swift as its generated content is empty."),
             .info("Code generation finished in 0.1 seconds")
         ])
+        XCTAssertEqual(templateMock.calls, [.render])
     }
 
     func test_warnsAboutSingleFileOutput() throws {
+        let templateMock = TemplateMock()
+        templateMock.renderReturnValue = ""
         var parsingResult = ParsingResult.stub()
         let config = Configuration.stub(output: .init("Generated/SingleOutput.generated.swift"))
 
         try sut.generate(
             from: &parsingResult,
-            using: [StencilTemplate(templateString: "")],
+            using: [templateMock],
             to: config.output,
             config: config
         )
