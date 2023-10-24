@@ -1,8 +1,5 @@
 import FileSystemEvents
-import Foundation
-import PathKit
 import SourceryRuntime
-import XcodeProj
 
 public class Sourcery {
     public static let version = "2.0.2"
