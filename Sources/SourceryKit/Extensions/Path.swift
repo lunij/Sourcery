@@ -5,6 +5,14 @@ extension Path {
         "\(lastComponentWithoutExtension).generated.swift"
     }
 
+    var hasExtension: Bool {
+        url.pathExtension.isNotEmpty
+    }
+
+    var isRepresentingDirectory: Bool {
+        string.isNotEmpty && (!hasExtension || string.hasSuffix("/"))
+    }
+
     var relativeToCurrent: Path {
         Path(string.replacingOccurrences(of: Path.current.string + "/", with: ""))
     }

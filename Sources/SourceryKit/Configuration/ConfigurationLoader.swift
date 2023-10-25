@@ -4,79 +4,56 @@ import SourceryRuntime
 
 struct ConfigurationLoader {
     let parser: ConfigurationParsing
+    let fileReader: FileReading
+    let environment: [String: String]
 
-    init(parser: ConfigurationParsing = ConfigurationParser()) {
+    init(
+        parser: ConfigurationParsing = ConfigurationParser(),
+        fileReader: FileReading = FileReader(),
+        environment: [String: String] = ProcessInfo.processInfo.environment
+    ) {
         self.parser = parser
+        self.fileReader = fileReader
+        self.environment = environment
     }
 
     func loadConfigurations(options: ConfigurationOptions) throws -> [Configuration] {
-        try options.configPaths.flatMap { configPath -> [Configuration] in
-            let configPath = configPath.isDirectory ? configPath + ".sourcery.yml" : configPath
-
+        let configs: [Configuration] = try options.configPaths.flatMap { configPath in
             do {
-                try configPath.checkConfigFile()
+                let configPath = configPath.isDirectory || configPath.isRepresentingDirectory ? configPath + ".sourcery.yml" : configPath
+                let configString = try fileReader.read(from: configPath)
 
-                if options.hasRedundantArguments { // TODO: do not ignore arguments, but override config setting
-                    logger.info("Using configuration file at '\(configPath)'. WARNING: Ignoring the parameters passed in the command line.")
-                } else {
-                    logger.info("Using configuration file at '\(configPath)'")
-                }
+                logger.info("Loading configuration file at \(configPath)")
 
                 return try parser.parseConfigurations(
-                    from: configPath.read(),
+                    from: configString,
                     relativePath: configPath.parent(),
-                    env: ProcessInfo.processInfo.environment
+                    env: environment
                 )
-            } catch Error.configMissing {
-                logger.info("No config file provided or it does not exist. Using command line arguments.")
-                let args = options.args.joined(separator: ",")
-                let arguments = AnnotationsParser.parse(line: args)
-                return [
-                    Configuration(
-                        sources: .paths(Paths(include: options.sources, exclude: options.excludeSources)),
-                        templates: Paths(include: options.templates, exclude: options.excludeTemplates),
-                        output: Output(options.output),
-                        cacheBasePath: options.cacheBasePath,
-                        cacheDisabled: options.cacheDisabled,
-                        forceParse: options.forceParse,
-                        parseDocumentation: options.parseDocumentation,
-                        baseIndentation: options.baseIndentation,
-                        arguments: arguments
-                    )
-                ]
+            } catch let FileReader.Error.fileNotExisting(path) where path == ".sourcery.yml" {
+                return []
             }
         }
-    }
 
-    enum Error: Swift.Error, Equatable {
-        case configMissing
-        case configNotAFile
-        case configNotReadable
-    }
-}
+        if configs.isEmpty {
+            logger.info("No configuration files loaded. Using default configuration and command line arguments.")
+            let args = options.args.joined(separator: ",")
+            let arguments = AnnotationsParser.parse(line: args)
+            return [
+                Configuration(
+                    sources: .paths(Paths(include: options.sources, exclude: options.excludeSources)),
+                    templates: Paths(include: options.templates, exclude: options.excludeTemplates),
+                    output: Output(options.output),
+                    cacheBasePath: options.cacheBasePath,
+                    cacheDisabled: options.cacheDisabled,
+                    forceParse: options.forceParse,
+                    parseDocumentation: options.parseDocumentation,
+                    baseIndentation: options.baseIndentation,
+                    arguments: arguments
+                )
+            ]
+        }
 
-private extension Path {
-    func checkConfigFile() throws {
-        guard exists else {
-            throw ConfigurationLoader.Error.configMissing
-        }
-        guard isFile else {
-            throw ConfigurationLoader.Error.configNotAFile
-        }
-        guard isReadable else {
-            throw ConfigurationLoader.Error.configNotReadable
-        }
-    }
-}
-
-private extension ConfigurationOptions {
-    var hasRedundantArguments: Bool {
-        !sources.isEmpty ||
-            !excludeSources.isEmpty ||
-            !templates.isEmpty ||
-            !excludeTemplates.isEmpty ||
-            !forceParse.isEmpty ||
-            output != "" ||
-            !args.isEmpty
+        return configs
     }
 }
