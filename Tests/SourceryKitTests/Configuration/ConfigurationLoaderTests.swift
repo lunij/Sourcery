@@ -3,8 +3,8 @@ import SourceryRuntime
 import XCTest
 @testable import SourceryKit
 
-class ConfigurationReaderTests: XCTestCase {
-    var sut: ConfigurationReader!
+class ConfigurationLoaderTests: XCTestCase {
+    var sut: ConfigurationLoader!
 
     var loggerMock: LoggerMock!
     var parserMock: ConfigurationParserMock!
@@ -19,7 +19,7 @@ class ConfigurationReaderTests: XCTestCase {
 
     func test_defaultOptions() throws {
         let options = try ConfigurationOptions.parse([])
-        let configurations = try sut.readConfigurations(options: options)
+        let configurations = try sut.loadConfigurations(options: options)
 
         XCTAssertEqual(configurations, [
             .init(

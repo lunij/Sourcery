@@ -2,14 +2,14 @@ import Foundation
 import PathKit
 import SourceryRuntime
 
-struct ConfigurationReader {
+struct ConfigurationLoader {
     let parser: ConfigurationParsing
 
     init(parser: ConfigurationParsing = ConfigurationParser()) {
         self.parser = parser
     }
 
-    func readConfigurations(options: ConfigurationOptions) throws -> [Configuration] {
+    func loadConfigurations(options: ConfigurationOptions) throws -> [Configuration] {
         try options.configPaths.flatMap { configPath -> [Configuration] in
             let configPath = configPath.isDirectory ? configPath + ".sourcery.yml" : configPath
 
@@ -58,13 +58,13 @@ struct ConfigurationReader {
 private extension Path {
     func checkConfigFile() throws {
         guard exists else {
-            throw ConfigurationReader.Error.configMissing
+            throw ConfigurationLoader.Error.configMissing
         }
         guard isFile else {
-            throw ConfigurationReader.Error.configNotAFile
+            throw ConfigurationLoader.Error.configNotAFile
         }
         guard isReadable else {
-            throw ConfigurationReader.Error.configNotReadable
+            throw ConfigurationLoader.Error.configNotReadable
         }
     }
 }

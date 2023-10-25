@@ -47,9 +47,9 @@ public struct SourceryCommand: AsyncParsableCommand {
 
         let start = CFAbsoluteTimeGetCurrent()
 
-        let configReader = ConfigurationReader()
+        let configLoader = ConfigurationLoader()
 
-        for configuration in try configReader.readConfigurations(options: options) {
+        for configuration in try configLoader.loadConfigurations(options: options) {
             try processFiles(specifiedIn: configuration)
         }
 
