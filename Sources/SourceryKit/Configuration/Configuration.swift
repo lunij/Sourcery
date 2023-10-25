@@ -6,6 +6,7 @@ public struct Configuration: Equatable {
     public let templates: Paths
     public let output: Output
     public let cacheBasePath: Path
+    public let cacheDisabled: Bool
     public let forceParse: [String]
     public let parseDocumentation: Bool
     public let baseIndentation: Int
@@ -16,6 +17,7 @@ public struct Configuration: Equatable {
         templates: Paths,
         output: Output,
         cacheBasePath: Path,
+        cacheDisabled: Bool,
         forceParse: [String],
         parseDocumentation: Bool,
         baseIndentation: Int,
@@ -25,6 +27,7 @@ public struct Configuration: Equatable {
         self.templates = templates
         self.output = output
         self.cacheBasePath = cacheBasePath
+        self.cacheDisabled = cacheDisabled
         self.forceParse = forceParse
         self.parseDocumentation = parseDocumentation
         self.baseIndentation = baseIndentation

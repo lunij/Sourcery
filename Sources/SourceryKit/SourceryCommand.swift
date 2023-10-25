@@ -17,9 +17,6 @@ public struct SourceryCommand: AsyncParsableCommand {
     @Flag(name: [.customLong("watch"), .short], help: "Watch template for changes and regenerate as needed")
     var watcherEnabled = false
 
-    @Flag(name: [.customLong("no-cache")], help: "Stop using cache")
-    var cacheDisabled = false
-
     @Flag(name: .shortAndLong, help: "Turn on verbose logging")
     var verbose = false
 
@@ -64,7 +61,6 @@ public struct SourceryCommand: AsyncParsableCommand {
 
         let sourcery = Sourcery(
             watcherEnabled: watcherEnabled,
-            cacheDisabled: cacheDisabled,
             buildPath: buildPath.string.isEmpty ? nil : buildPath
         )
 

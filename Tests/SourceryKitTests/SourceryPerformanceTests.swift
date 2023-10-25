@@ -14,10 +14,11 @@ class SourceryPerformanceTests: XCTestCase {
         _ = try? Path.cachesDir(sourcePath: Stubs.sourceForPerformance, basePath: nil).delete()
 
         measure {
-            _ = try? Sourcery(cacheDisabled: true).processConfiguration(.stub(
+            _ = try? Sourcery().processConfiguration(.stub(
                 sources: .paths(Paths(include: [Stubs.sourceForPerformance])),
                 templates: Paths(include: [Stubs.templateDirectory + Path("Basic.stencil")]),
-                output: output
+                output: output,
+                cacheDisabled: true
             ))
         }
     }

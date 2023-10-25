@@ -21,7 +21,7 @@ class ConfigurationParser: ConfigurationParsing {
 
         let start = CFAbsoluteTimeGetCurrent()
         defer {
-            logger.benchmark("Resolving configurations took \(CFAbsoluteTimeGetCurrent() - start)")
+            logger.benchmark("Resolving configurations took \(CFAbsoluteTimeGetCurrent() - start)") // TODO
         }
 
         if let configurations = dict["configurations"] as? [[String: Any]] {
@@ -79,11 +79,20 @@ class ConfigurationParser: ConfigurationParsing {
             .defaultBaseCachePath
         }
 
+        let cacheDisabled = if let cacheDisabled = dict["cacheDisabled"] as? Bool {
+            cacheDisabled
+        } else if dict["cacheDisabled"] != nil {
+            throw Error.invalidCacheBasePath(message: "'cacheBasePath' key is not a string.")
+        } else {
+            false
+        }
+
         return .init(
             sources: sources,
             templates: templates,
             output: output,
             cacheBasePath: cacheBasePath,
+            cacheDisabled: cacheDisabled,
             forceParse: dict["forceParse"] as? [String] ?? [],
             parseDocumentation: dict["parseDocumentation"] as? Bool ?? false,
             baseIndentation: dict["baseIndentation"] as? Int ?? 0,
@@ -98,6 +107,7 @@ class ConfigurationParser: ConfigurationParsing {
         case invalidTemplates(message: String)
         case invalidOutput(message: String)
         case invalidCacheBasePath(message: String)
+        case invalidCacheDisabled(valueType: String)
         case invalidPaths(message: String)
     }
 }
@@ -117,6 +127,8 @@ extension ConfigurationParser.Error: CustomStringConvertible {
             "Invalid output. \(message)"
         case let .invalidCacheBasePath(message):
             "Invalid cacheBasePath. \(message)"
+        case let .invalidCacheDisabled(valueType):
+            "Invalid value for cacheDisabled. Expected a boolean, but got a \(valueType)."
         case let .invalidPaths(message):
             "\(message)"
         }

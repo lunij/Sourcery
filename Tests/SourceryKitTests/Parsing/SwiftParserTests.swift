@@ -19,7 +19,7 @@ class SwiftParserTests: XCTestCase {
     }
 
     func test_parsesNothing_whenNoSources() throws {
-        let parsingResult = try sut.parseSources(from: .stub(), cacheDisabled: true)
+        let parsingResult = try sut.parseSources(from: .stub())
 
         XCTAssertEqual(parsingResult.parserResult, nil)
         XCTAssertEqual(parsingResult.functions, [])
@@ -37,7 +37,7 @@ class SwiftParserTests: XCTestCase {
         }
         """.update(in: sourcePath)
 
-        let parsingResult = try sut.parseSources(from: .stub(sources: .paths(.init(include: [sourcePath]))), cacheDisabled: true)
+        let parsingResult = try sut.parseSources(from: .stub(sources: .paths(.init(include: [sourcePath]))))
 
         XCTAssertEqual(parsingResult.parserResult, nil)
         XCTAssertEqual(parsingResult.functions, [])
@@ -71,7 +71,7 @@ class SwiftParserTests: XCTestCase {
         }
         """.update(in: sourcePath)
 
-        let parsingResult = try sut.parseSources(from: .stub(sources: .paths(.init(include: [sourcePath]))), cacheDisabled: false)
+        let parsingResult = try sut.parseSources(from: .stub(sources: .paths(.init(include: [sourcePath])), cacheDisabled: false))
 
         XCTAssertEqual(parsingResult.parserResult, nil)
         XCTAssertEqual(parsingResult.functions, [])
@@ -114,8 +114,7 @@ class SwiftParserTests: XCTestCase {
                 sources: .paths(Paths(include: [sourcePath])),
                 templates: Paths(include: [.basicStencilPath]),
                 output: output
-            ),
-            cacheDisabled: true
+            )
         )) {
             let error = $0 as? SwiftParser.Error
             XCTAssertEqual(error, .containsMergeConflictMarkers)

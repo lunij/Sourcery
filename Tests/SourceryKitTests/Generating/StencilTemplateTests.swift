@@ -192,10 +192,11 @@ class StencilTemplateTests: XCTestCase {
 
         """
 
-        try Sourcery(cacheDisabled: true).processConfiguration(.stub(
+        try Sourcery().processConfiguration(.stub(
             sources: .paths(Paths(include: [Stubs.sourceDirectory])),
             templates: Paths(include: [templatePath]),
-            output: output
+            output: output,
+            cacheDisabled: true
         ))
 
         let result = try output.path.appending(templatePath.generatedFileName).read(.utf8)

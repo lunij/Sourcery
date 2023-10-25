@@ -41,7 +41,7 @@ class SwiftTemplateTests: XCTestCase {
     }
 
     func test_generatesCorrectOutput() throws {
-        try Sourcery(cacheDisabled: true).processConfiguration(.stub(
+        try Sourcery().processConfiguration(.stub(
             sources: .paths(Paths(include: [Stubs.sourceDirectory])),
             templates: Paths(include: [templatePath]),
             output: output
@@ -62,7 +62,7 @@ class SwiftTemplateTests: XCTestCase {
         let templatePath = Stubs.swiftTemplates + Path("Includes.swifttemplate")
         let expectedResult = try (Stubs.resultDirectory + Path("Basic+Other.swift")).read(.utf8)
 
-        try Sourcery(cacheDisabled: true).processConfiguration(.stub(
+        try Sourcery().processConfiguration(.stub(
             sources: .paths(Paths(include: [Stubs.sourceDirectory])),
             templates: Paths(include: [templatePath]),
             output: output
@@ -76,7 +76,7 @@ class SwiftTemplateTests: XCTestCase {
         let templatePath = Stubs.swiftTemplates + Path("IncludeFile.swifttemplate")
         let expectedResult = try (Stubs.resultDirectory + Path("Basic.swift")).read(.utf8)
 
-        try Sourcery(cacheDisabled: true).processConfiguration(.stub(
+        try Sourcery().processConfiguration(.stub(
             sources: .paths(Paths(include: [Stubs.sourceDirectory])),
             templates: Paths(include: [templatePath]),
             output: output
@@ -90,7 +90,7 @@ class SwiftTemplateTests: XCTestCase {
         let templatePath = Stubs.swiftTemplates + Path("SubfolderIncludes.swifttemplate")
         let expectedResult = try (Stubs.resultDirectory + Path("Basic.swift")).read(.utf8)
 
-        try Sourcery(cacheDisabled: true).processConfiguration(.stub(
+        try Sourcery().processConfiguration(.stub(
             sources: .paths(Paths(include: [Stubs.sourceDirectory])),
             templates: Paths(include: [templatePath]),
             output: output
@@ -104,7 +104,7 @@ class SwiftTemplateTests: XCTestCase {
         let templatePath = Stubs.swiftTemplates + Path("SubfolderFileIncludes.swifttemplate")
         let expectedResult = try (Stubs.resultDirectory + Path("Basic.swift")).read(.utf8)
 
-        try Sourcery(cacheDisabled: true).processConfiguration(.stub(
+        try Sourcery().processConfiguration(.stub(
             sources: .paths(Paths(include: [Stubs.sourceDirectory])),
             templates: Paths(include: [templatePath]),
             output: output
@@ -173,10 +173,11 @@ class SwiftTemplateTests: XCTestCase {
     }
 
     func test_cache_whenMissingBuildDir() throws {
-        try Sourcery(cacheDisabled: false).processConfiguration(.stub(
+        try Sourcery().processConfiguration(.stub(
             sources: .paths(Paths(include: [Stubs.sourceDirectory])),
             templates: Paths(include: [templatePath]),
-            output: output
+            output: output,
+            cacheDisabled: false
         ))
         XCTAssertEqual(try output.path.appending(templatePath.generatedFileName).read(.utf8), expectedResult)
 
@@ -188,10 +189,11 @@ class SwiftTemplateTests: XCTestCase {
             try buildDir.delete()
         }
 
-        try Sourcery(cacheDisabled: false).processConfiguration(.stub(
+        try Sourcery().processConfiguration(.stub(
             sources: .paths(Paths(include: [Stubs.sourceDirectory])),
             templates: Paths(include: [templatePath]),
-            output: output
+            output: output,
+            cacheDisabled: false
         ))
 
         let result = try output.path.appending(templatePath.generatedFileName).read(.utf8)
@@ -202,7 +204,7 @@ class SwiftTemplateTests: XCTestCase {
         let templatePath = Stubs.swiftTemplates + Path("Function.swifttemplate")
         let expectedResult = try (Stubs.resultDirectory + Path("Function.swift")).read(.utf8)
 
-        try Sourcery(cacheDisabled: true).processConfiguration(.stub(
+        try Sourcery().processConfiguration(.stub(
             sources: .paths(Paths(include: [Stubs.sourceDirectory])),
             templates: Paths(include: [templatePath]),
             output: output

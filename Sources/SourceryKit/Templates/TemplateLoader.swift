@@ -1,7 +1,7 @@
 import SourceryRuntime
 
 protocol TemplateLoading {
-    func loadTemplates(from config: Configuration, cacheDisabled: Bool, buildPath: Path?) throws -> [Template]
+    func loadTemplates(from config: Configuration, buildPath: Path?) throws -> [Template]
 }
 
 class TemplateLoader: TemplateLoading {
@@ -11,13 +11,13 @@ class TemplateLoader: TemplateLoading {
         self.clock = clock
     }
 
-    func loadTemplates(from config: Configuration, cacheDisabled: Bool, buildPath: Path?) throws -> [Template] {
+    func loadTemplates(from config: Configuration, buildPath: Path?) throws -> [Template] {
         var templates: [Template] = []
         let elapsedTime = try clock.measure {
             templates = try config.templates.allPaths.filter(\.isTemplateFile).map {
                 logger.info("Loading \($0.relativeToCurrent)")
                 if $0.extension == "swifttemplate" {
-                    let cachePath = cacheDisabled ? nil : Path.cachesDir(sourcePath: $0, basePath: config.cacheBasePath)
+                    let cachePath = config.cacheDisabled ? nil : Path.cachesDir(sourcePath: $0, basePath: config.cacheBasePath)
                     return try SwiftTemplate(path: $0, buildPath: buildPath, cachePath: cachePath)
                 } else {
                     return try StencilTemplate(path: $0)

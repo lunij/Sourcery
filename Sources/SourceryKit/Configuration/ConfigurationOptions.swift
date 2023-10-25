@@ -38,4 +38,7 @@ struct ConfigurationOptions: ParsableArguments {
 
     @Flag(help: "Include documentation comments for all declarations")
     var parseDocumentation = false
+
+    @Flag(name: [.customLong("no-cache")], help: "Stop using cache")
+    var cacheDisabled = false
 }

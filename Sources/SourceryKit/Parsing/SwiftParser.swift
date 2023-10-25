@@ -7,10 +7,7 @@ public class SwiftParser {
 
     public init() {}
 
-    func parseSources(
-        from config: Configuration,
-        cacheDisabled: Bool // TODO: update Configuration's cacheBasePath beforehand to make cacheDisabled unnecessary
-    ) throws -> ParsingResult {
+    func parseSources(from config: Configuration) throws -> ParsingResult {
         let requiresFileParserCopy = config.templates.allPaths.contains { $0.extension == "swifttemplate" }
 
         switch config.sources {
@@ -20,8 +17,7 @@ public class SwiftParser {
                 excludes: paths.exclude,
                 config: config,
                 modules: nil,
-                requiresFileParserCopy: requiresFileParserCopy,
-                cacheDisabled: cacheDisabled
+                requiresFileParserCopy: requiresFileParserCopy
             )
         case let .projects(projects):
             var paths: [Path] = []
@@ -46,8 +42,7 @@ public class SwiftParser {
                 sources: paths,
                 config: config,
                 modules: modules,
-                requiresFileParserCopy: requiresFileParserCopy,
-                cacheDisabled: cacheDisabled
+                requiresFileParserCopy: requiresFileParserCopy
             )
         }
     }
@@ -57,8 +52,7 @@ public class SwiftParser {
         excludes: [Path] = [],
         config: Configuration,
         modules: [String]?,
-        requiresFileParserCopy: Bool,
-        cacheDisabled: Bool
+        requiresFileParserCopy: Bool
     ) throws -> ParsingResult {
         if let modules {
             precondition(sources.count == modules.count, "There should be module for each file to parse")
@@ -110,7 +104,7 @@ public class SwiftParser {
 
             let results: [(changed: Bool, result: FileParserResult)] = singleFileParser.parallelCompactMap { parser in
                 do {
-                    let cachePath: Path? = cacheDisabled ? nil : .cachesDir(sourcePath: sourcePath, basePath: config.cacheBasePath)
+                    let cachePath: Path? = config.cacheDisabled ? nil : .cachesDir(sourcePath: sourcePath, basePath: config.cacheBasePath)
                     return try self.loadOrParse(parser: parser, cachePath: cachePath)
                 } catch {
                     lastError = error
@@ -158,12 +152,12 @@ public class SwiftParser {
 
         logger.info("Found \(types.count, singular: "type", plural: "types") in \(allResults.count, singular: "file", plural: "files").")
 
-        if !cacheDisabled, logger.level == .verbose, changedFiles.isNotEmpty {
+        if !config.cacheDisabled, logger.level == .verbose, changedFiles.isNotEmpty {
             logger.verbose("\(changedFiles.count) changed from last run:")
             changedFiles.map { Path($0).relativeToCurrent }.forEach {
                 logger.verbose("\($0)")
             }
-        } else if !cacheDisabled {
+        } else if !config.cacheDisabled {
             logger.info("\(changedFiles.count, singular: "file", plural: "files") changed from last run.")
         }
 

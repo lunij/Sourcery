@@ -27,6 +27,7 @@ class ConfigurationReaderTests: XCTestCase {
                 templates: .init(include: []),
                 output: .init("."),
                 cacheBasePath: .defaultBaseCachePath,
+                cacheDisabled: false,
                 forceParse: [],
                 parseDocumentation: false,
                 baseIndentation: 0,

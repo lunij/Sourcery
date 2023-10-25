@@ -37,6 +37,7 @@ struct ConfigurationReader {
                         templates: Paths(include: options.templates, exclude: options.excludeTemplates),
                         output: Output(options.output),
                         cacheBasePath: options.cacheBasePath,
+                        cacheDisabled: options.cacheDisabled,
                         forceParse: options.forceParse,
                         parseDocumentation: options.parseDocumentation,
                         baseIndentation: options.baseIndentation,

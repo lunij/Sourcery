@@ -5,7 +5,6 @@ public class Sourcery {
     public static let version = "2.0.2"
 
     private let watcherEnabled: Bool
-    private let cacheDisabled: Bool
     private let buildPath: Path?
     
     private let swiftGenerator: SwiftGenerator
@@ -14,12 +13,10 @@ public class Sourcery {
 
     public convenience init(
         watcherEnabled: Bool = false,
-        cacheDisabled: Bool = false,
         buildPath: Path? = nil
     ) {
         self.init(
             watcherEnabled: watcherEnabled,
-            cacheDisabled: cacheDisabled,
             buildPath: buildPath,
             swiftGenerator: SwiftGenerator(),
             swiftParser: SwiftParser(),
@@ -29,14 +26,12 @@ public class Sourcery {
 
     init(
         watcherEnabled: Bool = false,
-        cacheDisabled: Bool = false,
         buildPath: Path? = nil,
         swiftGenerator: SwiftGenerator,
         swiftParser: SwiftParser,
         templateLoader: TemplateLoading
     ) {
         self.watcherEnabled = watcherEnabled
-        self.cacheDisabled = cacheDisabled
         self.buildPath = buildPath
         self.swiftGenerator = swiftGenerator
         self.swiftParser = swiftParser
@@ -50,8 +45,8 @@ public class Sourcery {
     }
 
     private func process(_ config: Configuration) throws -> ParsingResult {
-        var parsingResult = try swiftParser.parseSources(from: config, cacheDisabled: cacheDisabled)
-        let templates = try templateLoader.loadTemplates(from: config, cacheDisabled: cacheDisabled, buildPath: buildPath)
+        var parsingResult = try swiftParser.parseSources(from: config)
+        let templates = try templateLoader.loadTemplates(from: config, buildPath: buildPath)
         try swiftGenerator.generate(from: &parsingResult, using: templates, to: config.output, config: config)
         return parsingResult
     }
@@ -100,7 +95,7 @@ public class Sourcery {
         logger.info("Starting watching templates.")
 
         let templateWatchers = topPaths(from: config.templates.allPaths).compactMap { path in
-            FSEventStream(path: path.string) { [templateLoader, cacheDisabled, buildPath] events in
+            FSEventStream(path: path.string) { [templateLoader, buildPath] events in
                 let events = events.filter { $0.flags.contains(.isFile) && Path($0.path).isTemplateFile }
 
                 if events.isEmpty { return }
@@ -111,7 +106,7 @@ public class Sourcery {
                     } else {
                         logger.info("Templates changed: ")
                     }
-                    let templates = try templateLoader.loadTemplates(from: config, cacheDisabled: cacheDisabled, buildPath: buildPath)
+                    let templates = try templateLoader.loadTemplates(from: config, buildPath: buildPath)
                     try self.swiftGenerator.generate(
                         from: &result,
                         using: templates,
