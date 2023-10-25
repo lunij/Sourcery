@@ -5,6 +5,10 @@ extension Path {
         "\(lastComponentWithoutExtension).generated.swift"
     }
 
+    var relativeToCurrent: Path {
+        Path(string.replacingOccurrences(of: Path.current.string + "/", with: ""))
+    }
+
     var unlinked: Path {
         (try? symlinkDestination()) ?? self
     }

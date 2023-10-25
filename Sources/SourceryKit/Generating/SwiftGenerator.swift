@@ -290,17 +290,17 @@ public class SwiftGenerator {
     private func write(_ content: String, to outputPath: Path) throws {
         guard content.trimmingCharacters(in: .whitespacesAndNewlines).isNotEmpty else {
             if outputPath.exists {
-                logger.warning("Removing \(outputPath) as its generated content is empty.")
+                logger.warning("Removing \(outputPath.relativeToCurrent) as its generated content is empty.")
                 do { try outputPath.delete() } catch { logger.error("\(error)") }
             } else {
-                logger.warning("Skipping \(outputPath) as its generated content is empty.")
+                logger.warning("Skipping \(outputPath.relativeToCurrent) as its generated content is empty.")
             }
             return
         }
 
         let outputPath = outputPath.unlinked
 
-        logger.info("Generating \(outputPath)")
+        logger.info("Generating \(outputPath.relativeToCurrent)")
 
         let content = outputPath.extension == "swift" ? .generatedHeader + content : content
 

@@ -20,7 +20,6 @@ class TemplateLoaderTests: XCTestCase {
     func test_foobar() throws {
         XCTAssertNoThrow(try sut.loadTemplates(from: .stub(), cacheDisabled: true, buildPath: nil))
         XCTAssertEqual(loggerMock.calls, [
-            .info("Loading templates..."),
             .info("Loaded 0 templates in 0.1 seconds")
         ])
     }
