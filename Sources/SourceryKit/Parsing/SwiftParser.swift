@@ -9,7 +9,7 @@ public class SwiftParser {
 
     func parseSources(
         from config: Configuration,
-        cacheDisabled: Bool
+        cacheDisabled: Bool // TODO: update Configuration's cacheBasePath beforehand to make cacheDisabled unnecessary
     ) throws -> ParsingResult {
         let requiresFileParserCopy = config.templates.allPaths.contains { $0.extension == "swifttemplate" }
 
@@ -76,7 +76,7 @@ public class SwiftParser {
 
         for (index, sourcePath) in sources.enumerated() {
             let fileList = sourcePath.isDirectory ? try sourcePath.recursiveChildren() : [sourcePath]
-            let parserGenerator: [ParserWrapper] = fileList
+            let singleFileParser: [ParserWrapper] = fileList
                 .filter(\.isSwiftSourceFile)
                 .filter { !excludeSet.contains($0) }
                 .map { path in
@@ -108,7 +108,7 @@ public class SwiftParser {
 
             var lastError: Swift.Error?
 
-            let transform: (ParserWrapper) -> (changed: Bool, result: FileParserResult)? = { parser in
+            let results: [(changed: Bool, result: FileParserResult)] = singleFileParser.parallelCompactMap { parser in
                 do {
                     let cachePath: Path? = cacheDisabled ? nil : .cachesDir(sourcePath: sourcePath, basePath: config.cacheBasePath)
                     return try self.loadOrParse(parser: parser, cachePath: cachePath)
@@ -118,8 +118,6 @@ public class SwiftParser {
                     return nil
                 }
             }
-
-            let results: [(changed: Bool, result: FileParserResult)] = parserGenerator.parallelCompactMap(transform: transform)
 
             if let error = lastError {
                 throw error
@@ -158,14 +156,17 @@ public class SwiftParser {
             .filter(\.changed)
             .compactMap(\.result.path)
 
-        logger.info("Found \(types.count) types in \(allResults.count) files, \(changedFiles.count) changed from last run.")
+        logger.info("Found \(types.count, singular: "type", plural: "types") in \(allResults.count, singular: "file", plural: "files").")
 
-        if logger.level == .verbose, changedFiles.isNotEmpty {
-            logger.verbose("Files changed:")
+        if !cacheDisabled, logger.level == .verbose, changedFiles.isNotEmpty {
+            logger.verbose("\(changedFiles.count) changed from last run:")
             changedFiles.map { Path($0).relativeToCurrent }.forEach {
                 logger.verbose("\($0)")
             }
+        } else if !cacheDisabled {
+            logger.info("\(changedFiles.count, singular: "file", plural: "files") changed from last run.")
         }
+
         return .init(
             parserResult: parserResultCopy,
             types: Types(types: types, typealiases: typealiases),
@@ -217,5 +218,15 @@ public class SwiftParser {
 
     enum Error: Swift.Error {
         case containsMergeConflictMarkers
+    }
+}
+
+extension String.StringInterpolation {
+    mutating func appendInterpolation(_ count: Int, singular: String, plural: String) {
+        if count == 1 {
+            appendLiteral("\(count) \(singular)")
+        } else {
+            appendLiteral("\(count) \(plural)")
+        }
     }
 }
