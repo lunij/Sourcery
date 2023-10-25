@@ -32,9 +32,6 @@ public struct SourceryCommand: AsyncParsableCommand {
     @Flag(name: .shortAndLong, help: "Turn off any logging, only emmit errors")
     var quiet = false
 
-    @Flag(help: "Parse the specified sources in serial, rather than in parallel (the default), which can address stability issues in SwiftSyntax")
-    var serialParse = false
-
     @Option(help: "Set a custom build path")
     var buildPath: Path = ""
 
@@ -68,8 +65,7 @@ public struct SourceryCommand: AsyncParsableCommand {
         let sourcery = Sourcery(
             watcherEnabled: watcherEnabled,
             cacheDisabled: cacheDisabled,
-            buildPath: buildPath.string.isEmpty ? nil : buildPath,
-            serialParse: serialParse
+            buildPath: buildPath.string.isEmpty ? nil : buildPath
         )
 
         try sourcery.processConfiguration(configuration)

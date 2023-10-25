@@ -9,7 +9,6 @@ public class SwiftParser {
 
     func parseSources(
         from config: Configuration,
-        serialParse: Bool,
         cacheDisabled: Bool
     ) throws -> ParsingResult {
         let requiresFileParserCopy = config.templates.allPaths.contains { $0.extension == "swifttemplate" }
@@ -22,7 +21,6 @@ public class SwiftParser {
                 config: config,
                 modules: nil,
                 requiresFileParserCopy: requiresFileParserCopy,
-                serialParse: serialParse,
                 cacheDisabled: cacheDisabled
             )
         case let .projects(projects):
@@ -49,7 +47,6 @@ public class SwiftParser {
                 config: config,
                 modules: modules,
                 requiresFileParserCopy: requiresFileParserCopy,
-                serialParse: serialParse,
                 cacheDisabled: cacheDisabled
             )
         }
@@ -61,7 +58,6 @@ public class SwiftParser {
         config: Configuration,
         modules: [String]?,
         requiresFileParserCopy: Bool,
-        serialParse: Bool,
         cacheDisabled: Bool
     ) throws -> ParsingResult {
         if let modules {
@@ -123,11 +119,7 @@ public class SwiftParser {
                 }
             }
 
-            let results: [(changed: Bool, result: FileParserResult)] = if serialParse {
-                parserGenerator.compactMap(transform)
-            } else {
-                parserGenerator.parallelCompactMap(transform: transform)
-            }
+            let results: [(changed: Bool, result: FileParserResult)] = parserGenerator.parallelCompactMap(transform: transform)
 
             if let error = lastError {
                 throw error

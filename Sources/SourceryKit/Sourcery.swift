@@ -7,7 +7,6 @@ public class Sourcery {
     private let watcherEnabled: Bool
     private let cacheDisabled: Bool
     private let buildPath: Path?
-    private let serialParse: Bool
     
     private let swiftGenerator: SwiftGenerator
     private let swiftParser: SwiftParser
@@ -16,14 +15,12 @@ public class Sourcery {
     public convenience init(
         watcherEnabled: Bool = false,
         cacheDisabled: Bool = false,
-        buildPath: Path? = nil,
-        serialParse: Bool = false
+        buildPath: Path? = nil
     ) {
         self.init(
             watcherEnabled: watcherEnabled,
             cacheDisabled: cacheDisabled,
             buildPath: buildPath,
-            serialParse: serialParse,
             swiftGenerator: SwiftGenerator(),
             swiftParser: SwiftParser(),
             templateLoader: TemplateLoader()
@@ -34,7 +31,6 @@ public class Sourcery {
         watcherEnabled: Bool = false,
         cacheDisabled: Bool = false,
         buildPath: Path? = nil,
-        serialParse: Bool = false,
         swiftGenerator: SwiftGenerator,
         swiftParser: SwiftParser,
         templateLoader: TemplateLoading
@@ -42,7 +38,6 @@ public class Sourcery {
         self.watcherEnabled = watcherEnabled
         self.cacheDisabled = cacheDisabled
         self.buildPath = buildPath
-        self.serialParse = serialParse
         self.swiftGenerator = swiftGenerator
         self.swiftParser = swiftParser
         self.templateLoader = templateLoader
@@ -55,7 +50,7 @@ public class Sourcery {
     }
 
     private func process(_ config: Configuration) throws -> ParsingResult {
-        var parsingResult = try swiftParser.parseSources(from: config, serialParse: serialParse, cacheDisabled: cacheDisabled)
+        var parsingResult = try swiftParser.parseSources(from: config, cacheDisabled: cacheDisabled)
         let templates = try templateLoader.loadTemplates(from: config, cacheDisabled: cacheDisabled, buildPath: buildPath)
         try swiftGenerator.generate(from: &parsingResult, using: templates, to: config.output, config: config)
         return parsingResult
