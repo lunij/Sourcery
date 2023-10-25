@@ -440,7 +440,7 @@ class FileParserMethodTests: XCTestCase {
 private extension String {
     func parse() -> [Type] {
         do {
-            return try makeParser(for: self).parse().types
+            return try FileParserSyntax(contents: self).parse().types
         } catch {
             XCTFail(String(describing: error))
             return []
@@ -449,7 +449,7 @@ private extension String {
 
     func parseFunctions() -> [SourceryMethod] {
         do {
-            return try makeParser(for: self).parse().functions
+            return try FileParserSyntax(contents: self).parse().functions
         } catch {
             XCTFail(String(describing: error))
             return []

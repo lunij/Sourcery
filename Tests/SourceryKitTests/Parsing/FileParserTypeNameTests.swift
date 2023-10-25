@@ -119,7 +119,7 @@ private extension String {
         }
         """
         do {
-            let parser = try makeParser(for: wrappedCode)
+            let parser = try FileParserSyntax(contents: wrappedCode)
             let result = try parser.parse()
             let variable = result.types.first?.variables.first
             return variable?.typeName ?? TypeName(name: "")
@@ -132,7 +132,7 @@ private extension String {
     var typeNameFromTypealias: TypeName {
         let wrappedCode = "typealias Wrapper = \(self)"
         do {
-            let parser = try makeParser(for: wrappedCode)
+            let parser = try FileParserSyntax(contents: wrappedCode)
             let result = try parser.parse()
             return result.typealiases.first?.typeName ?? TypeName(name: "")
         } catch {

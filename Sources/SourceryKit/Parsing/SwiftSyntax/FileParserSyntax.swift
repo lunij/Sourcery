@@ -19,7 +19,7 @@ public final class FileParserSyntax: SyntaxVisitor, FileParserType {
 
     /// Parses given contents.
     /// - Throws: parsing errors.
-    public init(contents: String, forceParse: [String] = [], parseDocumentation: Bool, path: Path? = nil, module: String? = nil) throws {
+    public init(contents: String, forceParse: [String] = [], parseDocumentation: Bool = false, path: Path? = nil, module: String? = nil) throws {
         self.path = path?.string
         self.modifiedDate = path.flatMap({ (try? FileManager.default.attributesOfItem(atPath: $0.string)[.modificationDate]) as? Date })
         self.module = module

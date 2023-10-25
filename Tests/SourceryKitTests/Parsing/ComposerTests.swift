@@ -2287,7 +2287,7 @@ private extension String {
         line: UInt = #line
     ) -> [T] {
         do {
-            let parserResult = try makeParser(for: self).parse()
+            let parserResult = try FileParserSyntax(contents: self).parse()
             return Composer.uniqueTypesAndFunctions(parserResult)[keyPath: keyPath]
         } catch {
             XCTFail(String(describing: error), file: file, line: line)
@@ -2304,7 +2304,7 @@ private struct Module {
 private extension Array where Element == Module {
     func parse() -> (types: [Type], functions: [SourceryMethod], typealiases: [Typealias]) {
         let results = compactMap {
-            try? makeParser(for: $0.content, module: $0.name).parse()
+            try? FileParserSyntax(contents: $0.content, module: $0.name).parse()
         }
 
         let combinedResult = results.reduce(FileParserResult(path: nil, module: nil, types: [], functions: [], typealiases: [])) { acc, next in

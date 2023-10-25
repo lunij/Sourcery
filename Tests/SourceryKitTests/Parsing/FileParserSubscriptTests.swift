@@ -6,7 +6,7 @@ import XCTest
 
 class FileParserSubscriptTests: XCTestCase {
     private func parse(_ code: String) throws -> [Type] {
-        try makeParser(for: code).parse().types
+        try FileParserSyntax(contents: code).parse().types
     }
 
     func test_extractsSubscripts() throws {

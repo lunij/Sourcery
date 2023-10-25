@@ -95,8 +95,8 @@ public class SwiftParser {
                         case .isCodeGenerated:
                             return nil
                         case .approved:
-                            return try makeParser(
-                                for: content,
+                            return try FileParserSyntax(
+                                contents: content,
                                 forceParse: config.forceParse,
                                 parseDocumentation: config.parseDocumentation,
                                 path: path,

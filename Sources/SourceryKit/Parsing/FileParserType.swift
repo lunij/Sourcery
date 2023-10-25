@@ -15,16 +15,3 @@ public protocol FileParserType {
     /// - Returns: All types we could find.
     func parse() throws -> FileParserResult
 }
-
-public enum ParserEngine {
-    case swiftSyntax
-}
-
-public var parserEngine: ParserEngine = .swiftSyntax
-
-public func makeParser(for contents: String, forceParse: [String] = [], parseDocumentation: Bool = false, path: Path? = nil, module: String? = nil) throws -> FileParserType {
-    switch parserEngine {
-    case .swiftSyntax:
-        try FileParserSyntax(contents: contents, forceParse: forceParse, parseDocumentation: parseDocumentation, path: path, module: module)
-    }
-}
