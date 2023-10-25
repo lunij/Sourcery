@@ -68,11 +68,8 @@ public class SwiftParser {
             precondition(sources.count == modules.count, "There should be module for each file to parse")
         }
 
-        let startScan = currentTimestamp()
-        logger.info("Scanning sources...")
-
-        var inlineRanges = [(file: String, ranges: [String: NSRange], indentations: [String: String])]()
-        var allResults = [(changed: Bool, result: FileParserResult)]()
+        var inlineRanges: [(file: String, ranges: [String: NSRange], indentations: [String: String])] = []
+        var allResults: [(changed: Bool, result: FileParserResult)] = []
 
         let excludeSet = Set(
             excludes
@@ -141,12 +138,9 @@ public class SwiftParser {
             }
         }
 
-        logger.benchmark("\tloadOrParse: \(currentTimestamp() - startScan)")
-        let reduceStart = currentTimestamp()
-
-        var allTypealiases = [Typealias]()
-        var allTypes = [Type]()
-        var allFunctions = [SourceryMethod]()
+        var allTypealiases: [Typealias] = []
+        var allTypes: [Type] = []
+        var allFunctions: [SourceryMethod] = []
 
         for pair in allResults {
             let next = pair.result
@@ -154,7 +148,6 @@ public class SwiftParser {
             allTypes += next.types
             allFunctions += next.functions
 
-            // swiftlint:disable:next force_unwrapping
             inlineRanges.append((next.path!, next.inlineRanges, next.inlineIndentations))
         }
 
@@ -166,22 +159,20 @@ public class SwiftParser {
             parserResultCopy = try NSKeyedUnarchiver.unarchivedRootObject(ofClass: FileParserResult.self, from: data)
         }
 
-        let uniqueTypeStart = currentTimestamp()
-
         // ! All files have been scanned, time to join extensions with base class
         let (types, functions, typealiases) = Composer.uniqueTypesAndFunctions(parserResult)
 
-        let filesThatHadToBeParsed = allResults
+        let changedFiles = allResults
             .filter(\.changed)
             .compactMap(\.result.path)
 
-        logger.benchmark("\treduce: \(uniqueTypeStart - reduceStart)\n\tcomposer: \(currentTimestamp() - uniqueTypeStart)\n\ttotal: \(currentTimestamp() - startScan)")
-        logger.info("Found \(types.count) types in \(allResults.count) files, \(filesThatHadToBeParsed.count) changed from last run.")
+        logger.info("Found \(types.count) types in \(allResults.count) files, \(changedFiles.count) changed from last run.")
 
-        if !filesThatHadToBeParsed.isEmpty, filesThatHadToBeParsed.count < 50 || logger.level == .verbose {
-            let files = filesThatHadToBeParsed
-                .joined(separator: "\n")
-            logger.info("Files changed:\n\(files)")
+        if logger.level == .verbose, changedFiles.isNotEmpty {
+            logger.verbose("Files changed:")
+            changedFiles.map { Path($0).relativeToCurrent }.forEach {
+                logger.verbose("\($0)")
+            }
         }
         return .init(
             parserResult: parserResultCopy,

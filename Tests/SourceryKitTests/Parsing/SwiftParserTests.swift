@@ -8,8 +8,12 @@ class SwiftParserTests: XCTestCase {
 
     var output: Output!
 
+    var loggerMock: LoggerMock!
+
     override func setUpWithError() throws {
         try super.setUpWithError()
+        loggerMock = .init()
+        logger = loggerMock
         output = try .init(.createTestDirectory(suffixed: "SwiftParserTests"))
         sut = .init()
     }
@@ -21,6 +25,9 @@ class SwiftParserTests: XCTestCase {
         XCTAssertEqual(parsingResult.functions, [])
         XCTAssertEqual(parsingResult.types, Types(types: [], typealiases: []))
         XCTAssertTrue(parsingResult.inlineRanges.isEmpty)
+        XCTAssertEqual(loggerMock.calls, [
+            .info("Found 0 types in 0 files, 0 changed from last run.")
+        ])
     }
 
     func test_failsParsing_whenContainingMergeConflictMarkers() {
