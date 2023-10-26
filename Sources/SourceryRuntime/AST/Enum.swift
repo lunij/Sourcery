@@ -88,7 +88,7 @@ import Foundation
     }
 
     // Underlying parser data, never to be used by anything else
-    // sourcery: skipEquality, skipDescription, skipCoding, skipJSExport
+    // sourcery: skipEquality, skipDescription, skipCoding
     /// :nodoc:
     public var __parserData: Any?
 

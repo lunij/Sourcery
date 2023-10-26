@@ -10,7 +10,6 @@ public protocol Definition: AnyObject {
     /// nil if defined outside of any `enum`, `struct`, `class` etc or type is unknown
     var definedInType: Type? { get }
 
-    // sourcery: skipJSExport
     /// Reference to actual type name where the method is defined if declaration uses typealias, otherwise just a `definedInTypeName`
     var actualDefinedInTypeName: TypeName? { get }
 }

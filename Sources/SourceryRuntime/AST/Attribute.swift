@@ -9,10 +9,9 @@ import Foundation
     /// Attribute arguments
     public let arguments: [String: NSObject]
 
-    // sourcery: skipJSExport
     let _description: String
 
-    // sourcery: skipEquality, skipDescription, skipCoding, skipJSExport
+    // sourcery: skipEquality, skipDescription, skipCoding
     /// :nodoc:
     public var __parserData: Any?
 

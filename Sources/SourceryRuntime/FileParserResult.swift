@@ -1,6 +1,5 @@
 import Foundation
 
-// sourcery: skipJSExport
 /// :nodoc:
 @objcMembers public final class FileParserResult: NSObject, SourceryModel {
     public let path: String?

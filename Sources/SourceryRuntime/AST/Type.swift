@@ -28,7 +28,6 @@ public typealias AttributeList = [String: [Attribute]]
     }
 
     // All local typealiases
-    // sourcery: skipJSExport
     /// :nodoc:
     public var typealiases: [String: Typealias] {
         didSet {
@@ -36,7 +35,6 @@ public typealias AttributeList = [String: [Attribute]]
         }
     }
 
-    // sourcery: skipJSExport
     /// Whether declaration is an extension of some type
     public var isExtension: Bool
 
@@ -152,11 +150,11 @@ public typealias AttributeList = [String: [Attribute]]
         return lhs.parameters == rhs.parameters && lhs.returnTypeName == rhs.returnTypeName && lhs.readAccess == rhs.readAccess && lhs.writeAccess == rhs.writeAccess
     }
 
-    // sourcery: skipEquality, skipDescription, skipJSExport
+    // sourcery: skipEquality, skipDescription
     /// Bytes position of the body of this type in its declaration file if available.
     public var bodyBytesRange: BytesRange?
 
-    // sourcery: skipEquality, skipDescription, skipJSExport
+    // sourcery: skipEquality, skipDescription
     /// Bytes position of the whole declaration of this type in its declaration file if available.
     public var completeDeclarationRange: BytesRange?
 
@@ -307,7 +305,6 @@ public typealias AttributeList = [String: [Attribute]]
         }
     }
 
-    // sourcery: skipJSExport
     /// :nodoc:
     public var parentTypes: AnyIterator<Type> {
         var next: Type? = self
@@ -328,7 +325,7 @@ public typealias AttributeList = [String: [Attribute]]
     public var modifiers: [SourceryModifier]
 
     /// Path to file where the type is defined
-    // sourcery: skipDescription, skipEquality, skipJSExport
+    // sourcery: skipDescription, skipEquality
     public var path: String? {
         didSet {
             if let path = path {
@@ -338,7 +335,7 @@ public typealias AttributeList = [String: [Attribute]]
     }
 
     /// Directory to file where the type is defined
-    // sourcery: skipDescription, skipEquality, skipJSExport
+    // sourcery: skipDescription, skipEquality
     public var directory: String? {
         get {
             return (path as? NSString)?.deletingLastPathComponent
@@ -479,7 +476,7 @@ public typealias AttributeList = [String: [Attribute]]
 
 extension Type {
 
-    // sourcery: skipDescription, skipJSExport
+    // sourcery: skipDescription
     /// :nodoc:
     var isClass: Bool {
         let isNotClass = self is Struct || self is Enum || self is Protocol

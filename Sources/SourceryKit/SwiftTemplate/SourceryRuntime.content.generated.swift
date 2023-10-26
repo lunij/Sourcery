@@ -269,10 +269,9 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             /// Attribute arguments
             public let arguments: [String: NSObject]
 
-            // sourcery: skipJSExport
             let _description: String
 
-            // sourcery: skipEquality, skipDescription, skipCoding, skipJSExport
+            // sourcery: skipEquality, skipDescription, skipCoding
             /// :nodoc:
             public var __parserData: Any?
 
@@ -999,7 +998,6 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             /// nil if defined outside of any `enum`, `struct`, `class` etc or type is unknown
             var definedInType: Type? { get }
 
-            // sourcery: skipJSExport
             /// Reference to actual type name where the method is defined if declaration uses typealias, otherwise just a `definedInTypeName`
             var actualDefinedInTypeName: TypeName? { get }
         }
@@ -2245,7 +2243,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             }
 
             // Underlying parser data, never to be used by anything else
-            // sourcery: skipEquality, skipDescription, skipCoding, skipJSExport
+            // sourcery: skipEquality, skipDescription, skipCoding
             /// :nodoc:
             public var __parserData: Any?
 
@@ -3416,7 +3414,6 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
         #"""
         import Foundation
 
-        // sourcery: skipJSExport
         /// :nodoc:
         @objcMembers public final class FileParserResult: NSObject, SourceryModel {
             public let path: String?
@@ -4158,7 +4155,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             public let modifiers: [SourceryModifier]
 
             // Underlying parser data, never to be used by anything else
-            // sourcery: skipEquality, skipDescription, skipCoding, skipJSExport
+            // sourcery: skipEquality, skipDescription, skipCoding
             /// :nodoc:
             public var __parserData: Any?
 
@@ -4934,7 +4931,6 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
         #"""
         import Foundation
 
-        // sourcery: skipJSExport
         /// Describes a Swift [protocol composition](https://docs.swift.org/swift-book/ReferenceManual/Types.html#ID454).
         @objcMembers public final class ProtocolComposition: Type {
 
@@ -5151,7 +5147,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             public let modifiers: [SourceryModifier]
 
             // Underlying parser data, never to be used by anything else
-            // sourcery: skipEquality, skipDescription, skipCoding, skipJSExport
+            // sourcery: skipEquality, skipDescription, skipCoding
             /// :nodoc:
             public var __parserData: Any?
 
@@ -5221,7 +5217,6 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
         /// :nodoc:
         // sourcery: skipCoding
         @objcMembers public final class TemplateContext: NSObject, SourceryModel, NSCoding {
-            // sourcery: skipJSExport
             public let parserResult: FileParserResult?
             public let functions: [SourceryMethod]
             public let types: Types
@@ -5298,7 +5293,6 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             }
         }
 
-        // sourcery: skipJSExport
         /// Collection of scanned types for accessing in templates
         @objcMembers public final class Types: NSObject, SourceryModel {
 
@@ -5429,12 +5423,9 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
         /// :nodoc:
         @objcMembers public class TypesCollection: NSObject {
-
-            // sourcery:begin: skipJSExport
             let all: [Type]
             let types: [String: [Type]]
             let validate: ((Type) throws -> Void)?
-            // sourcery:end
 
             init(types: [Type], collection: (Type) -> [String], validate: ((Type) throws -> Void)? = nil) {
                 self.all = types
@@ -5638,7 +5629,6 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             }
 
             // All local typealiases
-            // sourcery: skipJSExport
             /// :nodoc:
             public var typealiases: [String: Typealias] {
                 didSet {
@@ -5646,7 +5636,6 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 }
             }
 
-            // sourcery: skipJSExport
             /// Whether declaration is an extension of some type
             public var isExtension: Bool
 
@@ -5762,11 +5751,11 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 return lhs.parameters == rhs.parameters && lhs.returnTypeName == rhs.returnTypeName && lhs.readAccess == rhs.readAccess && lhs.writeAccess == rhs.writeAccess
             }
 
-            // sourcery: skipEquality, skipDescription, skipJSExport
+            // sourcery: skipEquality, skipDescription
             /// Bytes position of the body of this type in its declaration file if available.
             public var bodyBytesRange: BytesRange?
 
-            // sourcery: skipEquality, skipDescription, skipJSExport
+            // sourcery: skipEquality, skipDescription
             /// Bytes position of the whole declaration of this type in its declaration file if available.
             public var completeDeclarationRange: BytesRange?
 
@@ -5917,7 +5906,6 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
                 }
             }
 
-            // sourcery: skipJSExport
             /// :nodoc:
             public var parentTypes: AnyIterator<Type> {
                 var next: Type? = self
@@ -5938,7 +5926,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             public var modifiers: [SourceryModifier]
 
             /// Path to file where the type is defined
-            // sourcery: skipDescription, skipEquality, skipJSExport
+            // sourcery: skipDescription, skipEquality
             public var path: String? {
                 didSet {
                     if let path = path {
@@ -5948,7 +5936,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             }
 
             /// Directory to file where the type is defined
-            // sourcery: skipDescription, skipEquality, skipJSExport
+            // sourcery: skipDescription, skipEquality
             public var directory: String? {
                 get {
                     return (path as? NSString)?.deletingLastPathComponent
@@ -6089,7 +6077,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
 
         extension Type {
 
-            // sourcery: skipDescription, skipJSExport
+            // sourcery: skipDescription
             /// :nodoc:
             var isClass: Bool {
                 let isNotClass = self is Struct || self is Enum || self is Protocol
@@ -6345,7 +6333,6 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
         #"""
         import Foundation
 
-        // sourcery: skipJSExport
         /// :nodoc:
         @objcMembers public final class Typealias: NSObject, Typed, SourceryModel {
             // New typealias name
@@ -6611,7 +6598,6 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
             public let writeAccess: String
 
             /// composed access level
-            /// sourcery: skipJSExport
             public var accessLevel: (read: AccessLevel, write: AccessLevel) {
                 (read: AccessLevel(rawValue: readAccess) ?? .none, AccessLevel(rawValue: writeAccess) ?? .none)
             }

@@ -3,7 +3,6 @@ import Foundation
 /// :nodoc:
 // sourcery: skipCoding
 @objcMembers public final class TemplateContext: NSObject, SourceryModel, NSCoding {
-    // sourcery: skipJSExport
     public let parserResult: FileParserResult?
     public let functions: [SourceryMethod]
     public let types: Types
@@ -80,7 +79,6 @@ extension ProcessInfo {
     }
 }
 
-// sourcery: skipJSExport
 /// Collection of scanned types for accessing in templates
 @objcMembers public final class Types: NSObject, SourceryModel {
 
@@ -211,12 +209,9 @@ public func encode(with aCoder: NSCoder) {
 
 /// :nodoc:
 @objcMembers public class TypesCollection: NSObject {
-
-    // sourcery:begin: skipJSExport
     let all: [Type]
     let types: [String: [Type]]
     let validate: ((Type) throws -> Void)?
-    // sourcery:end
 
     init(types: [Type], collection: (Type) -> [String], validate: ((Type) throws -> Void)? = nil) {
         self.all = types
