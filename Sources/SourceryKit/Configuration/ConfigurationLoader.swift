@@ -2,7 +2,11 @@ import Foundation
 import PathKit
 import SourceryRuntime
 
-struct ConfigurationLoader {
+protocol ConfigurationLoading {
+    func loadConfigurations(options: ConfigurationOptions) throws -> [Configuration]
+}
+
+struct ConfigurationLoader: ConfigurationLoading {
     let parser: ConfigurationParsing
     let fileReader: FileReading
     let environment: [String: String]

@@ -1156,14 +1156,15 @@ class SourceryTests: XCTestCase {
         XCTAssertFalse(targetPath.exists)
     }
 
-    func test_processFiles_andRestrictedFile_itDoesNotThrowWhenSourceFileDoesNotExist() {
-        let sourcePath = output.path + Path("Missing.swift")
-
-        XCTAssertNoThrow(try Sourcery().processConfiguration(.stub(
-            sources: .paths(Paths(include: [sourcePath])),
+    func test_failsProcessingConfig_whenSourceFileMissing() {
+        XCTAssertThrowsError(try Sourcery().processConfiguration(.stub(
+            sources: .paths(Paths(include: ["Missing.swift"])),
             templates: Paths(include: [.basicStencilPath]),
-            output: Output(output.path, linkTo: nil)
-        )))
+            output: Output(output.path)
+        ))) { error in
+            let error = error as? ConfigurationValidationError
+            XCTAssertEqual(error, .fileNotReadable("Missing.swift"))
+        }
     }
 
     func test_processFiles_ignoresExcludedSourcePaths() throws {

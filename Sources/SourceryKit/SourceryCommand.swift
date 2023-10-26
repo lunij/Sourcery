@@ -45,26 +45,12 @@ public struct SourceryCommand: AsyncParsableCommand {
             logBenchmarks: (logBenchmark || verbose) && !quiet
         )
 
-        let start = CFAbsoluteTimeGetCurrent()
-
-        let configLoader = ConfigurationLoader()
-
-        for configuration in try configLoader.loadConfigurations(options: options) {
-            try processFiles(specifiedIn: configuration)
-        }
-
-        logger.info("Processing time \(CFAbsoluteTimeGetCurrent() - start) seconds")
-    }
-
-    private func processFiles(specifiedIn configuration: Configuration) throws {
-        try configuration.validate()
-
         let sourcery = Sourcery(
             watcherEnabled: watcherEnabled,
             buildPath: buildPath.string.isEmpty ? nil : buildPath
         )
 
-        try sourcery.processConfiguration(configuration)
+        try sourcery.process(using: options)
     }
 
     enum Error: Swift.Error, Equatable {
@@ -84,72 +70,5 @@ extension SourceryCommand.Error: CustomStringConvertible {
 extension Path: ExpressibleByArgument {
     public init?(argument: String) {
         self.init(argument)
-    }
-}
-
-enum ConfigurationValidationError: Error, Equatable {
-    case fileNotReadable(Path)
-    case missingSources
-    case missingTemplates
-    case outputNotWritable(Path)
-}
-
-extension ConfigurationValidationError: CustomStringConvertible {
-    var description: String {
-        switch self {
-        case let .fileNotReadable(path):
-            "'\(path)' does not exist or is not readable."
-        case .missingSources:
-            "No sources provided."
-        case .missingTemplates:
-            "No templates provided."
-        case let .outputNotWritable(path):
-            "'\(path)' isn't writable."
-        }
-    }
-}
-
-private extension Configuration {
-    func validate() throws {
-        try validateSources()
-        try validateTemplates()
-        try validateOutput()
-    }
-
-    private func validateSources() throws {
-        if sources.isEmpty {
-            throw ConfigurationValidationError.missingSources
-        }
-        if case let .paths(paths) = sources {
-            for path in paths.allPaths {
-                try path.validateReadability()
-            }
-        }
-    }
-
-    private func validateTemplates() throws {
-        if templates.isEmpty {
-            throw ConfigurationValidationError.missingTemplates
-        }
-        for path in templates.allPaths {
-            try path.validateReadability()
-        }
-    }
-
-    private func validateOutput() throws {
-        try output.path.validateWritablity()
-    }
-}
-
-private extension Path {
-    func validateReadability() throws {
-        if isReadable { return }
-        throw ConfigurationValidationError.fileNotReadable(self)
-    }
-
-    func validateWritablity() throws {
-        if exists && !isWritable {
-            throw ConfigurationValidationError.outputNotWritable(self)
-        }
     }
 }

@@ -7,6 +7,8 @@ public class Sourcery {
     private let watcherEnabled: Bool
     private let buildPath: Path?
     
+    private let clock: TimeMeasuring
+    private let configLoader: ConfigurationLoading
     private let swiftGenerator: SwiftGenerator
     private let swiftParser: SwiftParser
     private let templateLoader: TemplateLoading
@@ -18,6 +20,8 @@ public class Sourcery {
         self.init(
             watcherEnabled: watcherEnabled,
             buildPath: buildPath,
+            clock: ContinuousClock(),
+            configLoader: ConfigurationLoader(),
             swiftGenerator: SwiftGenerator(),
             swiftParser: SwiftParser(),
             templateLoader: TemplateLoader()
@@ -27,19 +31,33 @@ public class Sourcery {
     init(
         watcherEnabled: Bool = false,
         buildPath: Path? = nil,
+        clock: TimeMeasuring,
+        configLoader: ConfigurationLoading,
         swiftGenerator: SwiftGenerator,
         swiftParser: SwiftParser,
         templateLoader: TemplateLoading
     ) {
         self.watcherEnabled = watcherEnabled
         self.buildPath = buildPath
+        self.clock = clock
+        self.configLoader = configLoader
         self.swiftGenerator = swiftGenerator
         self.swiftParser = swiftParser
         self.templateLoader = templateLoader
     }
 
+    func process(using options: ConfigurationOptions) throws {
+        let elapsedTime = try clock.measure {
+            for configuration in try configLoader.loadConfigurations(options: options) {
+                try processConfiguration(configuration)
+            }
+        }
+        logger.info("Processing finished in \(elapsedTime)")
+    }
+
     @discardableResult
-    public func processConfiguration(_ config: Configuration) throws -> [FSEventStream] {
+    func processConfiguration(_ config: Configuration) throws -> [FSEventStream] {
+        try config.validate()
         let parserResult = try process(config)
         return watcherEnabled ? createWatchers(config: config, parserResult: parserResult) : []
     }
@@ -144,5 +162,72 @@ public class Sourcery {
         }
 
         return top.map { $0.0 }
+    }
+}
+
+enum ConfigurationValidationError: Error, Equatable {
+    case fileNotReadable(Path)
+    case missingSources
+    case missingTemplates
+    case outputNotWritable(Path)
+}
+
+extension ConfigurationValidationError: CustomStringConvertible {
+    var description: String {
+        switch self {
+        case let .fileNotReadable(path):
+            "'\(path)' does not exist or is not readable."
+        case .missingSources:
+            "No sources provided."
+        case .missingTemplates:
+            "No templates provided."
+        case let .outputNotWritable(path):
+            "'\(path)' isn't writable."
+        }
+    }
+}
+
+private extension Configuration {
+    func validate() throws {
+        try validateSources()
+        try validateTemplates()
+        try validateOutput()
+    }
+
+    private func validateSources() throws {
+        if sources.isEmpty {
+            throw ConfigurationValidationError.missingSources
+        }
+        if case let .paths(paths) = sources {
+            for path in paths.allPaths {
+                try path.validateReadability()
+            }
+        }
+    }
+
+    private func validateTemplates() throws {
+        if templates.isEmpty {
+            throw ConfigurationValidationError.missingTemplates
+        }
+        for path in templates.allPaths {
+            try path.validateReadability()
+        }
+    }
+
+    private func validateOutput() throws {
+        try output.path.validateWritablity()
+    }
+}
+
+private extension Path {
+    func validateReadability() throws {
+        if isReadable { return }
+        throw ConfigurationValidationError.fileNotReadable(self)
+    }
+
+    func validateWritablity() throws {
+        if exists && !isWritable {
+            throw ConfigurationValidationError.outputNotWritable(self)
+        }
     }
 }
