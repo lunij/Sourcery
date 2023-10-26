@@ -4,7 +4,7 @@ import SourceryRuntime
 
 extension ParsingResult {
     static func stub(
-        parserResult: FileParserResult? = nil,
+        parserResult: FileParserResult = .stub(),
         types: Types = .init(types: []),
         functions: [SourceryMethod] = [],
         inlineRanges: [(file: String, ranges: [String: NSRange], indentations: [String: String])] = []

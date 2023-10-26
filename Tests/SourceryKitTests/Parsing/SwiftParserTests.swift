@@ -21,7 +21,7 @@ class SwiftParserTests: XCTestCase {
     func test_parsesNothing_whenNoSources() throws {
         let parsingResult = try sut.parseSources(from: .stub())
 
-        XCTAssertEqual(parsingResult.parserResult, nil)
+        XCTAssertEqual(parsingResult.parserResult, .stub(modifiedDate: parsingResult.parserResult.modifiedDate))
         XCTAssertEqual(parsingResult.functions, [])
         XCTAssertEqual(parsingResult.types, Types(types: [], typealiases: []))
         XCTAssertTrue(parsingResult.inlineRanges.isEmpty)
@@ -30,6 +30,18 @@ class SwiftParserTests: XCTestCase {
 
     func test_parses_whenCacheDisabled() throws {
         let sourcePath = output.path + Path("Source.swift")
+        let parsedStruct = Struct(
+            name: "Fake",
+            variables: [
+                Variable(
+                    name: "fakeInt",
+                    typeName: .Int,
+                    accessLevel: (.internal, .none),
+                    definedInTypeName: .init(name: "Fake")
+                )
+            ],
+            fileName: "Source.swift"
+        )
 
         """
         struct Fake {
@@ -39,31 +51,27 @@ class SwiftParserTests: XCTestCase {
 
         let parsingResult = try sut.parseSources(from: .stub(sources: .paths(.init(include: [sourcePath]))))
 
-        XCTAssertEqual(parsingResult.parserResult, nil)
+        XCTAssertEqual(parsingResult.parserResult, .stub(types: [parsedStruct], modifiedDate: parsingResult.parserResult.modifiedDate))
         XCTAssertEqual(parsingResult.functions, [])
-        XCTAssertEqual(parsingResult.types, Types(
-            types: [
-                Struct(
-                    name: "Fake",
-                    variables: [
-                        Variable(
-                            name: "fakeInt",
-                            typeName: .Int,
-                            accessLevel: (.internal, .none),
-                            definedInTypeName: .init(name: "Fake")
-                        )
-                    ],
-                    fileName: "Source.swift"
-                )
-            ],
-            typealiases: []
-        ))
+        XCTAssertEqual(parsingResult.types, Types(types: [parsedStruct], typealiases: []))
         XCTAssertFalse(parsingResult.inlineRanges.isEmpty)
         XCTAssertEqual(loggerMock.calls, [.info("Found 1 type in 1 file.")])
     }
 
     func test_parses_whenCacheEnabled() throws {
         let sourcePath = output.path + Path("Source.swift")
+        let parsedStruct = Struct(
+            name: "Fake",
+            variables: [
+                Variable(
+                    name: "fakeInt",
+                    typeName: .Int,
+                    accessLevel: (.internal, .none),
+                    definedInTypeName: .init(name: "Fake")
+                )
+            ],
+            fileName: "Source.swift"
+        )
 
         """
         struct Fake {
@@ -73,25 +81,9 @@ class SwiftParserTests: XCTestCase {
 
         let parsingResult = try sut.parseSources(from: .stub(sources: .paths(.init(include: [sourcePath])), cacheDisabled: false))
 
-        XCTAssertEqual(parsingResult.parserResult, nil)
+        XCTAssertEqual(parsingResult.parserResult, .stub(types: [parsedStruct], modifiedDate: parsingResult.parserResult.modifiedDate))
         XCTAssertEqual(parsingResult.functions, [])
-        XCTAssertEqual(parsingResult.types, Types(
-            types: [
-                Struct(
-                    name: "Fake",
-                    variables: [
-                        Variable(
-                            name: "fakeInt",
-                            typeName: .Int,
-                            accessLevel: (.internal, .none),
-                            definedInTypeName: .init(name: "Fake")
-                        )
-                    ],
-                    fileName: "Source.swift"
-                )
-            ],
-            typealiases: []
-        ))
+        XCTAssertEqual(parsingResult.types, Types(types: [parsedStruct], typealiases: []))
         XCTAssertFalse(parsingResult.inlineRanges.isEmpty)
         XCTAssertEqual(loggerMock.calls, [
             .info("Found 1 type in 1 file."),

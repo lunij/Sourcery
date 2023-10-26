@@ -8,16 +8,13 @@ public class SwiftParser {
     public init() {}
 
     func parseSources(from config: Configuration) throws -> ParsingResult {
-        let requiresFileParserCopy = config.templates.allPaths.contains { $0.extension == "swifttemplate" }
-
         switch config.sources {
         case let .paths(paths):
             return try parse(
                 sources: paths.include,
                 excludes: paths.exclude,
                 config: config,
-                modules: nil,
-                requiresFileParserCopy: requiresFileParserCopy
+                modules: nil
             )
         case let .projects(projects):
             var paths: [Path] = []
@@ -41,8 +38,7 @@ public class SwiftParser {
             return try parse(
                 sources: paths,
                 config: config,
-                modules: modules,
-                requiresFileParserCopy: requiresFileParserCopy
+                modules: modules
             )
         }
     }
@@ -51,8 +47,7 @@ public class SwiftParser {
         sources: [Path],
         excludes: [Path] = [],
         config: Configuration,
-        modules: [String]?,
-        requiresFileParserCopy: Bool
+        modules: [String]?
     ) throws -> ParsingResult {
         if let modules {
             precondition(sources.count == modules.count, "There should be module for each file to parse")
@@ -137,12 +132,6 @@ public class SwiftParser {
 
         let parserResult = FileParserResult(path: nil, module: nil, types: allTypes, functions: allFunctions, typealiases: allTypealiases)
 
-        var parserResultCopy: FileParserResult?
-        if requiresFileParserCopy {
-            let data = try NSKeyedArchiver.archivedData(withRootObject: parserResult, requiringSecureCoding: false)
-            parserResultCopy = try NSKeyedUnarchiver.unarchivedRootObject(ofClass: FileParserResult.self, from: data)
-        }
-
         // ! All files have been scanned, time to join extensions with base class
         let (types, functions, typealiases) = Composer.uniqueTypesAndFunctions(parserResult)
 
@@ -162,7 +151,7 @@ public class SwiftParser {
         }
 
         return .init(
-            parserResult: parserResultCopy,
+            parserResult: parserResult,
             types: Types(types: types, typealiases: typealiases),
             functions: functions,
             inlineRanges: inlineRanges
