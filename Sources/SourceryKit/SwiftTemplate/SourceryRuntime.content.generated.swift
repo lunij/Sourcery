@@ -261,7 +261,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
         import Foundation
 
         /// Describes Swift attribute
-        @objcMembers public class Attribute: NSObject, AutoCoding, AutoEquatable, AutoDiffable, AutoJSExport {
+        @objcMembers public class Attribute: NSObject, AutoCoding, AutoEquatable, AutoDiffable {
 
             /// Attribute name
             public let name: String
@@ -4257,7 +4257,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
         public typealias SourceryModifier = Modifier
         /// modifier can be thing like `private`, `class`, `nonmutating`
         /// if a declaration has modifier like `private(set)` it's name will be `private` and detail will be `set`
-        @objcMembers public class Modifier: NSObject, AutoCoding, AutoEquatable, AutoDiffable, AutoJSExport {
+        @objcMembers public class Modifier: NSObject, AutoCoding, AutoEquatable, AutoDiffable {
 
             /// The declaration modifier name.
             public let name: String
@@ -4834,10 +4834,8 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
         /// Phantom protocol for NSCoding
         protocol AutoCoding {}
 
-        protocol AutoJSExport {}
-
         /// Phantom protocol for NSCoding, Equatable and Diffable
-        protocol SourceryModelWithoutDescription: AutoDiffable, AutoEquatable, AutoCoding, AutoJSExport {}
+        protocol SourceryModelWithoutDescription: AutoDiffable, AutoEquatable, AutoCoding {}
 
         protocol SourceryModel: SourceryModelWithoutDescription, AutoDescription {}
 
@@ -5430,7 +5428,7 @@ let sourceryRuntimeFiles: [FolderSynchronizer.File] = [
         }
 
         /// :nodoc:
-        @objcMembers public class TypesCollection: NSObject, AutoJSExport {
+        @objcMembers public class TypesCollection: NSObject {
 
             // sourcery:begin: skipJSExport
             let all: [Type]

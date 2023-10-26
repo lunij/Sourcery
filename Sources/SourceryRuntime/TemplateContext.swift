@@ -210,7 +210,7 @@ public func encode(with aCoder: NSCoder) {
 }
 
 /// :nodoc:
-@objcMembers public class TypesCollection: NSObject, AutoJSExport {
+@objcMembers public class TypesCollection: NSObject {
 
     // sourcery:begin: skipJSExport
     let all: [Type]

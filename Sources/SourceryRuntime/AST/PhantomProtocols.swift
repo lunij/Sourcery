@@ -12,9 +12,7 @@ protocol AutoDescription {}
 /// Phantom protocol for NSCoding
 protocol AutoCoding {}
 
-protocol AutoJSExport {}
-
 /// Phantom protocol for NSCoding, Equatable and Diffable
-protocol SourceryModelWithoutDescription: AutoDiffable, AutoEquatable, AutoCoding, AutoJSExport {}
+protocol SourceryModelWithoutDescription: AutoDiffable, AutoEquatable, AutoCoding {}
 
 protocol SourceryModel: SourceryModelWithoutDescription, AutoDescription {}
