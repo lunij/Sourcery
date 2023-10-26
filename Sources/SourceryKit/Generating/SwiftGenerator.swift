@@ -180,11 +180,14 @@ public class SwiftGenerator {
             .forEach { _, filePath, rangeInFile, toInsert, indentation in
                 let path = Path(filePath).unlinked
                 let content = try path.read(.utf8)
-                let newContent = indent(toInsert: toInsert, indentation: indentation)
+                let snippet = indent(toInsert: toInsert, indentation: indentation)
+                let newContent = content.bridge().replacingCharacters(in: rangeInFile, with: snippet)
 
-                try path.write(content.bridge().replacingCharacters(in: rangeInFile, with: newContent))
+                if newContent != content {
+                    try path.write(newContent)
+                }
 
-                let newLength = newContent.bridge().length
+                let newLength = snippet.bridge().length
 
                 sourceChanges.append((
                     path: filePath,
