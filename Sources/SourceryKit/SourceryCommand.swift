@@ -23,9 +23,6 @@ public struct SourceryCommand: AsyncParsableCommand {
     @Flag(help: "Log AST messages")
     var logAST = false
 
-    @Flag(help: "Log time benchmark info")
-    var logBenchmark = false
-
     @Flag(name: .shortAndLong, help: "Turn off any logging, only emmit errors")
     var quiet = false
 
@@ -41,8 +38,7 @@ public struct SourceryCommand: AsyncParsableCommand {
 
         logger = Logger(
             level: quiet ? .error : verbose ? .verbose : .info,
-            logAST: (logAST || verbose) && !quiet,
-            logBenchmarks: (logBenchmark || verbose) && !quiet
+            logAST: (logAST || verbose) && !quiet
         )
 
         let sourcery = Sourcery(

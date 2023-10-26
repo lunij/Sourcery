@@ -8,7 +8,6 @@ public protocol Logging {
 
     func astError(_ message: String)
     func astWarning(_ message: String)
-    func benchmark(_ message: String)
     func error(_ message: String)
     func info(_ message: String)
     func verbose(_ message: String)
@@ -37,16 +36,13 @@ public class Logger: Logging {
     public let level: LogLevel
 
     public let logAST: Bool
-    public let logBenchmarks: Bool
 
     public init(
         level: LogLevel = .warning,
-        logAST: Bool = false,
-        logBenchmarks: Bool = false
+        logAST: Bool = false
     ) {
         self.level = level
         self.logAST = logAST
-        self.logBenchmarks = logBenchmarks
     }
 
     public func output(_ message: String) {
@@ -81,11 +77,6 @@ public class Logger: Logging {
 
     public func info(_ message: String) {
         log(level: .info, message)
-    }
-
-    public func benchmark(_ message: String) {
-        guard logBenchmarks else { return }
-        print(message)
     }
 
     func log(level: LogLevel, _ message: String) {

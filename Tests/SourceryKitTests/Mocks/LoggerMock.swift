@@ -4,7 +4,6 @@ class LoggerMock: Logging {
     enum Call: Equatable {
         case astError(String)
         case astWarning(String)
-        case benchmark(String)
         case error(String)
         case info(String)
         case verbose(String)
@@ -23,10 +22,6 @@ class LoggerMock: Logging {
 
     func astWarning(_ message: String) {
         calls.append(.astWarning(message))
-    }
-
-    func benchmark(_ message: String) {
-        calls.append(.benchmark(message))
     }
 
     func error(_ message: String) {
