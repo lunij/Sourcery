@@ -1,6 +1,16 @@
+import class Foundation.FileManager
 import PathKit
 
 extension Path {
+    public static var systemCachePath: Path {
+        do {
+            let url = try FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+            return Path(url.path)
+        } catch {
+            fatalError(String(describing: error))
+        }
+    }
+
     var generatedFileName: String {
         "\(lastComponentWithoutExtension).generated.swift"
     }

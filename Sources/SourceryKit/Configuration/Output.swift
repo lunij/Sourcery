@@ -9,7 +9,7 @@ public struct Output: Equatable {
     }
 
     public let path: Path
-    public let linkTo: LinkTo?
+    public let link: LinkTo?
 
     public var isRepresentingDirectory: Bool {
         isNotEmpty && (path.lastComponentWithoutExtension == path.lastComponent || path.string.hasSuffix("/"))
@@ -23,8 +23,8 @@ public struct Output: Equatable {
         path.string.isNotEmpty
     }
 
-    public init(_ path: Path, linkTo: LinkTo? = nil) {
+    public init(_ path: Path, link: LinkTo? = nil) {
         self.path = path
-        self.linkTo = linkTo
+        self.link = link
     }
 }

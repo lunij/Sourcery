@@ -34,7 +34,7 @@ struct ConfigurationOptions: ParsableArguments {
     var args: [String] = []
 
     @Option(help: "Base path to Sourcery's cache directory")
-    var cacheBasePath: Path = .defaultBaseCachePath
+    var cacheBasePath: Path = .systemCachePath
 
     @Flag(help: "Include documentation comments for all declarations")
     var parseDocumentation = false

@@ -46,9 +46,9 @@ public class SwiftGenerator {
                 let outputPath = output.path.appending(template.path.generatedFileName)
                 try write(result, to: outputPath)
 
-                if let linkTo = output.linkTo {
-                    linkTo.targets.forEach { target in
-                        link(outputPath, to: linkTo, target: target)
+                if let link = output.link {
+                    link.targets.forEach { target in
+                        self.link(outputPath, to: link, target: target)
                     }
                 }
             }
@@ -56,15 +56,15 @@ public class SwiftGenerator {
             for (path, content) in fileAnnotatedContent {
                 try write(content.joined(separator: "\n"), to: path)
 
-                if let linkTo = output.linkTo {
-                    linkTo.targets.forEach { target in
-                        link(path, to: linkTo, target: target)
+                if let link = output.link {
+                    link.targets.forEach { target in
+                        self.link(path, to: link, target: target)
                     }
                 }
             }
 
-            if let linkTo = output.linkTo {
-                try linkTo.project.writePBXProj(path: linkTo.projectPath, outputSettings: .init())
+            if let link = output.link {
+                try link.project.writePBXProj(path: link.projectPath, outputSettings: .init())
             }
         }
 

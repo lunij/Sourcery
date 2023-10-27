@@ -44,7 +44,7 @@ class ConfigurationLoaderTests: XCTestCase {
 
     func test_loadsDefaultConfig_whenConfigFile_andParserReturnsNoConfigs() throws {
         fileReaderMock.readReturnValue = "fake"
-        parserMock.parseConfigurationsReturnValue = []
+        parserMock.parseReturnValue = []
 
         let options = try ConfigurationOptions.parse([])
         let configurations = try sut.loadConfigurations(options: options)
@@ -55,12 +55,12 @@ class ConfigurationLoaderTests: XCTestCase {
             .info("Loading configuration file at .sourcery.yml"),
             .info("No configuration files loaded. Using default configuration and command line arguments.")
         ])
-        XCTAssertEqual(parserMock.calls, [.parseConfigurations("fake", ".", ["fakeEnvKey": "fakeEnvValue"])])
+        XCTAssertEqual(parserMock.calls, [.parse("fake", ".", ["fakeEnvKey": "fakeEnvValue"])])
     }
 
     func test_loadsConfig() throws {
         fileReaderMock.readReturnValue = "fake"
-        parserMock.parseConfigurationsReturnValue = [.stub()]
+        parserMock.parseReturnValue = [.stub()]
 
         let options = try ConfigurationOptions.parse([])
         let configurations = try sut.loadConfigurations(options: options)
@@ -68,12 +68,12 @@ class ConfigurationLoaderTests: XCTestCase {
         XCTAssertEqual(configurations, [.stub()])
         XCTAssertEqual(fileReaderMock.calls, [.read(".sourcery.yml", .utf8)])
         XCTAssertEqual(loggerMock.calls, [.info("Loading configuration file at .sourcery.yml")])
-        XCTAssertEqual(parserMock.calls, [.parseConfigurations("fake", ".", ["fakeEnvKey": "fakeEnvValue"])])
+        XCTAssertEqual(parserMock.calls, [.parse("fake", ".", ["fakeEnvKey": "fakeEnvValue"])])
     }
 
     func test_loadsConfig_whenConfigPathIsAFilePath() throws {
         fileReaderMock.readReturnValue = "fake"
-        parserMock.parseConfigurationsReturnValue = [.stub()]
+        parserMock.parseReturnValue = [.stub()]
 
         let options = try ConfigurationOptions.parse(["--config", ".sourcery.yml"])
         let configurations = try sut.loadConfigurations(options: options)
@@ -81,7 +81,7 @@ class ConfigurationLoaderTests: XCTestCase {
         XCTAssertEqual(configurations, [.stub()])
         XCTAssertEqual(fileReaderMock.calls, [.read(".sourcery.yml", .utf8)])
         XCTAssertEqual(loggerMock.calls, [.info("Loading configuration file at .sourcery.yml")])
-        XCTAssertEqual(parserMock.calls, [.parseConfigurations("fake", ".", ["fakeEnvKey": "fakeEnvValue"])])
+        XCTAssertEqual(parserMock.calls, [.parse("fake", ".", ["fakeEnvKey": "fakeEnvValue"])])
     }
 
     func test_failsLoadingConfig_whenFileNotExisting_andNonDefaultConfigPath() throws {
@@ -118,7 +118,7 @@ private extension Configuration {
             sources: .paths(.init(include: [])),
             templates: .init(include: []),
             output: .init("."),
-            cacheBasePath: .defaultBaseCachePath,
+            cacheBasePath: .systemCachePath,
             cacheDisabled: false,
             forceParse: [],
             parseDocumentation: false,

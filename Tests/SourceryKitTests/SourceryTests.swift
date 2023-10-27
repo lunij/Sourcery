@@ -988,7 +988,7 @@ class SourceryTests: XCTestCase {
         try Sourcery().processConfiguration(.stub(
             sources: .paths(Paths(include: [sourcePath])),
             templates: Paths(include: [templatePath]),
-            output: Output(output.path, linkTo: nil),
+            output: Output(output.path),
             cacheDisabled: false
         ))
 
@@ -997,7 +997,7 @@ class SourceryTests: XCTestCase {
         try Sourcery().processConfiguration(.stub(
             sources: .paths(Paths(include: [sourcePath])),
             templates: Paths(include: [templatePath]),
-            output: Output(output.path, linkTo: nil),
+            output: Output(output.path),
             cacheDisabled: false
         ))
 
@@ -1254,8 +1254,7 @@ class SourceryTests: XCTestCase {
         let project = try XcodeProj(path: projectFilePath)
         let sources = Sources.projects([
             Project(
-                file: project,
-                root: projectPath,
+                path: projectFilePath,
                 targets: [.init(name: "TestProject", module: "TestProject", xcframeworks: [])],
                 exclude: []
             )
@@ -1357,7 +1356,7 @@ private struct ProjectScenario {
 
     func createOutput(at path: Path) throws -> Output {
         let projectPath = projectPath + "TestProject.xcodeproj"
-        return try Output(path, linkTo: .init(
+        return try Output(path, link: .init(
             project: XcodeProj(path: projectPath),
             projectPath: projectPath,
             targets: ["TestProject"],

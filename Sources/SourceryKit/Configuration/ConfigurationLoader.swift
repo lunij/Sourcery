@@ -29,9 +29,9 @@ struct ConfigurationLoader: ConfigurationLoading {
 
                 logger.info("Loading configuration file at \(configPath)")
 
-                return try parser.parseConfigurations(
+                return try parser.parse(
                     from: configString,
-                    relativePath: configPath.parent(),
+                    basePath: configPath.parent(),
                     env: environment
                 )
             } catch let FileReader.Error.fileNotExisting(path) where path == ".sourcery.yml" {

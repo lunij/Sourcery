@@ -19,11 +19,12 @@ public class SwiftParser {
         case let .projects(projects):
             var paths: [Path] = []
             var modules: [String] = []
-            projects.forEach { project in
-                project.targets.forEach { target in
-                    guard let projectTarget = project.file.target(named: target.name) else { return }
+            for project in projects {
+                let xcodeProj = try project.parse()
+                for target in project.targets {
+                    guard let projectTarget = xcodeProj.target(named: target.name) else { continue }
 
-                    let files = project.file.sourceFilesPaths(target: projectTarget, sourceRoot: project.root)
+                    let files = xcodeProj.sourceFilesPaths(target: projectTarget, sourceRoot: project.root)
                     files.forEach { file in
                         guard !project.exclude.contains(file) else { return }
                         paths.append(file)
