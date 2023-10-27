@@ -14,7 +14,7 @@ class TemplateLoader: TemplateLoading {
     func loadTemplates(from config: Configuration, buildPath: Path?) throws -> [Template] {
         var templates: [Template] = []
         let elapsedTime = try clock.measure {
-            templates = try config.templates.allPaths.filter(\.isTemplateFile).map {
+            templates = try config.templates.blendedPaths.filter(\.isTemplateFile).map {
                 logger.info("Loading \($0.relativeToCurrent)")
                 if $0.extension == "swifttemplate" {
                     let cachePath = config.cacheDisabled ? nil : Path.cachesDir(sourcePath: $0, basePath: config.cacheBasePath)

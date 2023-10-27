@@ -5,7 +5,7 @@ public enum Sources {
     public var isEmpty: Bool {
         switch self {
         case let .paths(paths):
-            paths.allPaths.isEmpty
+            paths.blendedPaths.isEmpty
         case let .projects(projects):
             projects.isEmpty
         }

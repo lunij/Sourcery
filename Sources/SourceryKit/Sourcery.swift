@@ -81,7 +81,7 @@ public class Sourcery {
 
         logger.info("Starting watching sources.")
 
-        let sourceWatchers = topPaths(from: sourcePaths.allPaths).compactMap { path in
+        let sourceWatchers = topPaths(from: sourcePaths.blendedPaths).compactMap { path in
             FSEventStream(path: path.string) { events in
                 let eventPaths: [Path] = events
                     .filter { $0.flags.contains(.isFile) }
@@ -112,7 +112,7 @@ public class Sourcery {
 
         logger.info("Starting watching templates.")
 
-        let templateWatchers = topPaths(from: config.templates.allPaths).compactMap { path in
+        let templateWatchers = topPaths(from: config.templates.blendedPaths).compactMap { path in
             FSEventStream(path: path.string) { [templateLoader, buildPath] events in
                 let events = events.filter { $0.flags.contains(.isFile) && Path($0.path).isTemplateFile }
 
@@ -188,7 +188,7 @@ extension ConfigurationValidationError: CustomStringConvertible {
 }
 
 private extension Configuration {
-    func validate() throws {
+    func validate() throws { // TODO: move to ConfigurationLoader or introduce ConfigurationValidator
         try validateSources()
         try validateTemplates()
         try validateOutput()
@@ -199,17 +199,17 @@ private extension Configuration {
             throw ConfigurationValidationError.missingSources
         }
         if case let .paths(paths) = sources {
-            for path in paths.allPaths {
+            for path in paths.blendedPaths {
                 try path.validateReadability()
             }
         }
     }
 
     private func validateTemplates() throws {
-        if templates.isEmpty {
+        if templates.blendedPaths.isEmpty {
             throw ConfigurationValidationError.missingTemplates
         }
-        for path in templates.allPaths {
+        for path in templates.blendedPaths {
             try path.validateReadability()
         }
     }

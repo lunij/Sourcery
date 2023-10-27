@@ -4,11 +4,7 @@ import PathKit
 public struct Paths: Equatable {
     public let include: [Path]
     public let exclude: [Path]
-    public let allPaths: [Path]
-
-    public var isEmpty: Bool {
-        allPaths.isEmpty
-    }
+    public let blendedPaths: [Path] // TODO: Shall we use these blended paths as actual parsing result instead of "Paths"? Are "includes" and "excludes" still needed?
 
     public init(include: [Path], exclude: [Path] = []) {
         self.include = include
@@ -17,7 +13,7 @@ public struct Paths: Equatable {
         let include = self.include.parallelFlatMap { $0.processablePaths }
         let exclude = self.exclude.parallelFlatMap { $0.processablePaths }
 
-        allPaths = Array(Set(include).subtracting(Set(exclude))).sorted()
+        blendedPaths = Array(Set(include).subtracting(Set(exclude))).sorted()
     }
 }
 

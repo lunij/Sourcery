@@ -34,18 +34,7 @@ class ConfigurationParser: ConfigurationParsing {
             throw Error.invalidSources(message: "No sources provided.")
         }
 
-        let templates: Paths
-        guard let templatesDict = dict["templates"] else {
-            throw Error.invalidTemplates(message: "'templates' key is missing.")
-        }
-        do {
-            templates = try Paths(dict: templatesDict, basePath: basePath)
-        } catch {
-            throw Error.invalidTemplates(message: "\(error)")
-        }
-        guard !templates.isEmpty else {
-            throw Error.invalidTemplates(message: "No templates provided.")
-        }
+        let templates = try parseTemplatePaths(from: dict, basePath: basePath)
 
         let output: Output = if let value = dict["output"] {
             try Output(value: value, basePath: basePath)
@@ -80,6 +69,17 @@ class ConfigurationParser: ConfigurationParsing {
             baseIndentation: dict["baseIndentation"] as? Int ?? 0,
             arguments: dict["args"] as? [String: NSObject] ?? [:]
         )
+    }
+
+    private func parseTemplatePaths(from dict: [String: Any], basePath: Path) throws -> Paths {
+        guard let value = dict["templates"] else {
+            throw Error.invalidTemplates(message: "'templates' key is missing.")
+        }
+        do {
+            return try Paths(from: value, basePath: basePath)
+        } catch {
+            throw Error.invalidTemplates(message: "\(error)")
+        }
     }
 
     enum Error: Swift.Error, Equatable {
@@ -180,7 +180,7 @@ private extension Sources {
             }
         } else if let sources = dict["sources"] {
             do {
-                self = try .paths(Paths(dict: sources, basePath: basePath))
+                self = try .paths(Paths(from: sources, basePath: basePath))
             } catch {
                 throw ConfigurationParser.Error.invalidSources(message: "\(error)")
             }
@@ -191,19 +191,19 @@ private extension Sources {
 }
 
 private extension Paths {
-    init(dict: Any, basePath: Path) throws {
-        if let sources = dict as? [String: [String]],
+    init(from value: Any, basePath: Path) throws {
+        if let sources = value as? [String: [String]],
            let include = sources["include"]?.map({ Path($0, relativeTo: basePath) })
         {
             let exclude = sources["exclude"]?.map { Path($0, relativeTo: basePath) } ?? []
             self.init(include: include, exclude: exclude)
-        } else if let sources = dict as? [String] {
+        } else if let sources = value as? [String] {
             let sources = sources.map { Path($0, relativeTo: basePath) }
             guard !sources.isEmpty else {
                 throw ConfigurationParser.Error.invalidPaths(message: "No paths provided.")
             }
             self.init(include: sources)
-        } else if let source = dict as? String {
+        } else if let source = value as? String {
             let sourcePath = Path(source, relativeTo: basePath)
             self.init(include: [sourcePath])
         } else {
