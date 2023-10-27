@@ -10,6 +10,12 @@ public protocol ConfigurationParsing {
 }
 
 class ConfigurationParser: ConfigurationParsing {
+    private let xcodeProjFactory: XcodeProjFactoryProtocol
+
+    init(xcodeProjFactory: XcodeProjFactoryProtocol = XcodeProjFactory()) {
+        self.xcodeProjFactory = xcodeProjFactory
+    }
+
     func parse(
         from yaml: String,
         basePath: Path,
@@ -109,11 +115,9 @@ class ConfigurationParser: ConfigurationParsing {
         var paths: [Path] = []
         var modules: [String] = []
 
-        let xcodeProj = try XcodeProj(path: project.path)
+        let xcodeProj = try xcodeProjFactory.create(from: project.path)
         for target in project.targets {
-            guard let projectTarget = xcodeProj.target(named: target.name) else { continue }
-
-            let filePaths = xcodeProj.sourceFilesPaths(target: projectTarget, sourceRoot: project.root)
+            let filePaths = xcodeProj.sourceFilesPaths(targetName: target.name, sourceRoot: project.root)
             for filePath in filePaths where !project.exclude.contains(filePath) {
                 paths.append(filePath)
                 modules.append(target.module)
@@ -124,7 +128,7 @@ class ConfigurationParser: ConfigurationParsing {
             }
         }
 
-        return Paths(include: paths)
+        return Paths(include: paths, modules: modules)
     }
 
     enum Error: Swift.Error, Equatable {

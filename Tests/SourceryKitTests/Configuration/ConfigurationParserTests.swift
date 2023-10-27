@@ -5,9 +5,15 @@ import XCTest
 class ConfigurationParserTests: XCTestCase {
     var sut: ConfigurationParser!
 
+    var xcodeProjFactoryMock: XcodeProjFactoryMock!
+    var xcodeProjMock: XcodeProjMock!
+
     override func setUp() {
         super.setUp()
-        sut = .init()
+        xcodeProjMock = .init()
+        xcodeProjFactoryMock = .init()
+        xcodeProjFactoryMock.createReturnValue = xcodeProjMock
+        sut = .init(xcodeProjFactory: xcodeProjFactoryMock)
     }
 
     func test_parsesConfig_whenDefaultValues() throws {
@@ -92,6 +98,7 @@ class ConfigurationParserTests: XCTestCase {
     }
 
     func test_parsesConfig_whenProject() throws {
+        xcodeProjMock.sourceFilesPathsReturnValue = ["fake/source/file"]
         let yaml = """
         project:
           file: FakeProject.xcodeproj
@@ -101,10 +108,13 @@ class ConfigurationParserTests: XCTestCase {
         output: Output
         """
         let config = try XCTUnwrap(sut.parse(from: yaml).first)
-        XCTAssertEqual(config.sources.include, ["/base/path/Sources"])
+        XCTAssertEqual(config.sources.include, ["fake/source/file"])
+        XCTAssertEqual(xcodeProjFactoryMock.calls, [.create("/base/path/FakeProject.xcodeproj")])
+        XCTAssertEqual(xcodeProjMock.calls, [.sourceFilesPaths("FakeTarget", "/base/path")])
     }
 
     func test_parsesConfig_whenProject_andAllKeys() throws {
+        xcodeProjMock.sourceFilesPathsReturnValue = ["fake/source/file"]
         let yaml = """
         project:
           file: FakeProject.xcodeproj
@@ -119,7 +129,10 @@ class ConfigurationParserTests: XCTestCase {
         output: Output
         """
         let config = try XCTUnwrap(sut.parse(from: yaml).first)
-        XCTAssertEqual(config.sources.include, ["/base/path/Sources"])
+        XCTAssertEqual(config.sources.include, ["fake/source/file"]) // TODO: fix and test xcframework
+        XCTAssertEqual(config.sources.modules, ["FakeModule"])
+        XCTAssertEqual(xcodeProjFactoryMock.calls, [.create("/base/path/FakeProject.xcodeproj")])
+        XCTAssertEqual(xcodeProjMock.calls, [.sourceFilesPaths("FakeTarget", "/base/path")])
     }
 
     func test_parsesConfig_whenCacheBasePath() throws {
