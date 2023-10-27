@@ -29,12 +29,13 @@ class ConfigurationParser: ConfigurationParsing {
     }
 
     private func parse(dict: [String: Any], basePath: Path) throws -> Configuration {
-        let sources = try Sources(dict: dict, basePath: basePath)
-        guard !sources.isEmpty else {
-            throw Error.invalidSources(message: "No sources provided.")
-        }
+        let sourcePaths = try parseSourcePaths(from: dict, basePath: basePath)
+        let templatePaths = try parseTemplatePaths(from: dict, basePath: basePath)
+        let projectSourcePaths = try parseProjectSourcePaths(from: dict, basePath: basePath)
 
-        let templates = try parseTemplatePaths(from: dict, basePath: basePath)
+        guard let sourcePaths = sourcePaths ?? projectSourcePaths else {
+            throw Error.invalidSources(message: "Expected either 'sources' key or 'project' key.")
+        }
 
         let output: Output = if let value = dict["output"] {
             try Output(value: value, basePath: basePath)
@@ -59,8 +60,8 @@ class ConfigurationParser: ConfigurationParsing {
         }
 
         return .init(
-            sources: sources,
-            templates: templates,
+            sources: sourcePaths,
+            templates: templatePaths,
             output: output,
             cacheBasePath: cacheBasePath,
             cacheDisabled: cacheDisabled,
@@ -69,6 +70,17 @@ class ConfigurationParser: ConfigurationParsing {
             baseIndentation: dict["baseIndentation"] as? Int ?? 0,
             arguments: dict["args"] as? [String: NSObject] ?? [:]
         )
+    }
+
+    private func parseSourcePaths(from dict: [String: Any], basePath: Path) throws -> Paths? {
+        guard let value = dict["sources"] else {
+            return nil
+        }
+        do {
+            return try Paths(from: value, basePath: basePath)
+        } catch {
+            throw ConfigurationParser.Error.invalidSources(message: "\(error)")
+        }
     }
 
     private func parseTemplatePaths(from dict: [String: Any], basePath: Path) throws -> Paths {
@@ -80,6 +92,39 @@ class ConfigurationParser: ConfigurationParsing {
         } catch {
             throw Error.invalidTemplates(message: "\(error)")
         }
+    }
+
+    private func parseProject(from dict: [String: Any], basePath: Path) throws -> Project? {
+        guard let value = dict["project"] else {
+            return nil
+        }
+        return try Project(from: value, basePath: basePath)
+    }
+
+    private func parseProjectSourcePaths(from dict: [String: Any], basePath: Path) throws -> Paths? {
+        guard let project = try parseProject(from: dict, basePath: basePath) else {
+            return nil
+        }
+
+        var paths: [Path] = []
+        var modules: [String] = []
+
+        let xcodeProj = try XcodeProj(path: project.path)
+        for target in project.targets {
+            guard let projectTarget = xcodeProj.target(named: target.name) else { continue }
+
+            let filePaths = xcodeProj.sourceFilesPaths(target: projectTarget, sourceRoot: project.root)
+            for filePath in filePaths where !project.exclude.contains(filePath) {
+                paths.append(filePath)
+                modules.append(target.module)
+            }
+            for framework in target.xcframeworks {
+                paths.append(framework.swiftInterfacePath)
+                modules.append(target.module)
+            }
+        }
+
+        return Paths(include: paths)
     }
 
     enum Error: Swift.Error, Equatable {
@@ -170,26 +215,6 @@ private extension StringProtocol {
     }
 }
 
-private extension Sources {
-    init(dict: [String: Any], basePath: Path) throws {
-        if let project = dict["project"] {
-            if let dict = project as? [String: Any] {
-                self = try .projects([Project(dict: dict, basePath: basePath)])
-            } else {
-                throw ConfigurationParser.Error.invalidProject(message: "Expected an object.")
-            }
-        } else if let sources = dict["sources"] {
-            do {
-                self = try .paths(Paths(from: sources, basePath: basePath))
-            } catch {
-                throw ConfigurationParser.Error.invalidSources(message: "\(error)")
-            }
-        } else {
-            throw ConfigurationParser.Error.invalidSources(message: "'sources' or 'project' key are missing.")
-        }
-    }
-}
-
 private extension Paths {
     init(from value: Any, basePath: Path) throws {
         if let sources = value as? [String: [String]],
@@ -213,7 +238,10 @@ private extension Paths {
 }
 
 private extension Project {
-    init(dict: [String: Any], basePath: Path) throws {
+    init(from value: Any, basePath: Path) throws {
+        guard let dict = value as? [String: Any] else {
+            throw ConfigurationParser.Error.invalidProject(message: "Expected an object.")
+        }
         guard let file = dict["file"] as? String else {
             throw ConfigurationParser.Error.invalidProject(message: "Project file path is not provided. Expected string.")
         }

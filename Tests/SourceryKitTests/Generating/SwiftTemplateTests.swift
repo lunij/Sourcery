@@ -42,7 +42,7 @@ class SwiftTemplateTests: XCTestCase {
 
     func test_generatesCorrectOutput() throws {
         try Sourcery().processConfiguration(.stub(
-            sources: .paths(Paths(include: [Stubs.sourceDirectory])),
+            sources: Paths(include: [Stubs.sourceDirectory]),
             templates: Paths(include: [templatePath]),
             output: output
         ))
@@ -63,7 +63,7 @@ class SwiftTemplateTests: XCTestCase {
         let expectedResult = try (Stubs.resultDirectory + Path("Basic+Other.swift")).read(.utf8)
 
         try Sourcery().processConfiguration(.stub(
-            sources: .paths(Paths(include: [Stubs.sourceDirectory])),
+            sources: Paths(include: [Stubs.sourceDirectory]),
             templates: Paths(include: [templatePath]),
             output: output
         ))
@@ -77,7 +77,7 @@ class SwiftTemplateTests: XCTestCase {
         let expectedResult = try (Stubs.resultDirectory + Path("Basic.swift")).read(.utf8)
 
         try Sourcery().processConfiguration(.stub(
-            sources: .paths(Paths(include: [Stubs.sourceDirectory])),
+            sources: Paths(include: [Stubs.sourceDirectory]),
             templates: Paths(include: [templatePath]),
             output: output
         ))
@@ -91,7 +91,7 @@ class SwiftTemplateTests: XCTestCase {
         let expectedResult = try (Stubs.resultDirectory + Path("Basic.swift")).read(.utf8)
 
         try Sourcery().processConfiguration(.stub(
-            sources: .paths(Paths(include: [Stubs.sourceDirectory])),
+            sources: Paths(include: [Stubs.sourceDirectory]),
             templates: Paths(include: [templatePath]),
             output: output
         ))
@@ -105,7 +105,7 @@ class SwiftTemplateTests: XCTestCase {
         let expectedResult = try (Stubs.resultDirectory + Path("Basic.swift")).read(.utf8)
 
         try Sourcery().processConfiguration(.stub(
-            sources: .paths(Paths(include: [Stubs.sourceDirectory])),
+            sources: Paths(include: [Stubs.sourceDirectory]),
             templates: Paths(include: [templatePath]),
             output: output
         ))
@@ -174,7 +174,7 @@ class SwiftTemplateTests: XCTestCase {
 
     func test_cache_whenMissingBuildDir() throws {
         try Sourcery().processConfiguration(.stub(
-            sources: .paths(Paths(include: [Stubs.sourceDirectory])),
+            sources: Paths(include: [Stubs.sourceDirectory]),
             templates: Paths(include: [templatePath]),
             output: output,
             cacheDisabled: false
@@ -190,7 +190,7 @@ class SwiftTemplateTests: XCTestCase {
         }
 
         try Sourcery().processConfiguration(.stub(
-            sources: .paths(Paths(include: [Stubs.sourceDirectory])),
+            sources: Paths(include: [Stubs.sourceDirectory]),
             templates: Paths(include: [templatePath]),
             output: output,
             cacheDisabled: false
@@ -205,7 +205,7 @@ class SwiftTemplateTests: XCTestCase {
         let expectedResult = try (Stubs.resultDirectory + Path("Function.swift")).read(.utf8)
 
         try Sourcery().processConfiguration(.stub(
-            sources: .paths(Paths(include: [Stubs.sourceDirectory])),
+            sources: Paths(include: [Stubs.sourceDirectory]),
             templates: Paths(include: [templatePath]),
             output: output
         ))

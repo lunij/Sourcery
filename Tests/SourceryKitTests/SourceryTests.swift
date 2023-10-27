@@ -19,7 +19,7 @@ class SourceryTests: XCTestCase {
         "class Foo {}".update(in: sourcePath)
 
         _ = try? Sourcery().processConfiguration(.stub(
-            sources: .paths(Paths(include: [sourcePath])),
+            sources: Paths(include: [sourcePath]),
             templates: Paths(include: [.otherStencilPath]),
             output: output
         ))
@@ -36,7 +36,7 @@ class SourceryTests: XCTestCase {
 
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + Double(Int64(0.5 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)) { [output] in
             _ = try? Sourcery().processConfiguration(.stub(
-                sources: .paths(Paths(include: [sourcePath])),
+                sources: Paths(include: [sourcePath]),
                 templates: Paths(include: [.otherStencilPath]),
                 output: output!
             ))
@@ -61,7 +61,7 @@ class SourceryTests: XCTestCase {
 
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + Double(Int64(1 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)) { [output] in
             _ = try? Sourcery().processConfiguration(.stub(
-                sources: .paths(Paths(include: [sourcePath, anotherSourcePath])),
+                sources: Paths(include: [sourcePath, anotherSourcePath]),
                 templates: Paths(include: [.otherStencilPath]),
                 output: output!
             ))
@@ -96,7 +96,7 @@ class SourceryTests: XCTestCase {
         """.update(in: templatePath)
 
         try Sourcery().processConfiguration(.stub(
-            sources: .paths(Paths(include: [sourcePath])),
+            sources: Paths(include: [sourcePath]),
             templates: Paths(include: [templatePath]),
             output: output
         ))
@@ -149,7 +149,7 @@ class SourceryTests: XCTestCase {
         """.update(in: sourcePath)
 
         try Sourcery().processConfiguration(.stub(
-            sources: .paths(Paths(include: [sourcePath])),
+            sources: Paths(include: [sourcePath]),
             templates: Paths(include: [templatePath]),
             output: output
         ))
@@ -181,7 +181,7 @@ class SourceryTests: XCTestCase {
         """.update(in: templatePath)
 
         try Sourcery().processConfiguration(.stub(
-            sources: .paths(Paths(include: [sourcePath])),
+            sources: Paths(include: [sourcePath]),
             templates: Paths(include: [templatePath]),
             output: output
         ))
@@ -226,7 +226,7 @@ class SourceryTests: XCTestCase {
         """.update(in: templatePath)
 
         try Sourcery().processConfiguration(.stub(
-            sources: .paths(Paths(include: [sourcePath])),
+            sources: Paths(include: [sourcePath]),
             templates: Paths(include: [templatePath]),
             output: output
         ))
@@ -287,7 +287,7 @@ class SourceryTests: XCTestCase {
         """.update(in: templatePath)
 
         try Sourcery().processConfiguration(.stub(
-            sources: .paths(Paths(include: [sourcePath])),
+            sources: Paths(include: [sourcePath]),
             templates: Paths(include: [templatePath]),
             output: output
         ))
@@ -327,7 +327,7 @@ class SourceryTests: XCTestCase {
         """.update(in: templatePath)
 
         try Sourcery().processConfiguration(.stub(
-            sources: .paths(Paths(include: [sourcePath])),
+            sources: Paths(include: [sourcePath]),
             templates: Paths(include: [templatePath]),
             output: output
         ))
@@ -364,7 +364,7 @@ class SourceryTests: XCTestCase {
         """.update(in: templatePath)
 
         try Sourcery().processConfiguration(.stub(
-            sources: .paths(Paths(include: [sourcePath])),
+            sources: Paths(include: [sourcePath]),
             templates: Paths(include: [templatePath]),
             output: output,
             baseIndentation: 4
@@ -398,7 +398,7 @@ class SourceryTests: XCTestCase {
         """.update(in: templatePath)
 
         try Sourcery().processConfiguration(.stub(
-            sources: .paths(Paths(include: [sourcePath])),
+            sources: Paths(include: [sourcePath]),
             templates: Paths(include: [templatePath]),
             output: output
         ))
@@ -432,7 +432,7 @@ class SourceryTests: XCTestCase {
         """.update(in: templatePath)
 
         try Sourcery().processConfiguration(.stub(
-            sources: .paths(Paths(include: [sourcePath])),
+            sources: Paths(include: [sourcePath]),
             templates: Paths(include: [templatePath]),
             output: output
         ))
@@ -473,7 +473,7 @@ class SourceryTests: XCTestCase {
         """.update(in: templatePath)
 
         try Sourcery().processConfiguration(.stub(
-            sources: .paths(Paths(include: [sourcePath])),
+            sources: Paths(include: [sourcePath]),
             templates: Paths(include: [templatePath]),
             output: output
         ))
@@ -526,7 +526,7 @@ class SourceryTests: XCTestCase {
         """.update(in: templatePath)
 
         try Sourcery().processConfiguration(.stub(
-            sources: .paths(Paths(include: [sourcePath])),
+            sources: Paths(include: [sourcePath]),
             templates: Paths(include: [templatePath]),
             output: output
         ))
@@ -581,7 +581,7 @@ class SourceryTests: XCTestCase {
         """.update(in: templatePath)
 
         try Sourcery().processConfiguration(.stub(
-            sources: .paths(Paths(include: [sourcePath])),
+            sources: Paths(include: [sourcePath]),
             templates: Paths(include: [templatePath]),
             output: output
         ))
@@ -629,7 +629,7 @@ class SourceryTests: XCTestCase {
         """.update(in: templatePath)
 
         try Sourcery().processConfiguration(.stub(
-            sources: .paths(Paths(include: [sourcePath])),
+            sources: Paths(include: [sourcePath]),
             templates: Paths(include: [templatePath]),
             output: output
         ))
@@ -672,7 +672,7 @@ class SourceryTests: XCTestCase {
         """.update(in: templatePath)
 
         try Sourcery().processConfiguration(.stub(
-            sources: .paths(Paths(include: [sourcePath])),
+            sources: Paths(include: [sourcePath]),
             templates: Paths(include: [templatePath]),
             output: output
         ))
@@ -712,7 +712,7 @@ class SourceryTests: XCTestCase {
         """.update(in: templatePath)
 
         try Sourcery().processConfiguration(.stub(
-            sources: .paths(Paths(include: [sourcePath])),
+            sources: Paths(include: [sourcePath]),
             templates: Paths(include: [templatePath]),
             output: output
         ))
@@ -758,7 +758,7 @@ class SourceryTests: XCTestCase {
         """.update(in: templatePath)
 
         try Sourcery().processConfiguration(.stub(
-            sources: .paths(Paths(include: [sourcePath])),
+            sources: Paths(include: [sourcePath]),
             templates: Paths(include: [templatePath]),
             output: output
         ))
@@ -807,7 +807,7 @@ class SourceryTests: XCTestCase {
         """.update(in: secondTemplatePath)
 
         try Sourcery().processConfiguration(.stub(
-            sources: .paths(Paths(include: [sourcePath])),
+            sources: Paths(include: [sourcePath]),
             templates: Paths(include: [secondTemplatePath, templatePath]),
             output: output,
             baseIndentation: 0
@@ -830,7 +830,7 @@ class SourceryTests: XCTestCase {
         XCTAssertEqual(result, expectedResult)
 
         try Sourcery().processConfiguration(.stub(
-            sources: .paths(Paths(include: [sourcePath])),
+            sources: Paths(include: [sourcePath]),
             templates: Paths(include: [secondTemplatePath, templatePath]),
             output: output
         ))
@@ -877,7 +877,7 @@ class SourceryTests: XCTestCase {
         """.update(in: templatePathB)
 
         try Sourcery().processConfiguration(.stub(
-            sources: .paths(Paths(include: [sourcePath])),
+            sources: Paths(include: [sourcePath]),
             templates: Paths(include: [templatePathA, templatePathB]),
             output: output
         ))
@@ -944,7 +944,7 @@ class SourceryTests: XCTestCase {
         """.update(in: templatePathB)
 
         try Sourcery().processConfiguration(.stub(
-            sources: .paths(Paths(include: [sourcePath])),
+            sources: Paths(include: [sourcePath]),
             templates: Paths(include: [templatePathA, templatePathB]),
             output: output
         ))
@@ -986,7 +986,7 @@ class SourceryTests: XCTestCase {
         """.update(in: templatePath)
 
         try Sourcery().processConfiguration(.stub(
-            sources: .paths(Paths(include: [sourcePath])),
+            sources: Paths(include: [sourcePath]),
             templates: Paths(include: [templatePath]),
             output: Output(output.path),
             cacheDisabled: false
@@ -995,7 +995,7 @@ class SourceryTests: XCTestCase {
         "class Foo {}".update(in: sourcePath)
 
         try Sourcery().processConfiguration(.stub(
-            sources: .paths(Paths(include: [sourcePath])),
+            sources: Paths(include: [sourcePath]),
             templates: Paths(include: [templatePath]),
             output: Output(output.path),
             cacheDisabled: false
@@ -1035,7 +1035,7 @@ class SourceryTests: XCTestCase {
         """.update(in: templatePath)
 
         try Sourcery().processConfiguration(.stub(
-            sources: .paths(Paths(include: [sourcePath])),
+            sources: Paths(include: [sourcePath]),
             templates: Paths(include: [templatePath]),
             output: output
         ))
@@ -1089,7 +1089,7 @@ class SourceryTests: XCTestCase {
         """.update(in: templatePath)
 
         try Sourcery().processConfiguration(.stub(
-            sources: .paths(Paths(include: [sourcePath])),
+            sources: Paths(include: [sourcePath]),
             templates: Paths(include: [templatePath]),
             output: output
         ))
@@ -1131,7 +1131,7 @@ class SourceryTests: XCTestCase {
         """
 
         try Sourcery().processConfiguration(.stub(
-            sources: .paths(Paths(include: [sourcePath])),
+            sources: Paths(include: [sourcePath]),
             templates: Paths(include: [templatePath]),
             output: output
         ))
@@ -1148,7 +1148,7 @@ class SourceryTests: XCTestCase {
         _ = try? targetPath.delete()
 
         try Sourcery().processConfiguration(.stub(
-            sources: .paths(Paths(include: [Stubs.resultDirectory] + Path("Basic.swift"))),
+            sources: Paths(include: [Stubs.resultDirectory] + Path("Basic.swift")),
             templates: Paths(include: [.basicStencilPath]),
             output: output, baseIndentation: 0
         ))
@@ -1158,7 +1158,7 @@ class SourceryTests: XCTestCase {
 
     func test_failsProcessingConfig_whenSourceFileMissing() {
         XCTAssertThrowsError(try Sourcery().processConfiguration(.stub(
-            sources: .paths(Paths(include: ["Missing.swift"])),
+            sources: Paths(include: ["Missing.swift"]),
             templates: Paths(include: [.basicStencilPath]),
             output: Output(output.path)
         ))) { error in
@@ -1169,7 +1169,7 @@ class SourceryTests: XCTestCase {
 
     func test_processFiles_ignoresExcludedSourcePaths() throws {
         try Sourcery().processConfiguration(.stub(
-            sources: .paths(Paths(include: [Stubs.sourceDirectory], exclude: [Stubs.sourceDirectory + "Foo.swift"])),
+            sources: Paths(include: [Stubs.sourceDirectory], exclude: [Stubs.sourceDirectory + "Foo.swift"]),
             templates: Paths(include: [.basicStencilPath]),
             output: output
         ))
@@ -1181,7 +1181,7 @@ class SourceryTests: XCTestCase {
 
     func test_processFiles_whenNoWatcher_itCreatesExpectedOutputFile() throws {
         try Sourcery().processConfiguration(.stub(
-            sources: .paths(Paths(include: [Stubs.sourceDirectory])),
+            sources: Paths(include: [Stubs.sourceDirectory]),
             templates: Paths(include: [.basicStencilPath]),
             output: output
         ))
@@ -1197,7 +1197,7 @@ class SourceryTests: XCTestCase {
         "Found {{ types.enums.count }} Enums".update(in: templatePath)
 
         let eventStreams = try Sourcery(watcherEnabled: true).processConfiguration(.stub(
-            sources: .paths(Paths(include: [Stubs.sourceDirectory])),
+            sources: Paths(include: [Stubs.sourceDirectory]),
             templates: Paths(include: [templatePath]),
             output: output
         ))
@@ -1215,7 +1215,7 @@ class SourceryTests: XCTestCase {
 
     func test_processFiles_whenTemplateFolder_itCreatesGeneratedFileForEachTemplate() throws {
         try Sourcery().processConfiguration(.stub(
-            sources: .paths(Paths(include: [Stubs.sourceDirectory])),
+            sources: Paths(include: [Stubs.sourceDirectory]),
             templates: Paths(include: [Stubs.templateDirectory]),
             output: output
         ))
@@ -1229,7 +1229,7 @@ class SourceryTests: XCTestCase {
 
     func test_processFiles_whenTemplateFolder_andExcludedTemplatePaths_itDoesNotCreateGeneratedFileForExcludedTemplates() throws {
         try Sourcery().processConfiguration(.stub(
-            sources: .paths(Paths(include: [Stubs.sourceDirectory])),
+            sources: Paths(include: [Stubs.sourceDirectory]),
             templates: Paths(
                 include: [Stubs.templateDirectory],
                 exclude: [
@@ -1252,13 +1252,7 @@ class SourceryTests: XCTestCase {
         let projectPath = Stubs.sourceDirectory + "TestProject"
         let projectFilePath = Stubs.sourceDirectory + "TestProject/TestProject.xcodeproj"
         let project = try XcodeProj(path: projectFilePath)
-        let sources = Sources.projects([
-            Project(
-                path: projectFilePath,
-                targets: [.init(name: "TestProject", module: "TestProject", xcframeworks: [])],
-                exclude: []
-            )
-        ])
+        let sources = Paths(include: [Stubs.sourceDirectory])
         let templates = Paths(include: [templatePath])
         return .init(
             sources: sources,
@@ -1338,7 +1332,7 @@ private extension URL {
 }
 
 private struct ProjectScenario {
-    let sources: Sources
+    let sources: Paths
     let templates: Paths
     let originalProject: XcodeProj
     let projectPath: Path

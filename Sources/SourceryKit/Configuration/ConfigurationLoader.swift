@@ -45,7 +45,7 @@ struct ConfigurationLoader: ConfigurationLoading {
             let arguments = AnnotationsParser.parse(line: args)
             return [
                 Configuration(
-                    sources: .paths(Paths(include: options.sources, exclude: options.excludeSources)),
+                    sources: Paths(include: options.sources, exclude: options.excludeSources),
                     templates: Paths(include: options.templates, exclude: options.excludeTemplates),
                     output: Output(options.output),
                     cacheBasePath: options.cacheBasePath,

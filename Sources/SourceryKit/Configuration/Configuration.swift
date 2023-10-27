@@ -2,7 +2,7 @@ import PathKit
 import QuartzCore
 
 public struct Configuration: Equatable {
-    public let sources: Sources
+    public let sources: Paths
     public let templates: Paths
     public let output: Output
     public let cacheBasePath: Path
@@ -13,7 +13,7 @@ public struct Configuration: Equatable {
     public let arguments: [String: NSObject]
 
     public init(
-        sources: Sources,
+        sources: Paths,
         templates: Paths,
         output: Output,
         cacheBasePath: Path,

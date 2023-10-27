@@ -72,16 +72,9 @@ public class Sourcery {
     private func createWatchers(config: Configuration, parserResult: ParsingResult) -> [FSEventStream] {
         var result = parserResult
 
-        let sourcePaths = switch config.sources {
-        case let .paths(paths):
-            paths
-        case let .projects(projects):
-            Paths(include: projects.map(\.root), exclude: projects.flatMap(\.exclude))
-        }
-
         logger.info("Starting watching sources.")
 
-        let sourceWatchers = topPaths(from: sourcePaths.blendedPaths).compactMap { path in
+        let sourceWatchers = topPaths(from: config.sources.blendedPaths).compactMap { path in
             FSEventStream(path: path.string) { events in
                 let eventPaths: [Path] = events
                     .filter { $0.flags.contains(.isFile) }
@@ -195,13 +188,11 @@ private extension Configuration {
     }
 
     private func validateSources() throws {
-        if sources.isEmpty {
+        if sources.blendedPaths.isEmpty {
             throw ConfigurationValidationError.missingSources
         }
-        if case let .paths(paths) = sources {
-            for path in paths.blendedPaths {
-                try path.validateReadability()
-            }
+        for path in sources.blendedPaths {
+            try path.validateReadability()
         }
     }
 

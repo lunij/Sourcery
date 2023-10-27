@@ -8,48 +8,10 @@ public class SwiftParser {
     public init() {}
 
     func parseSources(from config: Configuration) throws -> ParsingResult {
-        switch config.sources {
-        case let .paths(paths):
-            return try parse(
-                sources: paths.include,
-                excludes: paths.exclude,
-                config: config,
-                modules: nil
-            )
-        case let .projects(projects):
-            var paths: [Path] = []
-            var modules: [String] = []
-            for project in projects {
-                let xcodeProj = try project.parse()
-                for target in project.targets {
-                    guard let projectTarget = xcodeProj.target(named: target.name) else { continue }
+        let sources = config.sources.include
+        let excludes = config.sources.exclude
+        let modules = config.sources.modules
 
-                    let files = xcodeProj.sourceFilesPaths(target: projectTarget, sourceRoot: project.root)
-                    files.forEach { file in
-                        guard !project.exclude.contains(file) else { return }
-                        paths.append(file)
-                        modules.append(target.module)
-                    }
-                    for framework in target.xcframeworks {
-                        paths.append(framework.swiftInterfacePath)
-                        modules.append(target.module)
-                    }
-                }
-            }
-            return try parse(
-                sources: paths,
-                config: config,
-                modules: modules
-            )
-        }
-    }
-
-    private func parse(
-        sources: [Path],
-        excludes: [Path] = [],
-        config: Configuration,
-        modules: [String]?
-    ) throws -> ParsingResult {
         if let modules {
             precondition(sources.count == modules.count, "There should be module for each file to parse")
         }

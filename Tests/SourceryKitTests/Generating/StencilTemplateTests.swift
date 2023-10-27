@@ -193,7 +193,7 @@ class StencilTemplateTests: XCTestCase {
         """
 
         try Sourcery().processConfiguration(.stub(
-            sources: .paths(Paths(include: [Stubs.sourceDirectory])),
+            sources: Paths(include: [Stubs.sourceDirectory]),
             templates: Paths(include: [templatePath]),
             output: output,
             cacheDisabled: true

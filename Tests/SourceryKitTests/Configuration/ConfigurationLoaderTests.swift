@@ -115,7 +115,7 @@ class ConfigurationLoaderTests: XCTestCase {
 private extension Configuration {
     static var expectedDefault: Self {
         .init(
-            sources: .paths(.init(include: [])),
+            sources: .init(include: []),
             templates: .init(include: []),
             output: .init("."),
             cacheBasePath: .systemCachePath,

@@ -32,12 +32,8 @@ class ConfigurationParserTests: XCTestCase {
         output: Output
         """
         let config = try XCTUnwrap(sut.parse(from: yaml).first)
-        guard case let .paths(paths) = config.sources else {
-            return XCTFail("Config has no source paths")
-        }
-
-        XCTAssertEqual(paths.include, ["/base/path/Sources"])
-        XCTAssertEqual(paths.exclude, [])
+        XCTAssertEqual(config.sources.include, ["/base/path/Sources"])
+        XCTAssertEqual(config.sources.exclude, [])
         XCTAssertEqual(config.templates.include, ["/base/path/Templates"])
         XCTAssertEqual(config.templates.exclude, [])
     }
@@ -51,12 +47,8 @@ class ConfigurationParserTests: XCTestCase {
         output: Output
         """
         let config = try XCTUnwrap(sut.parse(from: yaml).first)
-        guard case let .paths(paths) = config.sources else {
-            return XCTFail("Config has no source paths")
-        }
-
-        XCTAssertEqual(paths.include, ["/base/path/Sources"])
-        XCTAssertEqual(paths.exclude, [])
+        XCTAssertEqual(config.sources.include, ["/base/path/Sources"])
+        XCTAssertEqual(config.sources.exclude, [])
         XCTAssertEqual(config.templates.include, ["/base/path/Templates"])
         XCTAssertEqual(config.templates.exclude, [])
     }
@@ -72,12 +64,8 @@ class ConfigurationParserTests: XCTestCase {
         output: Output
         """
         let config = try XCTUnwrap(sut.parse(from: yaml).first)
-        guard case let .paths(paths) = config.sources else {
-            return XCTFail("Config has no source paths")
-        }
-
-        XCTAssertEqual(paths.include, ["/base/path/Sources"])
-        XCTAssertEqual(paths.exclude, [])
+        XCTAssertEqual(config.sources.include, ["/base/path/Sources"])
+        XCTAssertEqual(config.sources.exclude, [])
         XCTAssertEqual(config.templates.include, ["/base/path/Templates"])
         XCTAssertEqual(config.templates.exclude, [])
     }
@@ -97,12 +85,8 @@ class ConfigurationParserTests: XCTestCase {
         output: Output
         """
         let config = try XCTUnwrap(sut.parse(from: yaml).first)
-        guard case let .paths(paths) = config.sources else {
-            return XCTFail("Config has no source paths")
-        }
-
-        XCTAssertEqual(paths.include, ["/base/path/Sources"])
-        XCTAssertEqual(paths.exclude, ["/base/path/Sources/Excluded"])
+        XCTAssertEqual(config.sources.include, ["/base/path/Sources"])
+        XCTAssertEqual(config.sources.exclude, ["/base/path/Sources/Excluded"])
         XCTAssertEqual(config.templates.include, ["/base/path/Templates"])
         XCTAssertEqual(config.templates.exclude, ["/base/path/Templates/Excluded"])
     }
@@ -117,16 +101,7 @@ class ConfigurationParserTests: XCTestCase {
         output: Output
         """
         let config = try XCTUnwrap(sut.parse(from: yaml).first)
-        guard case let .projects(projects) = config.sources else {
-            return XCTFail("Config has no projects")
-        }
-
-        let project = try XCTUnwrap(projects.first)
-        XCTAssertEqual(project, .init(
-            path: "/base/path/FakeProject.xcodeproj",
-            targets: [.init(name: "FakeTarget", module: "FakeTarget", xcframeworks: [])],
-            exclude: []
-        ))
+        XCTAssertEqual(config.sources.include, ["/base/path/Sources"])
     }
 
     func test_parsesConfig_whenProject_andAllKeys() throws {
@@ -144,16 +119,7 @@ class ConfigurationParserTests: XCTestCase {
         output: Output
         """
         let config = try XCTUnwrap(sut.parse(from: yaml).first)
-        guard case let .projects(projects) = config.sources else {
-            return XCTFail("Config has no projects")
-        }
-
-        let project = try XCTUnwrap(projects.first)
-        XCTAssertEqual(project, .init(
-            path: "/base/path/FakeProject.xcodeproj",
-            targets: [.init(name: "FakeTarget", module: "FakeModule", xcframeworks: [])], // TODO: fix xcframework
-            exclude: ["/base/path/FakeExclude"]
-        ))
+        XCTAssertEqual(config.sources.include, ["/base/path/Sources"])
     }
 
     func test_parsesConfig_whenCacheBasePath() throws {
@@ -191,21 +157,15 @@ class ConfigurationParserTests: XCTestCase {
 
     func test_replacesEnvPlaceholders() throws {
         let yaml = """
-        sources:
-          - "${SOURCE_PATH}"
-        templates:
-          - "Templates"
+        sources: ${SOURCE_PATH}
+        templates: Templates
         output: "Output"
         args:
           serverUrl: ${serverUrl}
           serverPort: ${serverPort}
         """
         let config = try XCTUnwrap(sut.parse(from: yaml).first)
-        guard case let .paths(paths) = config.sources else {
-            return XCTFail("Config has no source paths")
-        }
-
-        XCTAssertEqual(paths.include, ["/base/path/Sources"])
+        XCTAssertEqual(config.sources.include, ["/base/path/Sources"])
         XCTAssertEqual(config.arguments["serverUrl"] as? String, "www.example.com")
         XCTAssertEqual(config.arguments["serverPort"] as? String, "")
     }
@@ -213,39 +173,28 @@ class ConfigurationParserTests: XCTestCase {
     func test_parsesMultipleConfigurations() throws {
         let yaml = """
         configurations:
-          - sources:
-              - "${SOURCE_PATH}/0"
-            templates:
-              - "Templates/0"
-            output: "Output/0"
+          - sources: ${SOURCE_PATH}/0
+            templates: Templates/0
+            output: Output/0
             args:
-              serverUrl: "${serverUrl}/0"
-              serverPort: "${serverPort}/0"
-          - sources:
-              - "${SOURCE_PATH}/1"
-            templates:
-              - "Templates/1"
-            output: "Output/1"
+              serverUrl: ${serverUrl}/0
+              serverPort: ${serverPort}/0
+          - sources: ${SOURCE_PATH}/1
+            templates: Templates/1
+            output: Output/1
             args:
-              serverUrl: "${serverUrl}/1"
-              serverPort: "${serverPort}1"
+              serverUrl: ${serverUrl}/1
+              serverPort: ${serverPort}1
         """
         let configs = try sut.parse(from: yaml)
 
         XCTAssertEqual(configs.count, 2)
 
-        configs.enumerated().forEach { offset, config in
-            guard case let .paths(paths) = config.sources,
-                  let path = paths.include.first
-            else {
-                XCTFail("Config has no Source Paths")
-                return
-            }
-
+        for (offset, config) in configs.enumerated() {
             let configServerUrl = config.arguments["serverUrl"] as? String
 
             XCTAssertEqual(configServerUrl, "www.example.com/\(offset)")
-            XCTAssertEqual(path, Path("/base/path/Sources/\(offset)"))
+            XCTAssertEqual(config.sources.include, [Path("/base/path/Sources/\(offset)")])
         }
     }
 
@@ -262,7 +211,7 @@ class ConfigurationParserTests: XCTestCase {
         output: .
         """
         assertThrowing(try sut.parse(from: yaml)) {
-            XCTAssertEqual($0, .invalidSources(message: "'sources' or 'project' key are missing."))
+            XCTAssertEqual($0, .invalidSources(message: "Expected either 'sources' key or 'project' key."))
         }
     }
 

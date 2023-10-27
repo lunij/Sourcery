@@ -5,10 +5,12 @@ public struct Paths: Equatable {
     public let include: [Path]
     public let exclude: [Path]
     public let blendedPaths: [Path] // TODO: Shall we use these blended paths as actual parsing result instead of "Paths"? Are "includes" and "excludes" still needed?
+    public let modules: [String]?
 
-    public init(include: [Path], exclude: [Path] = []) {
+    public init(include: [Path], exclude: [Path] = [], modules: [String]? = nil) {
         self.include = include
         self.exclude = exclude
+        self.modules = modules
 
         let include = self.include.parallelFlatMap { $0.processablePaths }
         let exclude = self.exclude.parallelFlatMap { $0.processablePaths }

@@ -49,7 +49,7 @@ class SwiftParserTests: XCTestCase {
         }
         """.update(in: sourcePath)
 
-        let parsingResult = try sut.parseSources(from: .stub(sources: .paths(.init(include: [sourcePath]))))
+        let parsingResult = try sut.parseSources(from: .stub(sources: .init(include: [sourcePath])))
 
         XCTAssertEqual(parsingResult.parserResult, .stub(types: [parsedStruct], modifiedDate: parsingResult.parserResult.modifiedDate))
         XCTAssertEqual(parsingResult.functions, [])
@@ -79,7 +79,7 @@ class SwiftParserTests: XCTestCase {
         }
         """.update(in: sourcePath)
 
-        let parsingResult = try sut.parseSources(from: .stub(sources: .paths(.init(include: [sourcePath])), cacheDisabled: false))
+        let parsingResult = try sut.parseSources(from: .stub(sources: Paths(include: [sourcePath]), cacheDisabled: false))
 
         XCTAssertEqual(parsingResult.parserResult, .stub(types: [parsedStruct], modifiedDate: parsingResult.parserResult.modifiedDate))
         XCTAssertEqual(parsingResult.functions, [])
@@ -103,7 +103,7 @@ class SwiftParserTests: XCTestCase {
 
         XCTAssertThrowsError(try sut.parseSources(
             from: .stub(
-                sources: .paths(Paths(include: [sourcePath])),
+                sources: Paths(include: [sourcePath]),
                 templates: Paths(include: [.basicStencilPath]),
                 output: output
             )

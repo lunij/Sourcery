@@ -22,8 +22,4 @@ extension Project {
     var root: Path {
         path.parent()
     }
-
-    func parse() throws -> XcodeProj {
-        try .init(path: path)
-    }
 }
