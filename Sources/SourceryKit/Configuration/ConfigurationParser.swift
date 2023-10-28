@@ -10,9 +10,14 @@ public protocol ConfigurationParsing {
 }
 
 class ConfigurationParser: ConfigurationParsing {
+    private let pathResolver: PathResolving
     private let xcodeProjFactory: XcodeProjFactoryProtocol
 
-    init(xcodeProjFactory: XcodeProjFactoryProtocol = XcodeProjFactory()) {
+    init(
+        pathResolver: PathResolving = PathResolver(),
+        xcodeProjFactory: XcodeProjFactoryProtocol = XcodeProjFactory()
+    ) {
+        self.pathResolver = pathResolver
         self.xcodeProjFactory = xcodeProjFactory
     }
 
@@ -78,25 +83,44 @@ class ConfigurationParser: ConfigurationParsing {
         )
     }
 
-    private func parseSourcePaths(from dict: [String: Any], basePath: Path) throws -> Paths? {
+    private func parseSourcePaths(from dict: [String: Any], basePath: Path) throws -> [SourceFile]? {
         guard let value = dict["sources"] else {
             return nil
         }
         do {
-            return try Paths(from: value, basePath: basePath)
+            return try parsePaths(from: value, basePath: basePath).map { SourceFile(path: $0, module: nil) }
         } catch {
             throw ConfigurationParser.Error.invalidSources(message: "\(error)")
         }
     }
 
-    private func parseTemplatePaths(from dict: [String: Any], basePath: Path) throws -> Paths {
+    private func parseTemplatePaths(from dict: [String: Any], basePath: Path) throws -> [Path] {
         guard let value = dict["templates"] else {
             throw Error.invalidTemplates(message: "'templates' key is missing.")
         }
         do {
-            return try Paths(from: value, basePath: basePath)
+            return try parsePaths(from: value, basePath: basePath)
         } catch {
             throw Error.invalidTemplates(message: "\(error)")
+        }
+    }
+
+    private func parsePaths(from value: Any, basePath: Path) throws -> [Path] {
+        if let dict = value as? [String: [String]], let include = dict["include"] {
+            let includes = include.map { Path($0, relativeTo: basePath) }
+            let excludes = dict["exclude"]?.map { Path($0, relativeTo: basePath) } ?? []
+            return pathResolver.resolve(includes: includes, excludes: excludes)
+        } else if let paths = value as? [String] {
+            let paths = paths.map { Path($0, relativeTo: basePath) }
+            guard !paths.isEmpty else {
+                throw ConfigurationParser.Error.invalidPaths(message: "No paths provided.")
+            }
+            return paths
+        } else if let path = value as? String {
+            let path = Path(path, relativeTo: basePath)
+            return [path]
+        } else {
+            throw ConfigurationParser.Error.invalidPaths(message: "No paths provided. Expected list of strings or object with 'include' and optional 'exclude' keys.")
         }
     }
 
@@ -107,28 +131,25 @@ class ConfigurationParser: ConfigurationParsing {
         return try Project(from: value, basePath: basePath)
     }
 
-    private func parseProjectSourcePaths(from dict: [String: Any], basePath: Path) throws -> Paths? {
+    private func parseProjectSourcePaths(from dict: [String: Any], basePath: Path) throws -> [SourceFile]? {
         guard let project = try parseProject(from: dict, basePath: basePath) else {
             return nil
         }
 
-        var paths: [Path] = []
-        var modules: [String] = []
+        var sourceFiles: [SourceFile] = []
 
         let xcodeProj = try xcodeProjFactory.create(from: project.path)
         for target in project.targets {
             let filePaths = xcodeProj.sourceFilesPaths(targetName: target.name, sourceRoot: project.root)
             for filePath in filePaths where !project.exclude.contains(filePath) {
-                paths.append(filePath)
-                modules.append(target.module)
+                sourceFiles.append(.init(path: filePath, module: target.module))
             }
             for framework in target.xcframeworks {
-                paths.append(framework.swiftInterfacePath)
-                modules.append(target.module)
+                sourceFiles.append(.init(path: framework.swiftInterfacePath, module: target.module))
             }
         }
 
-        return Paths(include: paths, modules: modules)
+        return sourceFiles
     }
 
     enum Error: Swift.Error, Equatable {
@@ -216,28 +237,6 @@ private extension StringProtocol {
         let start = index(startIndex, offsetBy: bounds.lowerBound)
         let end = index(start, offsetBy: bounds.count)
         return self[start ..< end]
-    }
-}
-
-private extension Paths {
-    init(from value: Any, basePath: Path) throws {
-        if let sources = value as? [String: [String]],
-           let include = sources["include"]?.map({ Path($0, relativeTo: basePath) })
-        {
-            let exclude = sources["exclude"]?.map { Path($0, relativeTo: basePath) } ?? []
-            self.init(include: include, exclude: exclude)
-        } else if let sources = value as? [String] {
-            let sources = sources.map { Path($0, relativeTo: basePath) }
-            guard !sources.isEmpty else {
-                throw ConfigurationParser.Error.invalidPaths(message: "No paths provided.")
-            }
-            self.init(include: sources)
-        } else if let source = value as? String {
-            let sourcePath = Path(source, relativeTo: basePath)
-            self.init(include: [sourcePath])
-        } else {
-            throw ConfigurationParser.Error.invalidPaths(message: "No paths provided. Expected list of strings or object with 'include' and optional 'exclude' keys.")
-        }
     }
 }
 

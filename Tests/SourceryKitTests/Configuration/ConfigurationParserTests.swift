@@ -5,15 +5,20 @@ import XCTest
 class ConfigurationParserTests: XCTestCase {
     var sut: ConfigurationParser!
 
+    var pathResolverMock: PathResolverMock!
     var xcodeProjFactoryMock: XcodeProjFactoryMock!
     var xcodeProjMock: XcodeProjMock!
 
     override func setUp() {
         super.setUp()
+        pathResolverMock = .init()
         xcodeProjMock = .init()
         xcodeProjFactoryMock = .init()
         xcodeProjFactoryMock.createReturnValue = xcodeProjMock
-        sut = .init(xcodeProjFactory: xcodeProjFactoryMock)
+        sut = .init(
+            pathResolver: pathResolverMock,
+            xcodeProjFactory: xcodeProjFactoryMock
+        )
     }
 
     func test_parsesConfig_whenDefaultValues() throws {
@@ -38,10 +43,8 @@ class ConfigurationParserTests: XCTestCase {
         output: Output
         """
         let config = try XCTUnwrap(sut.parse(from: yaml).first)
-        XCTAssertEqual(config.sources.include, ["/base/path/Sources"])
-        XCTAssertEqual(config.sources.exclude, [])
-        XCTAssertEqual(config.templates.include, ["/base/path/Templates"])
-        XCTAssertEqual(config.templates.exclude, [])
+        XCTAssertEqual(config.sources, ["/base/path/Sources"])
+        XCTAssertEqual(config.templates, ["/base/path/Templates"])
     }
 
     func test_parsesConfig_whenMultiplePaths() throws {
@@ -53,13 +56,12 @@ class ConfigurationParserTests: XCTestCase {
         output: Output
         """
         let config = try XCTUnwrap(sut.parse(from: yaml).first)
-        XCTAssertEqual(config.sources.include, ["/base/path/Sources"])
-        XCTAssertEqual(config.sources.exclude, [])
-        XCTAssertEqual(config.templates.include, ["/base/path/Templates"])
-        XCTAssertEqual(config.templates.exclude, [])
+        XCTAssertEqual(config.sources, ["/base/path/Sources"])
+        XCTAssertEqual(config.templates, ["/base/path/Templates"])
     }
 
     func test_parsesConfig_whenIncludes() throws {
+        pathResolverMock.resolveReturnValues = [["/base/path/Sources"], ["/base/path/Templates"]]
         let yaml = """
         sources:
           include:
@@ -70,13 +72,16 @@ class ConfigurationParserTests: XCTestCase {
         output: Output
         """
         let config = try XCTUnwrap(sut.parse(from: yaml).first)
-        XCTAssertEqual(config.sources.include, ["/base/path/Sources"])
-        XCTAssertEqual(config.sources.exclude, [])
-        XCTAssertEqual(config.templates.include, ["/base/path/Templates"])
-        XCTAssertEqual(config.templates.exclude, [])
+        XCTAssertEqual(config.sources, ["/base/path/Sources"])
+        XCTAssertEqual(config.templates, ["/base/path/Templates"])
+        XCTAssertEqual(pathResolverMock.calls, [
+            .resolve(["/base/path/Sources"], []),
+            .resolve(["/base/path/Templates"], [])
+        ])
     }
 
     func test_parsesConfig_whenIncludes_andExcludes() throws {
+        pathResolverMock.resolveReturnValues = [["/base/path/Sources"], ["/base/path/Templates"]]
         let yaml = """
         sources:
           include:
@@ -91,10 +96,12 @@ class ConfigurationParserTests: XCTestCase {
         output: Output
         """
         let config = try XCTUnwrap(sut.parse(from: yaml).first)
-        XCTAssertEqual(config.sources.include, ["/base/path/Sources"])
-        XCTAssertEqual(config.sources.exclude, ["/base/path/Sources/Excluded"])
-        XCTAssertEqual(config.templates.include, ["/base/path/Templates"])
-        XCTAssertEqual(config.templates.exclude, ["/base/path/Templates/Excluded"])
+        XCTAssertEqual(config.sources, ["/base/path/Sources"])
+        XCTAssertEqual(config.templates, ["/base/path/Templates"])
+        XCTAssertEqual(pathResolverMock.calls, [
+            .resolve(["/base/path/Sources"], ["/base/path/Sources/Excluded"]),
+            .resolve(["/base/path/Templates"], ["/base/path/Templates/Excluded"])
+        ])
     }
 
     func test_parsesConfig_whenProject() throws {
@@ -108,7 +115,7 @@ class ConfigurationParserTests: XCTestCase {
         output: Output
         """
         let config = try XCTUnwrap(sut.parse(from: yaml).first)
-        XCTAssertEqual(config.sources.include, ["fake/source/file"])
+        XCTAssertEqual(config.sources, [SourceFile(path: "fake/source/file", module: "FakeTarget")])
         XCTAssertEqual(xcodeProjFactoryMock.calls, [.create("/base/path/FakeProject.xcodeproj")])
         XCTAssertEqual(xcodeProjMock.calls, [.sourceFilesPaths("FakeTarget", "/base/path")])
     }
@@ -129,8 +136,7 @@ class ConfigurationParserTests: XCTestCase {
         output: Output
         """
         let config = try XCTUnwrap(sut.parse(from: yaml).first)
-        XCTAssertEqual(config.sources.include, ["fake/source/file"]) // TODO: fix and test xcframework
-        XCTAssertEqual(config.sources.modules, ["FakeModule"])
+        XCTAssertEqual(config.sources, [SourceFile(path: "fake/source/file", module: "FakeModule")]) // TODO: fix and test xcframework
         XCTAssertEqual(xcodeProjFactoryMock.calls, [.create("/base/path/FakeProject.xcodeproj")])
         XCTAssertEqual(xcodeProjMock.calls, [.sourceFilesPaths("FakeTarget", "/base/path")])
     }
@@ -178,7 +184,7 @@ class ConfigurationParserTests: XCTestCase {
           serverPort: ${serverPort}
         """
         let config = try XCTUnwrap(sut.parse(from: yaml).first)
-        XCTAssertEqual(config.sources.include, ["/base/path/Sources"])
+        XCTAssertEqual(config.sources, ["/base/path/Sources"])
         XCTAssertEqual(config.arguments["serverUrl"] as? String, "www.example.com")
         XCTAssertEqual(config.arguments["serverPort"] as? String, "")
     }
@@ -207,7 +213,7 @@ class ConfigurationParserTests: XCTestCase {
             let configServerUrl = config.arguments["serverUrl"] as? String
 
             XCTAssertEqual(configServerUrl, "www.example.com/\(offset)")
-            XCTAssertEqual(config.sources.include, [Path("/base/path/Sources/\(offset)")])
+            XCTAssertEqual(config.sources, [SourceFile(path: Path("/base/path/Sources/\(offset)"))])
         }
     }
 

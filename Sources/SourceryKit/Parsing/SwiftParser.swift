@@ -8,33 +8,15 @@ public class SwiftParser {
     public init() {}
 
     func parseSources(from config: Configuration) throws -> ParsingResult {
-        let sources = config.sources.include
-        let excludes = config.sources.exclude
-        let modules = config.sources.modules
-
-        if let modules {
-            precondition(sources.count == modules.count, "There should be module for each file to parse")
-        }
-
         var inlineRanges: [(file: String, ranges: [String: NSRange], indentations: [String: String])] = []
         var allResults: [(changed: Bool, result: FileParserResult)] = []
 
-        let excludeSet = Set(
-            excludes
-                .map { $0.isDirectory ? try? $0.recursiveChildren() : [$0] }
-                .compactMap { $0 }
-                .flatMap { $0 }
-        )
-
-        for (index, sourcePath) in sources.enumerated() {
-            let fileList = sourcePath.isDirectory ? try sourcePath.recursiveChildren() : [sourcePath]
+        for (index, sourceFile) in config.sources.enumerated() {
+            let fileList = sourceFile.path.isDirectory ? try sourceFile.path.recursiveChildren() : [sourceFile.path]
             let singleFileParser: [ParserWrapper] = fileList
                 .filter(\.isSwiftSourceFile)
-                .filter { !excludeSet.contains($0) }
                 .map { path in
                     (path: path, parse: {
-                        let module = modules?[index]
-
                         guard path.exists else {
                             return nil
                         }
@@ -52,7 +34,7 @@ public class SwiftParser {
                                 forceParse: config.forceParse,
                                 parseDocumentation: config.parseDocumentation,
                                 path: path,
-                                module: module
+                                module: config.sources[index].module
                             ).parse()
                         }
                     })
@@ -62,7 +44,7 @@ public class SwiftParser {
 
             let results: [(changed: Bool, result: FileParserResult)] = singleFileParser.parallelCompactMap { parser in
                 do {
-                    let cachePath: Path? = config.cacheDisabled ? nil : .cachesDir(sourcePath: sourcePath, basePath: config.cacheBasePath)
+                    let cachePath: Path? = config.cacheDisabled ? nil : .cachesDir(sourcePath: sourceFile.path, basePath: config.cacheBasePath)
                     return try self.loadOrParse(parser: parser, cachePath: cachePath)
                 } catch {
                     lastError = error

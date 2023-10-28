@@ -49,7 +49,7 @@ class SwiftParserTests: XCTestCase {
         }
         """.update(in: sourcePath)
 
-        let parsingResult = try sut.parseSources(from: .stub(sources: .init(include: [sourcePath])))
+        let parsingResult = try sut.parseSources(from: .stub(sources: [SourceFile(path: sourcePath)]))
 
         XCTAssertEqual(parsingResult.parserResult, .stub(types: [parsedStruct], modifiedDate: parsingResult.parserResult.modifiedDate))
         XCTAssertEqual(parsingResult.functions, [])
@@ -79,7 +79,7 @@ class SwiftParserTests: XCTestCase {
         }
         """.update(in: sourcePath)
 
-        let parsingResult = try sut.parseSources(from: .stub(sources: Paths(include: [sourcePath]), cacheDisabled: false))
+        let parsingResult = try sut.parseSources(from: .stub(sources: [SourceFile(path: sourcePath)], cacheDisabled: false))
 
         XCTAssertEqual(parsingResult.parserResult, .stub(types: [parsedStruct], modifiedDate: parsingResult.parserResult.modifiedDate))
         XCTAssertEqual(parsingResult.functions, [])
@@ -92,19 +92,19 @@ class SwiftParserTests: XCTestCase {
     }
 
     func test_failsParsing_whenContainingMergeConflictMarkers() {
-        let sourcePath = output.path + Path("Source.swift")
+        let sourceFile = SourceFile(path: output.path + Path("Source.swift"))
 
         """
 
 
         <<<<<
 
-        """.update(in: sourcePath)
+        """.update(in: sourceFile.path)
 
         XCTAssertThrowsError(try sut.parseSources(
             from: .stub(
-                sources: Paths(include: [sourcePath]),
-                templates: Paths(include: [.basicStencilPath]),
+                sources: [sourceFile],
+                templates: [.basicStencilPath],
                 output: output
             )
         )) {

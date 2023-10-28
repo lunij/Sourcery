@@ -2,8 +2,8 @@ import PathKit
 import QuartzCore
 
 public struct Configuration: Equatable {
-    public let sources: Paths
-    public let templates: Paths
+    public let sources: [SourceFile]
+    public let templates: [Path]
     public let output: Output
     public let cacheBasePath: Path
     public let cacheDisabled: Bool
@@ -13,8 +13,8 @@ public struct Configuration: Equatable {
     public let arguments: [String: NSObject]
 
     public init(
-        sources: Paths,
-        templates: Paths,
+        sources: [SourceFile],
+        templates: [Path],
         output: Output,
         cacheBasePath: Path,
         cacheDisabled: Bool,
@@ -32,5 +32,19 @@ public struct Configuration: Equatable {
         self.parseDocumentation = parseDocumentation
         self.baseIndentation = baseIndentation
         self.arguments = arguments
+    }
+}
+
+public struct SourceFile: Equatable, ExpressibleByStringLiteral {
+    let path: Path
+    let module: String?
+
+    public init(path: Path, module: String? = nil) {
+        self.path = path
+        self.module = module
+    }
+
+    public init(stringLiteral value: String) {
+        self.init(path: .init(value))
     }
 }

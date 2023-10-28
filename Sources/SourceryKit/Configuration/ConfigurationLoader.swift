@@ -7,16 +7,19 @@ protocol ConfigurationLoading {
 }
 
 struct ConfigurationLoader: ConfigurationLoading {
-    let parser: ConfigurationParsing
-    let fileReader: FileReading
-    let environment: [String: String]
+    private let parser: ConfigurationParsing
+    private let pathResolver: PathResolving
+    private let fileReader: FileReading
+    private let environment: [String: String]
 
     init(
         parser: ConfigurationParsing = ConfigurationParser(),
+        pathResolver: PathResolving = PathResolver(),
         fileReader: FileReading = FileReader(),
         environment: [String: String] = ProcessInfo.processInfo.environment
     ) {
         self.parser = parser
+        self.pathResolver = pathResolver
         self.fileReader = fileReader
         self.environment = environment
     }
@@ -45,8 +48,8 @@ struct ConfigurationLoader: ConfigurationLoading {
             let arguments = AnnotationsParser.parse(line: args)
             return [
                 Configuration(
-                    sources: Paths(include: options.sources, exclude: options.excludeSources),
-                    templates: Paths(include: options.templates, exclude: options.excludeTemplates),
+                    sources: pathResolver.resolveSources(from: options),
+                    templates: pathResolver.resolveTemplates(from: options),
                     output: Output(options.output),
                     cacheBasePath: options.cacheBasePath,
                     cacheDisabled: options.cacheDisabled,
@@ -59,5 +62,16 @@ struct ConfigurationLoader: ConfigurationLoading {
         }
 
         return configs
+    }
+}
+
+private extension PathResolving {
+    func resolveSources(from options: ConfigurationOptions) -> [SourceFile] {
+        resolve(includes: options.sources, excludes: options.excludeSources)
+            .map { SourceFile(path: $0, module: nil) }
+    }
+
+    func resolveTemplates(from options: ConfigurationOptions) -> [Path] {
+        resolve(includes: options.templates, excludes: options.excludeTemplates)
     }
 }

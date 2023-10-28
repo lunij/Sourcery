@@ -12,9 +12,10 @@ class TemplateLoader: TemplateLoading {
     }
 
     func loadTemplates(from config: Configuration, buildPath: Path?) throws -> [Template] {
+        let templatePaths = try resolveTemplatePaths(from: config)
         var templates: [Template] = []
         let elapsedTime = try clock.measure {
-            templates = try config.templates.blendedPaths.filter(\.isTemplateFile).map {
+            templates = try templatePaths.map {
                 logger.info("Loading \($0.relativeToCurrent)")
                 if $0.extension == "swifttemplate" {
                     let cachePath = config.cacheDisabled ? nil : Path.cachesDir(sourcePath: $0, basePath: config.cacheBasePath)
@@ -26,5 +27,11 @@ class TemplateLoader: TemplateLoading {
         }
         logger.info("Loaded \(templates.count) templates in \(elapsedTime)")
         return templates
+    }
+
+    private func resolveTemplatePaths(from config: Configuration) throws -> [Path] {
+        try config.templates
+            .flatMap { $0.isDirectory ? try $0.children() : [$0] }
+            .filter(\.isTemplateFile)
     }
 }

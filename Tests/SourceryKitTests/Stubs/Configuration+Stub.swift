@@ -3,8 +3,8 @@ import SourceryKit
 
 extension Configuration {
     static func stub(
-        sources: Paths = .init(include: []),
-        templates: Paths = .init(include: []),
+        sources: [SourceFile] = [],
+        templates: [Path] = [],
         output: Output = .init(""),
         cacheBasePath: Path = "",
         cacheDisabled: Bool = true,
