@@ -1157,17 +1157,6 @@ class SourceryTests: XCTestCase {
         XCTAssertFalse(targetPath.exists)
     }
 
-    func test_failsProcessingConfig_whenSourceFileMissing() {
-        XCTAssertThrowsError(try Sourcery().processConfiguration(.stub(
-            sources: [SourceFile(path: "Missing.swift")],
-            templates: [.basicStencilPath],
-            output: Output(output.path)
-        ))) { error in
-            let error = error as? ConfigurationValidationError
-            XCTAssertEqual(error, .fileNotReadable("Missing.swift"))
-        }
-    }
-
     func test_processFiles_whenNoWatcher_itCreatesExpectedOutputFile() throws {
         try Sourcery().processConfiguration(.stub(
             sources: [SourceFile(path: Stubs.sourceDirectory)],

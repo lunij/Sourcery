@@ -57,7 +57,6 @@ public class Sourcery {
 
     @discardableResult
     func processConfiguration(_ config: Configuration) throws -> [FSEventStream] {
-        try config.validate()
         let parserResult = try process(config)
         return watcherEnabled ? createWatchers(config: config, parserResult: parserResult) : []
     }
@@ -155,70 +154,5 @@ public class Sourcery {
         }
 
         return top.map { $0.0 }
-    }
-}
-
-enum ConfigurationValidationError: Error, Equatable {
-    case fileNotReadable(Path)
-    case missingSources
-    case missingTemplates
-    case outputNotWritable(Path)
-}
-
-extension ConfigurationValidationError: CustomStringConvertible {
-    var description: String {
-        switch self {
-        case let .fileNotReadable(path):
-            "'\(path)' does not exist or is not readable."
-        case .missingSources:
-            "No sources provided."
-        case .missingTemplates:
-            "No templates provided."
-        case let .outputNotWritable(path):
-            "'\(path)' isn't writable."
-        }
-    }
-}
-
-private extension Configuration {
-    func validate() throws { // TODO: move to ConfigurationLoader or introduce ConfigurationValidator
-        try validateSources()
-        try validateTemplates()
-        try validateOutput()
-    }
-
-    private func validateSources() throws {
-        if sources.isEmpty {
-            throw ConfigurationValidationError.missingSources
-        }
-        for sourceFile in sources {
-            try sourceFile.path.validateReadability()
-        }
-    }
-
-    private func validateTemplates() throws {
-        if templates.isEmpty {
-            throw ConfigurationValidationError.missingTemplates
-        }
-        for path in templates {
-            try path.validateReadability()
-        }
-    }
-
-    private func validateOutput() throws {
-        try output.path.validateWritablity()
-    }
-}
-
-private extension Path {
-    func validateReadability() throws {
-        if isReadable { return }
-        throw ConfigurationValidationError.fileNotReadable(self)
-    }
-
-    func validateWritablity() throws {
-        if exists && !isWritable {
-            throw ConfigurationValidationError.outputNotWritable(self)
-        }
     }
 }
