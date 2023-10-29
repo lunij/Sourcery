@@ -111,11 +111,7 @@ class ConfigurationParser: ConfigurationParsing {
             let excludes = dict["exclude"]?.map { Path($0, relativeTo: basePath) } ?? []
             return pathResolver.resolve(includes: includes, excludes: excludes)
         } else if let paths = value as? [String] {
-            let paths = paths.map { Path($0, relativeTo: basePath) }
-            guard !paths.isEmpty else {
-                throw ConfigurationParser.Error.invalidPaths(message: "No paths provided.")
-            }
-            return paths
+            return paths.map { Path($0, relativeTo: basePath) }
         } else if let path = value as? String {
             let path = Path(path, relativeTo: basePath)
             return [path]
@@ -249,20 +245,15 @@ private extension Project {
             throw ConfigurationParser.Error.invalidProject(message: "Project file path is not provided. Expected string.")
         }
 
-        let targetsArray: [Target]
-        if let targets = dict["target"] as? [[String: Any]] {
-            targetsArray = try targets.map { try Target(dict: $0, basePath: basePath) }
-        } else if let target = dict["target"] as? [String: Any] {
-            targetsArray = try [Target(dict: target, basePath: basePath)]
+        if let value = dict["target"] as? [[String: Any]] {
+            targets = try value.map { try Target(dict: $0, basePath: basePath) }
+        } else if let value = dict["target"] as? [String: Any] {
+            targets = try [Target(dict: value, basePath: basePath)]
         } else if dict["target"] != nil {
             throw ConfigurationParser.Error.invalidTarget(message: "Expected an object or an array of objects.")
         } else {
             throw ConfigurationParser.Error.invalidProject(message: "'target' key is missing.")
         }
-        if targetsArray.isEmpty {
-            throw ConfigurationParser.Error.invalidProject(message: "No targets provided.")
-        }
-        targets = targetsArray
 
         let exclude = (dict["exclude"] as? [String])?.map { Path($0, relativeTo: basePath) } ?? []
         self.exclude = exclude.flatMap(\.allPaths)
