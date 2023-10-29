@@ -178,7 +178,7 @@ extension ConfigurationParser.Error: CustomStringConvertible {
         case let .invalidTarget(message):
             "Invalid target. \(message)"
         case let .invalidXCFramework(path, message):
-            "Invalid xcframework\(path.map { " at path '\($0)'" } ?? "")'. \(message)"
+            "Invalid xcframework\(path.map { " at path '\($0)'" } ?? ""). \(message)"
         case let .invalidTemplates(message):
             "Invalid templates. \(message)"
         case let .invalidOutput(message):

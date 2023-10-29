@@ -439,6 +439,21 @@ class ConfigurationParserTests: XCTestCase {
             XCTAssertEqual($0, .invalidCacheDisabled(message: "Expected a boolean."))
         }
     }
+
+    func test_errorDescription() {
+        typealias Error = ConfigurationParser.Error
+        XCTAssertEqual(Error.invalidFormat(message: "fake").description, "Invalid config file format. fake")
+        XCTAssertEqual(Error.invalidProject(message: "fake").description, "Invalid project. fake")
+        XCTAssertEqual(Error.invalidSources(message: "fake").description, "Invalid sources. fake")
+        XCTAssertEqual(Error.invalidTarget(message: "fake").description, "Invalid target. fake")
+        XCTAssertEqual(Error.invalidXCFramework(path: "fakePath", message: "fake").description, "Invalid xcframework at path 'fakePath'. fake")
+        XCTAssertEqual(Error.invalidXCFramework(path: nil, message: "fake").description, "Invalid xcframework. fake")
+        XCTAssertEqual(Error.invalidTemplates(message: "fake").description, "Invalid templates. fake")
+        XCTAssertEqual(Error.invalidOutput(message: "fake").description, "Invalid output. fake")
+        XCTAssertEqual(Error.invalidCacheBasePath(message: "fake").description, "Invalid cacheBasePath. fake")
+        XCTAssertEqual(Error.invalidCacheDisabled(message: "fake").description, "Invalid cacheDisabled. Expected a boolean, but got a fake.")
+        XCTAssertEqual(Error.invalidPaths(message: "fake").description, "fake")
+    }
 }
 
 private extension ConfigurationParser {
