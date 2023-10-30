@@ -45,6 +45,7 @@ class ConfigurationParserTests: XCTestCase {
         let config = try XCTUnwrap(sut.parse(from: yaml).first)
         XCTAssertEqual(config.sources, ["/base/path/Sources"])
         XCTAssertEqual(config.templates, ["/base/path/Templates"])
+        XCTAssertEqual(config.output.path, "/base/path/Output")
     }
 
     func test_parsesConfig_whenMultiplePaths() throws {
@@ -178,7 +179,7 @@ class ConfigurationParserTests: XCTestCase {
         let yaml = """
         sources: ${SOURCE_PATH}
         templates: Templates
-        output: "Output"
+        output: Output
         args:
           serverUrl: ${serverUrl}
           serverPort: ${serverPort}
