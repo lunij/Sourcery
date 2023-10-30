@@ -48,11 +48,8 @@ class ConfigurationParser: ConfigurationParsing {
             throw Error.invalidSources(message: "Expected either 'sources' key or 'project' key.")
         }
 
-        let output: Output = if let value = dict["output"] {
-            try Output(value: value, basePath: basePath)
-        } else {
-            throw Error.invalidOutput(message: "'output' key is missing.")
-        }
+        let output = try parseOutput(from: dict, basePath: basePath)
+        let xcode = try parseXcode(from: dict, basePath: basePath)
 
         let cacheBasePath: Path = if let cacheBasePath = dict["cacheBasePath"] as? String {
             Path(cacheBasePath, relativeTo: basePath)
@@ -74,12 +71,53 @@ class ConfigurationParser: ConfigurationParsing {
             sources: sourcePaths,
             templates: templatePaths,
             output: output,
+            xcode: xcode,
             cacheBasePath: cacheBasePath,
             cacheDisabled: cacheDisabled,
             forceParse: dict["forceParse"] as? [String] ?? [],
             parseDocumentation: dict["parseDocumentation"] as? Bool ?? false,
             baseIndentation: dict["baseIndentation"] as? Int ?? 0,
             arguments: dict["args"] as? [String: NSObject] ?? [:]
+        )
+    }
+
+    private func parseOutput(from dict: [String: Any], basePath: Path) throws -> Path {
+        guard let value = dict["output"] else {
+            throw Error.invalidOutput(message: "'output' key is missing.")
+        }
+
+        guard let output = value as? String else {
+            throw Error.invalidOutput(message: "'output' key is not a string.")
+        }
+
+        return basePath + output
+    }
+
+    private func parseXcode(from dict: [String: Any], basePath: Path) throws -> Xcode? {
+        guard let value = dict["xcode"] else {
+            return nil
+        }
+
+        guard let dict = value as? [String: Any] else {
+            throw Error.invalidXcode(message: "Expected an object.")
+        }
+
+        guard let project = dict["project"] as? String else {
+            throw Error.invalidXcode(message: "Expected key 'project' of type string.")
+        }
+
+        let targets = if let target = dict["target"] as? String {
+            [target]
+        } else if let targets = dict["targets"] as? [String] {
+            targets
+        } else {
+            throw Error.invalidXcode(message: "Expected key 'target' of type string or key 'targets' with an array of strings.")
+        }
+
+        return .init(
+            project: Path(project, relativeTo: basePath),
+            targets: targets,
+            group: dict["group"] as? String
         )
     }
 
@@ -159,6 +197,7 @@ class ConfigurationParser: ConfigurationParsing {
         case invalidCacheBasePath(message: String)
         case invalidCacheDisabled(message: String)
         case invalidPaths(message: String)
+        case invalidXcode(message: String)
     }
 }
 
@@ -185,6 +224,8 @@ extension ConfigurationParser.Error: CustomStringConvertible {
             "Invalid cacheDisabled. Expected a boolean, but got a \(message)."
         case let .invalidPaths(message):
             "\(message)"
+        case let .invalidXcode(message):
+            "Invalid xcode. \(message)"
         }
     }
 }
@@ -303,55 +344,5 @@ private extension Project.Target.XCFramework {
 
         self.path = path
         self.swiftInterfacePath = swiftInterfacePath
-    }
-}
-
-private extension Output {
-    init(value: Any, basePath: Path) throws {
-        if let path = value as? String {
-            self.path = Path(path, relativeTo: basePath)
-            self.link = nil
-            return
-        }
-
-        guard let outputDict = value as? [String: Any] else {
-            throw ConfigurationParser.Error.invalidOutput(message: "Expected an object or a string.")
-        }
-
-        guard let path = outputDict["path"] as? String else {
-            throw ConfigurationParser.Error.invalidOutput(message: "Output path not provided. Expected a string.")
-        }
-
-        self.path = Path(path, relativeTo: basePath)
-
-        if let linkDict = outputDict["link"] as? [String: Any] {
-            do {
-                link = try LinkTo(dict: linkDict, basePath: basePath)
-            } catch {
-                link = nil
-                logger.warning(error)
-            }
-        } else {
-            link = nil
-        }
-    }
-}
-
-private extension Output.LinkTo {
-    init(dict: [String: Any], basePath: Path) throws {
-        guard let project = dict["project"] as? String else {
-            throw ConfigurationParser.Error.invalidOutput(message: "No project file path provided.")
-        }
-        if let target = dict["target"] as? String {
-            targets = [target]
-        } else if let targets = dict["targets"] as? [String] {
-            self.targets = targets
-        } else {
-            throw ConfigurationParser.Error.invalidOutput(message: "No target(s) provided.")
-        }
-        let projectPath = Path(project, relativeTo: basePath)
-        self.projectPath = projectPath
-        self.project = try XcodeProj(path: projectPath)
-        group = dict["group"] as? String
     }
 }

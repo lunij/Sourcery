@@ -6,7 +6,7 @@ import XCTest
 class SwiftParserTests: XCTestCase {
     var sut: SwiftParser!
 
-    var output: Output!
+    var output: Path!
 
     var loggerMock: LoggerMock!
 
@@ -14,7 +14,7 @@ class SwiftParserTests: XCTestCase {
         try super.setUpWithError()
         loggerMock = .init()
         logger = loggerMock
-        output = try .init(.createTestDirectory(suffixed: "SwiftParserTests"))
+        output = try Path.createTestDirectory(suffixed: "SwiftParserTests")
         sut = .init()
     }
 
@@ -29,7 +29,7 @@ class SwiftParserTests: XCTestCase {
     }
 
     func test_parses_whenCacheDisabled() throws {
-        let sourcePath = output.path + Path("Source.swift")
+        let sourcePath = output + Path("Source.swift")
         let parsedStruct = Struct(
             name: "Fake",
             variables: [
@@ -59,7 +59,7 @@ class SwiftParserTests: XCTestCase {
     }
 
     func test_parses_whenCacheEnabled() throws {
-        let sourcePath = output.path + Path("Source.swift")
+        let sourcePath = output + Path("Source.swift")
         let parsedStruct = Struct(
             name: "Fake",
             variables: [
@@ -92,7 +92,7 @@ class SwiftParserTests: XCTestCase {
     }
 
     func test_failsParsing_whenContainingMergeConflictMarkers() {
-        let sourceFile = SourceFile(path: output.path + Path("Source.swift"))
+        let sourceFile = SourceFile(path: output + Path("Source.swift"))
 
         """
 

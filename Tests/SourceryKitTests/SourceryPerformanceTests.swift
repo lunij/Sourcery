@@ -3,11 +3,11 @@ import XCTest
 @testable import SourceryKit
 
 class SourceryPerformanceTests: XCTestCase {
-    var output: Output!
+    var output: Path!
 
     override func setUpWithError() throws {
         try super.setUpWithError()
-        output = try .init(.createTestDirectory(suffixed: "SourceryPerformanceTests"))
+        output = try Path.createTestDirectory(suffixed: "SourceryPerformanceTests")
     }
 
     func testParsingPerformanceOnCleanRun() {

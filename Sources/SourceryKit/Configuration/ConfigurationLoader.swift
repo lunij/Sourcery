@@ -50,7 +50,8 @@ struct ConfigurationLoader: ConfigurationLoading {
                 Configuration(
                     sources: pathResolver.resolveSources(from: options),
                     templates: pathResolver.resolveTemplates(from: options),
-                    output: Output(options.output),
+                    output: options.output,
+                    xcode: nil,
                     cacheBasePath: options.cacheBasePath,
                     cacheDisabled: options.cacheDisabled,
                     forceParse: options.forceParse,

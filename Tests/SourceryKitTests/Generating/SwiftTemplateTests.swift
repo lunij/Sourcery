@@ -5,7 +5,7 @@ import XCTest
 @testable import SourceryRuntime
 
 class SwiftTemplateTests: XCTestCase {
-    var output: Output!
+    var output: Path!
 
     let templatePath = Stubs.swiftTemplates + Path("Equality.swifttemplate")
     let expectedResult = try? (Stubs.resultDirectory + Path("Basic.swift")).read(.utf8)
@@ -47,7 +47,7 @@ class SwiftTemplateTests: XCTestCase {
             output: output
         ))
 
-        let result = try output.path.appending(templatePath.generatedFileName).read(.utf8)
+        let result = try output.appending(templatePath.generatedFileName).read(.utf8)
         XCTAssertEqual(result, expectedResult)
     }
 
@@ -68,7 +68,7 @@ class SwiftTemplateTests: XCTestCase {
             output: output
         ))
 
-        let result = try output.path.appending(templatePath.generatedFileName).read(.utf8)
+        let result = try output.appending(templatePath.generatedFileName).read(.utf8)
         XCTAssertEqual(result, expectedResult)
     }
 
@@ -82,7 +82,7 @@ class SwiftTemplateTests: XCTestCase {
             output: output
         ))
 
-        let result = try output.path.appending(templatePath.generatedFileName).read(.utf8)
+        let result = try output.appending(templatePath.generatedFileName).read(.utf8)
         XCTAssertEqual(result, expectedResult)
     }
 
@@ -96,7 +96,7 @@ class SwiftTemplateTests: XCTestCase {
             output: output
         ))
 
-        let result = try output.path.appending(templatePath.generatedFileName).read(.utf8)
+        let result = try output.appending(templatePath.generatedFileName).read(.utf8)
         XCTAssertEqual(result, expectedResult)
     }
 
@@ -110,7 +110,7 @@ class SwiftTemplateTests: XCTestCase {
             output: output
         ))
 
-        let result = try output.path.appending(templatePath.generatedFileName).read(.utf8)
+        let result = try output.appending(templatePath.generatedFileName).read(.utf8)
         XCTAssertEqual(result, expectedResult)
     }
 
@@ -179,7 +179,7 @@ class SwiftTemplateTests: XCTestCase {
             output: output,
             cacheDisabled: false
         ))
-        XCTAssertEqual(try output.path.appending(templatePath.generatedFileName).read(.utf8), expectedResult)
+        XCTAssertEqual(try output.appending(templatePath.generatedFileName).read(.utf8), expectedResult)
 
         guard let buildDir = NSURL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("SwiftTemplate").map({ Path($0.path) }) else {
             XCTFail("Could not create buildDir path")
@@ -196,7 +196,7 @@ class SwiftTemplateTests: XCTestCase {
             cacheDisabled: false
         ))
 
-        let result = try output.path.appending(templatePath.generatedFileName).read(.utf8)
+        let result = try output.appending(templatePath.generatedFileName).read(.utf8)
         XCTAssertEqual(result, expectedResult)
     }
 
@@ -210,15 +210,15 @@ class SwiftTemplateTests: XCTestCase {
             output: output
         ))
 
-        let result = try output.path.appending(templatePath.generatedFileName).read(.utf8)
+        let result = try output.appending(templatePath.generatedFileName).read(.utf8)
         XCTAssertEqual(result, expectedResult)
     }
 
     func test_shouldChangeCacheKeyBasedOnIncludeFileModifications() throws {
-        let templatePath = output.path + "Template.swifttemplate"
+        let templatePath = output + "Template.swifttemplate"
         try templatePath.write(#"<%- include("Utils.swift") -%>"#)
 
-        let utilsPath = output.path + "Utils.swift"
+        let utilsPath = output + "Utils.swift"
         try utilsPath.write(#"let foo = "bar""#)
 
         let template = try SwiftTemplate(path: templatePath, cachePath: nil)
@@ -234,24 +234,24 @@ class SwiftTemplateTests: XCTestCase {
 }
 
 class FolderSynchronizerTests: XCTestCase {
-    var output: Output!
+    var output: Path!
     let files: [FolderSynchronizer.File] = [.init(name: "file.swift", content: "Swift code")]
 
     override func setUpWithError() throws {
         try super.setUpWithError()
-        output = try .init(.createTestDirectory(suffixed: "FolderSynchronizerTests"))
+        output = try Path.createTestDirectory(suffixed: "FolderSynchronizerTests")
     }
 
     func test_addsItsFilesToAnEmptyFolder() throws {
-        try FolderSynchronizer().sync(files: files, to: output.path)
+        try FolderSynchronizer().sync(files: files, to: output)
 
-        let newFile = output.path + Path("file.swift")
+        let newFile = output + Path("file.swift")
         XCTAssertEqual(newFile.exists, true)
         XCTAssertEqual(try newFile.read(), "Swift code")
     }
 
     func test_createsTheTargetFolderIfItDoesNotExist() throws {
-        let synchronizedFolder = output.path + Path("Folder")
+        let synchronizedFolder = output + Path("Folder")
 
         try FolderSynchronizer().sync(files: files, to: synchronizedFolder)
 
@@ -260,21 +260,21 @@ class FolderSynchronizerTests: XCTestCase {
     }
 
     func test_deletesFilesNotPresentInTheSynchronizedFiles() throws {
-        let existingFile = output.path + Path("Existing.swift")
+        let existingFile = output + Path("Existing.swift")
         try existingFile.write("Discarded")
 
-        try FolderSynchronizer().sync(files: files, to: output.path)
+        try FolderSynchronizer().sync(files: files, to: output)
 
         XCTAssertEqual(existingFile.exists, false)
-        let newFile = output.path + Path("file.swift")
+        let newFile = output + Path("file.swift")
         XCTAssertEqual(newFile.exists, true)
         XCTAssertEqual(try newFile.read(), "Swift code")
     }
 
     func test_replacesTheContentOfAFileIfAFileWithTheSameNameAlreadyExists() throws {
-        let existingFile = output.path + Path("file.swift")
+        let existingFile = output + Path("file.swift")
         try existingFile.write("Discarded")
-        try FolderSynchronizer().sync(files: files, to: output.path)
+        try FolderSynchronizer().sync(files: files, to: output)
 
         XCTAssertEqual(try existingFile.read(), "Swift code")
     }

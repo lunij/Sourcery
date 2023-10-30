@@ -7,6 +7,7 @@ class SwiftGeneratorTests: XCTestCase {
 
     var clockMock: ClockMock!
     var loggerMock: LoggerMock!
+    var xcodeProjFactoryMock: XcodeProjFactoryMock!
 
     override func setUp() {
         super.setUp()
@@ -14,7 +15,8 @@ class SwiftGeneratorTests: XCTestCase {
         clockMock.measureReturnValue = .milliseconds(100)
         loggerMock = .init()
         logger = loggerMock
-        sut = .init(clock: clockMock)
+        xcodeProjFactoryMock = .init()
+        sut = .init(clock: clockMock, xcodeProjFactory: xcodeProjFactoryMock)
     }
 
     func test_warnsAboutSkippedFiles() throws {
@@ -26,7 +28,6 @@ class SwiftGeneratorTests: XCTestCase {
         try sut.generate(
             from: &parsingResult,
             using: [templateMock],
-            to: config.output,
             config: config
         )
 
@@ -46,7 +47,6 @@ class SwiftGeneratorTests: XCTestCase {
         try sut.generate(
             from: &parsingResult,
             using: [templateMock],
-            to: config.output,
             config: config
         )
 
@@ -60,7 +60,6 @@ class SwiftGeneratorTests: XCTestCase {
         XCTAssertThrowsError(try sut.generate(
             from: &parsingResult,
             using: [],
-            to: config.output,
             config: config
         )) { error in
             let error = error as? SwiftGenerator.Error
@@ -76,7 +75,6 @@ class SwiftGeneratorTests: XCTestCase {
         XCTAssertThrowsError(try sut.generate(
             from: &parsingResult,
             using: [],
-            to: config.output,
             config: config
         )) { error in
             let error = error as? SwiftGenerator.Error

@@ -64,7 +64,7 @@ public class Sourcery {
     private func process(_ config: Configuration) throws -> ParsingResult {
         var parsingResult = try swiftParser.parseSources(from: config)
         let templates = try templateLoader.loadTemplates(from: config, buildPath: buildPath)
-        try swiftGenerator.generate(from: &parsingResult, using: templates, to: config.output, config: config)
+        try swiftGenerator.generate(from: &parsingResult, using: templates, config: config)
         return parsingResult
     }
 
@@ -120,7 +120,6 @@ public class Sourcery {
                     try self.swiftGenerator.generate(
                         from: &result,
                         using: templates,
-                        to: config.output,
                         config: config
                     )
                 } catch {

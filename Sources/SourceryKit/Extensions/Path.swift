@@ -19,6 +19,14 @@ extension Path {
         url.pathExtension.isNotEmpty
     }
 
+    var isEmpty: Bool {
+        string.isEmpty
+    }
+
+    var isNotEmpty: Bool {
+        string.isNotEmpty
+    }
+
     var isRepresentingDirectory: Bool {
         string.isNotEmpty && (!hasExtension || string.hasSuffix("/"))
     }

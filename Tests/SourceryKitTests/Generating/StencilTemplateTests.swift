@@ -182,7 +182,7 @@ class StencilTemplateTests: XCTestCase {
     }
 
     func test_includesPartialTemplates() throws {
-        let output = try Output(.createTestDirectory(suffixed: #function))
+        let output = try Path.createTestDirectory(suffixed: #function)
 
         let templatePath = Stubs.templateDirectory + Path("Include.stencil")
         let expectedResult = """
@@ -199,7 +199,7 @@ class StencilTemplateTests: XCTestCase {
             cacheDisabled: true
         ))
 
-        let result = try output.path.appending(templatePath.generatedFileName).read(.utf8)
+        let result = try output.appending(templatePath.generatedFileName).read(.utf8)
         XCTAssertEqual(result, expectedResult)
     }
 }

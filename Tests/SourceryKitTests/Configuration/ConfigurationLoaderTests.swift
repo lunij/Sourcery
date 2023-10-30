@@ -117,7 +117,8 @@ private extension Configuration {
         .init(
             sources: [],
             templates: [],
-            output: .init("."),
+            output: ".",
+            xcode: nil,
             cacheBasePath: .systemCachePath,
             cacheDisabled: false,
             forceParse: [],

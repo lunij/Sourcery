@@ -45,7 +45,7 @@ class ConfigurationParserTests: XCTestCase {
         let config = try XCTUnwrap(sut.parse(from: yaml).first)
         XCTAssertEqual(config.sources, ["/base/path/Sources"])
         XCTAssertEqual(config.templates, ["/base/path/Templates"])
-        XCTAssertEqual(config.output.path, "/base/path/Output")
+        XCTAssertEqual(config.output, "/base/path/Output")
     }
 
     func test_parsesConfig_whenMultiplePaths() throws {
@@ -140,6 +140,51 @@ class ConfigurationParserTests: XCTestCase {
         XCTAssertEqual(config.sources, [SourceFile(path: "fake/source/file", module: "FakeModule")]) // TODO: fix and test xcframework
         XCTAssertEqual(xcodeProjFactoryMock.calls, [.create("/base/path/FakeProject.xcodeproj")])
         XCTAssertEqual(xcodeProjMock.calls, [.sourceFilesPaths("FakeTarget", "/base/path")])
+    }
+
+    func test_parsesConfig_whenXcode() throws {
+        xcodeProjMock.sourceFilesPathsReturnValue = ["fake/source/file"]
+        let yaml = """
+        sources: Sources
+        templates: Templates
+        output: Output
+        xcode:
+          project: FakeProject.xcodeproj
+          target: FakeTarget
+        """
+        let config = try XCTUnwrap(sut.parse(from: yaml).first)
+        XCTAssertEqual(config.xcode, .stub(project: "/base/path/FakeProject.xcodeproj", targets: ["FakeTarget"]))
+    }
+
+    func test_parsesConfig_whenXcode_andGroup() throws {
+        xcodeProjMock.sourceFilesPathsReturnValue = ["fake/source/file"]
+        let yaml = """
+        sources: Sources
+        templates: Templates
+        output: Output
+        xcode:
+          project: FakeProject.xcodeproj
+          target: FakeTarget
+          group: FakeGroup
+        """
+        let config = try XCTUnwrap(sut.parse(from: yaml).first)
+        XCTAssertEqual(config.xcode, .stub(project: "/base/path/FakeProject.xcodeproj", targets: ["FakeTarget"], group: "FakeGroup"))
+    }
+
+    func test_parsesConfig_whenXcode_andMultipleTargets() throws {
+        xcodeProjMock.sourceFilesPathsReturnValue = ["fake/source/file"]
+        let yaml = """
+        sources: Sources
+        templates: Templates
+        output: Output
+        xcode:
+          project: FakeProject.xcodeproj
+          targets:
+            - FakeTarget1
+            - FakeTarget2
+        """
+        let config = try XCTUnwrap(sut.parse(from: yaml).first)
+        XCTAssertEqual(config.xcode, .stub(project: "/base/path/FakeProject.xcodeproj", targets: ["FakeTarget1", "FakeTarget2"]))
     }
 
     func test_parsesConfig_whenCacheBasePath() throws {
@@ -397,22 +442,21 @@ class ConfigurationParserTests: XCTestCase {
         sources: .
         templates: .
         output:
-          - .
         """
         assertThrowing(try sut.parse(from: yaml)) {
-            XCTAssertEqual($0, .invalidOutput(message: "Expected an object or a string."))
+            XCTAssertEqual($0, .invalidOutput(message: "'output' key is not a string."))
         }
     }
 
-    func test_failsParsing_whenInvalidOutput_andPathKeyMissing() {
+    func test_failsParsing_whenInvalidXcode_andInvalidValueType() {
         let yaml = """
         sources: .
         templates: .
-        output:
-          link:
+        output: .
+        xcode:
         """
         assertThrowing(try sut.parse(from: yaml)) {
-            XCTAssertEqual($0, .invalidOutput(message: "Output path not provided. Expected a string."))
+            XCTAssertEqual($0, .invalidXcode(message: "Expected an object."))
         }
     }
 

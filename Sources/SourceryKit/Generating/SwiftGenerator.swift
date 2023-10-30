@@ -10,22 +10,29 @@ public class SwiftGenerator {
     private var fileAnnotatedContent: [Path: [String]] = [:]
 
     private let clock: TimeMeasuring
+    private let xcodeProjFactory: XcodeProjFactoryProtocol
 
     public convenience init() {
-        self.init(clock: ContinuousClock())
+        self.init(
+            clock: ContinuousClock(),
+            xcodeProjFactory: XcodeProjFactory()
+        )
     }
 
-    init(clock: TimeMeasuring) {
+    init(
+        clock: TimeMeasuring,
+        xcodeProjFactory: XcodeProjFactoryProtocol
+    ) {
         self.clock = clock
+        self.xcodeProjFactory = xcodeProjFactory
     }
 
     func generate(
         from parsingResult: inout ParsingResult,
         using templates: [Template],
-        to output: Output,
         config: Configuration
     ) throws {
-        guard output.isNotEmpty else {
+        guard config.output.isNotEmpty else {
             throw Error.noOutput
         }
 
@@ -33,38 +40,40 @@ public class SwiftGenerator {
             throw Error.noTemplates
         }
 
-        var output = output
+        var output = config.output
         if !output.isRepresentingDirectory {
             logger.warning("The output path targets a single file. Continuing using its directory instead.")
-            output = .init(output.path.parent())
+            output = output.parent()
         }
 
         let elapsedTime = try clock.measure {
+            let xcodeProj: XcodeProjProtocol? = if let xcode = config.xcode {
+                try xcodeProjFactory.create(from: xcode.project)
+            } else {
+                nil
+            }
+
             for template in templates {
                 let (result, sourceChanges) = try generate(from: parsingResult, using: template, config: config)
                 updateRanges(in: &parsingResult, sourceChanges: sourceChanges)
-                let outputPath = output.path.appending(template.path.generatedFileName)
+                let outputPath = output.appending(template.path.generatedFileName)
                 try write(result, to: outputPath)
 
-                if let link = output.link {
-                    link.targets.forEach { target in
-                        self.link(outputPath, to: link, target: target)
-                    }
+                if let xcode = config.xcode, let xcodeProj {
+                    link(outputPath, to: xcodeProj, xcode: xcode)
                 }
             }
 
-            for (path, content) in fileAnnotatedContent {
-                try write(content.joined(separator: "\n"), to: path)
+            for (outputPath, content) in fileAnnotatedContent {
+                try write(content.joined(separator: "\n"), to: outputPath)
 
-                if let link = output.link {
-                    link.targets.forEach { target in
-                        self.link(path, to: link, target: target)
-                    }
+                if let xcode = config.xcode, let xcodeProj {
+                    link(outputPath, to: xcodeProj, xcode: xcode)
                 }
             }
 
-            if let link = output.link {
-                try link.project.writePBXProj(path: link.projectPath, outputSettings: .init())
+            if let xcode = config.xcode {
+                try xcodeProj?.writePBXProj(path: xcode.project, outputSettings: .init())
             }
         }
 
@@ -97,7 +106,7 @@ public class SwiftGenerator {
             .map { ($0, $1) }
             .forEach { filePath, ranges in
                 let generatedBody = ranges.map { contents.bridge().substring(with: $0.range) }.joined(separator: "\n")
-                let path = config.output.path + (Path(filePath).extension == nil ? "\(filePath).generated.swift" : filePath)
+                let path = config.output + (Path(filePath).extension == nil ? "\(filePath).generated.swift" : filePath)
                 var fileContents = fileAnnotatedContent[path] ?? []
                 fileContents.append(generatedBody)
                 fileAnnotatedContent[path] = fileContents
@@ -270,23 +279,29 @@ public class SwiftGenerator {
             .joined(separator: "\n")
     }
 
-    private func link(_ output: Path, to linkTo: Output.LinkTo, target targetName: String) {
-        guard let target = linkTo.project.target(named: targetName) else {
+    private func link(_ output: Path, to xcodeProj: XcodeProjProtocol, xcode: Xcode) {
+        for target in xcode.targets {
+            link(output, to: xcodeProj, projectPath: xcode.project, targetName: target, group: xcode.group)
+        }
+    }
+
+    private func link(_ output: Path, to xcodeProj: XcodeProjProtocol, projectPath: Path, targetName: String, group: String?) {
+        guard let target = xcodeProj.target(named: targetName) else {
             logger.warning("Unable to find target \(targetName)")
             return
         }
 
-        let sourceRoot = linkTo.projectPath.parent()
+        let sourceRoot = projectPath.parent()
 
-        guard let fileGroup = linkTo.project.createGroupIfNeeded(named: linkTo.group, sourceRoot: sourceRoot) else {
-            logger.warning("Unable to create group \(String(describing: linkTo.group))")
+        guard let fileGroup = xcodeProj.createGroupIfNeeded(named: group, sourceRoot: sourceRoot) else {
+            logger.warning("Unable to create group \(String(describing: group))")
             return
         }
 
         do {
-            try linkTo.project.addSourceFile(at: output, toGroup: fileGroup, target: target, sourceRoot: sourceRoot)
+            try xcodeProj.addSourceFile(at: output, toGroup: fileGroup, target: target, sourceRoot: sourceRoot)
         } catch {
-            logger.warning("Failed to link file at \(output) to \(linkTo.projectPath). \(error)")
+            logger.warning("Failed to link file at \(output) to \(projectPath). \(error)")
         }
     }
 

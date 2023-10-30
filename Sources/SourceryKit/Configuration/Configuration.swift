@@ -4,7 +4,8 @@ import QuartzCore
 public struct Configuration: Equatable {
     public let sources: [SourceFile]
     public let templates: [Path]
-    public let output: Output
+    public let output: Path
+    public let xcode: Xcode?
     public let cacheBasePath: Path
     public let cacheDisabled: Bool
     public let forceParse: [String]
@@ -15,7 +16,8 @@ public struct Configuration: Equatable {
     public init(
         sources: [SourceFile],
         templates: [Path],
-        output: Output,
+        output: Path,
+        xcode: Xcode?,
         cacheBasePath: Path,
         cacheDisabled: Bool,
         forceParse: [String],
@@ -26,6 +28,7 @@ public struct Configuration: Equatable {
         self.sources = sources
         self.templates = templates
         self.output = output
+        self.xcode = xcode
         self.cacheBasePath = cacheBasePath
         self.cacheDisabled = cacheDisabled
         self.forceParse = forceParse
@@ -47,4 +50,10 @@ public struct SourceFile: Equatable, ExpressibleByStringLiteral {
     public init(stringLiteral value: String) {
         self.init(path: .init(value))
     }
+}
+
+public struct Xcode: Equatable {
+    public let project: Path
+    public let targets: [String]
+    public let group: String?
 }

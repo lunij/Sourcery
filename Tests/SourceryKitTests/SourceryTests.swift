@@ -1,12 +1,12 @@
 import Foundation
 import PathKit
-import XcodeProj
+import class XcodeProj.XcodeProj
 import XCTest
 @testable import SourceryKit
 @testable import SourceryRuntime
 
 class SourceryTests: XCTestCase {
-    var output: Output!
+    var output: Path!
 
     override func setUpWithError() throws {
         try super.setUpWithError()
@@ -14,7 +14,7 @@ class SourceryTests: XCTestCase {
     }
 
     private func createExistingFiles() -> (SourceFile, Path) {
-        let sourceFile = SourceFile(path: output.path + Path("Source.swift"))
+        let sourceFile = SourceFile(path: output + Path("Source.swift"))
         let templatePath = Path.otherStencilPath
 
         "class Foo {}".update(in: sourceFile.path)
@@ -30,7 +30,7 @@ class SourceryTests: XCTestCase {
 
     func test_processFiles_whenExistingFiles_andNoChanges() {
         let (sourceFile, templatePath) = createExistingFiles()
-        let generatedFilePath = output.path.appending(Path.otherStencilPath.generatedFileName)
+        let generatedFilePath = output.appending(Path.otherStencilPath.generatedFileName)
         let generatedFileModificationDate = generatedFilePath.url.fileModificationDate()
         var newGeneratedFileModificationDate: Date?
         let expectation = expectation(description: #function)
@@ -51,11 +51,11 @@ class SourceryTests: XCTestCase {
 
     func test_processFiles_whenExistingFiles_andChanges() {
         let (sourceFile, templatePath) = createExistingFiles()
-        let anotherSourceFile = SourceFile(path: output.path + Path("AnotherSource.swift"))
+        let anotherSourceFile = SourceFile(path: output + Path("AnotherSource.swift"))
 
         "class Bar {}".update(in: anotherSourceFile.path)
 
-        let generatedFilePath = output.path.appending(Path.otherStencilPath.generatedFileName)
+        let generatedFilePath = output.appending(Path.otherStencilPath.generatedFileName)
         let generatedFileModificationDate = generatedFilePath.url.fileModificationDate()
         var newGeneratedFileModificationDate: Date?
         let expectation = expectation(description: #function)
@@ -75,8 +75,8 @@ class SourceryTests: XCTestCase {
     }
 
     private func createExistingFilesWithInlineTemplate() throws -> (SourceFile, Path) {
-        let sourceFile = SourceFile(path: output.path + Path("Source.swift"))
-        let templatePath = output.path + Path("FakeTemplate.stencil")
+        let sourceFile = SourceFile(path: output + Path("Source.swift"))
+        let templatePath = output + Path("FakeTemplate.stencil")
 
         """
         class Foo {
@@ -130,7 +130,7 @@ class SourceryTests: XCTestCase {
         // Line One
         """
 
-        let generatedPath = output.path.appending(templatePath.generatedFileName)
+        let generatedPath = output.appending(templatePath.generatedFileName)
 
         let result = try generatedPath.read(.utf8)
         XCTAssertEqual(result.withoutWhitespaces, expectedResult.withoutWhitespaces)
@@ -165,7 +165,7 @@ class SourceryTests: XCTestCase {
         // sourcery:end
         """
 
-        let generatedPath = output.path.appending(templatePath.generatedFileName)
+        let generatedPath = output.appending(templatePath.generatedFileName)
 
         let result = try generatedPath.read(.utf8)
         XCTAssertEqual(result.withoutWhitespaces, expectedResult.withoutWhitespaces)
@@ -187,7 +187,7 @@ class SourceryTests: XCTestCase {
             output: output
         ))
 
-        let generatedPath = output.path.appending(templatePath.generatedFileName)
+        let generatedPath = output.appending(templatePath.generatedFileName)
 
         XCTAssertThrowsError(try generatedPath.read(.utf8))
     }
@@ -799,7 +799,7 @@ class SourceryTests: XCTestCase {
         // sourcery:end
         """.update(in: templatePath)
 
-        let secondTemplatePath = output.path + Path("OtherFakeTemplate.stencil")
+        let secondTemplatePath = output + Path("OtherFakeTemplate.stencil")
 
         """
         // sourcery:inline:auto:Foo.otherFake
@@ -841,9 +841,9 @@ class SourceryTests: XCTestCase {
     }
 
     func test_processFiles_whenSingleTemplate_andAutoInlineGeneration_itInsertsCodeFromDifferentTemplates_inline() throws {
-        let templatePathA = output.path + Path("InlineTemplateA.stencil")
-        let templatePathB = output.path + Path("InlineTemplateB.stencil")
-        let sourceFile = SourceFile(path: output.path + Path("ClassWithMultipleInlineAnnotations.swift"))
+        let templatePathA = output + Path("InlineTemplateA.stencil")
+        let templatePathB = output + Path("InlineTemplateB.stencil")
+        let sourceFile = SourceFile(path: output + Path("ClassWithMultipleInlineAnnotations.swift"))
 
         """
         class ClassWithMultipleInlineAnnotations {
@@ -904,9 +904,9 @@ class SourceryTests: XCTestCase {
     }
 
     func test_processFiles_whenSingleTemplate_andAutoInlineGeneration_itInsertsCodeFromDifferentTemplates_inlineAndInlineAuto() throws {
-        let templatePathA = output.path + Path("InlineTemplateA.stencil")
-        let templatePathB = output.path + Path("InlineTemplateB.stencil")
-        let sourceFile = SourceFile(path: output.path + Path("ClassWithMultipleInlineAnnotations.swift"))
+        let templatePathA = output + Path("InlineTemplateA.stencil")
+        let templatePathB = output + Path("InlineTemplateB.stencil")
+        let sourceFile = SourceFile(path: output + Path("ClassWithMultipleInlineAnnotations.swift"))
 
         // inline:auto annotations are inserted at the beginning of the last line of a declaration,
         // OR at the beginning of the last line of the containing file,
@@ -989,7 +989,7 @@ class SourceryTests: XCTestCase {
         try Sourcery().processConfiguration(.stub(
             sources: [sourceFile],
             templates: [templatePath],
-            output: Output(output.path),
+            output: output,
             cacheDisabled: false
         ))
 
@@ -998,7 +998,7 @@ class SourceryTests: XCTestCase {
         try Sourcery().processConfiguration(.stub(
             sources: [sourceFile],
             templates: [templatePath],
-            output: Output(output.path),
+            output: output,
             cacheDisabled: false
         ))
 
@@ -1018,8 +1018,8 @@ class SourceryTests: XCTestCase {
     }
 
     private func createGivenFiles3() throws -> (SourceFile, Path) {
-        let sourceFile = SourceFile(path: output.path + Path("Source.swift"))
-        let templatePath = output.path + Path("FakeTemplate.stencil")
+        let sourceFile = SourceFile(path: output + Path("Source.swift"))
+        let templatePath = output + Path("FakeTemplate.stencil")
 
         "class Foo { }".update(in: sourceFile.path)
 
@@ -1057,7 +1057,7 @@ class SourceryTests: XCTestCase {
 
         """
 
-        let generatedPath = output.path + Path("Generated/Foo.generated.swift")
+        let generatedPath = output + Path("Generated/Foo.generated.swift")
 
         let result = try generatedPath.read(.utf8)
         XCTAssertEqual(result, expectedResult)
@@ -1073,7 +1073,7 @@ class SourceryTests: XCTestCase {
 
         """
 
-        let generatedPath = output.path.appending(templatePath.generatedFileName)
+        let generatedPath = output.appending(templatePath.generatedFileName)
 
         let result = try generatedPath.read(.utf8)
         XCTAssertEqual(result.withoutWhitespaces, expectedResult.withoutWhitespaces)
@@ -1095,7 +1095,7 @@ class SourceryTests: XCTestCase {
             output: output
         ))
 
-        let generatedPath = output.path + Path("Generated/Foo.generated.swift")
+        let generatedPath = output + Path("Generated/Foo.generated.swift")
 
         let result = try? generatedPath.read(.utf8)
         XCTAssertNil(result)
@@ -1137,14 +1137,14 @@ class SourceryTests: XCTestCase {
             output: output
         ))
 
-        let generatedPath = output.path + Path("Generated/Foo.generated.swift")
+        let generatedPath = output + Path("Generated/Foo.generated.swift")
 
         let result = try generatedPath.read(.utf8)
         XCTAssertEqual(result, expectedResult)
     }
 
     func test_processFiles_andRestrictedFile_itIgnoresSourceryGeneratedFiles() throws {
-        let targetPath = output.path.appending(Path.basicStencilPath.generatedFileName)
+        let targetPath = output.appending(Path.basicStencilPath.generatedFileName)
 
         _ = try? targetPath.delete()
 
@@ -1164,13 +1164,13 @@ class SourceryTests: XCTestCase {
             output: output
         ))
 
-        let result = try output.path.appending(Path.basicStencilPath.generatedFileName).read(.utf8)
+        let result = try output.appending(Path.basicStencilPath.generatedFileName).read(.utf8)
         let expectedResult = try (Stubs.resultDirectory + Path("Basic.swift")).read(.utf8).withoutWhitespaces
         XCTAssertEqual(result.withoutWhitespaces, expectedResult.withoutWhitespaces)
     }
 
     func test_processFiles_whenWatcher_itRegeneratesOnTemplateChange() throws {
-        let templatePath = output.path + Path("FakeTemplate.stencil")
+        let templatePath = output + Path("FakeTemplate.stencil")
 
         "Found {{ types.enums.count }} Enums".update(in: templatePath)
 
@@ -1185,7 +1185,7 @@ class SourceryTests: XCTestCase {
         XCTAssertEqual(eventStreams.count, 2)
 
         assertContinuously {
-            try output.path.appending(templatePath.generatedFileName).read(.utf8)
+            try output.appending(templatePath.generatedFileName).read(.utf8)
         } until: {
             $0.contains("\(String.generatedHeader)Found 3 Types")
         }
@@ -1198,23 +1198,23 @@ class SourceryTests: XCTestCase {
             output: output
         ))
 
-        XCTAssertTrue(output.path.appending("Basic.generated.swift").exists)
-        XCTAssertTrue(output.path.appending("GenerationWays.generated.swift").exists)
-        XCTAssertTrue(output.path.appending("Include.generated.swift").exists)
-        XCTAssertTrue(output.path.appending("Other.generated.swift").exists)
-        XCTAssertTrue(output.path.appending("Partial.generated.swift").exists)
+        XCTAssertTrue(output.appending("Basic.generated.swift").exists)
+        XCTAssertTrue(output.appending("GenerationWays.generated.swift").exists)
+        XCTAssertTrue(output.appending("Include.generated.swift").exists)
+        XCTAssertTrue(output.appending("Other.generated.swift").exists)
+        XCTAssertTrue(output.appending("Partial.generated.swift").exists)
     }
 
     private func createProjectScenario(templatePath: Path) throws -> ProjectScenario {
-        let projectPath = Stubs.sourceDirectory + "TestProject"
-        let projectFilePath = Stubs.sourceDirectory + "TestProject/TestProject.xcodeproj"
-        let project = try XcodeProj(path: projectFilePath)
+        let sourceRoot = Stubs.sourceDirectory + "TestProject"
+        let projectPath = sourceRoot + "TestProject.xcodeproj"
+        let project = try XcodeProj(path: projectPath)
         return .init(
             sources: [SourceFile(path: Stubs.sourceDirectory)],
             templates: [templatePath],
             originalProject: project,
-            projectPath: projectPath,
-            projectFilePath: projectFilePath
+            sourceRoot: sourceRoot,
+            projectPath: projectPath
         )
     }
 
@@ -1224,15 +1224,16 @@ class SourceryTests: XCTestCase {
         try Sourcery().processConfiguration(.stub(
             sources: scenario.sources,
             templates: scenario.templates,
-            output: scenario.createOutput(at: output.path)
+            output: output,
+            xcode: scenario.stubXcode()
         ))
 
-        XCTAssertTrue(scenario.sourceFilesPaths.contains(output.path + "Other.generated.swift"))
-        XCTAssertNoThrow(try scenario.originalProject.writePBXProj(path: scenario.projectFilePath, outputSettings: .init()))
+        XCTAssertTrue(scenario.sourceFilesPaths.contains(output + "Other.generated.swift"))
+        XCTAssertNoThrow(try scenario.originalProject.writePBXProj(path: scenario.projectPath, outputSettings: .init()))
     }
 
     func test_processFiles_whenProject_itLinksGeneratedFilesWhenUsingPerFileGeneration() throws {
-        let templatePath = output.path + "PerFileGeneration.stencil"
+        let templatePath = output + "PerFileGeneration.stencil"
         let scenario = try createProjectScenario(templatePath: templatePath)
 
         """
@@ -1250,12 +1251,13 @@ class SourceryTests: XCTestCase {
         try Sourcery().processConfiguration(.stub(
             sources: scenario.sources,
             templates: scenario.templates,
-            output: scenario.createOutput(at: output.path)
+            output: output,
+            xcode: scenario.stubXcode()
         ))
 
-        XCTAssertTrue(scenario.sourceFilesPaths.contains(output.path + "PerFileGeneration.generated.swift"))
-        XCTAssertTrue(scenario.sourceFilesPaths.contains(output.path + "Generated/Foo.generated.swift"))
-        XCTAssertNoThrow(try scenario.originalProject.writePBXProj(path: scenario.projectFilePath, outputSettings: .init()))
+        XCTAssertTrue(scenario.sourceFilesPaths.contains(output + "PerFileGeneration.generated.swift"))
+        XCTAssertTrue(scenario.sourceFilesPaths.contains(output + "Generated/Foo.generated.swift"))
+        XCTAssertNoThrow(try scenario.originalProject.writePBXProj(path: scenario.projectPath, outputSettings: .init()))
     }
 }
 
@@ -1290,27 +1292,25 @@ private struct ProjectScenario {
     let sources: [SourceFile]
     let templates: [Path]
     let originalProject: XcodeProj
+    let sourceRoot: Path
     let projectPath: Path
-    let projectFilePath: Path
 
     var sourceFilesPaths: [Path] {
         guard
-            let project = try? XcodeProj(path: projectFilePath),
+            let project = try? XcodeProj(path: projectPath),
             let target = project.target(named: "TestProject")
         else {
             return []
         }
-        return project.sourceFilesPaths(target: target, sourceRoot: projectPath)
+        return project.sourceFilesPaths(target: target, sourceRoot: sourceRoot)
     }
 
-    func createOutput(at path: Path) throws -> Output {
-        let projectPath = projectPath + "TestProject.xcodeproj"
-        return try Output(path, link: .init(
-            project: XcodeProj(path: projectPath),
-            projectPath: projectPath,
+    func stubXcode() -> Xcode {
+        .stub(
+            project: sourceRoot + "TestProject.xcodeproj",
             targets: ["TestProject"],
             group: nil
-        ))
+        )
     }
 }
 
