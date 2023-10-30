@@ -1,10 +1,9 @@
 import Foundation
 import Stencil
 import PathKit
-import StencilSwiftKit
 import SourceryRuntime
 
-public final class StencilTemplate: StencilSwiftKit.StencilSwiftTemplate {
+public final class StencilTemplate: Stencil.StencilSwiftTemplate {
     private(set) public var path: Path = ""
 
     /// Trim leading / trailing whitespaces until content or newline tag appears

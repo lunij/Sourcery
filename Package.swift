@@ -16,7 +16,7 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-argument-parser", from: "1.2.3"),
         .package(url: "https://github.com/jpsim/Yams.git", from: "5.0.3"),
         .package(url: "https://github.com/kylef/PathKit.git", exact: "1.0.1"),
-        .package(url: "https://github.com/lunij/StencilSwiftKit.git", branch: "marc/wip"),
+        .package(url: "https://github.com/lunij/Stencil.git", branch: "marc/wip"),
         .package(url: "https://github.com/tuist/XcodeProj.git", exact: "8.3.1"),
         .package(url: "https://github.com/apple/swift-syntax.git", from: "508.0.0")
     ],
@@ -31,7 +31,7 @@ let package = Package(
                 "FileSystemEvents",
                 "PathKit",
                 "SourceryRuntime",
-                "StencilSwiftKit",
+                "Stencil",
                 "XcodeProj",
                 "Yams"
             ],
