@@ -10,21 +10,21 @@ public class SwiftGenerator {
     private var fileAnnotatedContent: [Path: [String]] = [:]
 
     private let clock: TimeMeasuring
-    private let xcodeProjFactory: XcodeProjFactoryProtocol
+    private let xcodeProjModifierFactory: XcodeProjModifierMaking
 
     public convenience init() {
         self.init(
             clock: ContinuousClock(),
-            xcodeProjFactory: XcodeProjFactory()
+            xcodeProjModifierFactory: XcodeProjModifierFactory()
         )
     }
 
     init(
         clock: TimeMeasuring,
-        xcodeProjFactory: XcodeProjFactoryProtocol
+        xcodeProjModifierFactory: XcodeProjModifierMaking
     ) {
         self.clock = clock
-        self.xcodeProjFactory = xcodeProjFactory
+        self.xcodeProjModifierFactory = xcodeProjModifierFactory
     }
 
     func generate(
@@ -47,11 +47,7 @@ public class SwiftGenerator {
         }
 
         let elapsedTime = try clock.measure {
-            let xcodeProj: XcodeProjProtocol? = if let xcode = config.xcode {
-                try xcodeProjFactory.create(from: xcode.project)
-            } else {
-                nil
-            }
+            let xcodeProjModifier = try xcodeProjModifierFactory.makeModifier(from: config)
 
             for template in templates {
                 let (result, sourceChanges) = try generate(from: parsingResult, using: template, config: config)
@@ -59,22 +55,16 @@ public class SwiftGenerator {
                 let outputPath = output.appending(template.path.generatedFileName)
                 try write(result, to: outputPath)
 
-                if let xcode = config.xcode, let xcodeProj {
-                    link(outputPath, to: xcodeProj, xcode: xcode)
-                }
+                xcodeProjModifier?.link(path: outputPath)
             }
 
             for (outputPath, content) in fileAnnotatedContent {
                 try write(content.joined(separator: "\n"), to: outputPath)
 
-                if let xcode = config.xcode, let xcodeProj {
-                    link(outputPath, to: xcodeProj, xcode: xcode)
-                }
+                xcodeProjModifier?.link(path: outputPath)
             }
 
-            if let xcode = config.xcode {
-                try xcodeProj?.writePBXProj(path: xcode.project, outputSettings: .init())
-            }
+            try xcodeProjModifier?.save()
         }
 
         logger.info("Code generation finished in \(elapsedTime)")
@@ -277,32 +267,6 @@ public class SwiftGenerator {
                 return index == lines.count - 1 ? line : indentation + line
             }
             .joined(separator: "\n")
-    }
-
-    private func link(_ output: Path, to xcodeProj: XcodeProjProtocol, xcode: Xcode) {
-        for target in xcode.targets {
-            link(output, to: xcodeProj, projectPath: xcode.project, targetName: target, group: xcode.group)
-        }
-    }
-
-    private func link(_ output: Path, to xcodeProj: XcodeProjProtocol, projectPath: Path, targetName: String, group: String?) {
-        guard let target = xcodeProj.target(named: targetName) else {
-            logger.warning("Unable to find target \(targetName)")
-            return
-        }
-
-        let sourceRoot = projectPath.parent()
-
-        guard let fileGroup = xcodeProj.createGroupIfNeeded(named: group, sourceRoot: sourceRoot) else {
-            logger.warning("Unable to create group \(String(describing: group))")
-            return
-        }
-
-        do {
-            try xcodeProj.addSourceFile(at: output, toGroup: fileGroup, target: target, sourceRoot: sourceRoot)
-        } catch {
-            logger.warning("Failed to link file at \(output) to \(projectPath). \(error)")
-        }
     }
 
     private func write(_ content: String, to outputPath: Path) throws {

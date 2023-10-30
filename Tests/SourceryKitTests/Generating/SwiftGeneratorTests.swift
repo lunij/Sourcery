@@ -7,7 +7,8 @@ class SwiftGeneratorTests: XCTestCase {
 
     var clockMock: ClockMock!
     var loggerMock: LoggerMock!
-    var xcodeProjFactoryMock: XcodeProjFactoryMock!
+    var xcodeProjModifierMock: XcodeProjModifierMock!
+    var xcodeProjModifierFactoryMock: XcodeProjModifierFactoryMock!
 
     override func setUp() {
         super.setUp()
@@ -15,8 +16,10 @@ class SwiftGeneratorTests: XCTestCase {
         clockMock.measureReturnValue = .milliseconds(100)
         loggerMock = .init()
         logger = loggerMock
-        xcodeProjFactoryMock = .init()
-        sut = .init(clock: clockMock, xcodeProjFactory: xcodeProjFactoryMock)
+        xcodeProjModifierMock = .init()
+        xcodeProjModifierFactoryMock = .init()
+        xcodeProjModifierFactoryMock.makeModifierReturnValue = xcodeProjModifierMock
+        sut = .init(clock: clockMock, xcodeProjModifierFactory: xcodeProjModifierFactoryMock)
     }
 
     func test_warnsAboutSkippedFiles() throws {

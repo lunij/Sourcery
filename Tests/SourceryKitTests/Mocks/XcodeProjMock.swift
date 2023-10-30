@@ -16,7 +16,6 @@ class XcodeProjMock: XcodeProjProtocol {
     func addSourceFile(at filePath: Path, toGroup: PBXGroup, target: PBXTarget, sourceRoot: Path) throws {
         calls.append(.addSourceFile(filePath))
         if let addSourceFileError { throw addSourceFileError }
-        preconditionFailure("Mock needs to be configured")
     }
 
     var createGroupIfNeededReturnValue: PBXGroup?
