@@ -1,5 +1,3 @@
-import SourceryRuntime
-
 protocol XcodeProjModifierMaking {
     func makeModifier(from config: Configuration) throws -> XcodeProjModifying?
 }
@@ -22,7 +20,7 @@ class XcodeProjModifierFactory: XcodeProjModifierMaking {
 }
 
 protocol XcodeProjModifying {
-    func link(path: Path)
+    func addSourceFile(path: Path) throws
     func save() throws
 }
 
@@ -35,33 +33,42 @@ class XcodeProjModifier: XcodeProjModifying {
         self.xcodeProj = xcodeProj
     }
 
-    func link(path: Path) {
+    func addSourceFile(path: Path) throws {
         for target in xcode.targets {
-            addSourceFile(at: path, target: target, group: xcode.group)
+            try addSourceFile(at: path, target: target, group: xcode.group)
         }
     }
 
-    private func addSourceFile(at path: Path, target: String, group: String?) {
+    private func addSourceFile(at path: Path, target: String, group groupName: String?) throws {
         guard let target = xcodeProj.target(named: target) else {
-            logger.warning("Unable to find target \(target)")
-            return
+            throw Error.targetNotFound(name: target)
         }
 
         let sourceRoot = xcode.project.parent()
 
-        guard let fileGroup = xcodeProj.createGroupIfNeeded(named: group, sourceRoot: sourceRoot) else {
-            logger.warning("Unable to create group \(String(describing: group))")
-            return
+        guard let rootGroup = try xcodeProj.rootGroup() else {
+            throw Error.malformedXcodeProject(context: "Root group not found.")
+        }
+
+        var group = rootGroup
+        if let groupName {
+            group = xcodeProj.addGroupIfNeeded(named: groupName, to: rootGroup, sourceRoot: sourceRoot)
         }
 
         do {
-            try xcodeProj.addSourceFile(at: path, toGroup: fileGroup, target: target, sourceRoot: sourceRoot)
+            try xcodeProj.addSourceFile(with: path, to: group, target: target, sourceRoot: sourceRoot)
         } catch {
-            logger.warning("Failed to link file at \(path) to \(xcode.project). \(error)")
+            throw Error.failedToAddSourceFile(path, group: group.name, target: target.name, projectPath: xcode.project, context: String(describing: error))
         }
     }
 
     func save() throws {
         try xcodeProj.writePBXProj(path: xcode.project, outputSettings: .init())
+    }
+
+    enum Error: Swift.Error, Equatable {
+        case failedToAddSourceFile(Path, group: String?, target: String, projectPath: Path, context: String)
+        case malformedXcodeProject(context: String)
+        case targetNotFound(name: String)
     }
 }

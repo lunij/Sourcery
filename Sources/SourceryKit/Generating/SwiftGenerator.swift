@@ -55,13 +55,13 @@ public class SwiftGenerator {
                 let outputPath = output.appending(template.path.generatedFileName)
                 try write(result, to: outputPath)
 
-                xcodeProjModifier?.link(path: outputPath)
+                try xcodeProjModifier?.addSourceFile(path: outputPath)
             }
 
             for (outputPath, content) in fileAnnotatedContent {
                 try write(content.joined(separator: "\n"), to: outputPath)
 
-                xcodeProjModifier?.link(path: outputPath)
+                try xcodeProjModifier?.addSourceFile(path: outputPath)
             }
 
             try xcodeProjModifier?.save()

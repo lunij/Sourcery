@@ -2,14 +2,16 @@
 
 class XcodeProjModifierMock: XcodeProjModifying {
     enum Call: Equatable {
-        case link(Path)
+        case addSourceFile(Path)
         case save
     }
 
     var calls: [Call] = []
 
-    func link(path: Path) {
-        calls.append(.link(path))
+    var addSourceFileError: Error?
+    func addSourceFile(path: Path) throws {
+        calls.append(.addSourceFile(path))
+        if let addSourceFileError { throw addSourceFileError }
     }
 
     var saveError: Error?

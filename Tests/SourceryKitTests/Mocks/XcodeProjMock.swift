@@ -3,8 +3,9 @@ import XcodeProj
 
 class XcodeProjMock: XcodeProjProtocol {
     enum Call: Equatable {
+        case addGroupIfNeeded(String, Path)
         case addSourceFile(Path)
-        case createGroupIfNeeded(String?, Path)
+        case rootGroup
         case sourceFilesPaths(String, Path)
         case target(String)
         case writePBXProj(Path, Bool)
@@ -12,17 +13,25 @@ class XcodeProjMock: XcodeProjProtocol {
 
     var calls: [Call] = []
 
+    var addGroupIfNeededReturnValue: PBXGroup?
+    func addGroupIfNeeded(named group: String, to parentGroup: PBXGroup, sourceRoot: Path) -> PBXGroup {
+        calls.append(.addGroupIfNeeded(group, sourceRoot))
+        if let addGroupIfNeededReturnValue { return addGroupIfNeededReturnValue }
+        preconditionFailure("Mock needs to be configured")
+    }
+
     var addSourceFileError: Error?
-    func addSourceFile(at filePath: Path, toGroup: PBXGroup, target: PBXTarget, sourceRoot: Path) throws {
+    func addSourceFile(with filePath: Path, to group: PBXGroup, target: PBXTarget, sourceRoot: Path) throws {
         calls.append(.addSourceFile(filePath))
         if let addSourceFileError { throw addSourceFileError }
     }
 
-    var createGroupIfNeededReturnValue: PBXGroup?
-    func createGroupIfNeeded(named group: String?, sourceRoot: Path) -> PBXGroup? {
-        calls.append(.createGroupIfNeeded(group, sourceRoot))
-        if let createGroupIfNeededReturnValue { return createGroupIfNeededReturnValue }
-        preconditionFailure("Mock needs to be configured")
+    var rootGroupError: Error?
+    var rootGroupReturnValue: PBXGroup?
+    func rootGroup() throws -> PBXGroup? {
+        calls.append(.rootGroup)
+        if let rootGroupError { throw rootGroupError }
+        return rootGroupReturnValue
     }
 
     var sourceFilesPathsReturnValue: [Path]?
@@ -35,15 +44,13 @@ class XcodeProjMock: XcodeProjProtocol {
     var targetReturnValue: PBXTarget?
     func target(named targetName: String) -> PBXTarget? {
         calls.append(.target(targetName))
-        if let targetReturnValue { return targetReturnValue }
-        preconditionFailure("Mock needs to be configured")
+        return targetReturnValue
     }
 
     var writePBXProjError: Error?
     func writePBXProj(path: Path, override: Bool, outputSettings: PBXOutputSettings) throws {
         calls.append(.writePBXProj(path, override))
         if let writePBXProjError { throw writePBXProjError }
-        preconditionFailure("Mock needs to be configured")
     }
 }
 
