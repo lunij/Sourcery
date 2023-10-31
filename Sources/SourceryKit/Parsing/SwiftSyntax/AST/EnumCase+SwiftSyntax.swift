@@ -4,7 +4,7 @@ import SourceryRuntime
 
 extension EnumCase {
 
-    convenience init(_ node: EnumCaseElementSyntax, parent: EnumCaseDeclSyntax, annotationsParser: AnnotationsParser) {
+    convenience init(_ node: EnumCaseElementSyntax, parent: EnumCaseDeclSyntax, getAnnotationUseCase: GetAnnotationUseCase) {
         var associatedValues: [AssociatedValue] = []
         if let paramList = node.associatedValue?.parameterList {
             let hasManyValues = paramList.count > 1
@@ -22,7 +22,7 @@ extension EnumCase {
 
                   var collectedAnnotations = Annotations()
                   if let typeSyntax = param.type {
-                      collectedAnnotations = annotationsParser.annotations(fromToken: typeSyntax)
+                      collectedAnnotations = getAnnotationUseCase.annotations(fromToken: typeSyntax)
                   }
 
                   return AssociatedValue(localName: name,
@@ -53,15 +53,15 @@ extension EnumCase {
           name: node.identifier.text.trimmed,
           rawValue: rawValue,
           associatedValues: associatedValues,
-          annotations: annotationsParser.annotations(from: node),
-          documentation: annotationsParser.documentation(from: node),
+          annotations: getAnnotationUseCase.annotations(from: node),
+          documentation: getAnnotationUseCase.documentation(from: node),
           indirect: indirect
         )
     }
 
-    static func from(_ node: EnumCaseDeclSyntax, annotationsParser: AnnotationsParser) -> [EnumCase] {
+    static func from(_ node: EnumCaseDeclSyntax, getAnnotationUseCase: GetAnnotationUseCase) -> [EnumCase] {
         node.elements.compactMap {
-            EnumCase($0, parent: node, annotationsParser: annotationsParser)
+            EnumCase($0, parent: node, getAnnotationUseCase: getAnnotationUseCase)
         }
     }
 }

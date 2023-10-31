@@ -3,55 +3,76 @@ import SwiftSyntax
 import SourceryRuntime
 
 extension SourceryMethod {
-    convenience init(_ node: FunctionDeclSyntax, parent: Type?, typeName: TypeName?, annotationsParser: AnnotationsParser) {
+    convenience init(
+        _ node: FunctionDeclSyntax,
+        parent: Type?,
+        typeName: TypeName?,
+        getAnnotationUseCase: GetAnnotationUseCase
+    ) {
         self.init(
-          node: node,
-          parent: parent,
-          identifier: node.identifier.text.trimmed,
-          typeName: typeName,
-          signature: Signature(node.signature, annotationsParser: annotationsParser),
-          modifiers: node.modifiers,
-          attributes: node.attributes,
-          genericParameterClause: node.genericParameterClause,
-          genericWhereClause: node.genericWhereClause,
-          annotationsParser: annotationsParser
+            node: node,
+            parent: parent,
+            identifier: node.identifier.text.trimmed,
+            typeName: typeName,
+            signature: Signature(node.signature, getAnnotationUseCase: getAnnotationUseCase),
+            modifiers: node.modifiers,
+            attributes: node.attributes,
+            genericParameterClause: node.genericParameterClause,
+            genericWhereClause: node.genericWhereClause,
+            getAnnotationUseCase: getAnnotationUseCase
         )
     }
 
-    convenience init(_ node: InitializerDeclSyntax, parent: Type, typeName: TypeName, annotationsParser: AnnotationsParser) {
+    convenience init(
+        _ node: InitializerDeclSyntax,
+        parent: Type,
+        typeName: TypeName,
+        getAnnotationUseCase: GetAnnotationUseCase
+    ) {
         let signature = node.signature
         self.init(
-          node: node,
-          parent: parent,
-          identifier: "init\(node.optionalMark?.text.trimmed ?? "")",
-          typeName: typeName,
-          signature: Signature(
-            parameters: signature.input.parameterList,
-            output: nil,
-            asyncKeyword: nil,
-            throwsOrRethrowsKeyword: signature.throwsOrRethrowsKeyword?.description.trimmed,
-            annotationsParser: annotationsParser
-          ),
-          modifiers: node.modifiers,
-          attributes: node.attributes,
-          genericParameterClause: node.genericParameterClause,
-          genericWhereClause: node.genericWhereClause,
-          annotationsParser: annotationsParser
+            node: node,
+            parent: parent,
+            identifier: "init\(node.optionalMark?.text.trimmed ?? "")",
+            typeName: typeName,
+            signature: Signature(
+                parameters: signature.input.parameterList,
+                output: nil,
+                asyncKeyword: nil,
+                throwsOrRethrowsKeyword: signature.throwsOrRethrowsKeyword?.description.trimmed,
+                getAnnotationUseCase: getAnnotationUseCase
+            ),
+            modifiers: node.modifiers,
+            attributes: node.attributes,
+            genericParameterClause: node.genericParameterClause,
+            genericWhereClause: node.genericWhereClause,
+            getAnnotationUseCase: getAnnotationUseCase
         )
     }
 
-    convenience init(_ node: DeinitializerDeclSyntax, parent: Type, typeName: TypeName, annotationsParser: AnnotationsParser) {
+    convenience init(
+        _ node: DeinitializerDeclSyntax,
+        parent: Type,
+        typeName: TypeName,
+        getAnnotationUseCase: GetAnnotationUseCase
+    ) {
         self.init(
-          node: node,
-          parent: parent,
-          identifier: "deinit",
-          typeName: typeName,
-          signature: Signature(parameters: nil, output: nil, asyncKeyword: nil, throwsOrRethrowsKeyword: nil, annotationsParser: annotationsParser),
-          modifiers: node.modifiers,
-          attributes: node.attributes,
-          genericParameterClause: nil,
-          genericWhereClause: nil,
-          annotationsParser: annotationsParser
+            node: node,
+            parent: parent,
+            identifier: "deinit",
+            typeName: typeName,
+            signature: Signature(
+                parameters: nil,
+                output: nil,
+                asyncKeyword: nil,
+                throwsOrRethrowsKeyword: nil,
+                getAnnotationUseCase: getAnnotationUseCase
+            ),
+            modifiers: node.modifiers,
+            attributes: node.attributes,
+            genericParameterClause: nil,
+            genericWhereClause: nil,
+            getAnnotationUseCase: getAnnotationUseCase
         )
     }
 
@@ -65,7 +86,7 @@ extension SourceryMethod {
       attributes: AttributeListSyntax?,
       genericParameterClause: GenericParameterClauseSyntax?,
       genericWhereClause: GenericWhereClauseSyntax?,
-      annotationsParser: AnnotationsParser
+      getAnnotationUseCase: GetAnnotationUseCase
     ) {
         let initializerNode = node as? InitializerDeclSyntax
 
@@ -111,11 +132,11 @@ extension SourceryMethod {
         let annotations: Annotations
         let documentation: Documentation
         if let function = node as? FunctionDeclSyntax {
-            annotations = annotationsParser.annotations(from: function)
-            documentation = annotationsParser.documentation(from: function)
+            annotations = getAnnotationUseCase.annotations(from: function)
+            documentation = getAnnotationUseCase.documentation(from: function)
         } else {
-            annotations = annotationsParser.annotations(fromToken: node)
-            documentation = annotationsParser.documentation(fromToken: node)
+            annotations = getAnnotationUseCase.annotations(fromToken: node)
+            documentation = getAnnotationUseCase.documentation(fromToken: node)
         }
 
         self.init(

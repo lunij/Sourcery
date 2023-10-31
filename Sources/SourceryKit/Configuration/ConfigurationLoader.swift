@@ -45,7 +45,7 @@ struct ConfigurationLoader: ConfigurationLoading {
         if configs.isEmpty {
             logger.info("No configuration files loaded. Using default configuration and command line arguments.")
             let args = options.args.joined(separator: ",")
-            let arguments = AnnotationsParser.parse(line: args)
+            let arguments = AnnotationParser().parse(line: args)
             return [
                 Configuration(
                     sources: pathResolver.resolveSources(from: options),

@@ -3,7 +3,7 @@ import SourceryRuntime
 import SwiftSyntax
 
 extension SourceryProtocol {
-    convenience init(_ node: ProtocolDeclSyntax, parent: Type?, annotationsParser: AnnotationsParser) {
+    convenience init(_ node: ProtocolDeclSyntax, parent: Type?, getAnnotationParser: GetAnnotationUseCase) {
         let modifiers = node.modifiers?.map(Modifier.init) ?? []
 
         let genericRequirements: [GenericRequirement] = node.genericWhereClause?.requirementList.compactMap { requirement in
@@ -29,8 +29,8 @@ extension SourceryProtocol {
           genericRequirements: genericRequirements,
           attributes: Attribute.from(node.attributes),
           modifiers: modifiers.map(SourceryModifier.init),
-          annotations: annotationsParser.annotations(from: node),
-          documentation: annotationsParser.documentation(from: node)
+          annotations: getAnnotationParser.annotations(from: node),
+          documentation: getAnnotationParser.documentation(from: node)
         )
     }
 }

@@ -14,17 +14,24 @@ public struct Signature {
     /// The `throws` or `rethrows` keyword, if any.
     public let throwsOrRethrowsKeyword: String?
 
-    public init(_ node: FunctionSignatureSyntax, annotationsParser: AnnotationsParser) {
-        self.init(parameters: node.input.parameterList,
-                  output: node.output.map { TypeName($0.returnType) },
-                  asyncKeyword: node.asyncOrReasyncKeyword?.text,
-                  throwsOrRethrowsKeyword: node.throwsOrRethrowsKeyword?.description.trimmed,
-                  annotationsParser: annotationsParser
+    public init(_ node: FunctionSignatureSyntax, getAnnotationUseCase: GetAnnotationUseCase) {
+        self.init(
+            parameters: node.input.parameterList,
+            output: node.output.map { TypeName($0.returnType) },
+            asyncKeyword: node.asyncOrReasyncKeyword?.text,
+            throwsOrRethrowsKeyword: node.throwsOrRethrowsKeyword?.description.trimmed,
+            getAnnotationUseCase: getAnnotationUseCase
         )
     }
 
-    public init(parameters: FunctionParameterListSyntax?, output: TypeName?, asyncKeyword: String?, throwsOrRethrowsKeyword: String?, annotationsParser: AnnotationsParser) {
-        input = parameters?.map { MethodParameter($0, annotationsParser: annotationsParser) } ?? []
+    public init(
+        parameters: FunctionParameterListSyntax?,
+        output: TypeName?,
+        asyncKeyword: String?,
+        throwsOrRethrowsKeyword: String?,
+        getAnnotationUseCase: GetAnnotationUseCase
+    ) {
+        input = parameters?.map { MethodParameter($0, getAnnotationUseCase: getAnnotationUseCase) } ?? []
         self.output = output
         self.asyncKeyword = asyncKeyword
         self.throwsOrRethrowsKeyword = throwsOrRethrowsKeyword

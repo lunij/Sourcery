@@ -44,19 +44,23 @@ public final class FileParserSyntax: SyntaxVisitor, FileParserType {
     public func parse() throws -> FileParserResult {
         // Inline handling
         let inline = annotationsParser.parseAnnotations("inline", contents: initialContents, forceParse: self.forceParse)
-        let contents = inline.contents
+        let content = inline.contents
         inlineRanges = inline.annotatedRanges.mapValues { $0[0].range }
         inlineIndentations = inline.annotatedRanges.mapValues { $0[0].indentation }
 
         // Syntax walking
-        let tree = Parser.parse(source: contents)
+        let tree = Parser.parse(source: content)
         let fileName = path ?? "in-memory"
         let sourceLocationConverter = SourceLocationConverter(file: fileName, tree: tree)
         let collector = SyntaxTreeCollector(
-          file: fileName,
-          module: module,
-          annotations: AnnotationsParser(contents: contents, parseDocumentation: parseDocumentation, sourceLocationConverter: sourceLocationConverter),
-          sourceLocationConverter: sourceLocationConverter)
+            file: fileName,
+            module: module,
+            getAnnotationUseCase: GetAnnotationUseCase(
+                content: content,
+                sourceLocationConverter: sourceLocationConverter,
+                parseDocumentation: parseDocumentation
+            ),
+            sourceLocationConverter: sourceLocationConverter)
         collector.walk(tree)
 
         collector.types.forEach {
@@ -65,15 +69,14 @@ public final class FileParserSyntax: SyntaxVisitor, FileParserType {
         }
 
         return FileParserResult(
-          path: path,
-          module: module,
-          types: collector.types,
-          functions: collector.methods,
-          typealiases: collector.typealiases,
-          inlineRanges: inlineRanges,
-          inlineIndentations: inlineIndentations,
-          modifiedDate: modifiedDate ?? Date()
+            path: path,
+            module: module,
+            types: collector.types,
+            functions: collector.methods,
+            typealiases: collector.typealiases,
+            inlineRanges: inlineRanges,
+            inlineIndentations: inlineIndentations,
+            modifiedDate: modifiedDate ?? Date()
         )
     }
-
 }

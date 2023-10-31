@@ -3,7 +3,7 @@ import SourceryRuntime
 import SwiftSyntax
 
 extension Class {
-    convenience init(_ node: ClassDeclSyntax, parent: Type?, annotationsParser: AnnotationsParser) {
+    convenience init(_ node: ClassDeclSyntax, parent: Type?, getAnnotationUseCase: GetAnnotationUseCase) {
         let modifiers = node.modifiers?.map(Modifier.init) ?? []
 
         self.init(
@@ -19,8 +19,8 @@ extension Class {
           typealiases: [],
           attributes: Attribute.from(node.attributes),
           modifiers: modifiers.map(SourceryModifier.init),
-          annotations: annotationsParser.annotations(from: node),
-          documentation: annotationsParser.documentation(from: node),
+          annotations: getAnnotationUseCase.annotations(from: node),
+          documentation: getAnnotationUseCase.documentation(from: node),
           isGeneric: node.genericParameterClause?.genericParameterList.isEmpty == false
         )
     }

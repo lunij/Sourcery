@@ -4,14 +4,14 @@ import SwiftSyntax
 
 extension Variable {
     convenience init(
-      _ node: PatternBindingSyntax,
-      variableNode: VariableDeclSyntax,
-      readAccess: AccessLevel,
-      writeAccess: AccessLevel,
-      isStatic: Bool,
-      modifiers: [Modifier],
-      visitingType: Type?,
-      annotationParser: AnnotationsParser
+        _ node: PatternBindingSyntax,
+        variableNode: VariableDeclSyntax,
+        readAccess: AccessLevel,
+        writeAccess: AccessLevel,
+        isStatic: Bool,
+        modifiers: [Modifier],
+        visitingType: Type?,
+        getAnnotationUseCase: GetAnnotationUseCase
     ) {
         var writeAccess = writeAccess
         var hadGetter = false
@@ -80,28 +80,30 @@ extension Variable {
           defaultValue: node.initializer?.value.description.trimmingCharacters(in: .whitespacesAndNewlines),
           attributes: Attribute.from(variableNode.attributes),
           modifiers: modifiers.map(SourceryModifier.init),
-          annotations: annotationParser.annotations(fromToken: variableNode.letOrVarKeyword),
-          documentation: annotationParser.documentation(fromToken: variableNode.letOrVarKeyword),
+          annotations: getAnnotationUseCase.annotations(fromToken: variableNode.letOrVarKeyword),
+          documentation: getAnnotationUseCase.documentation(fromToken: variableNode.letOrVarKeyword),
           definedInTypeName: visitingType.map { TypeName($0.name) }
         )
     }
 
-    static func from(_ variableNode: VariableDeclSyntax, visitingType: Type?,
-                     annotationParser: AnnotationsParser) -> [Variable] {
-
+    static func from(
+        _ variableNode: VariableDeclSyntax,
+        visitingType: Type?,
+        getAnnotationUseCase: GetAnnotationUseCase
+    ) -> [Variable] {
         let modifiers = variableNode.modifiers?.map(Modifier.init) ?? []
         let baseModifiers = modifiers.baseModifiers(parent: visitingType)
 
         return variableNode.bindings.map { (node: PatternBindingSyntax) -> Variable in
             Variable(
-              node,
-              variableNode: variableNode,
-              readAccess: baseModifiers.readAccess,
-              writeAccess: baseModifiers.writeAccess,
-              isStatic: baseModifiers.isStatic || baseModifiers.isClass,
-              modifiers: modifiers,
-              visitingType: visitingType,
-              annotationParser: annotationParser
+                node,
+                variableNode: variableNode,
+                readAccess: baseModifiers.readAccess,
+                writeAccess: baseModifiers.writeAccess,
+                isStatic: baseModifiers.isStatic || baseModifiers.isClass,
+                modifiers: modifiers,
+                visitingType: visitingType,
+                getAnnotationUseCase: getAnnotationUseCase
             )
         }
     }

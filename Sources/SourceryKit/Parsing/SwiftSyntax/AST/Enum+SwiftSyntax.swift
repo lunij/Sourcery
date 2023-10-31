@@ -3,7 +3,7 @@ import SourceryRuntime
 import SwiftSyntax
 
 extension Enum {
-    convenience init(_ node: EnumDeclSyntax, parent: Type?, annotationsParser: AnnotationsParser) {
+    convenience init(_ node: EnumDeclSyntax, parent: Type?, getAnnotationUseCase: GetAnnotationUseCase) {
         let modifiers = node.modifiers?.map(Modifier.init) ?? []
 
         //let rawTypeName: String? = node.inheritanceClause?.inheritedTypeCollection.first?.typeName.description.trimmed ?? nil
@@ -21,8 +21,8 @@ extension Enum {
           typealiases: [],
           attributes: Attribute.from(node.attributes),
           modifiers: modifiers.map(SourceryModifier.init),
-          annotations: annotationsParser.annotations(from: node),
-          documentation: annotationsParser.documentation(from: node),
+          annotations: getAnnotationUseCase.annotations(from: node),
+          documentation: getAnnotationUseCase.documentation(from: node),
           isGeneric: node.genericParameters?.genericParameterList.isEmpty == false
         )
     }

@@ -3,7 +3,7 @@ import SwiftSyntax
 import SourceryRuntime
 
 extension Subscript {
-    convenience init(_ node: SubscriptDeclSyntax, parent: Type, annotationsParser: AnnotationsParser) {
+    convenience init(_ node: SubscriptDeclSyntax, parent: Type, getAnnotationUseCase: GetAnnotationUseCase) {
         let modifiers = node.modifiers?.map(Modifier.init) ?? []
         let baseModifiers = modifiers.baseModifiers(parent: parent)
         let parentAccess = AccessLevel(rawValue: parent.accessLevel) ?? .internal
@@ -50,14 +50,14 @@ extension Subscript {
         }
 
         self.init(
-          parameters: node.indices.parameterList.map { MethodParameter($0, annotationsParser: annotationsParser) },
-          returnTypeName: TypeName(node.result.returnType.description.trimmed),
-          accessLevel: (read: readAccess, write: isWritable ? writeAccess : .none),
-          attributes: Attribute.from(node.attributes),
-          modifiers: modifiers.map(SourceryModifier.init),
-          annotations: node.firstToken.map { annotationsParser.annotations(fromToken: $0) } ?? [:],
-          documentation: node.firstToken.map { annotationsParser.documentation(fromToken: $0) } ?? [],
-          definedInTypeName: TypeName(parent.name)
+            parameters: node.indices.parameterList.map { MethodParameter($0, getAnnotationUseCase: getAnnotationUseCase) },
+            returnTypeName: TypeName(node.result.returnType.description.trimmed),
+            accessLevel: (read: readAccess, write: isWritable ? writeAccess : .none),
+            attributes: Attribute.from(node.attributes),
+            modifiers: modifiers.map(SourceryModifier.init),
+            annotations: node.firstToken.map { getAnnotationUseCase.annotations(fromToken: $0) } ?? [:],
+            documentation: node.firstToken.map { getAnnotationUseCase.documentation(fromToken: $0) } ?? [],
+            definedInTypeName: TypeName(parent.name)
         )
     }
 }
