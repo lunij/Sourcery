@@ -82,13 +82,13 @@ public class SwiftGenerator {
 
     private func processRanges(in parsingResult: ParsingResult, result: String, config: Configuration) throws -> GenerationResult {
         var result = result
-        result = processFileRanges(for: parsingResult, in: result, config: config)
+        result = processFileRanges(in: result, config: config)
         let sourceChanges: [SourceChange]
         (result, sourceChanges) = try processInlineRanges(for: parsingResult, in: result, config: config)
         return (TemplateAnnotationsParser.removingEmptyAnnotations(from: result), sourceChanges)
     }
 
-    private func processFileRanges(for _: ParsingResult, in contents: String, config: Configuration) -> String {
+    private func processFileRanges(in contents: String, config: Configuration) -> String {
         let files = TemplateAnnotationsParser.parseAnnotations("file", contents: contents, aggregate: true, forceParse: config.forceParse)
 
         files
