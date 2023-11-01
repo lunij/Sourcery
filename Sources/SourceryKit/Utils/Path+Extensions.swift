@@ -4,10 +4,6 @@ import PathKit
 public typealias Path = PathKit.Path
 
 extension Path {
-    public var modifiedDate: Date? {
-        (try? FileManager.default.attributesOfItem(atPath: string)[.modificationDate]) as? Date
-    }
-
     /// - parameter _basePath: The value of the `--cachePath` command line parameter, if any.
     /// - note: This function does not consider the `--disableCache` command line parameter.
     ///         It is considered programmer error to call this function when `--disableCache` is specified.

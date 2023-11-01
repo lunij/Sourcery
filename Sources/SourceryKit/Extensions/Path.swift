@@ -1,3 +1,4 @@
+import struct Foundation.Date
 import class Foundation.FileManager
 import PathKit
 
@@ -29,6 +30,10 @@ extension Path {
 
     var isRepresentingDirectory: Bool {
         string.isNotEmpty && (!hasExtension || string.hasSuffix("/"))
+    }
+
+    var modificationDate: Date? {
+        (try? FileManager.default.attributesOfItem(atPath: string)[.modificationDate]) as? Date
     }
 
     var relativeToCurrent: Path {

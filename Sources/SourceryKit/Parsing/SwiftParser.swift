@@ -117,7 +117,7 @@ public class SwiftParser {
 
         guard
             artifactsPath.exists,
-            let modifiedDate = path.modifiedDate,
+            let modifiedDate = path.modificationDate,
             let unarchived = loadArtifacts(path: artifactsPath, modifiedDate: modifiedDate)
         else {
             guard let result = try parser.parse() else {

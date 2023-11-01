@@ -28,8 +28,8 @@ final class SwiftSyntaxParser: SwiftSyntaxParsing {
         forceParse: [String] = [],
         parseDocumentation: Bool = false
     ) -> FileParserResult {
+        let modificationDate = path?.modificationDate
         let path = path?.string
-        let modifiedDate = path.flatMap { (try? FileManager.default.attributesOfItem(atPath: $0)[.modificationDate]) as? Date }
 
         let inline = annotationParser.parseAnnotations("inline", contents: content, forceParse: forceParse)
         let content = inline.contents
@@ -63,7 +63,7 @@ final class SwiftSyntaxParser: SwiftSyntaxParsing {
             typealiases: collector.typealiases,
             inlineRanges: inlineRanges,
             inlineIndentations: inlineIndentations,
-            modifiedDate: modifiedDate ?? Date()
+            modifiedDate: modificationDate ?? Date()
         )
     }
 }
