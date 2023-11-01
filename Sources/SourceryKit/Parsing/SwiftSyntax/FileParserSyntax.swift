@@ -19,8 +19,6 @@ public final class FileParserSyntax: SyntaxVisitor {
 
     private let annotationParser: TemplateAnnotationParsing
 
-    /// Parses given contents.
-    /// - Throws: parsing errors.
     public init(
         contents: String,
         forceParse: [String] = [],
@@ -38,17 +36,12 @@ public final class FileParserSyntax: SyntaxVisitor {
         super.init(viewMode: .fixedUp)
     }
 
-    /// Parses given file context.
-    ///
-    /// - Returns: All types we could find.
     public func parse() throws -> FileParserResult {
-        // Inline handling
         let inline = annotationParser.parseAnnotations("inline", contents: initialContents, forceParse: self.forceParse)
         let content = inline.contents
         inlineRanges = inline.annotatedRanges.mapValues { $0[0].range }
         inlineIndentations = inline.annotatedRanges.mapValues { $0[0].indentation }
 
-        // Syntax walking
         let tree = Parser.parse(source: content)
         let fileName = path ?? "in-memory"
         let sourceLocationConverter = SourceLocationConverter(file: fileName, tree: tree)
