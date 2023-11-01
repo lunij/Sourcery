@@ -12,14 +12,12 @@ class SwiftSyntaxParserTests: XCTestCase {
     }
 
     func test_parsesAnnotationsFromExtensions() {
-        let result = """
+        let annotations = """
         // sourcery: forceMockPublisher
         public extension AnyPublisher {}
-        """.parse()
+        """.parse().types.first?.annotations
 
-        let annotations: [String: NSObject] = ["forceMockPublisher": NSNumber(value: true)]
-
-        XCTAssertEqual(result.types.first?.annotations, annotations)
+        XCTAssertEqual(annotations, ["forceMockPublisher": NSNumber(value: true)])
     }
 
     func test_parsesAnnotationBlock() {
