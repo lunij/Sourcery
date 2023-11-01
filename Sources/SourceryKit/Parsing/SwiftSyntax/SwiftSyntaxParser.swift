@@ -14,12 +14,11 @@ protocol SwiftSyntaxParsing {
     ) -> FileParserResult
 }
 
-final class SwiftSyntaxParser: SyntaxVisitor, SwiftSyntaxParsing {
+final class SwiftSyntaxParser: SwiftSyntaxParsing {
     private let annotationParser: TemplateAnnotationParsing
 
     init(annotationParser: TemplateAnnotationParsing = TemplateAnnotationParser()) {
         self.annotationParser = annotationParser
-        super.init(viewMode: .fixedUp)
     }
 
     func parse(
