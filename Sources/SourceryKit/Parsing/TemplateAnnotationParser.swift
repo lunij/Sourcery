@@ -18,7 +18,7 @@ extension TemplateAnnotationParsing {
 }
 
 class TemplateAnnotationParser: TemplateAnnotationParsing {
-    private func regex(annotation: String) throws -> NSRegularExpression {
+    func regex(annotation: String) throws -> NSRegularExpression {
         let commentPattern = NSRegularExpression.escapedPattern(for: "//")
         let regex = try NSRegularExpression(
             pattern: "(^(?:\\s*?\\n)?(\\s*)\(commentPattern)\\s*?sourcery:\(annotation):)(\\S*)\\s*?(^.*?)(^\\s*?\(commentPattern)\\s*?sourcery:end)",
