@@ -29,7 +29,7 @@ public class SwiftParser {
                         case .isCodeGenerated:
                             return nil
                         case .approved:
-                            return try FileParserSyntax(
+                            return try SwiftSyntaxParser(
                                 contents: content,
                                 forceParse: config.forceParse,
                                 parseDocumentation: config.parseDocumentation,

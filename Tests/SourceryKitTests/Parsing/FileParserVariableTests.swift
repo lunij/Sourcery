@@ -304,7 +304,7 @@ private extension String {
         }
         """
         do {
-            let parser = try FileParserSyntax(contents: wrappedCode, parseDocumentation: parseDocumentation)
+            let parser = try SwiftSyntaxParser(contents: wrappedCode, parseDocumentation: parseDocumentation)
             let result = try parser.parse()
             let variable = result.types.first?.variables.first
             variable?.definedInType = nil
@@ -323,7 +323,7 @@ private extension String {
         }
         """
         do {
-            let parser = try FileParserSyntax(contents: wrappedCode)
+            let parser = try SwiftSyntaxParser(contents: wrappedCode)
             let result = try parser.parse()
             let variable = result.types.first?.variables.first
             variable?.definedInType = nil

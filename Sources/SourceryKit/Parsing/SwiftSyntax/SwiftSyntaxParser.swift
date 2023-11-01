@@ -4,7 +4,7 @@ import SwiftParser
 import PathKit
 import SourceryRuntime
 
-final class FileParserSyntax: SyntaxVisitor {
+final class SwiftSyntaxParser: SyntaxVisitor {
 
     let path: String?
     let modifiedDate: Date?

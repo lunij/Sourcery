@@ -5,7 +5,7 @@ import XCTest
 
 final class FileParserAssociatedTypeTests: XCTestCase {
     private func associatedType(_ code: String, protocolName: String? = nil) throws -> [AssociatedType] {
-        try FileParserSyntax(contents: code)
+        try SwiftSyntaxParser(contents: code)
             .parse()
             .types
             .compactMap { $0 as? SourceryProtocol }

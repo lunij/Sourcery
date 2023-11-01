@@ -17,7 +17,7 @@ class SwiftTemplateTests: XCTestCase {
 
     func test_createsPersistableData() throws {
         func templateContextData(_ code: String) throws -> TemplateContext {
-            let parserResult = try FileParserSyntax(contents: code).parse()
+            let parserResult = try SwiftSyntaxParser(contents: code).parse()
             let data = try NSKeyedArchiver.archivedData(withRootObject: parserResult, requiringSecureCoding: false)
 
             let result = Composer.uniqueTypesAndFunctions(parserResult)

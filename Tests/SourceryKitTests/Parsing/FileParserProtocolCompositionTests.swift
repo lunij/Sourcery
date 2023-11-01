@@ -6,7 +6,7 @@ import XCTest
 
 class FileParserProtocolCompositionTests: XCTestCase {
     private func parse(_ code: String) throws -> [Type] {
-        try FileParserSyntax(contents: code).parse().types
+        try SwiftSyntaxParser(contents: code).parse().types
     }
 
     func test_extractsProtocolCompositions() throws {
