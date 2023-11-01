@@ -51,10 +51,11 @@ class TemplateAnnotationParserTests: XCTestCase {
     }
 
     func test_inline_withIndentation() {
-        let source =
-            "    // sourcery:inline:Type.AutoCoding\n" +
-            "    var something: Int\n" +
-            "    // sourcery:end\n"
+        let source = """
+            // sourcery:inline:Type.AutoCoding
+            var something: Int
+            // sourcery:end
+        """
 
         let result = sut.parseAnnotations("inline", contents: source, forceParse: [])
 
@@ -64,15 +65,16 @@ class TemplateAnnotationParserTests: XCTestCase {
         XCTAssertEqual(result.contents,
             "    // sourcery:inline:Type.AutoCoding\n" +
             String(repeating: " ", count: 23) +
-            "    // sourcery:end\n"
+            "    // sourcery:end"
         )
     }
 
     func test_inline_withIndentation_andForceParse() {
-        let source =
-            "    // sourcery:inline:Type.AutoCoding\n" +
-            "    var something: Int\n" +
-            "    // sourcery:end\n"
+        let source = """
+            // sourcery:inline:Type.AutoCoding
+            var something: Int
+            // sourcery:end
+        """
 
         let result = sut.parseAnnotations("inline", contents: source, aggregate: false, forceParse: ["AutoCoding"])
 
@@ -82,7 +84,7 @@ class TemplateAnnotationParserTests: XCTestCase {
         XCTAssertEqual(result.contents,
             "    // sourcery:inline:Type.AutoCoding\n" +
             "    var something: Int\n" +
-            "    // sourcery:end\n"
+            "    // sourcery:end"
         )
     }
 }
