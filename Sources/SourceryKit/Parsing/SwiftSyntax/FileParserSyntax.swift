@@ -4,10 +4,10 @@ import SwiftParser
 import PathKit
 import SourceryRuntime
 
-public final class FileParserSyntax: SyntaxVisitor {
+final class FileParserSyntax: SyntaxVisitor {
 
-    public let path: String?
-    public let modifiedDate: Date?
+    let path: String?
+    let modifiedDate: Date?
 
     private let module: String?
     private let initialContents: String
@@ -19,7 +19,7 @@ public final class FileParserSyntax: SyntaxVisitor {
 
     private let annotationParser: TemplateAnnotationParsing
 
-    public init(
+    init(
         contents: String,
         forceParse: [String] = [],
         parseDocumentation: Bool = false,
@@ -36,7 +36,7 @@ public final class FileParserSyntax: SyntaxVisitor {
         super.init(viewMode: .fixedUp)
     }
 
-    public func parse() throws -> FileParserResult {
+    func parse() throws -> FileParserResult {
         let inline = annotationParser.parseAnnotations("inline", contents: initialContents, forceParse: self.forceParse)
         let content = inline.contents
         inlineRanges = inline.annotatedRanges.mapValues { $0[0].range }
