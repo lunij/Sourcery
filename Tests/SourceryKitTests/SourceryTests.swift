@@ -108,17 +108,15 @@ class SourceryTests: XCTestCase {
     func test_processFiles_whenSingleTemplate_andInlineGeneration_itReplacesPlaceholder() throws {
         let (sourceFile, _) = try createExistingFilesWithInlineTemplate()
 
-        let expectedResult = """
+        let sourceFileContent = try sourceFile.path.read(.utf8)
+        XCTAssertEqual(sourceFileContent, """
         class Foo {
         // sourcery:inline:Foo.Inlined
         var property = 2
         // Line Three
         // sourcery:end
         }
-        """
-
-        let result = try sourceFile.path.read(.utf8)
-        XCTAssertEqual(result, expectedResult)
+        """)
     }
 
     func test_processFiles_whenSingleTemplate_andInlineGeneration_itRemovesCode() throws {

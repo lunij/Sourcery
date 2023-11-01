@@ -31,8 +31,8 @@ final class SwiftSyntaxParser: SwiftSyntaxParsing {
         let modificationDate = path?.modificationDate
         let path = path?.string
 
-        let inline = annotationParser.parseAnnotations("inline", contents: content, forceParse: forceParse)
-        let content = inline.contents
+        let inline = annotationParser.parseAnnotations("inline", content: content, forceParse: forceParse)
+        let content = inline.content
         let inlineRanges = inline.annotatedRanges.mapValues { $0[0].range }
         let inlineIndentations = inline.annotatedRanges.mapValues { $0[0].indentation }
 
