@@ -17,7 +17,7 @@ public final class FileParserSyntax: SyntaxVisitor, FileParserType {
     fileprivate var forceParse: [String] = []
     fileprivate var parseDocumentation: Bool = false
 
-    private let annotationParser: TemplateAnnotationParser
+    private let annotationParser: TemplateAnnotationParsing
 
     /// Parses given contents.
     /// - Throws: parsing errors.

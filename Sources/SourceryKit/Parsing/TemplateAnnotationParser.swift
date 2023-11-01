@@ -11,6 +11,10 @@ extension TemplateAnnotationParsing {
     func annotationRanges(_ annotation: String, contents: String, forceParse: [String]) -> (annotatedRanges: AnnotatedRanges, rangesToReplace: Set<NSRange>) {
         annotationRanges(annotation, contents: contents, aggregate: false, forceParse: forceParse)
     }
+
+    func parseAnnotations(_ annotation: String, contents: String, forceParse: [String]) -> (contents: String, annotatedRanges: AnnotatedRanges) {
+        parseAnnotations(annotation, contents: contents, aggregate: false, forceParse: forceParse)
+    }
 }
 
 class TemplateAnnotationParser: TemplateAnnotationParsing {
