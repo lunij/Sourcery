@@ -190,11 +190,6 @@ class FileParserAttributeTests: XCTestCase {
 
 private extension String {
     func parse() -> [Type] {
-        do {
-            return try SwiftSyntaxParser(contents: self).parse().types
-        } catch {
-            XCTFail(String(describing: error))
-            return []
-        }
+        SwiftSyntaxParser().parse(self).types
     }
 }

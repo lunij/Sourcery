@@ -303,17 +303,11 @@ private extension String {
             \(self)
         }
         """
-        do {
-            let parser = try SwiftSyntaxParser(contents: wrappedCode, parseDocumentation: parseDocumentation)
-            let result = try parser.parse()
-            let variable = result.types.first?.variables.first
-            variable?.definedInType = nil
-            variable?.definedInTypeName = nil
-            return variable
-        } catch {
-            XCTFail(String(describing: error))
-            return nil
-        }
+        let result = SwiftSyntaxParser().parse(wrappedCode, parseDocumentation: parseDocumentation)
+        let variable = result.types.first?.variables.first
+        variable?.definedInType = nil
+        variable?.definedInTypeName = nil
+        return variable
     }
 
     var protocolVariable: Variable? {
@@ -322,16 +316,10 @@ private extension String {
             \(self)
         }
         """
-        do {
-            let parser = try SwiftSyntaxParser(contents: wrappedCode)
-            let result = try parser.parse()
-            let variable = result.types.first?.variables.first
-            variable?.definedInType = nil
-            variable?.definedInTypeName = nil
-            return variable
-        } catch {
-            XCTFail(String(describing: error))
-            return nil
-        }
+        let result = SwiftSyntaxParser().parse(wrappedCode)
+        let variable = result.types.first?.variables.first
+        variable?.definedInType = nil
+        variable?.definedInTypeName = nil
+        return variable
     }
 }

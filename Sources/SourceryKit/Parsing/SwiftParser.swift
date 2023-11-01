@@ -5,7 +5,11 @@ import SourceryRuntime
 public class SwiftParser {
     typealias ParserWrapper = (path: Path, parse: () throws -> FileParserResult?)
 
-    public init() {}
+    private let syntaxParser: SwiftSyntaxParsing
+
+    public init() {
+        syntaxParser = SwiftSyntaxParser()
+    }
 
     func parseSources(from config: Configuration) throws -> ParsingResult {
         var inlineRanges: [(file: String, ranges: [String: NSRange], indentations: [String: String])] = []
@@ -15,7 +19,7 @@ public class SwiftParser {
             let fileList = sourceFile.path.isDirectory ? try sourceFile.path.recursiveChildren() : [sourceFile.path]
             let singleFileParser: [ParserWrapper] = fileList
                 .filter(\.isSwiftSourceFile)
-                .map { path in
+                .map { [syntaxParser] path in
                     (path: path, parse: {
                         guard path.exists else {
                             return nil
@@ -29,13 +33,13 @@ public class SwiftParser {
                         case .isCodeGenerated:
                             return nil
                         case .approved:
-                            return try SwiftSyntaxParser(
-                                contents: content,
-                                forceParse: config.forceParse,
-                                parseDocumentation: config.parseDocumentation,
+                            return syntaxParser.parse(
+                                content,
                                 path: path,
-                                module: config.sources[index].module
-                            ).parse()
+                                module: config.sources[index].module,
+                                forceParse: config.forceParse,
+                                parseDocumentation: config.parseDocumentation
+                            )
                         }
                     })
                 }

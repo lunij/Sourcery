@@ -1,46 +1,41 @@
 import Foundation
-import SwiftSyntax
-import SwiftParser
 import PathKit
 import SourceryRuntime
+import SwiftParser
+import SwiftSyntax
 
-final class SwiftSyntaxParser: SyntaxVisitor {
+protocol SwiftSyntaxParsing {
+    func parse(
+        _ content: String,
+        path: Path?,
+        module: String?,
+        forceParse: [String],
+        parseDocumentation: Bool
+    ) -> FileParserResult
+}
 
-    let path: String?
-    let modifiedDate: Date?
-
-    private let module: String?
-    private let initialContents: String
- 
-    fileprivate var inlineRanges: [String: NSRange]!
-    fileprivate var inlineIndentations: [String: String]!
-    fileprivate var forceParse: [String] = []
-    fileprivate var parseDocumentation: Bool = false
-
+final class SwiftSyntaxParser: SyntaxVisitor, SwiftSyntaxParsing {
     private let annotationParser: TemplateAnnotationParsing
 
-    init(
-        contents: String,
-        forceParse: [String] = [],
-        parseDocumentation: Bool = false,
-        path: Path? = nil,
-        module: String? = nil
-    ) throws {
-        self.path = path?.string
-        self.modifiedDate = path.flatMap({ (try? FileManager.default.attributesOfItem(atPath: $0.string)[.modificationDate]) as? Date })
-        self.module = module
-        self.initialContents = contents
-        self.forceParse = forceParse
-        self.parseDocumentation = parseDocumentation
-        annotationParser = TemplateAnnotationParser()
+    init(annotationParser: TemplateAnnotationParsing = TemplateAnnotationParser()) {
+        self.annotationParser = annotationParser
         super.init(viewMode: .fixedUp)
     }
 
-    func parse() throws -> FileParserResult {
-        let inline = annotationParser.parseAnnotations("inline", contents: initialContents, forceParse: self.forceParse)
+    func parse(
+        _ content: String,
+        path: Path? = nil,
+        module: String? = nil,
+        forceParse: [String] = [],
+        parseDocumentation: Bool = false
+    ) -> FileParserResult {
+        let path = path?.string
+        let modifiedDate = path.flatMap { (try? FileManager.default.attributesOfItem(atPath: $0)[.modificationDate]) as? Date }
+
+        let inline = annotationParser.parseAnnotations("inline", contents: content, forceParse: forceParse)
         let content = inline.contents
-        inlineRanges = inline.annotatedRanges.mapValues { $0[0].range }
-        inlineIndentations = inline.annotatedRanges.mapValues { $0[0].indentation }
+        let inlineRanges = inline.annotatedRanges.mapValues { $0[0].range }
+        let inlineIndentations = inline.annotatedRanges.mapValues { $0[0].indentation }
 
         let tree = Parser.parse(source: content)
         let fileName = path ?? "in-memory"

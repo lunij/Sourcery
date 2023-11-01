@@ -118,26 +118,14 @@ private extension String {
             var myFoo: \(self)
         }
         """
-        do {
-            let parser = try SwiftSyntaxParser(contents: wrappedCode)
-            let result = try parser.parse()
-            let variable = result.types.first?.variables.first
-            return variable?.typeName ?? TypeName(name: "")
-        } catch {
-            XCTFail(String(describing: error))
-            return TypeName(name: "")
-        }
+        let result = SwiftSyntaxParser().parse(wrappedCode)
+        let variable = result.types.first?.variables.first
+        return variable?.typeName ?? TypeName(name: "")
     }
 
     var typeNameFromTypealias: TypeName {
         let wrappedCode = "typealias Wrapper = \(self)"
-        do {
-            let parser = try SwiftSyntaxParser(contents: wrappedCode)
-            let result = try parser.parse()
-            return result.typealiases.first?.typeName ?? TypeName(name: "")
-        } catch {
-            XCTFail(String(describing: error))
-            return TypeName(name: "")
-        }
+        let result = SwiftSyntaxParser().parse(wrappedCode)
+        return result.typealiases.first?.typeName ?? TypeName(name: "")
     }
 }

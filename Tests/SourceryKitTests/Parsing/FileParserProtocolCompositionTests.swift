@@ -5,12 +5,12 @@ import XCTest
 @testable import SourceryRuntime
 
 class FileParserProtocolCompositionTests: XCTestCase {
-    private func parse(_ code: String) throws -> [Type] {
-        try SwiftSyntaxParser(contents: code).parse().types
+    private func parse(_ code: String) -> [Type] {
+        SwiftSyntaxParser().parse(code).types
     }
 
     func test_extractsProtocolCompositions() throws {
-        let types = try parse("""
+        let types = parse("""
         protocol Foo {
             func fooDo()
         }
@@ -41,7 +41,7 @@ class FileParserProtocolCompositionTests: XCTestCase {
     }
 
     func test_extractsAnnotationsOnProtocolComposition() throws {
-        let types = try parse("""
+        let types = parse("""
         protocol Foo {
             func fooDo()
         }

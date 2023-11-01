@@ -823,11 +823,6 @@ class FileParserTests: XCTestCase {
 
 private extension String {
     func parse(parseDocumentation: Bool = false) -> FileParserResult {
-        do {
-            return try SwiftSyntaxParser(contents: self, parseDocumentation: parseDocumentation).parse()
-        } catch {
-            XCTFail(String(describing: error))
-            return .init(path: nil, module: nil, types: [], functions: [])
-        }
+        SwiftSyntaxParser().parse(self, parseDocumentation: parseDocumentation)
     }
 }

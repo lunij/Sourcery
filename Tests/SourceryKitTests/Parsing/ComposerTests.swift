@@ -2286,13 +2286,8 @@ private extension String {
         file: StaticString = #filePath,
         line: UInt = #line
     ) -> [T] {
-        do {
-            let parserResult = try SwiftSyntaxParser(contents: self).parse()
-            return Composer.uniqueTypesAndFunctions(parserResult)[keyPath: keyPath]
-        } catch {
-            XCTFail(String(describing: error), file: file, line: line)
-            return []
-        }
+        let parserResult = SwiftSyntaxParser().parse(self)
+        return Composer.uniqueTypesAndFunctions(parserResult)[keyPath: keyPath]
     }
 }
 
@@ -2303,8 +2298,8 @@ private struct Module {
 
 private extension Array where Element == Module {
     func parse() -> (types: [Type], functions: [SourceryMethod], typealiases: [Typealias]) {
-        let results = compactMap {
-            try? SwiftSyntaxParser(contents: $0.content, module: $0.name).parse()
+        let results = map {
+            SwiftSyntaxParser().parse($0.content, module: $0.name)
         }
 
         let combinedResult = results.reduce(FileParserResult(path: nil, module: nil, types: [], functions: [], typealiases: [])) { acc, next in
