@@ -3,16 +3,12 @@ import XCTest
 @testable import SourceryKit
 @testable import SourceryRuntime
 
-final class FileParserAssociatedTypeTests: XCTestCase {
-    private func associatedType(_ code: String, protocolName: String? = nil) throws -> [AssociatedType] {
-        SwiftSyntaxParser()
-            .parse(code)
-            .types
-            .compactMap { $0 as? SourceryProtocol }
-            .first { protocolName != nil ? $0.name == protocolName : true }?
-            .associatedTypes
-            .values
-            .map { $0 } ?? []
+final class SwiftSyntaxParserProtocolTests: XCTestCase {
+    var sut: SwiftSyntaxParser!
+
+    override func setUp() {
+        super.setUp()
+        sut = .init()
     }
 
     func test_protocol_whenOneAssociatedType() {
@@ -21,7 +17,7 @@ final class FileParserAssociatedTypeTests: XCTestCase {
             associatedtype Bar
         }
         """
-        XCTAssertEqual(try associatedType(code), [AssociatedType(name: "Bar")])
+        XCTAssertEqual(try sut.parseAssociatedTypes(code), [AssociatedType(name: "Bar")])
     }
 
     func test_protocol_whenMultipleAssociatedTypes() {
@@ -32,7 +28,7 @@ final class FileParserAssociatedTypeTests: XCTestCase {
         }
         """
         XCTAssertEqual(
-            try associatedType(code).sorted(by: { $0.name < $1.name }),
+            try sut.parseAssociatedTypes(code).sorted { $0.name < $1.name },
             [AssociatedType(name: "Bar"), AssociatedType(name: "Baz")]
         )
     }
@@ -44,7 +40,7 @@ final class FileParserAssociatedTypeTests: XCTestCase {
         }
         """
         XCTAssertEqual(
-            try associatedType(code),
+            try sut.parseAssociatedTypes(code),
             [AssociatedType(name: "Bar", typeName: TypeName(name: "Codable"))]
         )
     }
@@ -57,13 +53,13 @@ final class FileParserAssociatedTypeTests: XCTestCase {
         }
         """
         XCTAssertEqual(
-            try associatedType(code, protocolName: "Foo"),
+            try sut.parseAssociatedTypes(code),
             [AssociatedType(name: "Bar", typeName: TypeName(name: "A"))]
         )
     }
 
     func test_protocol_whenAssociatedTypeConstrainedToCompositeType() throws {
-        let parsed = try associatedType("""
+        let parsed = try sut.parseAssociatedTypes("""
         protocol Foo {
             associatedtype Bar: Encodable & Decodable
         }
@@ -78,5 +74,14 @@ final class FileParserAssociatedTypeTests: XCTestCase {
             inheritedTypes: ["Encodable", "Decodable"],
             composedTypeNames: [TypeName(name: "Encodable"), TypeName(name: "Decodable")]
         ))
+    }
+}
+
+private extension SwiftSyntaxParser {
+    func parseAssociatedTypes(_ code: String) throws -> [AssociatedType] {
+        parse(code)
+            .types
+            .compactMap { $0 as? SourceryProtocol }
+            .flatMap(\.associatedTypes.values)
     }
 }

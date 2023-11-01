@@ -6,7 +6,7 @@ import SourceryRuntime
 
 class Bar {}
 
-class FileParserMethodTests: XCTestCase {
+class SwiftSyntaxParserMethodTests: XCTestCase {
     func test_parsesMethodsWithInoutProperties() {
         let methods = """
         class Foo {

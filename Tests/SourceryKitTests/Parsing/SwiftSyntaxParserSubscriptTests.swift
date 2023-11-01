@@ -4,13 +4,16 @@ import XCTest
 @testable import SourceryKit
 @testable import SourceryRuntime
 
-class FileParserSubscriptTests: XCTestCase {
-    private func parse(_ code: String) throws -> [Type] {
-        SwiftSyntaxParser().parse(code).types
+class SwiftSyntaxParserSubscriptTests: XCTestCase {
+    var sut: SwiftSyntaxParser!
+
+    override func setUp() {
+        super.setUp()
+        sut = .init()
     }
 
     func test_extractsSubscripts() throws {
-        let subscripts = try parse("""
+        let subscripts = sut.parse("""
         class Foo {
             final private subscript(_ index: Int, a: String) -> Int {
                 get { return 0 }
@@ -21,7 +24,7 @@ class FileParserSubscriptTests: XCTestCase {
                 set { }
             }
         }
-        """).first?.subscripts
+        """).types.first?.subscripts
 
         XCTAssertEqual(
             subscripts?.first,
@@ -60,12 +63,12 @@ class FileParserSubscriptTests: XCTestCase {
     }
 
     func test_extractsSubscriptIsMutableState() throws {
-        let subscripts = try parse("""
+        let subscripts = sut.parse("""
         protocol Subscript: AnyObject {
           subscript(arg1: String, arg2: Int) -> Bool { get set }
           subscript(with arg1: String, and arg2: Int) -> String { get }
         }
-        """).first?.subscripts
+        """).types.first?.subscripts
 
         XCTAssertEqual(subscripts?.first?.isMutable, true)
         XCTAssertEqual(subscripts?.last?.isMutable, false)
@@ -78,14 +81,13 @@ class FileParserSubscriptTests: XCTestCase {
     }
 
     func test_extractsSubscriptAnnotations() throws {
-        let subscripts = try parse("""
+        let subscripts = sut.parse("""
         //sourcery: thisIsClass
         class Foo {
           // sourcery: thisIsSubscript
           subscript(/* sourcery: thisIsSubscriptParam */a: Int) -> Int { return 0 }
         }
-        """)
-            .first?.subscripts
+        """).types.first?.subscripts
 
         let subscriptAnnotations = subscripts?.first?.annotations
         XCTAssertEqual(subscriptAnnotations, ["thisIsSubscript": NSNumber(value: true)])

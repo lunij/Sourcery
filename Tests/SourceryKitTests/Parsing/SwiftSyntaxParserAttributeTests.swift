@@ -3,7 +3,7 @@ import SourceryRuntime
 import XCTest
 @testable import SourceryKit
 
-class FileParserAttributeTests: XCTestCase {
+class SwiftSyntaxParserAttributeTests: XCTestCase {
     func test_parsesTypeAttributeAndModifiers() throws {
         let string = """
         /*

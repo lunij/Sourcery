@@ -4,7 +4,7 @@ import XCTest
 @testable import SourceryKit
 @testable import SourceryRuntime
 
-class FileParserTests: XCTestCase {
+class SwiftSyntaxParserTests: XCTestCase {
     func test_doesNotCrashOnLocalizedStrings() throws {
         let templatePath = Stubs.errorsDirectory + Path("localized-error.swift")
         let content = try templatePath.read(.utf8)

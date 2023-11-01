@@ -1,11 +1,10 @@
-
 import Foundation
 import PathKit
 import XCTest
 @testable import SourceryKit
 @testable import SourceryRuntime
 
-class FileParserVariableTests: XCTestCase {
+class SwiftSyntaxParserVariableTests: XCTestCase {
     func test_infersGenericTypeInitializer() {
         func verify(_ type: String) {
             let parsedTypeName = "static let generic: \(type)".structVariable?.typeName

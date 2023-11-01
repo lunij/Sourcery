@@ -4,13 +4,16 @@ import XCTest
 @testable import SourceryKit
 @testable import SourceryRuntime
 
-class FileParserProtocolCompositionTests: XCTestCase {
-    private func parse(_ code: String) -> [Type] {
-        SwiftSyntaxParser().parse(code).types
+class SwiftSyntaxParserProtocolCompositionTests: XCTestCase {
+    var sut: SwiftSyntaxParser!
+
+    override func setUp() {
+        super.setUp()
+        sut = .init()
     }
 
     func test_extractsProtocolCompositions() throws {
-        let types = parse("""
+        let types = sut.parse("""
         protocol Foo {
             func fooDo()
         }
@@ -20,7 +23,7 @@ class FileParserProtocolCompositionTests: XCTestCase {
         }
 
         typealias FooBar = Foo & Bar
-        """)
+        """).types
         let protocolComp = types.first(where: { $0 is ProtocolComposition }) as? ProtocolComposition
 
         XCTAssertEqual(
@@ -41,7 +44,7 @@ class FileParserProtocolCompositionTests: XCTestCase {
     }
 
     func test_extractsAnnotationsOnProtocolComposition() throws {
-        let types = parse("""
+        let types = sut.parse("""
         protocol Foo {
             func fooDo()
         }
@@ -52,7 +55,7 @@ class FileParserProtocolCompositionTests: XCTestCase {
 
         // sourcery: TestAnnotation
         typealias FooBar = Foo & Bar
-        """)
+        """).types
         let protocolComp = types.first(where: { $0 is ProtocolComposition }) as? ProtocolComposition
 
         XCTAssertEqual(protocolComp?.annotations, ["TestAnnotation": NSNumber(true)])

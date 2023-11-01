@@ -3,7 +3,7 @@ import SourceryRuntime
 import XCTest
 @testable import SourceryKit
 
-class FileParserTypeNameTests: XCTestCase {
+class SwiftSyntaxParserTypeNameTests: XCTestCase {
     func test_isOptional() {
         XCTAssertEqual("Int?".typeName.isOptional, true)
         XCTAssertEqual("Int!".typeName.isOptional, true)
