@@ -99,7 +99,7 @@ public class SwiftGenerator {
             .annotatedRanges
             .map { ($0, $1) }
             .forEach { filePath, ranges in
-                let generatedBody = ranges.map { content.bridge().substring(with: $0.range) }.joined(separator: "\n")
+                let generatedBody = ranges.map { content[$0.range] }.joined(separator: "\n")
                 let path = config.output + (Path(filePath).extension == nil ? "\(filePath).generated.swift" : filePath)
                 var fileContents = fileAnnotatedContent[path] ?? []
                 fileContents.append(generatedBody)
@@ -112,9 +112,9 @@ public class SwiftGenerator {
         var (annotatedRanges, rangesToReplace) = templateAnnotationParser.annotationRanges("inline", content: content, forceParse: config.forceParse)
 
         typealias MappedInlineAnnotations = (
-            range: NSRange,
+            range: Range<Substring.Index>,
             filePath: String,
-            rangeInFile: NSRange,
+            rangeInFile: Range<Substring.Index>,
             toInsert: String,
             indentation: String
         )
@@ -124,7 +124,7 @@ public class SwiftGenerator {
         try annotatedRanges
             .map { (key: $0, range: $1[0].range) }
             .compactMap { key, range -> MappedInlineAnnotations? in
-                let generatedBody = content.bridge().substring(with: range)
+                let generatedBody = content[range]
 
                 if let (filePath, inlineRanges, inlineIndentations) = parsingResult.inlineRanges.first(where: { $0.ranges[key] != nil }) {
                     // swiftlint:disable:next force_unwrapping
@@ -178,7 +178,7 @@ public class SwiftGenerator {
                 return MappedInlineAnnotations(range, filePath, rangeInFile, toInsert, indent)
             }
             .sorted { lhs, rhs in
-                lhs.rangeInFile.location > rhs.rangeInFile.location
+                lhs.rangeInFile.lowerBound > rhs.rangeInFile.lowerBound
             }
             .forEach { _, filePath, rangeInFile, toInsert, indentation in
                 let path = Path(filePath).unlinked
@@ -199,14 +199,12 @@ public class SwiftGenerator {
                 ))
             }
 
-        var bridged = content.bridge()
-
-        rangesToReplace
-            .sorted { $0.location > $1.location }
-            .forEach {
-                bridged = bridged.replacingCharacters(in: $0, with: "") as NSString
-            }
-        return (bridged as String, sourceChanges)
+        var content = content
+        let ranges = rangesToReplace.sorted { $0.lowerBound > $1.lowerBound }
+        for range in ranges {
+            content = content.replacingCharacters(in: range, with: "")
+        }
+        return (content, sourceChanges)
     }
 
     private func bodyRange(for type: Type, contentsView: StringView) -> NSRange? {

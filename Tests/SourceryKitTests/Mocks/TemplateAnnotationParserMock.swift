@@ -10,8 +10,8 @@ class TemplateAnnotationParserMock: TemplateAnnotationParsing {
 
     var calls: [Call] = []
 
-    var annotationRangesReturnValue: (annotatedRanges: AnnotatedRanges, rangesToReplace: Set<NSRange>)?
-    func annotationRanges(_ annotation: String, content: String, aggregate: Bool, forceParse: [String]) -> (annotatedRanges: AnnotatedRanges, rangesToReplace: Set<NSRange>) {
+    var annotationRangesReturnValue: (annotatedRanges: AnnotatedRanges, rangesToReplace: Set<Range<Substring.Index>>)?
+    func annotationRanges(_ annotation: String, content: String, aggregate: Bool, forceParse: [String]) -> (annotatedRanges: AnnotatedRanges, rangesToReplace: Set<Range<Substring.Index>>) {
         calls.append(.annotationRanges)
         if let annotationRangesReturnValue { return annotationRangesReturnValue }
         preconditionFailure("Mock needs to be configured")

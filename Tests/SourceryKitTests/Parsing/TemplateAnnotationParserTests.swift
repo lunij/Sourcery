@@ -20,19 +20,16 @@ class TemplateAnnotationParserTests: XCTestCase {
         // sourcery:end
         ignored
         """
-        let match = try XCTUnwrap(try sut.regex(annotation: "inline").firstMatch(in: source, range: NSRange(location: 0, length: source.count)))
-        XCTAssertEqual(match.numberOfRanges, 6)
-        let bridged = source as NSString
-        XCTAssertEqual(bridged.substring(with: match.range(at: 0)), """
+        let match = try XCTUnwrap(try sut.regex.firstMatch(in: source))
+        XCTAssertEqual(match.output.0, """
         // sourcery:inline:Type.AutoCoding
         var something: Int
         // sourcery:end
         """)
-        XCTAssertEqual(bridged.substring(with: match.range(at: 1)), "// sourcery:inline:")
-        XCTAssertEqual(bridged.substring(with: match.range(at: 2)), "")
-        XCTAssertEqual(bridged.substring(with: match.range(at: 3)), "Type.AutoCoding")
-        XCTAssertEqual(bridged.substring(with: match.range(at: 4)), "var something: Int\n")
-        XCTAssertEqual(bridged.substring(with: match.range(at: 5)), "// sourcery:end")
+        XCTAssertEqual(match.output.1, "")
+        XCTAssertEqual(match.output.2, "inline")
+        XCTAssertEqual(match.output.3, "Type.AutoCoding")
+        XCTAssertEqual(match.output.4, "var something: Int")
     }
 
     func test_regex_2() throws {
@@ -43,19 +40,16 @@ class TemplateAnnotationParserTests: XCTestCase {
             // sourcery:end
         ignored
         """
-        let match = try XCTUnwrap(try sut.regex(annotation: "inline").firstMatch(in: source, range: NSRange(location: 0, length: source.count)))
-        XCTAssertEqual(match.numberOfRanges, 6)
-        let bridged = source as NSString
-        XCTAssertEqual(bridged.substring(with: match.range(at: 0)), """
+        let match = try XCTUnwrap(try sut.regex.firstMatch(in: source))
+        XCTAssertEqual(match.output.0, """
             // sourcery:inline:Type.AutoCoding
             var something: Int
             // sourcery:end
         """)
-        XCTAssertEqual(bridged.substring(with: match.range(at: 1)), "    // sourcery:inline:")
-        XCTAssertEqual(bridged.substring(with: match.range(at: 2)), "    ")
-        XCTAssertEqual(bridged.substring(with: match.range(at: 3)), "Type.AutoCoding")
-        XCTAssertEqual(bridged.substring(with: match.range(at: 4)), "    var something: Int\n")
-        XCTAssertEqual(bridged.substring(with: match.range(at: 5)), "    // sourcery:end")
+        XCTAssertEqual(match.output.1, "    ")
+        XCTAssertEqual(match.output.2, "inline")
+        XCTAssertEqual(match.output.3, "Type.AutoCoding")
+        XCTAssertEqual(match.output.4, "    var something: Int")
     }
 
     func test_inline_withoutIndentation() {

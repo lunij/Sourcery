@@ -12,7 +12,7 @@ public class SwiftParser {
     }
 
     func parseSources(from config: Configuration) throws -> ParsingResult {
-        var inlineRanges: [(file: String, ranges: [String: NSRange], indentations: [String: String])] = []
+        var inlineRanges: [(file: String, ranges: [String: Range<Substring.Index>], indentations: [String: String])] = []
         var allResults: [(changed: Bool, result: FileParserResult)] = []
 
         for (index, sourceFile) in config.sources.enumerated() {

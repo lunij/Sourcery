@@ -14,7 +14,7 @@ import Foundation
     }
     public var functions = [SourceryMethod]()
     public var typealiases = [Typealias]()
-    public var inlineRanges = [String: NSRange]()
+    public var inlineRanges = [String: Range<Substring.Index>]()
     public var inlineIndentations = [String: String]()
 
     public var modifiedDate: Date
@@ -23,7 +23,16 @@ import Foundation
         types.isEmpty && functions.isEmpty && typealiases.isEmpty && inlineRanges.isEmpty && inlineIndentations.isEmpty
     }
 
-    public init(path: String?, module: String?, types: [Type], functions: [SourceryMethod], typealiases: [Typealias] = [], inlineRanges: [String: NSRange] = [:], inlineIndentations: [String: String] = [:], modifiedDate: Date = Date()) {
+    public init(
+        path: String?,
+        module: String?,
+        types: [Type],
+        functions: [SourceryMethod],
+        typealiases: [Typealias] = [],
+        inlineRanges: [String: Range<Substring.Index>] = [:],
+        inlineIndentations: [String: String] = [:],
+        modifiedDate: Date = Date()
+    ) {
         self.path = path
         self.module = module
         self.types = types
@@ -49,7 +58,7 @@ public required init?(coder aDecoder: NSCoder) {
     guard let types: [Type] = aDecoder.decode(forKey: "types") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["types"])); fatalError() }; self.types = types
     guard let functions: [SourceryMethod] = aDecoder.decode(forKey: "functions") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["functions"])); fatalError() }; self.functions = functions
     guard let typealiases: [Typealias] = aDecoder.decode(forKey: "typealiases") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["typealiases"])); fatalError() }; self.typealiases = typealiases
-    guard let inlineRanges: [String: NSRange] = aDecoder.decode(forKey: "inlineRanges") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["inlineRanges"])); fatalError() }; self.inlineRanges = inlineRanges
+    guard let inlineRanges: [String: Range<Substring.Index>] = aDecoder.decode(forKey: "inlineRanges") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["inlineRanges"])); fatalError() }; self.inlineRanges = inlineRanges
     guard let inlineIndentations: [String: String] = aDecoder.decode(forKey: "inlineIndentations") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["inlineIndentations"])); fatalError() }; self.inlineIndentations = inlineIndentations
     guard let modifiedDate: Date = aDecoder.decode(forKey: "modifiedDate") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["modifiedDate"])); fatalError() }; self.modifiedDate = modifiedDate
 }
