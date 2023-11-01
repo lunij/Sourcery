@@ -10,20 +10,24 @@ public class SwiftGenerator {
     private var fileAnnotatedContent: [Path: [String]] = [:]
 
     private let clock: TimeMeasuring
+    private let templateAnnotationsParser: TemplateAnnotationsParsing
     private let xcodeProjModifierFactory: XcodeProjModifierMaking
 
     public convenience init() {
         self.init(
             clock: ContinuousClock(),
+            templateAnnotationsParser: TemplateAnnotationsParser(),
             xcodeProjModifierFactory: XcodeProjModifierFactory()
         )
     }
 
     init(
         clock: TimeMeasuring,
+        templateAnnotationsParser: TemplateAnnotationsParsing,
         xcodeProjModifierFactory: XcodeProjModifierMaking
     ) {
         self.clock = clock
+        self.templateAnnotationsParser = templateAnnotationsParser
         self.xcodeProjModifierFactory = xcodeProjModifierFactory
     }
 
@@ -85,11 +89,11 @@ public class SwiftGenerator {
         result = processFileRanges(in: result, config: config)
         let sourceChanges: [SourceChange]
         (result, sourceChanges) = try processInlineRanges(for: parsingResult, in: result, config: config)
-        return (TemplateAnnotationsParser.removingEmptyAnnotations(from: result), sourceChanges)
+        return (templateAnnotationsParser.removingEmptyAnnotations(from: result), sourceChanges)
     }
 
     private func processFileRanges(in contents: String, config: Configuration) -> String {
-        let files = TemplateAnnotationsParser.parseAnnotations("file", contents: contents, aggregate: true, forceParse: config.forceParse)
+        let files = templateAnnotationsParser.parseAnnotations("file", contents: contents, aggregate: true, forceParse: config.forceParse)
 
         files
             .annotatedRanges
@@ -105,7 +109,7 @@ public class SwiftGenerator {
     }
 
     private func processInlineRanges(for parsingResult: ParsingResult, in contents: String, config: Configuration) throws -> GenerationResult {
-        var (annotatedRanges, rangesToReplace) = TemplateAnnotationsParser.annotationRanges("inline", contents: contents, forceParse: config.forceParse)
+        var (annotatedRanges, rangesToReplace) = templateAnnotationsParser.annotationRanges("inline", contents: contents, forceParse: config.forceParse)
 
         typealias MappedInlineAnnotations = (
             range: NSRange,

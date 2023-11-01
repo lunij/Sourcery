@@ -7,6 +7,7 @@ class SwiftGeneratorTests: XCTestCase {
 
     var clockMock: ClockMock!
     var loggerMock: LoggerMock!
+    var templateAnnotationsParserMock: TemplateAnnotationsParserMock!
     var xcodeProjModifierMock: XcodeProjModifierMock!
     var xcodeProjModifierFactoryMock: XcodeProjModifierFactoryMock!
 
@@ -16,15 +17,24 @@ class SwiftGeneratorTests: XCTestCase {
         clockMock.measureReturnValue = .milliseconds(100)
         loggerMock = .init()
         logger = loggerMock
+        templateAnnotationsParserMock = .init()
         xcodeProjModifierMock = .init()
         xcodeProjModifierFactoryMock = .init()
         xcodeProjModifierFactoryMock.makeModifierReturnValue = xcodeProjModifierMock
-        sut = .init(clock: clockMock, xcodeProjModifierFactory: xcodeProjModifierFactoryMock)
+        sut = .init(
+            clock: clockMock,
+            templateAnnotationsParser: templateAnnotationsParserMock,
+            xcodeProjModifierFactory: xcodeProjModifierFactoryMock
+        )
     }
 
     func test_warnsAboutSkippedFiles() throws {
         let templateMock = TemplateMock(path: "Templates/Fake.stencil")
         templateMock.renderReturnValue = ""
+        templateAnnotationsParserMock.parseAnnotationsReturnValue = (contents: "", annotatedRanges: .init())
+        templateAnnotationsParserMock.annotationRangesReturnValue = (annotatedRanges: .init(), rangesToReplace: [])
+        templateAnnotationsParserMock.removingEmptyAnnotationsReturnValue = ""
+
         var parsingResult = ParsingResult.stub()
         let config = Configuration.stub(output: .init("Generated"))
 
@@ -39,11 +49,20 @@ class SwiftGeneratorTests: XCTestCase {
             .info("Code generation finished in 0.1 seconds")
         ])
         XCTAssertEqual(templateMock.calls, [.render])
+        XCTAssertEqual(templateAnnotationsParserMock.calls, [
+            .parseAnnotations,
+            .annotationRanges,
+            .removingEmptyAnnotations
+        ])
     }
 
     func test_warnsAboutSingleFileOutput() throws {
         let templateMock = TemplateMock()
         templateMock.renderReturnValue = ""
+        templateAnnotationsParserMock.parseAnnotationsReturnValue = (contents: "", annotatedRanges: .init())
+        templateAnnotationsParserMock.annotationRangesReturnValue = (annotatedRanges: .init(), rangesToReplace: [])
+        templateAnnotationsParserMock.removingEmptyAnnotationsReturnValue = ""
+
         var parsingResult = ParsingResult.stub()
         let config = Configuration.stub(output: .init("Generated/SingleOutput.generated.swift"))
 
@@ -54,6 +73,11 @@ class SwiftGeneratorTests: XCTestCase {
         )
 
         XCTAssertEqual(loggerMock.calls.first, .warning("The output path targets a single file. Continuing using its directory instead."))
+        XCTAssertEqual(templateAnnotationsParserMock.calls, [
+            .parseAnnotations,
+            .annotationRanges,
+            .removingEmptyAnnotations
+        ])
     }
 
     func test_failsGenerating_whenNoTemplates() throws {

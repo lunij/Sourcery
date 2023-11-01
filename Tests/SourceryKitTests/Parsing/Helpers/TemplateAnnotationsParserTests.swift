@@ -5,6 +5,13 @@ import XCTest
 @testable import SourceryRuntime
 
 class TemplateAnnotationsParserTests: XCTestCase {
+    var sut: TemplateAnnotationsParser!
+
+    override func setUp() {
+        super.setUp()
+        sut = .init()
+    }
+
     func test_inline_withoutIndentation() {
         let source = """
         // sourcery:inline:Type.AutoCoding
@@ -12,7 +19,7 @@ class TemplateAnnotationsParserTests: XCTestCase {
         // sourcery:end
         """
 
-        let result = TemplateAnnotationsParser.parseAnnotations("inline", contents: source, forceParse: [])
+        let result = sut.parseAnnotations("inline", contents: source, forceParse: [])
 
         let annotatedRanges = result.annotatedRanges["Type.AutoCoding"]
         XCTAssertEqual(annotatedRanges?.map { $0.range }, [NSRange(location: 35, length: 19)])
@@ -31,7 +38,7 @@ class TemplateAnnotationsParserTests: XCTestCase {
         // sourcery:end
         """
 
-        let result = TemplateAnnotationsParser.parseAnnotations("inline", contents: source, aggregate: false, forceParse: ["AutoCoding"])
+        let result = sut.parseAnnotations("inline", contents: source, aggregate: false, forceParse: ["AutoCoding"])
 
         let annotatedRanges = result.annotatedRanges["Type.AutoCoding"]
         XCTAssertEqual(annotatedRanges?.map { $0.range }, [NSRange(location: 35, length: 19)])
@@ -49,7 +56,7 @@ class TemplateAnnotationsParserTests: XCTestCase {
             "    var something: Int\n" +
             "    // sourcery:end\n"
 
-        let result = TemplateAnnotationsParser.parseAnnotations("inline", contents: source, forceParse: [])
+        let result = sut.parseAnnotations("inline", contents: source, forceParse: [])
 
         let annotatedRanges = result.annotatedRanges["Type.AutoCoding"]
         XCTAssertEqual(annotatedRanges?.map { $0.range }, [NSRange(location: 39, length: 23)])
@@ -67,7 +74,7 @@ class TemplateAnnotationsParserTests: XCTestCase {
             "    var something: Int\n" +
             "    // sourcery:end\n"
 
-        let result = TemplateAnnotationsParser.parseAnnotations("inline", contents: source, aggregate: false, forceParse: ["AutoCoding"])
+        let result = sut.parseAnnotations("inline", contents: source, aggregate: false, forceParse: ["AutoCoding"])
 
         let annotatedRanges = result.annotatedRanges["Type.AutoCoding"]
         XCTAssertEqual(annotatedRanges?.map { $0.range }, [NSRange(location: 39, length: 23)])

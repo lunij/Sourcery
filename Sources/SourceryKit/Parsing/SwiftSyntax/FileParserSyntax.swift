@@ -17,15 +17,24 @@ public final class FileParserSyntax: SyntaxVisitor, FileParserType {
     fileprivate var forceParse: [String] = []
     fileprivate var parseDocumentation: Bool = false
 
+    private let annotationsParser: TemplateAnnotationsParser
+
     /// Parses given contents.
     /// - Throws: parsing errors.
-    public init(contents: String, forceParse: [String] = [], parseDocumentation: Bool = false, path: Path? = nil, module: String? = nil) throws {
+    public init(
+        contents: String,
+        forceParse: [String] = [],
+        parseDocumentation: Bool = false,
+        path: Path? = nil,
+        module: String? = nil
+    ) throws {
         self.path = path?.string
         self.modifiedDate = path.flatMap({ (try? FileManager.default.attributesOfItem(atPath: $0.string)[.modificationDate]) as? Date })
         self.module = module
         self.initialContents = contents
         self.forceParse = forceParse
         self.parseDocumentation = parseDocumentation
+        annotationsParser = TemplateAnnotationsParser()
         super.init(viewMode: .fixedUp)
     }
 
@@ -34,7 +43,7 @@ public final class FileParserSyntax: SyntaxVisitor, FileParserType {
     /// - Returns: All types we could find.
     public func parse() throws -> FileParserResult {
         // Inline handling
-        let inline = TemplateAnnotationsParser.parseAnnotations("inline", contents: initialContents, forceParse: self.forceParse)
+        let inline = annotationsParser.parseAnnotations("inline", contents: initialContents, forceParse: self.forceParse)
         let contents = inline.contents
         inlineRanges = inline.annotatedRanges.mapValues { $0[0].range }
         inlineIndentations = inline.annotatedRanges.mapValues { $0[0].indentation }

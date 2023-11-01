@@ -1,10 +1,20 @@
 import Foundation
 
-public enum TemplateAnnotationsParser {
+protocol TemplateAnnotationsParsing {
+    typealias AnnotatedRanges = [String: [(range: NSRange, indentation: String)]]
+    func annotationRanges(_ annotation: String, contents: String, aggregate: Bool, forceParse: [String]) -> (annotatedRanges: AnnotatedRanges, rangesToReplace: Set<NSRange>)
+    func parseAnnotations(_ annotation: String, contents: String, aggregate: Bool, forceParse: [String]) -> (contents: String, annotatedRanges: AnnotatedRanges)
+    func removingEmptyAnnotations(from content: String) -> String
+}
 
-    public typealias AnnotatedRanges = [String: [(range: NSRange, indentation: String)]]
+extension TemplateAnnotationsParsing {
+    func annotationRanges(_ annotation: String, contents: String, forceParse: [String]) -> (annotatedRanges: AnnotatedRanges, rangesToReplace: Set<NSRange>) {
+        annotationRanges(annotation, contents: contents, aggregate: false, forceParse: forceParse)
+    }
+}
 
-    private static func regex(annotation: String) throws -> NSRegularExpression {
+class TemplateAnnotationsParser: TemplateAnnotationsParsing {
+    private func regex(annotation: String) throws -> NSRegularExpression {
         let commentPattern = NSRegularExpression.escapedPattern(for: "//")
         let regex = try NSRegularExpression(
             pattern: "(^(?:\\s*?\\n)?(\\s*)\(commentPattern)\\s*?sourcery:\(annotation):)(\\S*)\\s*?(^.*?)(^\\s*?\(commentPattern)\\s*?sourcery:end)",
@@ -13,7 +23,7 @@ public enum TemplateAnnotationsParser {
         return regex
     }
 
-    public static func parseAnnotations(_ annotation: String, contents: String, aggregate: Bool = false, forceParse: [String]) -> (contents: String, annotatedRanges: AnnotatedRanges) {
+    func parseAnnotations(_ annotation: String, contents: String, aggregate: Bool = false, forceParse: [String]) -> (contents: String, annotatedRanges: AnnotatedRanges) {
         let (annotatedRanges, rangesToReplace) = annotationRanges(annotation, contents: contents, aggregate: aggregate, forceParse: forceParse)
 
         let strigView = StringView(contents)
@@ -26,7 +36,7 @@ public enum TemplateAnnotationsParser {
         return (bridged as String, annotatedRanges)
     }
 
-    public static func annotationRanges(_ annotation: String, contents: String, aggregate: Bool = false, forceParse: [String]) -> (annotatedRanges: AnnotatedRanges, rangesToReplace: Set<NSRange>) {
+    func annotationRanges(_ annotation: String, contents: String, aggregate: Bool = false, forceParse: [String]) -> (annotatedRanges: AnnotatedRanges, rangesToReplace: Set<NSRange>) {
         let bridged = contents.bridge()
         let regex = try? self.regex(annotation: annotation)
 
@@ -64,7 +74,7 @@ public enum TemplateAnnotationsParser {
         return (annotatedRanges, rangesToReplace)
     }
 
-    public static func removingEmptyAnnotations(from content: String) -> String {
+    func removingEmptyAnnotations(from content: String) -> String {
         var bridged = content.bridge()
         let regex = try? self.regex(annotation: "\\S*")
 
@@ -94,5 +104,4 @@ public enum TemplateAnnotationsParser {
 
         return bridged as String
     }
-
 }
