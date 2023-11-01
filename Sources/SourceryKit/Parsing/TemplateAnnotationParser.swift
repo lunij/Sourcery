@@ -1,19 +1,19 @@
 import Foundation
 
-protocol TemplateAnnotationsParsing {
+protocol TemplateAnnotationParsing {
     typealias AnnotatedRanges = [String: [(range: NSRange, indentation: String)]]
     func annotationRanges(_ annotation: String, contents: String, aggregate: Bool, forceParse: [String]) -> (annotatedRanges: AnnotatedRanges, rangesToReplace: Set<NSRange>)
     func parseAnnotations(_ annotation: String, contents: String, aggregate: Bool, forceParse: [String]) -> (contents: String, annotatedRanges: AnnotatedRanges)
     func removingEmptyAnnotations(from content: String) -> String
 }
 
-extension TemplateAnnotationsParsing {
+extension TemplateAnnotationParsing {
     func annotationRanges(_ annotation: String, contents: String, forceParse: [String]) -> (annotatedRanges: AnnotatedRanges, rangesToReplace: Set<NSRange>) {
         annotationRanges(annotation, contents: contents, aggregate: false, forceParse: forceParse)
     }
 }
 
-class TemplateAnnotationsParser: TemplateAnnotationsParsing {
+class TemplateAnnotationParser: TemplateAnnotationParsing {
     private func regex(annotation: String) throws -> NSRegularExpression {
         let commentPattern = NSRegularExpression.escapedPattern(for: "//")
         let regex = try NSRegularExpression(

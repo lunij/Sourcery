@@ -4,8 +4,8 @@ import XCTest
 @testable import SourceryKit
 @testable import SourceryRuntime
 
-class TemplateAnnotationsParserTests: XCTestCase {
-    var sut: TemplateAnnotationsParser!
+class TemplateAnnotationParserTests: XCTestCase {
+    var sut: TemplateAnnotationParser!
 
     override func setUp() {
         super.setUp()

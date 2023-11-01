@@ -10,24 +10,24 @@ public class SwiftGenerator {
     private var fileAnnotatedContent: [Path: [String]] = [:]
 
     private let clock: TimeMeasuring
-    private let templateAnnotationsParser: TemplateAnnotationsParsing
+    private let templateAnnotationParser: TemplateAnnotationParsing
     private let xcodeProjModifierFactory: XcodeProjModifierMaking
 
     public convenience init() {
         self.init(
             clock: ContinuousClock(),
-            templateAnnotationsParser: TemplateAnnotationsParser(),
+            templateAnnotationParser: TemplateAnnotationParser(),
             xcodeProjModifierFactory: XcodeProjModifierFactory()
         )
     }
 
     init(
         clock: TimeMeasuring,
-        templateAnnotationsParser: TemplateAnnotationsParsing,
+        templateAnnotationParser: TemplateAnnotationParsing,
         xcodeProjModifierFactory: XcodeProjModifierMaking
     ) {
         self.clock = clock
-        self.templateAnnotationsParser = templateAnnotationsParser
+        self.templateAnnotationParser = templateAnnotationParser
         self.xcodeProjModifierFactory = xcodeProjModifierFactory
     }
 
@@ -89,11 +89,11 @@ public class SwiftGenerator {
         result = processFileRanges(in: result, config: config)
         let sourceChanges: [SourceChange]
         (result, sourceChanges) = try processInlineRanges(for: parsingResult, in: result, config: config)
-        return (templateAnnotationsParser.removingEmptyAnnotations(from: result), sourceChanges)
+        return (templateAnnotationParser.removingEmptyAnnotations(from: result), sourceChanges)
     }
 
     private func processFileRanges(in contents: String, config: Configuration) -> String {
-        let files = templateAnnotationsParser.parseAnnotations("file", contents: contents, aggregate: true, forceParse: config.forceParse)
+        let files = templateAnnotationParser.parseAnnotations("file", contents: contents, aggregate: true, forceParse: config.forceParse)
 
         files
             .annotatedRanges
@@ -109,7 +109,7 @@ public class SwiftGenerator {
     }
 
     private func processInlineRanges(for parsingResult: ParsingResult, in contents: String, config: Configuration) throws -> GenerationResult {
-        var (annotatedRanges, rangesToReplace) = templateAnnotationsParser.annotationRanges("inline", contents: contents, forceParse: config.forceParse)
+        var (annotatedRanges, rangesToReplace) = templateAnnotationParser.annotationRanges("inline", contents: contents, forceParse: config.forceParse)
 
         typealias MappedInlineAnnotations = (
             range: NSRange,

@@ -17,7 +17,7 @@ public final class FileParserSyntax: SyntaxVisitor, FileParserType {
     fileprivate var forceParse: [String] = []
     fileprivate var parseDocumentation: Bool = false
 
-    private let annotationsParser: TemplateAnnotationsParser
+    private let annotationParser: TemplateAnnotationParser
 
     /// Parses given contents.
     /// - Throws: parsing errors.
@@ -34,7 +34,7 @@ public final class FileParserSyntax: SyntaxVisitor, FileParserType {
         self.initialContents = contents
         self.forceParse = forceParse
         self.parseDocumentation = parseDocumentation
-        annotationsParser = TemplateAnnotationsParser()
+        annotationParser = TemplateAnnotationParser()
         super.init(viewMode: .fixedUp)
     }
 
@@ -43,7 +43,7 @@ public final class FileParserSyntax: SyntaxVisitor, FileParserType {
     /// - Returns: All types we could find.
     public func parse() throws -> FileParserResult {
         // Inline handling
-        let inline = annotationsParser.parseAnnotations("inline", contents: initialContents, forceParse: self.forceParse)
+        let inline = annotationParser.parseAnnotations("inline", contents: initialContents, forceParse: self.forceParse)
         let content = inline.contents
         inlineRanges = inline.annotatedRanges.mapValues { $0[0].range }
         inlineIndentations = inline.annotatedRanges.mapValues { $0[0].indentation }
