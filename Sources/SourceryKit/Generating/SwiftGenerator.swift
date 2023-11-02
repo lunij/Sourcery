@@ -94,7 +94,7 @@ public class SwiftGenerator {
     }
 
     private func processFileAnnotations(in content: inout String, config: Configuration) {
-        let annotations = blockAnnotationParser.parseAnnotations("file", content: content, aggregate: true, forceParse: config.forceParse)
+        let annotations = blockAnnotationParser.parseAnnotations("file", content: content, forceParse: config.forceParse)
         annotations
             .annotatedRanges
             .map { ($0, $1) }

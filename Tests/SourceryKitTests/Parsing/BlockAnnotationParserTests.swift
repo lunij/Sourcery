@@ -84,7 +84,7 @@ class BlockAnnotationParserTests: XCTestCase {
         // sourcery:end
         """
 
-        let result = sut.parseAnnotations("inline", content: source, aggregate: false, forceParse: ["AutoCoding"])
+        let result = sut.parseAnnotations("inline", content: source, forceParse: ["AutoCoding"])
 
         let annotatedRanges = result.annotatedRanges["Type.AutoCoding"]
         XCTAssertEqual(annotatedRanges?.map { $0.range }, [NSRange(location: 35, length: 19)])
@@ -122,7 +122,7 @@ class BlockAnnotationParserTests: XCTestCase {
             // sourcery:end
         """
 
-        let result = sut.parseAnnotations("inline", content: source, aggregate: false, forceParse: ["AutoCoding"])
+        let result = sut.parseAnnotations("inline", content: source, forceParse: ["AutoCoding"])
 
         let annotatedRanges = result.annotatedRanges["Type.AutoCoding"]
         XCTAssertEqual(annotatedRanges?.map { $0.range }, [NSRange(location: 39, length: 23)])

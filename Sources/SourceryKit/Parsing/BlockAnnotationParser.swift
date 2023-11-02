@@ -2,19 +2,9 @@ import Foundation
 
 protocol BlockAnnotationParsing {
     typealias AnnotatedRanges = [String: [(range: NSRange, indentation: String)]]
-    func annotationRanges(_ annotation: String, content: String, aggregate: Bool, forceParse: [String]) -> (annotatedRanges: AnnotatedRanges, rangesToReplace: Set<NSRange>)
-    func parseAnnotations(_ annotation: String, content: String, aggregate: Bool, forceParse: [String]) -> (content: String, annotatedRanges: AnnotatedRanges)
+    func annotationRanges(_ annotation: String, content: String, forceParse: [String]) -> (annotatedRanges: AnnotatedRanges, rangesToReplace: Set<NSRange>)
+    func parseAnnotations(_ annotation: String, content: String, forceParse: [String]) -> (content: String, annotatedRanges: AnnotatedRanges)
     func removingEmptyAnnotations(from content: String) -> String
-}
-
-extension BlockAnnotationParsing {
-    func annotationRanges(_ annotation: String, content: String, forceParse: [String]) -> (annotatedRanges: AnnotatedRanges, rangesToReplace: Set<NSRange>) {
-        annotationRanges(annotation, content: content, aggregate: false, forceParse: forceParse)
-    }
-
-    func parseAnnotations(_ annotation: String, content: String, forceParse: [String]) -> (content: String, annotatedRanges: AnnotatedRanges) {
-        parseAnnotations(annotation, content: content, aggregate: false, forceParse: forceParse)
-    }
 }
 
 class BlockAnnotationParser: BlockAnnotationParsing {
@@ -27,8 +17,8 @@ class BlockAnnotationParser: BlockAnnotationParsing {
         return regex
     }
 
-    func parseAnnotations(_ annotation: String, content: String, aggregate: Bool = false, forceParse: [String]) -> (content: String, annotatedRanges: AnnotatedRanges) {
-        let (annotatedRanges, rangesToReplace) = annotationRanges(annotation, content: content, aggregate: aggregate, forceParse: forceParse)
+    func parseAnnotations(_ annotation: String, content: String, forceParse: [String]) -> (content: String, annotatedRanges: AnnotatedRanges) {
+        let (annotatedRanges, rangesToReplace) = annotationRanges(annotation, content: content, forceParse: forceParse)
 
         let strigView = StringView(content)
         var bridged = content.bridge()
@@ -40,7 +30,7 @@ class BlockAnnotationParser: BlockAnnotationParsing {
         return (bridged as String, annotatedRanges)
     }
 
-    func annotationRanges(_ annotation: String, content: String, aggregate: Bool = false, forceParse: [String]) -> (annotatedRanges: AnnotatedRanges, rangesToReplace: Set<NSRange>) {
+    func annotationRanges(_ annotation: String, content: String, forceParse: [String]) -> (annotatedRanges: AnnotatedRanges, rangesToReplace: Set<NSRange>) {
         let bridged = content.bridge()
         let regex = try? self.regex(annotation: annotation)
 
@@ -63,13 +53,11 @@ class BlockAnnotationParser: BlockAnnotationParsing {
                 location: startLineRange.location,
                 length: endLineRange.location - startLineRange.location
             )
-            if aggregate {
-                var ranges = annotatedRanges[name] ?? []
-                ranges.append((range: range, indentation: indentation))
-                annotatedRanges[name] = ranges
-            } else {
-                annotatedRanges[name] = [(range: range, indentation: indentation)]
-            }
+
+            var ranges = annotatedRanges[name] ?? []
+            ranges.append((range: range, indentation: indentation))
+            annotatedRanges[name] = ranges
+
             let rangeToBeRemoved = !forceParse.contains(where: { name.hasSuffix("." + $0) || name == $0 })
             if rangeToBeRemoved {
                 rangesToReplace.insert(range)
