@@ -97,7 +97,7 @@ public class SwiftGenerator {
         let tuple = blockAnnotationParser.parseAnnotations("file", content: content, forceParse: config.forceParse)
         tuple.annotations.forEach { annotation in
             let filePath = annotation.key
-            let generatedBody = annotation.value.map { content.bridge().substring(with: $0.range) }.joined(separator: "\n")
+            let generatedBody = annotation.value.map(\.body).joined(separator: "\n")
             let path = config.output + (Path(filePath).extension == nil ? "\(filePath).generated.swift" : filePath)
             var fileContents = fileAnnotatedContent[path] ?? []
             fileContents.append(generatedBody)
@@ -123,8 +123,7 @@ public class SwiftGenerator {
             .compactMap { annotation -> MappedInlineAnnotation? in
                 let key = annotation.key
                 let range = annotation.value[0].range
-
-                let generatedBody = content.bridge().substring(with: range)
+                let generatedBody = annotation.value[0].body
 
                 if let (filePath, inlineRanges, inlineIndentations) = parsingResult.inlineRanges.first(where: { $0.ranges[key] != nil }) {
                     return MappedInlineAnnotation(range, filePath, inlineRanges[key]!, generatedBody, inlineIndentations[key] ?? "")

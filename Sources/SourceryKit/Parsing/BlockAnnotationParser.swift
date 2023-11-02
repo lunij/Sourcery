@@ -1,6 +1,6 @@
 import Foundation
 
-typealias BlockAnnotations = [String: [(range: NSRange, indentation: String)]]
+typealias BlockAnnotations = [String: [(body: String, range: NSRange, indentation: String)]]
 
 protocol BlockAnnotationParsing {
     func annotationRanges(_ annotation: String, content: String, forceParse: [String]) -> (annotations: BlockAnnotations, rangesToReplace: Set<NSRange>)
@@ -34,21 +34,22 @@ class BlockAnnotationParser: BlockAnnotationParsing {
             let nameRange = result.range(at: 3)
             let startLineRange = result.range(at: 4)
             let endLineRange = result.range(at: 5)
-
-            let indentation = bridged.substring(with: indentationRange)
-            let name = bridged.substring(with: nameRange)
-            let range = NSRange(
+            let bodyRange = NSRange(
                 location: startLineRange.location,
                 length: endLineRange.location - startLineRange.location
             )
 
+            let indentation = bridged.substring(with: indentationRange)
+            let name = bridged.substring(with: nameRange)
+            let body = bridged.substring(with: bodyRange)
+
             var ranges = annotations[name] ?? []
-            ranges.append((range: range, indentation: indentation))
+            ranges.append((body: body, range: bodyRange, indentation: indentation))
             annotations[name] = ranges
 
             let rangeToBeRemoved = !forceParse.contains { name.hasSuffix("." + $0) || name == $0 }
             if rangeToBeRemoved {
-                rangesToReplace.insert(range)
+                rangesToReplace.insert(bodyRange)
             }
         }
         return (annotations, rangesToReplace)
