@@ -70,13 +70,12 @@ public class SwiftParser {
         var allTypes: [Type] = []
         var allFunctions: [SourceryMethod] = []
 
-        for pair in allResults {
-            let next = pair.result
-            allTypealiases += next.typealiases
-            allTypes += next.types
-            allFunctions += next.functions
+        for (_, result) in allResults {
+            allTypealiases += result.typealiases
+            allTypes += result.types
+            allFunctions += result.functions
 
-            inlineRanges.append((next.path!, next.inlineRanges, next.inlineIndentations))
+            inlineRanges.append((result.path!, result.inlineRanges, result.inlineIndentations))
         }
 
         let parserResult = FileParserResult(path: nil, module: nil, types: allTypes, functions: allFunctions, typealiases: allTypealiases)
