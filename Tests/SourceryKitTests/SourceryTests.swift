@@ -255,6 +255,65 @@ class SourceryTests: XCTestCase {
         """)
     }
 
+    func test_processFiles_whenSingleTemplate_andInlineAnnotationMatchingMultipleTimes() throws {
+        let (sourceFile, templatePath) = try createExistingFilesWithInlineTemplate()
+
+        """
+        class Foo {
+            // sourcery:inline:Foo.Inlined
+            // This will be replaced
+            // This will be replaced
+            // sourcery:end
+        }
+
+        class AnotherFoo {
+            // sourcery:inline:Foo.Inlined
+            // This will be replaced
+            // This will be replaced
+            // sourcery:end
+        }
+        """.update(in: sourceFile.path)
+
+        """
+        // This will end up in generated file
+        // sourcery:inline:Foo.Inlined
+        var property = "foo"
+        // This will end up in source file when matching annotation found
+        // sourcery:end
+        """.update(in: templatePath)
+
+        try Sourcery().processConfiguration(.stub(
+            sources: [sourceFile],
+            templates: [templatePath],
+            output: output
+        ))
+
+        let sourceFileContent = try sourceFile.path.read(.utf8)
+        let generatedFileContent = try output.appending(templatePath.generatedFileName).read(.utf8)
+
+        XCTAssertEqual(sourceFileContent, """
+        class Foo {
+            // sourcery:inline:Foo.Inlined
+            var property = "foo"
+            // This will end up in source file when matching annotation found
+            // sourcery:end
+        }
+
+        class AnotherFoo {
+            // sourcery:inline:Foo.Inlined
+            var property = "foo"
+            // This will end up in source file when matching annotation found
+            // sourcery:end
+        }
+        """)
+        XCTAssertEqual(generatedFileContent, """
+        // Generated using Sourcery
+
+        // This will end up in generated file
+
+        """)
+    }
+
     func test_processFiles_whenSingleTemplate_andInlineGeneration_itIndentsCodeBlocks() throws {
         let (sourceFile, templatePath) = try createExistingFilesWithInlineTemplate()
 
