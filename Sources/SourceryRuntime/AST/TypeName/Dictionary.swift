@@ -41,8 +41,6 @@ import Foundation
     }
 
     // sourcery:inline:DictionaryType.AutoCoding
-
-    /// :nodoc:
     public required init?(coder aDecoder: NSCoder) {
         guard let name: String = aDecoder.decode(forKey: "name") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["name"])); fatalError() }; self.name = name
         guard let valueTypeName: TypeName = aDecoder.decode(forKey: "valueTypeName") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["valueTypeName"])); fatalError() }; self.valueTypeName = valueTypeName
@@ -51,7 +49,6 @@ import Foundation
         keyType = aDecoder.decode(forKey: "keyType")
     }
 
-    /// :nodoc:
     public func encode(with aCoder: NSCoder) {
         aCoder.encode(name, forKey: "name")
         aCoder.encode(valueTypeName, forKey: "valueTypeName")

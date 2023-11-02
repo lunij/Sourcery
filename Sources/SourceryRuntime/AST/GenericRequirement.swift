@@ -35,8 +35,6 @@ import Foundation
     }
 
     // sourcery:inline:GenericRequirement.AutoCoding
-
-    /// :nodoc:
     public required init?(coder aDecoder: NSCoder) {
         guard let leftType: AssociatedType = aDecoder.decode(forKey: "leftType") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["leftType"])); fatalError() }; self.leftType = leftType
         guard let rightType: GenericTypeParameter = aDecoder.decode(forKey: "rightType") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["rightType"])); fatalError() }; self.rightType = rightType
@@ -44,7 +42,6 @@ import Foundation
         guard let relationshipSyntax: String = aDecoder.decode(forKey: "relationshipSyntax") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["relationshipSyntax"])); fatalError() }; self.relationshipSyntax = relationshipSyntax
     }
 
-    /// :nodoc:
     public func encode(with aCoder: NSCoder) {
         aCoder.encode(leftType, forKey: "leftType")
         aCoder.encode(rightType, forKey: "rightType")

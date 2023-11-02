@@ -75,8 +75,6 @@ public typealias SourceryMethod = Method
     }
 
     // sourcery:inline:MethodParameter.AutoCoding
-
-    /// :nodoc:
     public required init?(coder aDecoder: NSCoder) {
         argumentLabel = aDecoder.decode(forKey: "argumentLabel")
         guard let name: String = aDecoder.decode(forKey: "name") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["name"])); fatalError() }; self.name = name
@@ -88,7 +86,6 @@ public typealias SourceryMethod = Method
         guard let annotations: Annotations = aDecoder.decode(forKey: "annotations") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["annotations"])); fatalError() }; self.annotations = annotations
     }
 
-    /// :nodoc:
     public func encode(with aCoder: NSCoder) {
         aCoder.encode(argumentLabel, forKey: "argumentLabel")
         aCoder.encode(name, forKey: "name")
@@ -168,8 +165,6 @@ extension Array where Element == MethodParameter {
     }
 
     // sourcery:inline:ClosureParameter.AutoCoding
-
-    /// :nodoc:
     public required init?(coder aDecoder: NSCoder) {
         argumentLabel = aDecoder.decode(forKey: "argumentLabel")
         name = aDecoder.decode(forKey: "name")
@@ -180,7 +175,6 @@ extension Array where Element == MethodParameter {
         guard let annotations: Annotations = aDecoder.decode(forKey: "annotations") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["annotations"])); fatalError() }; self.annotations = annotations
     }
 
-    /// :nodoc:
     public func encode(with aCoder: NSCoder) {
         aCoder.encode(argumentLabel, forKey: "argumentLabel")
         aCoder.encode(name, forKey: "name")
@@ -398,8 +392,6 @@ extension Array where Element == ClosureParameter {
     }
 
     // sourcery:inline:Method.AutoCoding
-
-    /// :nodoc:
     public required init?(coder aDecoder: NSCoder) {
         guard let name: String = aDecoder.decode(forKey: "name") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["name"])); fatalError() }; self.name = name
         guard let selectorName: String = aDecoder.decode(forKey: "selectorName") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["selectorName"])); fatalError() }; self.selectorName = selectorName
@@ -421,7 +413,6 @@ extension Array where Element == ClosureParameter {
         guard let modifiers: [SourceryModifier] = aDecoder.decode(forKey: "modifiers") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["modifiers"])); fatalError() }; self.modifiers = modifiers
     }
 
-    /// :nodoc:
     public func encode(with aCoder: NSCoder) {
         aCoder.encode(name, forKey: "name")
         aCoder.encode(selectorName, forKey: "selectorName")

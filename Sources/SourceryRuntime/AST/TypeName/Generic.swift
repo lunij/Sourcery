@@ -26,14 +26,11 @@ import Foundation
     }
 
     // sourcery:inline:GenericType.AutoCoding
-
-    /// :nodoc:
     public required init?(coder aDecoder: NSCoder) {
         guard let name: String = aDecoder.decode(forKey: "name") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["name"])); fatalError() }; self.name = name
         guard let typeParameters: [GenericTypeParameter] = aDecoder.decode(forKey: "typeParameters") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["typeParameters"])); fatalError() }; self.typeParameters = typeParameters
     }
 
-    /// :nodoc:
     public func encode(with aCoder: NSCoder) {
         aCoder.encode(name, forKey: "name")
         aCoder.encode(typeParameters, forKey: "typeParameters")
@@ -59,14 +56,11 @@ import Foundation
     }
 
     // sourcery:inline:GenericTypeParameter.AutoCoding
-
-    /// :nodoc:
     public required init?(coder aDecoder: NSCoder) {
         guard let typeName: TypeName = aDecoder.decode(forKey: "typeName") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["typeName"])); fatalError() }; self.typeName = typeName
         type = aDecoder.decode(forKey: "type")
     }
 
-    /// :nodoc:
     public func encode(with aCoder: NSCoder) {
         aCoder.encode(typeName, forKey: "typeName")
         aCoder.encode(type, forKey: "type")

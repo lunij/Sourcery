@@ -95,14 +95,11 @@ extension ProcessInfo {
     }
 
 // sourcery:inline:Types.AutoCoding
-
-/// :nodoc:
 public required init?(coder aDecoder: NSCoder) {
     guard let types: [Type] = aDecoder.decode(forKey: "types") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["types"])); fatalError() }; self.types = types
     guard let typealiases: [Typealias] = aDecoder.decode(forKey: "typealiases") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["typealiases"])); fatalError() }; self.typealiases = typealiases
 }
 
-/// :nodoc:
 public func encode(with aCoder: NSCoder) {
     aCoder.encode(types, forKey: "types")
     aCoder.encode(typealiases, forKey: "typealiases")

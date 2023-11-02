@@ -407,8 +407,6 @@ public typealias AttributeList = [String: [Attribute]]
     }
 
     // sourcery:inline:Type.AutoCoding
-
-    /// :nodoc:
     public required init?(coder aDecoder: NSCoder) {
         module = aDecoder.decode(forKey: "module")
         guard let imports: [Import] = aDecoder.decode(forKey: "imports") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["imports"])); fatalError() }; self.imports = imports
@@ -440,7 +438,6 @@ public typealias AttributeList = [String: [Attribute]]
         fileName = aDecoder.decode(forKey: "fileName")
     }
 
-    /// :nodoc:
     public func encode(with aCoder: NSCoder) {
         aCoder.encode(module, forKey: "module")
         aCoder.encode(imports, forKey: "imports")

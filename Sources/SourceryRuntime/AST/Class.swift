@@ -46,13 +46,10 @@ import Foundation
     }
 
     // sourcery:inline:Class.AutoCoding
-
-    /// :nodoc:
     public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
 
-    /// :nodoc:
     override public func encode(with aCoder: NSCoder) {
         super.encode(with: aCoder)
     }
