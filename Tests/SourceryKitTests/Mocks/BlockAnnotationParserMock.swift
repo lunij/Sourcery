@@ -17,8 +17,8 @@ class BlockAnnotationParserMock: BlockAnnotationParsing {
         preconditionFailure("Mock needs to be configured")
     }
     
-    var parseAnnotationsReturnValue: (content: String, annotatedRanges: AnnotatedRanges)?
-    func parseAnnotations(_ annotation: String, content: String, forceParse: [String]) -> (content: String, annotatedRanges: AnnotatedRanges) {
+    var parseAnnotationsReturnValue: (annotatedRanges: AnnotatedRanges, content: String)?
+    func parseAnnotations(_ annotation: String, content: String, forceParse: [String]) -> (annotatedRanges: AnnotatedRanges, content: String) {
         calls.append(.parseAnnotations)
         if let parseAnnotationsReturnValue { return parseAnnotationsReturnValue }
         preconditionFailure("Mock needs to be configured")
