@@ -80,19 +80,18 @@ class SourceryTests: XCTestCase {
 
         """
         class Foo {
-        // sourcery:inline:Foo.Inlined
-
-        // This will be replaced
-        Last line
-        // sourcery:end
+            // sourcery:inline:Foo.Inlined
+            // This will be replaced
+            // This will be replaced
+            // sourcery:end
         }
         """.update(in: sourceFile.path)
 
         """
-        // Line One
+        // This will end up in generated file
         // sourcery:inline:Foo.Inlined
         var property = 2
-        // Line Three
+        // This will end up in source file when matching annotation found
         // sourcery:end
         """.update(in: templatePath)
 
@@ -105,45 +104,37 @@ class SourceryTests: XCTestCase {
         return (sourceFile, templatePath)
     }
 
-    func test_processFiles_whenSingleTemplate_andInlineGeneration_itReplacesPlaceholder() throws {
-        let (sourceFile, _) = try createExistingFilesWithInlineTemplate()
+    func test_processFiles_whenSingleTemplate_andMatchingInlineAnnotations() throws {
+        let (sourceFile, templatePath) = try createExistingFilesWithInlineTemplate()
 
         let sourceFileContent = try sourceFile.path.read(.utf8)
+        let generatedFileContent = try output.appending(templatePath.generatedFileName).read(.utf8)
+
         XCTAssertEqual(sourceFileContent, """
         class Foo {
-        // sourcery:inline:Foo.Inlined
-        var property = 2
-        // Line Three
-        // sourcery:end
+            // sourcery:inline:Foo.Inlined
+            var property = 2
+            // This will end up in source file when matching annotation found
+            // sourcery:end
         }
+        """)
+        XCTAssertEqual(generatedFileContent, """
+        // Generated using Sourcery
+
+        // This will end up in generated file
+
         """)
     }
 
-    func test_processFiles_whenSingleTemplate_andInlineGeneration_itRemovesCode() throws {
-        let (_, templatePath) = try createExistingFilesWithInlineTemplate()
-
-        let expectedResult = """
-        // Generated using Sourcery
-
-        // Line One
-        """
-
-        let generatedPath = output.appending(templatePath.generatedFileName)
-
-        let result = try generatedPath.read(.utf8)
-        XCTAssertEqual(result.withoutWhitespaces, expectedResult.withoutWhitespaces)
-    }
-
-    func test_processFiles_whenSingleTemplate_andInlineGeneration_itDoesNotRemoveCode() throws {
+    func test_processFiles_whenSingleTemplate_andNotMatchingInlineAnnotations() throws {
         let (sourceFile, templatePath) = try createExistingFilesWithInlineTemplate()
 
         """
         class Foo {
-        // sourcery:inline:Bar.Inlined
-
-        // This will be replaced
-        Last line
-        // sourcery:end
+            // sourcery:inline:Bar.Inlined
+            // This will not be replaced
+            // Template does not contain inline annotation with the same name
+            // sourcery:end
         }
         """.update(in: sourceFile.path)
 
@@ -153,20 +144,26 @@ class SourceryTests: XCTestCase {
             output: output
         ))
 
-        let expectedResult = """
+        let sourceFileContent = try sourceFile.path.read(.utf8)
+        let generatedFileContent = try output.appending(templatePath.generatedFileName).read(.utf8)
+
+        XCTAssertEqual(sourceFileContent, """
+        class Foo {
+            // sourcery:inline:Bar.Inlined
+            // This will not be replaced
+            // Template does not contain inline annotation with the same name
+            // sourcery:end
+        }
+        """)
+        XCTAssertEqual(generatedFileContent, """
         // Generated using Sourcery
 
-        // Line One
+        // This will end up in generated file
         // sourcery:inline:Foo.Inlined
         var property = 2
-        // Line Three
+        // This will end up in source file when matching annotation found
         // sourcery:end
-        """
-
-        let generatedPath = output.appending(templatePath.generatedFileName)
-
-        let result = try generatedPath.read(.utf8)
-        XCTAssertEqual(result.withoutWhitespaces, expectedResult.withoutWhitespaces)
+        """)
     }
 
     func test_processFiles_whenSingleTemplate_andInlineGeneration_itDoesNotCreateEmptyFile() throws {
@@ -175,7 +172,7 @@ class SourceryTests: XCTestCase {
         """
         // sourcery:inline:Foo.Inlined
         var property = 2
-        // Line Three
+        // This will end up in source file when matching annotation found
         // sourcery:end
         """.update(in: templatePath)
 
@@ -190,37 +187,36 @@ class SourceryTests: XCTestCase {
         XCTAssertThrowsError(try generatedPath.read(.utf8))
     }
 
-    func test_processFiles_whenSingleTemplate_andInlineGeneration_itInlinesMultipleCodeBlocks() throws {
+    func test_processFiles_whenSingleTemplate_andMultipleMatchingInlineAnnotations() throws {
         let (sourceFile, templatePath) = try createExistingFilesWithInlineTemplate()
 
         """
         class Foo {
-        // sourcery:inline:Foo.Inlined
-
-        // This will be replaced
-        Last line
-        // sourcery:end
+            // sourcery:inline:Foo.Inlined
+            // This will be replaced
+            // This will be replaced
+            // sourcery:end
         }
 
         class Bar {
-        // sourcery:inline:Bar.Inlined
-
-        // This will be replaced
-        Last line
-        // sourcery:end
+            // sourcery:inline:Bar.Inlined
+            // This will be replaced
+            // This will be replaced
+            // sourcery:end
         }
         """.update(in: sourceFile.path)
 
         """
-        // Line One
+        // This will end up in generated file
         // sourcery:inline:Bar.Inlined
-        var property = bar
-        // Line Three
+        var property = "bar"
+        // This will end up in source file when matching annotation found
         // sourcery:end
-        // Line One
+
+        // This will end up in generated file
         // sourcery:inline:Foo.Inlined
-        var property = foo
-        // Line Three
+        var property = "foo"
+        // This will end up in source file when matching annotation found
         // sourcery:end
         """.update(in: templatePath)
 
@@ -230,24 +226,33 @@ class SourceryTests: XCTestCase {
             output: output
         ))
 
-        let expectedResult = """
+        let sourceFileContent = try sourceFile.path.read(.utf8)
+        let generatedFileContent = try output.appending(templatePath.generatedFileName).read(.utf8)
+
+        XCTAssertEqual(sourceFileContent, """
         class Foo {
-        // sourcery:inline:Foo.Inlined
-        var property = foo
-        // Line Three
-        // sourcery:end
+            // sourcery:inline:Foo.Inlined
+            var property = "foo"
+            // This will end up in source file when matching annotation found
+            // sourcery:end
         }
 
         class Bar {
-        // sourcery:inline:Bar.Inlined
-        var property = bar
-        // Line Three
-        // sourcery:end
+            // sourcery:inline:Bar.Inlined
+            var property = "bar"
+            // This will end up in source file when matching annotation found
+            // sourcery:end
         }
-        """
+        """)
+        XCTAssertEqual(generatedFileContent, """
+        // Generated using Sourcery
 
-        let result = try sourceFile.path.read(.utf8)
-        XCTAssertEqual(result, expectedResult)
+        // This will end up in generated file
+
+
+        // This will end up in generated file
+
+        """)
     }
 
     func test_processFiles_whenSingleTemplate_andInlineGeneration_itIndentsCodeBlocks() throws {
