@@ -95,16 +95,14 @@ public class SwiftGenerator {
 
     private func processFileAnnotations(in content: inout String, config: Configuration) {
         let tuple = blockAnnotationParser.parseAnnotations("file", content: content, forceParse: config.forceParse)
-        tuple
-            .annotations
-            .map { ($0, $1) }
-            .forEach { filePath, ranges in
-                let generatedBody = ranges.map { content.bridge().substring(with: $0.range) }.joined(separator: "\n")
-                let path = config.output + (Path(filePath).extension == nil ? "\(filePath).generated.swift" : filePath)
-                var fileContents = fileAnnotatedContent[path] ?? []
-                fileContents.append(generatedBody)
-                fileAnnotatedContent[path] = fileContents
-            }
+        tuple.annotations.forEach { annotation in
+            let filePath = annotation.key
+            let generatedBody = annotation.value.map { content.bridge().substring(with: $0.range) }.joined(separator: "\n")
+            let path = config.output + (Path(filePath).extension == nil ? "\(filePath).generated.swift" : filePath)
+            var fileContents = fileAnnotatedContent[path] ?? []
+            fileContents.append(generatedBody)
+            fileAnnotatedContent[path] = fileContents
+        }
         content = tuple.content
     }
 
