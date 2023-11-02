@@ -390,7 +390,10 @@ class SourceryTests: XCTestCase {
     func test_processFiles_whenSingleTemplate_andAutoInlineGeneration_itInsertsCodeAfterTheEndOfTypeBody() throws {
         let (sourceFile, templatePath) = try createExistingFilesWithInlineTemplate()
 
-        "class Foo {}\nstruct Boo {}".update(in: sourceFile.path)
+        """
+        class Foo {}
+        struct Boo {}
+        """.update(in: sourceFile.path)
 
         """
         // sourcery:inline:after-auto:Foo.Inlined
@@ -404,16 +407,15 @@ class SourceryTests: XCTestCase {
             output: output
         ))
 
-        let expectedResult = """
+        let sourceFileContent = try sourceFile.path.read(.utf8)
+
+        XCTAssertEqual(sourceFileContent, """
         class Foo {}
         // sourcery:inline:after-auto:Foo.Inlined
         var property = 2
         // sourcery:end
         struct Boo {}
-        """
-
-        let result = try sourceFile.path.read(.utf8)
-        XCTAssertEqual(result, expectedResult)
+        """)
     }
 
     func test_processFiles_whenSingleTemplate_andAutoInlineGeneration_itInsertsCodeAtTheBeginningOfTypeBody() throws {
