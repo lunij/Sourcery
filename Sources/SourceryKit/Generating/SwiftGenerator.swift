@@ -109,9 +109,9 @@ public class SwiftGenerator {
     }
 
     private func processInlineAnnotations(in content: String, for parsingResult: ParsingResult, config: Configuration) throws -> GenerationResult {
-        var (annotatedRanges, rangesToReplace) = blockAnnotationParser.annotationRanges("inline", content: content, forceParse: config.forceParse)
+        var (annotations, rangesToReplace) = blockAnnotationParser.annotationRanges("inline", content: content, forceParse: config.forceParse)
 
-        typealias MappedInlineAnnotations = (
+        typealias MappedInlineAnnotation = (
             range: NSRange,
             filePath: String,
             rangeInFile: NSRange,
@@ -121,14 +121,15 @@ public class SwiftGenerator {
 
         var sourceChanges: [SourceChange] = []
 
-        try annotatedRanges
-            .map { (key: $0, range: $1[0].range) }
-            .compactMap { key, range -> MappedInlineAnnotations? in
+        try annotations
+            .compactMap { annotation -> MappedInlineAnnotation? in
+                let key = annotation.key
+                let range = annotation.value[0].range
+
                 let generatedBody = content.bridge().substring(with: range)
 
                 if let (filePath, inlineRanges, inlineIndentations) = parsingResult.inlineRanges.first(where: { $0.ranges[key] != nil }) {
-                    // swiftlint:disable:next force_unwrapping
-                    return MappedInlineAnnotations(range, filePath, inlineRanges[key]!, generatedBody, inlineIndentations[key] ?? "")
+                    return MappedInlineAnnotation(range, filePath, inlineRanges[key]!, generatedBody, inlineIndentations[key] ?? "")
                 }
 
                 guard let autoRange = key.range(of: "auto:") else {
@@ -175,7 +176,7 @@ public class SwiftGenerator {
                 }
 
                 let indent = String(repeating: " ", count: indentRange?.location ?? 0)
-                return MappedInlineAnnotations(range, filePath, rangeInFile, toInsert, indent)
+                return MappedInlineAnnotation(range, filePath, rangeInFile, toInsert, indent)
             }
             .sorted { lhs, rhs in
                 lhs.rangeInFile.location > rhs.rangeInFile.location
