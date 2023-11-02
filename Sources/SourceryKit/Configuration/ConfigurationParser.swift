@@ -76,7 +76,6 @@ class ConfigurationParser: ConfigurationParsing {
             cacheDisabled: cacheDisabled,
             forceParse: dict["forceParse"] as? [String] ?? [],
             parseDocumentation: dict["parseDocumentation"] as? Bool ?? false,
-            baseIndentation: dict["baseIndentation"] as? Int ?? 0,
             arguments: dict["args"] as? [String: NSObject] ?? [:]
         )
     }

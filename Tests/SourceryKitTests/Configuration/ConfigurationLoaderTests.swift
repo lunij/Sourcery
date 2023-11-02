@@ -123,7 +123,6 @@ private extension Configuration {
             cacheDisabled: false,
             forceParse: [],
             parseDocumentation: false,
-            baseIndentation: 0,
             arguments: [:]
         )
     }

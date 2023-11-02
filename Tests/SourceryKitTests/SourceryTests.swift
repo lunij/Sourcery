@@ -323,10 +323,10 @@ class SourceryTests: XCTestCase {
         "class Foo {}".update(in: sourceFile.path)
 
         """
-        // Line One
+        // This will end up in generated file
         // sourcery:inline:auto:Foo.Inlined
         var property = 2
-        // Line Three
+        // This will end up in source file when matching type names found
         // sourcery:end
         """.update(in: templatePath)
 
@@ -336,17 +336,16 @@ class SourceryTests: XCTestCase {
             output: output
         ))
 
-        let expectedResult = """
+        let sourceFileContent = try sourceFile.path.read(.utf8)
+
+        XCTAssertEqual(sourceFileContent, """
         class Foo {
         // sourcery:inline:auto:Foo.Inlined
         var property = 2
-        // Line Three
+        // This will end up in source file when matching type names found
         // sourcery:end
         }
-        """
-
-        let result = try sourceFile.path.read(.utf8)
-        XCTAssertEqual(result, expectedResult)
+        """)
     }
 
     func test_processFiles_whenSingleTemplate_andAutoInlineGeneration_itInsertsCodeAtTheEndOfTypeBodyMaintainingIndentation() throws {
@@ -360,34 +359,32 @@ class SourceryTests: XCTestCase {
         """.update(in: sourceFile.path)
 
         """
-        // Line One
+        // This will end up in generated file
         // sourcery:inline:auto:Foo.Inner.Inlined
-            var property = 3
-        // Line Three
+        var property = 3
+        // This will end up in source file when matching type names found
         // sourcery:end
         """.update(in: templatePath)
 
         try Sourcery().processConfiguration(.stub(
             sources: [sourceFile],
             templates: [templatePath],
-            output: output,
-            baseIndentation: 4
+            output: output
         ))
 
-        let expectedResult = """
+        let sourceFileContent = try sourceFile.path.read(.utf8)
+
+        XCTAssertEqual(sourceFileContent, """
         class Foo {
             struct Inner {
 
-                // sourcery:inline:auto:Foo.Inner.Inlined
-                    var property = 3
-                // Line Three
-                // sourcery:end
+            // sourcery:inline:auto:Foo.Inner.Inlined
+            var property = 3
+            // This will end up in source file when matching type names found
+            // sourcery:end
             }
         }
-        """
-
-        let result = try sourceFile.path.read(.utf8)
-        XCTAssertEqual(result, expectedResult)
+        """)
     }
 
     func test_processFiles_whenSingleTemplate_andAutoInlineGeneration_itInsertsCodeAfterTheEndOfTypeBody() throws {
@@ -813,8 +810,7 @@ class SourceryTests: XCTestCase {
         try Sourcery().processConfiguration(.stub(
             sources: [sourceFile],
             templates: [templatePath, secondTemplatePath],
-            output: output,
-            baseIndentation: 0
+            output: output
         ))
 
         let expectedResult = """
@@ -1154,7 +1150,7 @@ class SourceryTests: XCTestCase {
         try Sourcery().processConfiguration(.stub(
             sources: [SourceFile(path: Stubs.resultDirectory + Path("Basic.swift"))],
             templates: [.basicStencilPath],
-            output: output, baseIndentation: 0
+            output: output
         ))
 
         XCTAssertFalse(targetPath.exists)

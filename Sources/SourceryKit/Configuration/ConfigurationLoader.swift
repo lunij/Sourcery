@@ -56,7 +56,6 @@ struct ConfigurationLoader: ConfigurationLoading {
                     cacheDisabled: options.cacheDisabled,
                     forceParse: options.forceParse,
                     parseDocumentation: options.parseDocumentation,
-                    baseIndentation: options.baseIndentation,
                     arguments: arguments
                 )
             ]

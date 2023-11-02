@@ -11,7 +11,6 @@ extension Configuration {
         cacheDisabled: Bool = true,
         forceParse: [String] = [],
         parseDocumentation: Bool = false,
-        baseIndentation: Int = 0,
         arguments: [String: NSObject] = [:]
     ) -> Self {
         .init(
@@ -23,7 +22,6 @@ extension Configuration {
             cacheDisabled: cacheDisabled,
             forceParse: forceParse,
             parseDocumentation: parseDocumentation,
-            baseIndentation: baseIndentation,
             arguments: arguments
         )
     }

@@ -29,7 +29,6 @@ class ConfigurationParserTests: XCTestCase {
         """
         let config = try XCTUnwrap(sut.parse(from: yaml).first)
         XCTAssertEqual(config.arguments, [:])
-        XCTAssertEqual(config.baseIndentation, 0)
         XCTAssertEqual(config.cacheBasePath, .systemCachePath)
         XCTAssertEqual(config.cacheDisabled, false)
         XCTAssertEqual(config.forceParse, [])

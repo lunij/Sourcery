@@ -174,7 +174,7 @@ public class SwiftGenerator {
                     toInsert += "\n"
                 }
 
-                let indent = String(repeating: " ", count: (indentRange?.location ?? 0) + config.baseIndentation)
+                let indent = String(repeating: " ", count: indentRange?.location ?? 0)
                 return MappedInlineAnnotations(range, filePath, rangeInFile, toInsert, indent)
             }
             .sorted { lhs, rhs in

@@ -10,7 +10,6 @@ public struct Configuration: Equatable {
     public let cacheDisabled: Bool
     public let forceParse: [String]
     public let parseDocumentation: Bool
-    public let baseIndentation: Int
     public let arguments: [String: NSObject]
 
     public init(
@@ -22,7 +21,6 @@ public struct Configuration: Equatable {
         cacheDisabled: Bool,
         forceParse: [String],
         parseDocumentation: Bool,
-        baseIndentation: Int,
         arguments: [String: NSObject]
     ) {
         self.sources = sources
@@ -33,7 +31,6 @@ public struct Configuration: Equatable {
         self.cacheDisabled = cacheDisabled
         self.forceParse = forceParse
         self.parseDocumentation = parseDocumentation
-        self.baseIndentation = baseIndentation
         self.arguments = arguments
     }
 }

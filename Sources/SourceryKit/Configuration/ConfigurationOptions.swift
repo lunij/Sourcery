@@ -22,9 +22,6 @@ struct ConfigurationOptions: ParsableArguments {
     @Option(help: "File extensions that will be forced to parse, even if they were generated")
     var forceParse: [String] = []
 
-    @Option(help: "Base indendation to add to sourcery:auto fragments")
-    var baseIndentation = 0
-
     @Option(help: """
     Additional arguments to pass to templates. Each argument can have an explicit value or will have \
     an implicit `true` value. Arguments should be comma-separated without spaces (e.g. --args arg1=value,arg2) \
