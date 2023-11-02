@@ -1,7 +1,7 @@
 import Foundation
 @testable import SourceryKit
 
-class TemplateAnnotationParserMock: TemplateAnnotationParsing {
+class BlockAnnotationParserMock: BlockAnnotationParsing {
     enum Call: Equatable {
         case annotationRanges
         case parseAnnotations
