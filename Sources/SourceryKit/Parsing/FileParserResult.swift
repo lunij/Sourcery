@@ -14,13 +14,12 @@ public final class FileParserResult: Diffable, Equatable, Hashable, CustomString
 
     public var functions: [Function]
     public var typealiases: [Typealias]
-    public var inlineRanges: [String: NSRange]
-    public var inlineIndentations: [String: String]
+    public var inlineAnnotations: [BlockAnnotation]
 
     public var modifiedDate: Date
 
     var isEmpty: Bool {
-        types.isEmpty && functions.isEmpty && typealiases.isEmpty && inlineRanges.isEmpty && inlineIndentations.isEmpty
+        types.isEmpty && functions.isEmpty && typealiases.isEmpty && inlineAnnotations.isEmpty
     }
 
     public init(
@@ -29,8 +28,7 @@ public final class FileParserResult: Diffable, Equatable, Hashable, CustomString
         types: [Type],
         functions: [Function],
         typealiases: [Typealias] = [],
-        inlineRanges: [String: NSRange] = [:],
-        inlineIndentations: [String: String] = [:],
+        inlineAnnotations: [BlockAnnotation] = [],
         modifiedDate: Date = Date()
     ) {
         self.path = path
@@ -38,8 +36,7 @@ public final class FileParserResult: Diffable, Equatable, Hashable, CustomString
         self.types = types
         self.functions = functions
         self.typealiases = typealiases
-        self.inlineRanges = inlineRanges
-        self.inlineIndentations = inlineIndentations
+        self.inlineAnnotations = inlineAnnotations
         self.modifiedDate = modifiedDate
 
         defer {

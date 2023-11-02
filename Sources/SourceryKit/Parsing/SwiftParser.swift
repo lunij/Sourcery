@@ -11,7 +11,7 @@ public class SwiftParser {
     }
 
     func parseSources(from config: Configuration) throws -> ParsingResult {
-        var inlineRanges: [(file: String, ranges: [String: NSRange], indentations: [String: String])] = []
+        var inlineAnnotations: [(file: String, annotations: [BlockAnnotation])] = []
         var allResults: [(changed: Bool, result: FileParserResult)] = []
 
         for (index, sourceFile) in config.sources.enumerated() {
@@ -74,7 +74,7 @@ public class SwiftParser {
             allTypes += result.types
             allFunctions += result.functions
 
-            inlineRanges.append((result.path!, result.inlineRanges, result.inlineIndentations))
+            inlineAnnotations.append((result.path!, result.inlineAnnotations))
         }
 
         let parserResult = FileParserResult(path: nil, module: nil, types: allTypes, functions: allFunctions, typealiases: allTypealiases)
@@ -105,7 +105,7 @@ public class SwiftParser {
             parserResult: parserResult,
             types: Types(types: types, typealiases: typealiases),
             functions: functions,
-            inlineRanges: inlineRanges
+            inlineAnnotations: inlineAnnotations
         )
     }
 

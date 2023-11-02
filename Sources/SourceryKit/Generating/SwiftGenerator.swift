@@ -118,11 +118,11 @@ public class SwiftGenerator {
 
         try annotations
             .compactMap { annotation -> MappedInlineAnnotation? in
-                let key = annotation.key
-                let range = annotation.value[0].range
-                let generatedBody = annotation.value[0].body
+                let key = annotation.context
+                let range = annotation.range
+                let generatedBody = annotation.body
 
-                if let (filePath, inlineRanges, inlineIndentations) = parsingResult.inlineRanges.first(where: { $0.ranges[key] != nil }) {
+                if let (filePath, inlineRanges, inlineIndentations) = parsingResult.inlineAnnotations.first(where: { $0.ranges[key] != nil }) {
                     return MappedInlineAnnotation(range, filePath, inlineRanges[key]!, generatedBody, inlineIndentations[key] ?? "")
                 }
 
@@ -211,8 +211,8 @@ public class SwiftGenerator {
 
     private func updateRanges(in parsingResult: inout ParsingResult, sourceChanges: [SourceChange]) {
         for (path, rangeInFile, newRangeInFile) in sourceChanges {
-            if let inlineRangesIndex = parsingResult.inlineRanges.firstIndex(where: { $0.file == path }) {
-                let inlineRanges = parsingResult.inlineRanges[inlineRangesIndex].ranges
+            if let inlineRangesIndex = parsingResult.inlineAnnotations.firstIndex(where: { $0.file == path }) {
+                let inlineRanges = parsingResult.inlineAnnotations[inlineRangesIndex].ranges
                     .mapValues { inlineRange -> NSRange in
                         let change = NSRange(
                             location: newRangeInFile.location,
@@ -220,7 +220,7 @@ public class SwiftGenerator {
                         )
                         return inlineRange.changingContent(change)
                     }
-                parsingResult.inlineRanges[inlineRangesIndex].ranges = inlineRanges
+                parsingResult.inlineAnnotations[inlineRangesIndex].ranges = inlineRanges
             }
 
             func stringViewForContent(at path: String) -> StringView? {

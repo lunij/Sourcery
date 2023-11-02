@@ -1,10 +1,8 @@
 import Foundation
 
-typealias BlockAnnotations = [String: [(body: String, range: NSRange, indentation: String)]]
-
 protocol BlockAnnotationParsing {
-    func annotationRanges(_ annotation: String, content: String, forceParse: [String]) -> (annotations: BlockAnnotations, rangesToReplace: Set<NSRange>)
-    func parseAnnotations(_ annotation: String, content: inout String, forceParse: [String]) -> BlockAnnotations
+    func annotationRanges(_ annotation: String, content: String, forceParse: [String]) -> (annotations: [BlockAnnotation], rangesToReplace: Set<NSRange>)
+    func parseAnnotations(_ annotation: String, content: inout String, forceParse: [String]) -> [BlockAnnotation]
     func removingEmptyAnnotations(from content: String) -> String
 }
 
@@ -18,12 +16,12 @@ class BlockAnnotationParser: BlockAnnotationParsing {
         return regex
     }
 
-    func annotationRanges(_ annotation: String, content: String, forceParse: [String]) -> (annotations: BlockAnnotations, rangesToReplace: Set<NSRange>) {
+    func annotationRanges(_ annotation: String, content: String, forceParse: [String]) -> (annotations: [BlockAnnotation], rangesToReplace: Set<NSRange>) {
         let bridged = content.bridge()
         let regex = try? regex(annotation: annotation)
 
+        var annotations: [BlockAnnotation] = []
         var rangesToReplace = Set<NSRange>()
-        var annotations = BlockAnnotations()
 
         regex?.enumerateMatches(in: content, options: [], range: bridged.entireRange) { result, _, _ in
             guard let result = result, result.numberOfRanges == 6 else {
@@ -43,9 +41,7 @@ class BlockAnnotationParser: BlockAnnotationParsing {
             let name = bridged.substring(with: nameRange)
             let body = bridged.substring(with: bodyRange)
 
-            var ranges = annotations[name] ?? []
-            ranges.append((body: body, range: bodyRange, indentation: indentation))
-            annotations[name] = ranges
+            annotations.append(.init(context: name, body: body, range: bodyRange, indentation: indentation))
 
             let rangeToBeRemoved = !forceParse.contains { name.hasSuffix("." + $0) || name == $0 }
             if rangeToBeRemoved {
@@ -55,7 +51,7 @@ class BlockAnnotationParser: BlockAnnotationParsing {
         return (annotations, rangesToReplace)
     }
 
-    func parseAnnotations(_ annotation: String, content: inout String, forceParse: [String]) -> BlockAnnotations {
+    func parseAnnotations(_ annotation: String, content: inout String, forceParse: [String]) -> [BlockAnnotation] {
         let (annotations, rangesToReplace) = annotationRanges(annotation, content: content, forceParse: forceParse)
 
         let strigView = StringView(content)
