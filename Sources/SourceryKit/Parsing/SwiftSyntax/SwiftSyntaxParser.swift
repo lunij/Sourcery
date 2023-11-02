@@ -33,8 +33,8 @@ final class SwiftSyntaxParser: SwiftSyntaxParsing {
 
         let inline = blockAnnotationParser.parseAnnotations("inline", content: content, forceParse: forceParse)
         let content = inline.content
-        let inlineRanges = inline.annotatedRanges.mapValues { $0[0].range }
-        let inlineIndentations = inline.annotatedRanges.mapValues { $0[0].indentation }
+        let inlineRanges = inline.annotations.mapValues { $0[0].range }
+        let inlineIndentations = inline.annotations.mapValues { $0[0].indentation }
 
         let tree = Parser.parse(source: content)
         let fileName = path ?? "in-memory"

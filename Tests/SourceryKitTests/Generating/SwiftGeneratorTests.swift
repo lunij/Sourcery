@@ -31,8 +31,8 @@ class SwiftGeneratorTests: XCTestCase {
     func test_warnsAboutSkippedFiles() throws {
         let templateMock = TemplateMock(path: "Templates/Fake.stencil")
         templateMock.renderReturnValue = ""
-        blockAnnotationParserMock.parseAnnotationsReturnValue = (annotatedRanges: .init(), content: "")
-        blockAnnotationParserMock.annotationRangesReturnValue = (annotatedRanges: .init(), rangesToReplace: [])
+        blockAnnotationParserMock.parseAnnotationsReturnValue = (annotations: .init(), content: "")
+        blockAnnotationParserMock.annotationRangesReturnValue = (annotations: .init(), rangesToReplace: [])
         blockAnnotationParserMock.removingEmptyAnnotationsReturnValue = ""
 
         var parsingResult = ParsingResult.stub()
@@ -59,8 +59,8 @@ class SwiftGeneratorTests: XCTestCase {
     func test_warnsAboutSingleFileOutput() throws {
         let templateMock = TemplateMock()
         templateMock.renderReturnValue = ""
-        blockAnnotationParserMock.parseAnnotationsReturnValue = (annotatedRanges: .init(), content: "")
-        blockAnnotationParserMock.annotationRangesReturnValue = (annotatedRanges: .init(), rangesToReplace: [])
+        blockAnnotationParserMock.parseAnnotationsReturnValue = (annotations: .init(), content: "")
+        blockAnnotationParserMock.annotationRangesReturnValue = (annotations: .init(), rangesToReplace: [])
         blockAnnotationParserMock.removingEmptyAnnotationsReturnValue = ""
 
         var parsingResult = ParsingResult.stub()

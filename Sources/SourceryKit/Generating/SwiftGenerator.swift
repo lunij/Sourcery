@@ -94,9 +94,9 @@ public class SwiftGenerator {
     }
 
     private func processFileAnnotations(in content: inout String, config: Configuration) {
-        let annotations = blockAnnotationParser.parseAnnotations("file", content: content, forceParse: config.forceParse)
-        annotations
-            .annotatedRanges
+        let tuple = blockAnnotationParser.parseAnnotations("file", content: content, forceParse: config.forceParse)
+        tuple
+            .annotations
             .map { ($0, $1) }
             .forEach { filePath, ranges in
                 let generatedBody = ranges.map { content.bridge().substring(with: $0.range) }.joined(separator: "\n")
@@ -105,7 +105,7 @@ public class SwiftGenerator {
                 fileContents.append(generatedBody)
                 fileAnnotatedContent[path] = fileContents
             }
-        content = annotations.content
+        content = tuple.content
     }
 
     private func processInlineAnnotations(in content: String, for parsingResult: ParsingResult, config: Configuration) throws -> GenerationResult {
