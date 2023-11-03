@@ -81,7 +81,7 @@ public class SwiftParser {
         let parserResult = FileParserResult(path: nil, module: nil, types: allTypes, functions: allFunctions, typealiases: allTypealiases)
 
         // ! All files have been scanned, time to join extensions with base class
-        let (types, functions, typealiases) = Composer.uniqueTypesAndFunctions(parserResult)
+        let (types, functions, typealiases) = Composer().uniqueTypesAndFunctions(parserResult)
 
         let changedFiles = allResults
             .filter(\.changed)

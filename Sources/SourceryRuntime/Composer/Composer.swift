@@ -1,7 +1,9 @@
 import Foundation
 
 /// Responsible for composing results of `FileParser`.
-public enum Composer {
+public struct Composer {
+
+    public init() {}
 
     /// Performs final processing of discovered types:
     /// - extends types with their corresponding extensions;
@@ -11,7 +13,7 @@ public enum Composer {
     ///
     /// - Parameter parserResult: Result of parsing source code.
     /// - Returns: Final types and extensions of unknown types.
-    public static func uniqueTypesAndFunctions(_ parserResult: FileParserResult) -> (types: [Type], functions: [SourceryMethod], typealiases: [Typealias]) {
+    public func uniqueTypesAndFunctions(_ parserResult: FileParserResult) -> (types: [Type], functions: [SourceryMethod], typealiases: [Typealias]) {
         let composed = ParserResultsComposed(parserResult: parserResult)
 
         let resolveType = { (typeName: TypeName, containingType: Type?) -> Type? in
@@ -57,7 +59,7 @@ public enum Composer {
 
     typealias TypeResolver = (TypeName, Type?) -> Type?
 
-    private static func resolveVariableTypes(_ variable: Variable, of type: Type, resolve: TypeResolver) {
+    private func resolveVariableTypes(_ variable: Variable, of type: Type, resolve: TypeResolver) {
         variable.type = resolve(variable.typeName, type)
 
         /// The actual `definedInType` is assigned in `uniqueTypes` but we still
@@ -68,7 +70,7 @@ public enum Composer {
         }
     }
 
-    private static func resolveSubscriptTypes(_ subscript: Subscript, of type: Type, resolve: TypeResolver) {
+    private func resolveSubscriptTypes(_ subscript: Subscript, of type: Type, resolve: TypeResolver) {
         `subscript`.parameters.forEach { (parameter) in
             parameter.type = resolve(parameter.typeName, type)
         }
@@ -79,7 +81,7 @@ public enum Composer {
         }
     }
 
-    private static func resolveMethodTypes(_ method: SourceryMethod, of type: Type?, resolve: TypeResolver) {
+    private func resolveMethodTypes(_ method: SourceryMethod, of type: Type?, resolve: TypeResolver) {
         method.parameters.forEach { parameter in
             parameter.type = resolve(parameter.typeName, type)
         }
@@ -118,7 +120,7 @@ public enum Composer {
         }
     }
 
-    private static func resolveEnumTypes(_ enumeration: Enum, types: [String: Type], resolve: TypeResolver) {
+    private func resolveEnumTypes(_ enumeration: Enum, types: [String: Type], resolve: TypeResolver) {
         enumeration.cases.forEach { enumCase in
             enumCase.associatedValues.forEach { associatedValue in
                 associatedValue.type = resolve(associatedValue.typeName, enumeration)
@@ -148,7 +150,7 @@ public enum Composer {
         }
     }
 
-    private static func resolveProtocolCompositionTypes(_ protocolComposition: ProtocolComposition, resolve: TypeResolver) {
+    private func resolveProtocolCompositionTypes(_ protocolComposition: ProtocolComposition, resolve: TypeResolver) {
         let composedTypes = protocolComposition.composedTypeNames.compactMap { typeName in
             resolve(typeName, protocolComposition)
         }
@@ -156,7 +158,7 @@ public enum Composer {
         protocolComposition.composedTypes = composedTypes
     }
 
-    private static func resolveProtocolTypes(_ sourceryProtocol: SourceryProtocol, resolve: TypeResolver) {
+    private func resolveProtocolTypes(_ sourceryProtocol: SourceryProtocol, resolve: TypeResolver) {
         sourceryProtocol.associatedTypes.forEach { (_, value) in
             guard let typeName = value.typeName,
                   let type = resolve(typeName, sourceryProtocol)
@@ -172,7 +174,7 @@ public enum Composer {
         }
     }
 
-    private static func updateTypeRelationships(types: [Type]) {
+    private func updateTypeRelationships(types: [Type]) {
         var typesByName = [String: Type]()
         types.forEach { typesByName[$0.globalName] = $0 }
 
@@ -186,7 +188,7 @@ public enum Composer {
         }
     }
 
-    private static func findBaseType(for type: Type, name: String, typesByName: [String: Type]) -> Type? {
+    private func findBaseType(for type: Type, name: String, typesByName: [String: Type]) -> Type? {
         if let baseType = typesByName[name] {
             return baseType
         }
@@ -201,7 +203,7 @@ public enum Composer {
         return nil
     }
 
-    private static func updateTypeRelationship(for type: Type, typesByName: [String: Type], processed: inout [String: Bool]) {
+    private func updateTypeRelationship(for type: Type, typesByName: [String: Type], processed: inout [String: Bool]) {
         type.based.keys.forEach { name in
             guard let baseType = findBaseType(for: type, name: name, typesByName: typesByName) else { return }
             let globalName = baseType.globalName

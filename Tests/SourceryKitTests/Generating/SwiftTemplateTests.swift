@@ -20,7 +20,7 @@ class SwiftTemplateTests: XCTestCase {
             let parserResult = SwiftSyntaxParser().parse(code)
             let data = try NSKeyedArchiver.archivedData(withRootObject: parserResult, requiringSecureCoding: false)
 
-            let result = Composer.uniqueTypesAndFunctions(parserResult)
+            let result = Composer().uniqueTypesAndFunctions(parserResult)
             let unarchivedParserResult = try NSKeyedUnarchiver.unarchivedRootObject(ofClass: FileParserResult.self, from: data)
             return TemplateContext(parserResult: unarchivedParserResult, types: .init(types: result.types, typealiases: result.typealiases), functions: result.functions, arguments: [:])
         }

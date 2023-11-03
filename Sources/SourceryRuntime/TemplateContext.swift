@@ -29,7 +29,7 @@ import Foundation
         let fileParserResultCopy: FileParserResult? = nil
 //      fileParserResultCopy = try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(NSKeyedArchiver.archivedData(withRootObject: parserResult)) as? FileParserResult
 
-        let composed = Composer.uniqueTypesAndFunctions(parserResult)
+        let composed = Composer().uniqueTypesAndFunctions(parserResult)
         self.types = .init(types: composed.types, typealiases: composed.typealiases)
         self.functions = composed.functions
 

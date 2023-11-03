@@ -2287,7 +2287,7 @@ private extension String {
         line: UInt = #line
     ) -> [T] {
         let parserResult = SwiftSyntaxParser().parse(self)
-        return Composer.uniqueTypesAndFunctions(parserResult)[keyPath: keyPath]
+        return Composer().uniqueTypesAndFunctions(parserResult)[keyPath: keyPath]
     }
 }
 
@@ -2309,6 +2309,6 @@ private extension Array where Element == Module {
             return acc
         }
 
-        return Composer.uniqueTypesAndFunctions(combinedResult)
+        return Composer().uniqueTypesAndFunctions(combinedResult)
     }
 }
