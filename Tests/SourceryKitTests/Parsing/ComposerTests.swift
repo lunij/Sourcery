@@ -4,25 +4,32 @@ import XCTest
 @testable import SourceryKit
 @testable import SourceryRuntime
 
-class ComposerTests: XCTestCase {
+final class ComposerTests: XCTestCase {
+    var sut: Composer!
+
+    override func setUp() {
+        super.setUp()
+        sut = .init()
+    }
+
     private func createGivenClassHierarchyScenario() -> (fooType: Type, barType: Type, bazType: Type) {
-        let parsedResult = """
+        let types = sut.compose("""
         class Foo {
-            var foo: Int;
+            var foo: Int
             func fooMethod() {}
         }
         class Bar: Foo {
             var bar: Int
         }
         class Baz: Bar {
-            var baz: Int;
+            var baz: Int
             func bazMethod() {}
         }
-        """.parse()
+        """).types
         return (
-            parsedResult[2],
-            parsedResult[0],
-            parsedResult[1]
+            types[2],
+            types[0],
+            types[1]
         )
     }
 
@@ -45,10 +52,10 @@ class ComposerTests: XCTestCase {
     }
 
     func test_givenMethodWithReturnType_itFindsActualReturnType() {
-        let types = """
+        let types = sut.compose("""
         class Foo { func foo() -> Bar { } }
         class Bar {}
-        """.parse()
+        """).types
         let method = types.last?.methods.first
 
         XCTAssertEqual(method?.returnType, Class(name: "Bar"))
@@ -86,7 +93,7 @@ class ComposerTests: XCTestCase {
     }
 
     func test_genericMethod_itExtractsClassMethod() {
-        let types = """
+        let types = sut.compose("""
         class Foo {
             func foo<T: Equatable>() -> Bar?\n where \nT: Equatable {
             };  /// Asks a Duck to quack
@@ -95,12 +102,12 @@ class ComposerTests: XCTestCase {
             func fooBar<T>(bar: T) where T: Equatable { }
         };
         class Bar {}
-        """.parse()
+        """).types
         assertMethods(types)
     }
 
     func test_genericMethod_itExtractsProtocolMethod() {
-        let types = """
+        let types = sut.compose("""
         protocol Foo {
             func foo<T: Equatable>() -> Bar?\n where \nT: Equatable  /// Asks a Duck to quack
                 ///
@@ -108,7 +115,7 @@ class ComposerTests: XCTestCase {
             func fooBar<T>(bar: T) where T: Equatable
         };
         class Bar {}
-        """.parse()
+        """).types
         assertMethods(types)
     }
 
@@ -118,7 +125,7 @@ class ComposerTests: XCTestCase {
         expectedInitializer.returnType = fooType
         fooType.rawMethods = [Method(name: "foo()", selectorName: "foo", definedInTypeName: TypeName(name: "Foo")), expectedInitializer]
 
-        let type = "class Foo { func foo() {}; init() {} }".parse().first
+        let type = sut.compose("class Foo { func foo() {}; init() {} }").types.first
         let initializer = type?.initializers.first
 
         XCTAssertEqual(initializer, expectedInitializer)
@@ -131,7 +138,7 @@ class ComposerTests: XCTestCase {
         expectedInitializer.returnType = fooType
         fooType.rawMethods = [Method(name: "foo()", selectorName: "foo", definedInTypeName: TypeName(name: "Foo")), expectedInitializer]
 
-        let type = "class Foo { func foo() {}; init?() {} }".parse().first
+        let type = sut.compose("class Foo { func foo() {}; init?() {} }").types.first
         let initializer = type?.initializers.first
 
         XCTAssertEqual(initializer, expectedInitializer)
@@ -139,7 +146,7 @@ class ComposerTests: XCTestCase {
     }
 
     func test_protocolInheritance_itFlattensProtocolWithDefaultImplementation() {
-        let parsed = """
+        let types = sut.compose("""
         protocol UrlOpening {
             func open(
                 _ url: URL,
@@ -157,17 +164,17 @@ class ComposerTests: XCTestCase {
             func anotherFunction(key: String) {
             }
         }
-        """.parse()
+        """).types
 
-        XCTAssertEqual(parsed.count, 1)
+        XCTAssertEqual(types.count, 1)
 
-        let childProtocol = parsed.last
+        let childProtocol = types.last
         XCTAssertEqual(childProtocol?.name, "UrlOpening")
         XCTAssertEqual(childProtocol?.allMethods.map { $0.selectorName }, ["open(_:options:completionHandler:)", "open(_:)", "anotherFunction(key:)"])
     }
 
     func test_protocolInheritance_itFlattensInheritedProtocolsWithDefaultImplementation() {
-        let parsed = """
+        let types = sut.compose("""
         protocol RemoteUrlOpening {
             func open(_ url: URL)
         }
@@ -185,11 +192,11 @@ class ComposerTests: XCTestCase {
                 open(url, options: [:], completionHandler: nil)
             }
         }
-        """.parse()
+        """).types
 
-        XCTAssertEqual(parsed.count, 2)
+        XCTAssertEqual(types.count, 2)
 
-        let childProtocol = parsed.last
+        let childProtocol = types.last
         XCTAssertEqual(childProtocol?.name, "UrlOpening")
         XCTAssertEqual(childProtocol?.allMethods.filter({ $0.definedInType?.isExtension == false }).map { $0.selectorName }, ["open(_:options:completionHandler:)", "open(_:)"])
     }
@@ -200,7 +207,7 @@ class ComposerTests: XCTestCase {
         extendedProtocol: Type,
         extendedClass: Type
     ) {
-        let parsedResult = """
+        let types = sut.compose("""
         protocol BaseProtocol {
             var variable: Int { get }
             func baseFunction()
@@ -220,12 +227,12 @@ class ComposerTests: XCTestCase {
             var extendedVariable: Int = 0
             func extendedFunction() { }
         }
-        """.parse()
+        """).types
         return (
-            parsedResult[1],
-            parsedResult[0],
-            parsedResult[3],
-            parsedResult[2]
+            types[1],
+            types[0],
+            types[3],
+            types[2]
         )
     }
 
@@ -246,16 +253,18 @@ class ComposerTests: XCTestCase {
     }
 
     func test_extensionOfSameType_itCombinesNestedTypes() {
-        let innerType = Struct(name: "Bar", accessLevel: .internal, isExtension: false, variables: [])
+        let types = sut.compose("struct Foo {}  extension Foo { struct Bar { } }").types
 
-        XCTAssertEqual("struct Foo {}  extension Foo { struct Bar { } }".parse(), [
+        let innerType = Struct(name: "Bar", accessLevel: .internal, isExtension: false, variables: [])
+        XCTAssertEqual(types, [
             Struct(name: "Foo", accessLevel: .internal, isExtension: false, variables: [], containedTypes: [innerType]),
             innerType
         ])
     }
 
     func test_extensionOfSameType_itCombinesMethods() {
-        XCTAssertEqual("class Baz {}; extension Baz { func foo() {} }".parse(), [
+        let types = sut.compose("class Baz {}; extension Baz { func foo() {} }").types
+        XCTAssertEqual(types, [
             Class(name: "Baz", methods: [
                 Method(name: "foo()", selectorName: "foo", accessLevel: .internal, definedInTypeName: TypeName(name: "Baz"))
             ])
@@ -263,7 +272,8 @@ class ComposerTests: XCTestCase {
     }
 
     func test_extensionOfSameType_itCombinesVariables() {
-        XCTAssertEqual("class Baz {}; extension Baz { var foo: Int }".parse(), [
+        let types = sut.compose("class Baz {}; extension Baz { var foo: Int }").types
+        XCTAssertEqual(types, [
             Class(name: "Baz", variables: [
                 .init(name: "foo", typeName: .Int, definedInTypeName: TypeName(name: "Baz"))
             ])
@@ -271,30 +281,41 @@ class ComposerTests: XCTestCase {
     }
 
     func test_extensionOfSameType_itCombinesVariablesAndMethodsWithAccessInformationFromTheExtension() {
-        let foo = Struct(name: "Foo", accessLevel: .public, isExtension: false, variables: [.init(name: "boo", typeName: .Int, accessLevel: (.public, .none), isComputed: true, definedInTypeName: TypeName(name: "Foo"))], methods: [.init(name: "foo()", selectorName: "foo", accessLevel: .public, definedInTypeName: TypeName(name: "Foo"))], modifiers: [.init(name: "public")])
+        let types = sut.compose("""
+        public struct Foo { }
+        public extension Foo {
+          func foo() { }
+          var boo: Int { 0 }
+        }
+        """).types
 
         XCTAssertEqual(
-            """
-            public struct Foo { }
-            public extension Foo {
-              func foo() { }
-              var boo: Int { 0 }
-            }
-            """.parse().last, foo
+            types.last,
+            Struct(
+                name: "Foo",
+                accessLevel: .public,
+                isExtension: false,
+                variables: [.init(name: "boo", typeName: .Int, accessLevel: (.public, .none), isComputed: true, definedInTypeName: TypeName(name: "Foo"))],
+                methods: [.init(name: "foo()", selectorName: "foo", accessLevel: .public, definedInTypeName: TypeName(name: "Foo"))],
+                modifiers: [.init(name: "public")]
+            )
         )
     }
 
     func test_extensionOfSameType_itCombinesInheritedTypes() {
-        XCTAssertEqual("class Foo: TestProtocol { }; extension Foo: AnotherProtocol {}".parse(), [
+        let types = sut.compose("class Foo: TestProtocol { }; extension Foo: AnotherProtocol {}").types
+        XCTAssertEqual(types, [
             Class(name: "Foo", accessLevel: .internal, isExtension: false, variables: [], inheritedTypes: ["TestProtocol", "AnotherProtocol"])
         ])
     }
 
     func test_extensionOfSameType_itDoesNotUseExtensionToInferEnumRawType() {
-        XCTAssertEqual("enum Foo { case one }; extension Foo: Equatable {}".parse(), [
-            Enum(name: "Foo",
-                 inheritedTypes: ["Equatable"],
-                 cases: [EnumCase(name: "one")]
+        let types = sut.compose("enum Foo { case one }; extension Foo: Equatable {}").types
+        XCTAssertEqual(types, [
+            Enum(
+                name: "Foo",
+                inheritedTypes: ["Equatable"],
+                cases: [EnumCase(name: "one")]
             )
         ])
     }
@@ -324,51 +345,47 @@ class ComposerTests: XCTestCase {
 
     func test_extensionOfSameType_andRemembersOriginalDefinitionType_andEnum_itResolvesMethodsDefinedInType() {
         let (method, defaultedMethod) = createOriginalDefinitionTypeScenario()
-        let input = "enum Foo { case A; func \(method.name) {} }; extension Foo { func \(defaultedMethod.name) {} }"
-        let parsedResult = input.parse().first
+        let types = sut.compose("enum Foo { case A; func \(method.name) {} }; extension Foo { func \(defaultedMethod.name) {} }").types
         let originalType = Enum(name: "Foo", cases: [EnumCase(name: "A")], methods: [method, defaultedMethod])
         let typeExtension = Type(name: "Foo", accessLevel: .internal, isExtension: true, methods: [defaultedMethod])
 
-        XCTAssertEqual(parsedResult?.methods.first?.definedInType, originalType)
-        XCTAssertEqual(parsedResult?.methods.last?.definedInType, typeExtension)
+        XCTAssertEqual(types.first?.methods.first?.definedInType, originalType)
+        XCTAssertEqual(types.first?.methods.last?.definedInType, typeExtension)
     }
 
     func test_extensionOfSameType_andRemembersOriginalDefinitionType_andProtocol_itResolvesMethodsDefinedInType() {
         let (method, defaultedMethod) = createOriginalDefinitionTypeScenario()
-        let input = "protocol Foo { func \(method.name) }; extension Foo { func \(defaultedMethod.name) {} }"
-        let parsedResult = input.parse().first
+        let types = sut.compose("protocol Foo { func \(method.name) }; extension Foo { func \(defaultedMethod.name) {} }").types
         let originalType = Protocol(name: "Foo", methods: [method, defaultedMethod])
         let typeExtension = Type(name: "Foo", accessLevel: .internal, isExtension: true, methods: [defaultedMethod])
 
-        XCTAssertEqual(parsedResult?.methods.first?.definedInType, originalType)
-        XCTAssertEqual(parsedResult?.methods.last?.definedInType, typeExtension)
+        XCTAssertEqual(types.first?.methods.first?.definedInType, originalType)
+        XCTAssertEqual(types.first?.methods.last?.definedInType, typeExtension)
     }
 
     func test_extensionOfSameType_andRemembersOriginalDefinitionType_andClass_itResolvesMethodsDefinedInType() {
         let (method, defaultedMethod) = createOriginalDefinitionTypeScenario()
-        let input = "class Foo { func \(method.name) {} }; extension Foo { func \(defaultedMethod.name) {} }"
-        let parsedResult = input.parse().first
+        let types = sut.compose("class Foo { func \(method.name) {} }; extension Foo { func \(defaultedMethod.name) {} }").types
         let originalType = Class(name: "Foo", methods: [method, defaultedMethod])
         let typeExtension = Type(name: "Foo", accessLevel: .internal, isExtension: true, methods: [defaultedMethod])
 
-        XCTAssertEqual(parsedResult?.methods.first?.definedInType, originalType)
-        XCTAssertEqual(parsedResult?.methods.last?.definedInType, typeExtension)
+        XCTAssertEqual(types.first?.methods.first?.definedInType, originalType)
+        XCTAssertEqual(types.first?.methods.last?.definedInType, typeExtension)
     }
 
     func test_extensionOfSameType_andRemembersOriginalDefinitionType_andStruct_itResolvesMethodsDefinedInType() {
         let (method, defaultedMethod) = createOriginalDefinitionTypeScenario()
-        let input = "struct Foo { func \(method.name) {} }; extension Foo { func \(defaultedMethod.name) {} }"
-        let parsedResult = input.parse().first
+        let types = sut.compose("struct Foo { func \(method.name) {} }; extension Foo { func \(defaultedMethod.name) {} }").types
         let originalType = Struct(name: "Foo", methods: [method, defaultedMethod])
         let typeExtension = Type(name: "Foo", accessLevel: .internal, isExtension: true, methods: [defaultedMethod])
 
-        XCTAssertEqual(parsedResult?.methods.first?.definedInType, originalType)
-        XCTAssertEqual(parsedResult?.methods.last?.definedInType, typeExtension)
+        XCTAssertEqual(types.first?.methods.first?.definedInType, originalType)
+        XCTAssertEqual(types.first?.methods.last?.definedInType, typeExtension)
     }
 
     func test_enumContainingAssociatedValues_itTrimsWhitespaceFromAssociatedValueNames() {
         XCTAssertEqual(
-            "enum Foo {\n case bar(\nvalue: String,\n other: Int\n)\n}".parse(),
+            sut.compose("enum Foo {\n case bar(\nvalue: String,\n other: Int\n)\n}").types,
             [
                 Enum(
                     name: "Foo",
@@ -402,7 +419,7 @@ class ComposerTests: XCTestCase {
 
     func test_enumContainingRawType_itExtractsEnumsWithoutRawRepresentable() {
         XCTAssertEqual(
-            "enum Foo: String, SomeProtocol { case optionA }; protocol SomeProtocol {}".parse(),
+            sut.compose("enum Foo: String, SomeProtocol { case optionA }; protocol SomeProtocol {}").types,
             [
                 Enum(
                     name: "Foo",
@@ -419,7 +436,7 @@ class ComposerTests: XCTestCase {
 
     func test_enumContainingRawType_itExtractsEnumsWithRawRepresentableByInferringFromVariable() {
         XCTAssertEqual(
-            "enum Foo: RawRepresentable { case optionA; var rawValue: String { return \"\" }; init?(rawValue: String) { self = .optionA } }".parse(),
+            sut.compose("enum Foo: RawRepresentable { case optionA; var rawValue: String { return \"\" }; init?(rawValue: String) { self = .optionA } }").types,
             [
                 Enum(
                     name: "Foo",
@@ -454,14 +471,14 @@ class ComposerTests: XCTestCase {
 
     func test_enumContainingRawType_itExtractsEnumsWithRawRepresentableByInferringFromVariableWithTypealias() {
         XCTAssertEqual(
-            """
+            sut.compose("""
             enum Foo: RawRepresentable {
                 case optionA
                 typealias RawValue = String
                 var rawValue: RawValue { return \"\" }
                 init?(rawValue: RawValue) { self = .optionA }
             }
-            """.parse(),
+            """).types,
             [
                 Enum(
                     name: "Foo",
@@ -497,14 +514,14 @@ class ComposerTests: XCTestCase {
 
     func test_enumContainingRawType_itExtractsEnumsWithRawRepresentableByInferringFromTypealias() {
         XCTAssertEqual(
-            """
+            sut.compose("""
             enum Foo: CustomStringConvertible, RawRepresentable {
                 case optionA
                 typealias RawValue = String
                 var rawValue: RawValue { return \"\" }
                 init?(rawValue: RawValue) { self = .optionA }
             }
-            """.parse(),
+            """).types,
             [
                 Enum(
                     name: "Foo",
@@ -540,7 +557,7 @@ class ComposerTests: XCTestCase {
 
     func test_enumWithoutRawTypeWithInheritingType_itDoesNotSetInheritedTypeToRawValueTypeForEnumCases() {
         XCTAssertEqual(
-            "enum Enum: SomeProtocol { case optionA }".parse().first(where: { $0.name == "Enum" }),
+            sut.compose("enum Enum: SomeProtocol { case optionA }").types.first { $0.name == "Enum" },
             // ATM it is expected that we assume that first inherited type is a raw value type. To avoid that client code should specify inherited type via extension
             Enum(name: "Enum", inheritedTypes: ["SomeProtocol"], rawTypeName: TypeName(name: "SomeProtocol"), cases: [EnumCase(name: "optionA")])
         )
@@ -548,7 +565,7 @@ class ComposerTests: XCTestCase {
 
     func test_enumWithoutRawTypeWithInheritingType_itDoesNotSetInheritedTypeToRawValueTypeForEnumCasesWithAssociatedValues() {
         XCTAssertEqual(
-            "enum Enum: SomeProtocol { case optionA(Int); case optionB;  }".parse().first(where: { $0.name == "Enum" }),
+            sut.compose("enum Enum: SomeProtocol { case optionA(Int); case optionB;  }").types.first { $0.name == "Enum" },
             Enum(name: "Enum", inheritedTypes: ["SomeProtocol"], cases: [
                 EnumCase(name: "optionA", associatedValues: [AssociatedValue(typeName: TypeName(name: "Int"))]),
                 EnumCase(name: "optionB")
@@ -558,20 +575,20 @@ class ComposerTests: XCTestCase {
 
     func test_enumWithoutRawTypeWithInheritingType_itDoesNotSetInheritedTypeToRawValueTypeForEnumWithNoCases() {
         XCTAssertEqual(
-            "enum Enum: SomeProtocol { }".parse().first(where: { $0.name == "Enum" }),
+            sut.compose("enum Enum: SomeProtocol { }").types.first { $0.name == "Enum" },
             Enum(name: "Enum", inheritedTypes: ["SomeProtocol"])
         )
     }
 
     func test_enumInheritingProtocolComposition_itExtractsTheProtocolCompositionAsTheInheritedType() {
         XCTAssertEqual(
-            "enum Enum: Composition { }; typealias Composition = Foo & Bar; protocol Foo {}; protocol Bar {}".parse().first(where: { $0.name == "Enum" }),
+            sut.compose("enum Enum: Composition { }; typealias Composition = Foo & Bar; protocol Foo {}; protocol Bar {}").types.first { $0.name == "Enum" },
             Enum(name: "Enum", inheritedTypes: ["Composition"])
         )
     }
 
     func test_genericCustomType_itExtractsGenericTypeName() throws {
-        let types = """
+        let types = sut.compose("""
         struct GenericArgumentStruct<T> {
             let value: T
         }
@@ -579,7 +596,7 @@ class ComposerTests: XCTestCase {
         struct Foo {
             var value: GenericArgumentStruct<Bool>
         }
-        """.parse()
+        """).types
 
         let foo = try XCTUnwrap(types.first { $0.name == "Foo" })
         let fooGeneric = try XCTUnwrap(foo.instanceVariables.first?.typeName.generic)
@@ -590,11 +607,11 @@ class ComposerTests: XCTestCase {
     }
 
     func test_tupleType_itExtractsElements() {
-        let types = """
+        let types = sut.compose("""
         struct Foo {
             var tuple: (a: Int, b: Int, String, _: Float, literal: [String: [String: Float]], generic: Dictionary<String, Dictionary<String, Float>>, closure: (Int) -> (Int) -> Int, tuple: (Int, Int))
         }
-        """.parse()
+        """).types
         let variable = types.first?.variables.first
         let tuple = variable?.typeName.tuple
 
@@ -652,13 +669,13 @@ class ComposerTests: XCTestCase {
     }
 
     func test_literalArrayType_itExtractsElementType() {
-        let types = """
+        let types = sut.compose("""
         struct Foo {
             var array: [Int]
             var arrayOfTuples: [(Int, Int)]
             var arrayOfArrays: [[Int]], var arrayOfClosures: [() -> ()] 
         }
-        """.parse()
+        """).types
         let variables = types.first?.variables
         XCTAssertEqual(
             variables?[0].typeName.array,
@@ -682,13 +699,13 @@ class ComposerTests: XCTestCase {
     }
 
     func test_genericArrayType_itExtractsElementType() {
-        let types = """
+        let types = sut.compose("""
         struct Foo {
             var array: Array<Int>
             var arrayOfTuples: Array<(Int, Int)>
             var arrayOfArrays: Array<Array<Int>>, var arrayOfClosures: Array<() -> ()>
         }
-        """.parse()
+        """).types
         let variables = types.first?.variables
         XCTAssertEqual(
             variables?[0].typeName.array,
@@ -709,7 +726,7 @@ class ComposerTests: XCTestCase {
     }
 
     func test_genericDictionaryType_itExtractsKeyType() {
-        let types = """
+        let types = sut.compose("""
         struct Foo {
             var dictionary: Dictionary<Int, String>
             var dictionaryOfArrays: Dictionary<[Int], [String]>
@@ -717,7 +734,7 @@ class ComposerTests: XCTestCase {
             var dictionaryOfTuples: Dictionary<Int, (String, String)>
             var dictionaryOfClosures: Dictionary<Int, () -> ()>
         }
-        """.parse()
+        """).types
         let variables = types.first?.variables
 
         XCTAssertEqual(
@@ -786,7 +803,7 @@ class ComposerTests: XCTestCase {
     }
 
     func test_genericTypesExtensions_itDetectsProtocolConformanceInExtensionOfGenericTypes() {
-        let types = """
+        let types = sut.compose("""
         protocol Bar {}
         extension Array: Bar {}
         extension Dictionary: Bar {}
@@ -798,7 +815,7 @@ class ComposerTests: XCTestCase {
             var dictionaryLiteral: [String: Int]
             var set: Set<String>
         }
-        """.parse()
+        """).types
         let bar = SourceryProtocol.init(name: "Bar")
         let variables = types[3].variables
         XCTAssertEqual(variables[0].type?.implements["Bar"], bar)
@@ -809,7 +826,7 @@ class ComposerTests: XCTestCase {
     }
 
     func test_literalDictionaryType_itExtractsKeyType() {
-        let types = """
+        let types = sut.compose("""
         struct Foo {
             var dictionary: [Int: String]
             var dictionaryOfArrays: [[Int]: [String]]
@@ -817,7 +834,7 @@ class ComposerTests: XCTestCase {
             var dictionaryOfTuples: [Int: (String, String)]
             var dictionaryOfClojures: [Int: () -> ()]
         }
-        """.parse()
+        """).types
         let variables = types.first?.variables
 
         XCTAssertEqual(
@@ -872,7 +889,7 @@ class ComposerTests: XCTestCase {
     }
 
     func test_closureType_itExtractsClosureReturnType() {
-        let types = "struct Foo { var closure: () -> \n Int }".parse()
+        let types = sut.compose("struct Foo { var closure: () -> \n Int }").types
         let variables = types.first?.variables
 
         XCTAssertEqual(
@@ -882,7 +899,7 @@ class ComposerTests: XCTestCase {
     }
 
     func test_closureType_itExtractsThrowsReturnType() {
-        let types = "struct Foo { var closure: () throws -> Int }".parse()
+        let types = sut.compose("struct Foo { var closure: () throws -> Int }").types
         let variables = types.first?.variables
 
         XCTAssertEqual(
@@ -892,7 +909,7 @@ class ComposerTests: XCTestCase {
     }
 
     func test_closureType_itExtractsVoidReturnType() {
-        let types = "struct Foo { var closure: () -> Void }".parse()
+        let types = sut.compose("struct Foo { var closure: () -> Void }").types
         let variables = types.first?.variables
 
         XCTAssertEqual(
@@ -902,7 +919,7 @@ class ComposerTests: XCTestCase {
     }
 
     func test_closureType_itExtractsVoidAsParanthesesReturnType() {
-        let types = "struct Foo { var closure: () -> () }".parse()
+        let types = sut.compose("struct Foo { var closure: () -> () }").types
         let variables = types.first?.variables
 
         XCTAssertEqual(
@@ -912,7 +929,7 @@ class ComposerTests: XCTestCase {
     }
 
     func test_closureType_itExtractsComplexClosureType() {
-        let types = "struct Foo { var closure: () -> (Int) throws -> Int }".parse()
+        let types = sut.compose("struct Foo { var closure: () -> (Int) throws -> Int }").types
         let variables = types.first?.variables
 
         XCTAssertEqual(
@@ -934,7 +951,7 @@ class ComposerTests: XCTestCase {
     }
 
     func test_closureType_itExtractsEmptyParameters() {
-        let types = "struct Foo { var closure: () -> Int }".parse()
+        let types = sut.compose("struct Foo { var closure: () -> Int }").types
         let variables = types.first?.variables
 
         XCTAssertEqual(
@@ -944,7 +961,7 @@ class ComposerTests: XCTestCase {
     }
 
     func test_closureType_itExtractsVoidParameters() {
-        let types = "struct Foo { var closure: (Void) -> Int }".parse()
+        let types = sut.compose("struct Foo { var closure: (Void) -> Int }").types
         let variables = types.first?.variables
 
         XCTAssertEqual(
@@ -954,7 +971,7 @@ class ComposerTests: XCTestCase {
     }
 
     func test_closureType_itExtractsParameters() {
-        let types = "struct Foo { var closure: (Int, Int -> Int) -> Int }".parse()
+        let types = sut.compose("struct Foo { var closure: (Int, Int -> Int) -> Int }").types
         let variables = types.first?.variables
 
         XCTAssertEqual(
@@ -994,7 +1011,7 @@ class ComposerTests: XCTestCase {
         expectedVariable.type = fooType
         expectedStaticVariable.type = subType
 
-        let types = """
+        let types = sut.compose("""
         struct Foo {
             var variable: Self { .init() }
 
@@ -1002,7 +1019,7 @@ class ComposerTests: XCTestCase {
                 static var staticVar: Self = .init()
             }
         }
-        """.parse()
+        """).types
 
         func assert(_ variable: Variable?, expected: Variable, file: StaticString = #file, line: UInt = #line) {
             XCTAssertEqual(variable, expected, file: file, line: line)
@@ -1026,7 +1043,7 @@ class ComposerTests: XCTestCase {
 
         subType.parent = fooType
 
-        let types = """
+        let types = sut.compose("""
         struct Foo {
             struct SubType {
                 func myMethod() -> Self {
@@ -1034,21 +1051,21 @@ class ComposerTests: XCTestCase {
                 }
             }
         }
-        """.parse()
+        """).types
 
         let parsedSubType = types.first { $0.name == "Foo.SubType" }
         XCTAssertEqual(parsedSubType?.methods.first, expectedMethod)
     }
 
     func test_typealiases_andUpdatedComposer_itFollowsThroughTypealiasChainToFinalType() {
-        let typealiases = """
+        let typealiases = sut.compose("""
         enum Bar {}
         struct Foo {}
         typealias Root = Bar
         typealias Leaf1 = Root
         typealias Leaf2 = Leaf1
         typealias Leaf3 = Leaf1
-        """.parse(\.typealiases)
+        """).typealiases
 
         XCTAssertEqual(typealiases.count, 4)
         typealiases.forEach {
@@ -1057,7 +1074,7 @@ class ComposerTests: XCTestCase {
     }
 
     func test_typealiases_andUpdatedComposer_itFollowsThroughTypealiasChainContainedInTypesToFinalType() {
-        let typealiases = """
+        let typealiases = sut.compose("""
         enum Bar {
             typealias Root = Bar
         }
@@ -1068,7 +1085,7 @@ class ComposerTests: XCTestCase {
         typealias Leaf2 = Foo.Leaf1
         typealias Leaf3 = Leaf2
         typealias Leaf4 = Bar.Root
-        """.parse(\.typealiases)
+        """).typealiases
 
         XCTAssertEqual(typealiases.count, 5)
         typealiases.forEach {
@@ -1077,7 +1094,7 @@ class ComposerTests: XCTestCase {
     }
 
     func test_typealiases_andUpdatedComposer_itFollowsThroughTypealiasContainedInOtherTypes() {
-        let type = """
+        let type = sut.compose("""
         enum Module {
             typealias Model = ModuleModel
         }
@@ -1090,7 +1107,7 @@ class ComposerTests: XCTestCase {
                 let idUsingTypealias: ModuleModel.ModelID
             }
         }
-        """.parse()[2]
+        """).types[2]
 
         XCTAssertEqual(type.name, "ModuleModel.Element")
         XCTAssertEqual(type.variables.count, 2)
@@ -1114,7 +1131,7 @@ class ComposerTests: XCTestCase {
     }
 
     func test_typealiases_andUpdatedComposer_itGathersFullTypeInformationIfATypeIsDefinedOnAnTypealiasedUnknownParentViaExtension() {
-        let result = """
+        let result = sut.compose("""
         typealias UnknownTypeAlias = Unknown
         extension UnknownTypeAlias {
             struct KnownStruct {
@@ -1122,7 +1139,7 @@ class ComposerTests: XCTestCase {
                 var meh: Float = 0
             }
         }
-        """.parse()
+        """).types
         let knownType = result.first { $0.localName == "KnownStruct" }
 
         XCTAssertEqual(knownType?.isExtension, false)
@@ -1130,20 +1147,20 @@ class ComposerTests: XCTestCase {
     }
 
     func test_typealiases_andUpdatedComposer_itExtendsTheActualTypeWhenUsingTypealias() {
-        let result = """
+        let result = sut.compose("""
         struct Foo {
         }
         typealias FooAlias = Foo
         extension FooAlias {
             var name: Int { 0 }
         }
-        """.parse()
+        """).types
 
         XCTAssertEqual(result.first?.variables.first?.typeName, TypeName.Int)
     }
 
     func test_typealiases_andUpdatedComposer_itResolvesInheritanceChainViaTypealias() {
-        let result = """
+        let result = sut.compose("""
         class Foo {
             class Inner {
                 var innerBase: Bool
@@ -1153,18 +1170,18 @@ class ComposerTests: XCTestCase {
                 var innerInherited: Bool = true
             }
         }
-        """.parse()
+        """).types
         let innerInherited = result.first { $0.localName == "InnerInherited" }
 
         XCTAssertEqual(innerInherited?.inheritedTypes, ["Foo.Inner"])
     }
 
     func test_typealiases_itResolvesDefinedInTypeForMethods() {
-        let type = """
+        let type = sut.compose("""
         class Foo { func bar() {} }
         typealias FooAlias = Foo
         extension FooAlias { func baz() {} }
-        """.parse().first
+        """).types.first
 
         XCTAssertEqual(type?.methods.first?.actualDefinedInTypeName, TypeName(name: "Foo"))
         XCTAssertEqual(type?.methods.first?.definedInTypeName, TypeName(name: "Foo"))
@@ -1177,11 +1194,11 @@ class ComposerTests: XCTestCase {
     }
 
     func test_typealiases_itResolvesDefinedInTypeForVariables() {
-        let type = """
+        let type = sut.compose("""
         class Foo { var bar: Int { return 1 } }
         typealias FooAlias = Foo
         extension FooAlias { var baz: Int { return 2 } }
-        """.parse().first
+        """).types.first
 
         XCTAssertEqual(type?.variables.first?.actualDefinedInTypeName, TypeName(name: "Foo"))
         XCTAssertEqual(type?.variables.first?.definedInTypeName, TypeName(name: "Foo"))
@@ -1194,7 +1211,7 @@ class ComposerTests: XCTestCase {
     }
 
     func test_typealiases_itSetsTypealiasType() {
-        let types = "class Bar {}; class Foo { typealias BarAlias = Bar }".parse()
+        let types = sut.compose("class Bar {}; class Foo { typealias BarAlias = Bar }").types
         let bar = types.first
         let foo = types.last
 
@@ -1209,11 +1226,11 @@ class ComposerTests: XCTestCase {
         )
         expectedVariable.type = Class(name: "Foo")
 
-        let type = """
+        let type = sut.compose("""
         typealias GlobalAlias = Foo
         class Foo {}
         class Bar { var foo: GlobalAlias }
-        """.parse().first
+        """).types.first
         let variable = type?.variables.first
 
         XCTAssertEqual(variable, expectedVariable)
@@ -1237,11 +1254,11 @@ class ComposerTests: XCTestCase {
             definedInTypeName: TypeName(name: "Bar")
         )
 
-        let types = """
+        let types = sut.compose("""
         typealias GlobalAlias = Foo
         class Foo {}
         class Bar { var foo: (GlobalAlias, Int) }
-        """.parse()
+        """).types
         let variable = types.first?.variables.first
         let tupleElement = variable?.typeName.tuple?.elements.first
 
@@ -1262,11 +1279,11 @@ class ComposerTests: XCTestCase {
             definedInTypeName: TypeName(name: "Bar")
         )
 
-        let type = """
+        let type = sut.compose("""
         typealias GlobalAlias = (Foo, Int)
         class Foo {}
         class Bar { var foo: GlobalAlias }
-        """.parse().first
+        """).types.first
         let variable = type?.variables.first
 
         XCTAssertEqual(variable, expectedVariable)
@@ -1282,7 +1299,7 @@ class ComposerTests: XCTestCase {
             definedInTypeName: TypeName(name: "Bar")
         )
 
-        let types = "typealias FooAlias = Foo; class Foo {}; class Bar { func some() -> FooAlias }".parse()
+        let types = sut.compose("typealias FooAlias = Foo; class Foo {}; class Bar { func some() -> FooAlias }").types
         let method = types.first?.methods.first
 
         XCTAssertEqual(method, expectedMethod)
@@ -1303,7 +1320,7 @@ class ComposerTests: XCTestCase {
             definedInTypeName: TypeName(name: "Bar")
         )
 
-        let types = "typealias FooAlias = Foo; class Foo {}; class Bar { func some() -> (FooAlias, Int) }".parse()
+        let types = sut.compose("typealias FooAlias = Foo; class Foo {}; class Bar { func some() -> (FooAlias, Int) }").types
         let method = types.first?.methods.first
         let tupleElement = method?.returnTypeName.tuple?.elements.first
 
@@ -1325,7 +1342,7 @@ class ComposerTests: XCTestCase {
             definedInTypeName: TypeName(name: "Bar")
         )
 
-        let types = "typealias GlobalAlias = (Foo, Int); class Foo {}; class Bar { func some() -> GlobalAlias }".parse()
+        let types = sut.compose("typealias GlobalAlias = (Foo, Int); class Foo {}; class Bar { func some() -> GlobalAlias }").types
         let method = types.first?.methods.first
 
         XCTAssertEqual(method, expectedMethod)
@@ -1336,11 +1353,11 @@ class ComposerTests: XCTestCase {
     func test_typealiases_andMethodParameter_itReplacesMethodParameterTypeAliasWithActualType() {
         let expectedMethodParameter = MethodParameter(name: "foo", typeName: TypeName(name: "FooAlias", actualTypeName: TypeName(name: "Foo")), type: Class(name: "Foo"))
 
-        let types = """
+        let types = sut.compose("""
         typealias FooAlias = Foo
         class Foo {}
         class Bar { func some(foo: FooAlias) }
-        """.parse()
+        """).types
         let methodParameter = types.first?.methods.first?.parameters.first
 
         XCTAssertEqual(methodParameter, expectedMethodParameter)
@@ -1359,11 +1376,11 @@ class ComposerTests: XCTestCase {
             typeName: TypeName(name: "(FooAlias, Int)", actualTypeName: expectedActualTypeName, tuple: expectedActualTypeName.tuple)
         )
 
-        let types = """
+        let types = sut.compose("""
         typealias FooAlias = Foo
         class Foo {}
         class Bar { func some(foo: (FooAlias, Int)) }
-        """.parse()
+        """).types
         let methodParameter = types.first?.methods.first?.parameters.first
         let tupleElement = methodParameter?.typeName.tuple?.elements.first
 
@@ -1383,7 +1400,7 @@ class ComposerTests: XCTestCase {
             typeName: TypeName(name: "GlobalAlias", actualTypeName: expectedActualTypeName, tuple: expectedActualTypeName.tuple)
         )
 
-        let types = "typealias GlobalAlias = (Foo, Int); class Foo {}; class Bar { func some(foo: GlobalAlias) }".parse()
+        let types = sut.compose("typealias GlobalAlias = (Foo, Int); class Foo {}; class Bar { func some(foo: GlobalAlias) }").types
         let methodParameter = types.first?.methods.first?.parameters.first
 
         XCTAssertEqual(methodParameter, expectedMethodParameter)
@@ -1394,11 +1411,11 @@ class ComposerTests: XCTestCase {
     func test_typealias_andAssociatedValue_itReplacesAssociatedValueTypeAliasWithActualType() {
         let expectedAssociatedValue = AssociatedValue(typeName: TypeName(name: "FooAlias", actualTypeName: TypeName(name: "Foo")), type: Class(name: "Foo"))
 
-        let types = """
+        let types = sut.compose("""
         typealias FooAlias = Foo
         class Foo {}
         enum Some { case optionA(FooAlias) }
-        """.parse()
+        """).types
         let associatedValue = (types.last as? Enum)?.cases.first?.associatedValues.first
 
         XCTAssertEqual(associatedValue, expectedAssociatedValue)
@@ -1414,7 +1431,7 @@ class ComposerTests: XCTestCase {
             ])
         let expectedAssociatedValue = AssociatedValue(typeName: TypeName(name: "(FooAlias, Int)", actualTypeName: expectedActualTypeName, tuple: expectedActualTypeName.tuple))
 
-        let types = "typealias FooAlias = Foo; class Foo {}; enum Some { case optionA((FooAlias, Int)) }".parse()
+        let types = sut.compose("typealias FooAlias = Foo; class Foo {}; enum Some { case optionA((FooAlias, Int)) }").types
         let associatedValue = (types.last as? Enum)?.cases.first?.associatedValues.first
         let tupleElement = associatedValue?.typeName.tuple?.elements.first
 
@@ -1431,7 +1448,7 @@ class ComposerTests: XCTestCase {
             ])
         let expectedAssociatedValue = AssociatedValue(typeName: TypeName(name: "GlobalAlias", actualTypeName: expectedTypeName, tuple: expectedTypeName.tuple))
 
-        let types = "typealias GlobalAlias = (Foo, Int); class Foo {}; enum Some { case optionA(GlobalAlias) }".parse()
+        let types = sut.compose("typealias GlobalAlias = (Foo, Int); class Foo {}; enum Some { case optionA(GlobalAlias) }").types
         let associatedValue = (types.last as? Enum)?.cases.first?.associatedValues.first
 
         XCTAssertEqual(associatedValue, expectedAssociatedValue)
@@ -1446,7 +1463,7 @@ class ComposerTests: XCTestCase {
 
         let expectedAssociatedValue = AssociatedValue(typeName: TypeName(name: "JSON", actualTypeName: expectedTypeName, dictionary: expectedTypeName.dictionary, generic: expectedTypeName.generic), type: nil)
 
-        let types = "typealias JSON = [String: Any]; enum Some { case optionA(JSON) }".parse()
+        let types = sut.compose("typealias JSON = [String: Any]; enum Some { case optionA(JSON) }").types
         let associatedValue = (types.last as? Enum)?.cases.first?.associatedValues.first
 
         XCTAssertEqual(associatedValue?.typeName, expectedAssociatedValue.typeName)
@@ -1460,7 +1477,7 @@ class ComposerTests: XCTestCase {
 
         let expectedAssociatedValue = AssociatedValue(typeName: TypeName(name: "JSON", actualTypeName: expectedTypeName, array: expectedTypeName.array, generic: expectedTypeName.generic), type: nil)
 
-        let types = "typealias JSON = [Any]; enum Some { case optionA(JSON) }".parse()
+        let types = sut.compose("typealias JSON = [Any]; enum Some { case optionA(JSON) }").types
         let associatedValue = (types.last as? Enum)?.cases.first?.associatedValues.first
 
         XCTAssertEqual(associatedValue, expectedAssociatedValue)
@@ -1477,7 +1494,7 @@ class ComposerTests: XCTestCase {
 
         let expectedAssociatedValue = AssociatedValue(typeName: TypeName(name: "JSON", actualTypeName: expectedTypeName, closure: expectedTypeName.closure), type: nil)
 
-        let types = "typealias JSON = (String) -> Any; enum Some { case optionA(JSON) }".parse()
+        let types = sut.compose("typealias JSON = (String) -> Any; enum Some { case optionA(JSON) }").types
         let associatedValue = (types.last as? Enum)?.cases.first?.associatedValues.first
 
         XCTAssertEqual(associatedValue, expectedAssociatedValue)
@@ -1487,13 +1504,13 @@ class ComposerTests: XCTestCase {
     func test_typealias_andVariable_itReplacesVariableAliasWithActualTypeViaThreeTypealiases() {
         let expectedVariable = Variable(name: "foo", typeName: TypeName(name: "FinalAlias", actualTypeName: TypeName(name: "Foo")), type: Class(name: "Foo"), definedInTypeName: TypeName(name: "Bar"))
 
-        let type = """
+        let type = sut.compose("""
         typealias FooAlias = Foo
         typealias BarAlias = FooAlias
         typealias FinalAlias = BarAlias
         class Foo {}
         class Bar { var foo: FinalAlias }
-        """.parse().first
+        """).types.first
         let variable = type?.variables.first
 
         XCTAssertEqual(variable, expectedVariable)
@@ -1504,7 +1521,7 @@ class ComposerTests: XCTestCase {
     func test_typealias_andVariable_itReplacesVariableOptionalAliasTypeWithActualType() {
         let expectedVariable = Variable(name: "foo", typeName: TypeName(name: "GlobalAlias?", actualTypeName: TypeName(name: "Foo?")), type: Class(name: "Foo"), definedInTypeName: TypeName(name: "Bar"))
 
-        let type = "typealias GlobalAlias = Foo; class Foo {}; class Bar { var foo: GlobalAlias? }".parse().first
+        let type = sut.compose("typealias GlobalAlias = Foo; class Foo {}; class Bar { var foo: GlobalAlias? }").types.first
         let variable = type?.variables.first
 
         XCTAssertEqual(variable, expectedVariable)
@@ -1513,16 +1530,22 @@ class ComposerTests: XCTestCase {
     }
 
     func test_typealias_andVariable_itExtendsActualTypeWithTypeAliasExtension() {
-        let types = "typealias GlobalAlias = Foo; class Foo: TestProtocol { }; extension GlobalAlias: AnotherProtocol {}".parse()
-        XCTAssertEqual(types, [
-            Class(
-                name: "Foo",
-                accessLevel: .internal,
-                isExtension: false,
-                variables: [],
-                inheritedTypes: ["TestProtocol", "AnotherProtocol"]
-            )
-        ])
+        XCTAssertEqual(
+            sut.compose("""
+            typealias GlobalAlias = Foo
+            class Foo: TestProtocol { }
+            extension GlobalAlias: AnotherProtocol {}
+            """).types,
+            [
+                Class(
+                    name: "Foo",
+                    accessLevel: .internal,
+                    isExtension: false,
+                    variables: [],
+                    inheritedTypes: ["TestProtocol", "AnotherProtocol"]
+                )
+            ]
+        )
     }
 
     func test_typealias_andVariable_itUpdatesInheritedTypesWithRealTypeName() {
@@ -1530,7 +1553,11 @@ class ComposerTests: XCTestCase {
         let expectedClass = Class(name: "Bar", inheritedTypes: ["Foo"])
         expectedClass.inherits = ["Foo": expectedFoo]
 
-        let types = "typealias GlobalAliasFoo = Foo; class Foo { }; class Bar: GlobalAliasFoo {}".parse()
+        let types = sut.compose("""
+        typealias GlobalAliasFoo = Foo
+        class Foo { }
+        class Bar: GlobalAliasFoo {}
+        """).types
 
         XCTAssertTrue(types.contains(expectedClass))
     }
@@ -1540,7 +1567,11 @@ class ComposerTests: XCTestCase {
         let expectedProtocol2 = Protocol(name: "Bar")
         let expectedProtocolComposition = ProtocolComposition(name: "GlobalComposition", inheritedTypes: ["Foo", "Bar"], composedTypeNames: [TypeName(name: "Foo"), TypeName(name: "Bar")])
 
-        let type = "typealias GlobalComposition = Foo & Bar; protocol Foo {}; protocol Bar {}".parse().last as? ProtocolComposition
+        let type = sut.compose("""
+        typealias GlobalComposition = Foo & Bar
+        protocol Foo {}
+        protocol Bar {}
+        """).types.last as? ProtocolComposition
 
         XCTAssertEqual(type, expectedProtocolComposition)
         XCTAssertEqual(type?.composedTypes?.first, expectedProtocol1)
@@ -1552,7 +1583,12 @@ class ComposerTests: XCTestCase {
         let expectedProtocol2 = Protocol(name: "Bar")
         let expectedProtocolComposition = ProtocolComposition(name: "GlobalComposition", inheritedTypes: ["Foo", "Bar"], composedTypeNames: [TypeName(name: "Foo"), TypeName(name: "Bar")])
 
-        let type = "typealias GlobalComposition = Foo & Bar; protocol Foo {}; protocol Bar {}; class Implements: GlobalComposition {}".parse().last as? Class
+        let type = sut.compose("""
+        typealias GlobalComposition = Foo & Bar
+        protocol Foo {}
+        protocol Bar {}
+        class Implements: GlobalComposition {}
+        """).types.last as? Class
 
         XCTAssertEqual(type?.implements, [
             expectedProtocol1.name: expectedProtocol1,
@@ -1567,7 +1603,12 @@ class ComposerTests: XCTestCase {
         let expectedProtocolComposition = ProtocolComposition(name: "GlobalComposition", inheritedTypes: ["Foo", "Bar"], composedTypeNames: [TypeName(name: "Foo"), TypeName(name: "Bar")])
         expectedProtocolComposition.inherits = ["Bar": expectedClass]
 
-        let type = "typealias GlobalComposition = Foo & Bar; protocol Foo {}; class Bar {}; class Implements: GlobalComposition {}".parse().last as? Class
+        let type = sut.compose("""
+        typealias GlobalComposition = Foo & Bar
+        protocol Foo {}
+        class Bar {}
+        class Implements: GlobalComposition {}
+        """).types.last as? Class
 
         XCTAssertEqual(type?.implements, [
             expectedProtocol.name: expectedProtocol,
@@ -1581,7 +1622,13 @@ class ComposerTests: XCTestCase {
     func test_localTypealias_itReplacesVariableAliasTypeWithActualType() {
         let expectedVariable = Variable(name: "foo", typeName: TypeName(name: "FooAlias", actualTypeName: TypeName(name: "Foo")), type: Class(name: "Foo"), definedInTypeName: TypeName(name: "Bar"))
 
-        let type = "class Bar { typealias FooAlias = Foo; var foo: FooAlias }; class Foo {}".parse().first
+        let type = sut.compose("""
+        class Bar {
+            typealias FooAlias = Foo
+            var foo: FooAlias
+        }
+        class Foo {}
+        """).types.first
         let variable = type?.variables.first
 
         XCTAssertEqual(variable, expectedVariable)
@@ -1592,8 +1639,13 @@ class ComposerTests: XCTestCase {
     func test_localTypealias_itReplacesVariableAliasTypeWithActualContainedType() {
         let expectedVariable = Variable(name: "foo", typeName: TypeName(name: "FooAlias", actualTypeName: TypeName(name: "Bar.Foo")), type: Class(name: "Foo", parent: Class(name: "Bar")), definedInTypeName: TypeName(name: "Bar"))
 
-        let type = "class Bar { typealias FooAlias = Foo; var foo: FooAlias; class Foo {} }".parse().first
-        let variable = type?.variables.first
+        let variable = sut.compose("""
+        class Bar {
+            typealias FooAlias = Foo
+            var foo: FooAlias
+            class Foo {}
+        }
+        """).types.first?.variables.first
 
         XCTAssertEqual(variable, expectedVariable)
         XCTAssertEqual(variable?.actualTypeName, expectedVariable.actualTypeName)
@@ -1603,8 +1655,13 @@ class ComposerTests: XCTestCase {
     func test_localTypealias_itReplacesVariableAliasTypeWithActualForeignContainedType() {
         let expectedVariable = Variable(name: "foo", typeName: TypeName(name: "FooAlias", actualTypeName: TypeName(name: "FooBar.Foo")), type: Class(name: "Foo", parent: Type(name: "FooBar")), definedInTypeName: TypeName(name: "Bar"))
 
-        let type = "class Bar { typealias FooAlias = FooBar.Foo; var foo: FooAlias }; class FooBar { class Foo {} }".parse().first
-        let variable = type?.variables.first
+        let variable = sut.compose("""
+        class Bar {
+            typealias FooAlias = FooBar.Foo
+            var foo: FooAlias
+        }
+        class FooBar { class Foo {} }
+        """).types.first?.variables.first
 
         XCTAssertEqual(variable, expectedVariable)
         XCTAssertEqual(variable?.actualTypeName, expectedVariable.actualTypeName)
@@ -1614,8 +1671,10 @@ class ComposerTests: XCTestCase {
     func test_localTypealias_itPopulatesTheLocalCollectionOfTypealiases() {
         let expectedType = Class(name: "Foo")
         let expectedParent = Class(name: "Bar")
-        let type = "class Bar { typealias FooAlias = Foo }; class Foo {}".parse().first
-        let aliases = type?.typealiases
+        let aliases = sut.compose("""
+        class Bar { typealias FooAlias = Foo }
+        class Foo {}
+        """).types.first?.typealiases
 
         XCTAssertEqual(aliases?.count, 1)
         XCTAssertEqual(aliases?["FooAlias"], Typealias(aliasName: "FooAlias", typeName: TypeName(name: "Foo"), parent: expectedParent))
@@ -1625,7 +1684,10 @@ class ComposerTests: XCTestCase {
     func test_localTypealias_itPopulatesTheGlobalCollectionOfTypealiases() {
         let expectedType = Class(name: "Foo")
         let expectedParent = Class(name: "Bar")
-        let aliases = "class Bar { typealias FooAlias = Foo }; class Foo {}".parse(\.typealiases)
+        let aliases = sut.compose("""
+        class Bar { typealias FooAlias = Foo }
+        class Foo {}
+        """).typealiases
 
         XCTAssertEqual(aliases.count, 1)
         XCTAssertEqual(aliases.first, Typealias(aliasName: "FooAlias", typeName: TypeName(name: "Foo"), parent: expectedParent))
@@ -1634,7 +1696,7 @@ class ComposerTests: XCTestCase {
 
     func test_globalTypealias_itExtractsTypealiasesOfOtherTypealiases() {
         XCTAssertEqual(
-            "typealias Foo = Int; typealias Bar = Foo".parse(\.typealiases),
+            sut.compose("typealias Foo = Int; typealias Bar = Foo").typealiases,
             [
                 Typealias(aliasName: "Bar", typeName: TypeName(name: "Foo")),
                 Typealias(aliasName: "Foo", typeName: TypeName(name: "Int"))
@@ -1644,7 +1706,7 @@ class ComposerTests: XCTestCase {
 
     func test_globalTypealias_itExtractsTypealiasesOfOtherTypealiasesOfAType() {
         XCTAssertEqual(
-            "typealias Foo = Baz; typealias Bar = Foo; class Baz {}".parse(\.typealiases),
+            sut.compose("typealias Foo = Baz; typealias Bar = Foo; class Baz {}").typealiases,
             [
                 Typealias(aliasName: "Bar", typeName: TypeName(name: "Foo")),
                 Typealias(aliasName: "Foo", typeName: TypeName(name: "Baz"))
@@ -1655,7 +1717,7 @@ class ComposerTests: XCTestCase {
     func test_globalTypealias_itResolvesTypesTransitively() {
         let expectedType = Class(name: "Baz")
 
-        let typealiases = "typealias Foo = Bar; typealias Bar = Baz; class Baz {}".parse(\.typealiases)
+        let typealiases = sut.compose("typealias Foo = Bar; typealias Bar = Baz; class Baz {}").typealiases
 
         XCTAssertEqual(typealiases.count, 2)
         XCTAssertEqual(typealiases.first?.type, expectedType)
@@ -1664,58 +1726,49 @@ class ComposerTests: XCTestCase {
 
     func test_associatedValue_itExtractsType() {
         let associatedValue = AssociatedValue(typeName: TypeName(name: "Bar"), type: Class(name: "Bar", inheritedTypes: ["Baz"]))
-        let item = Enum(name: "Foo", cases: [EnumCase(name: "optionA", associatedValues: [associatedValue])])
 
-        let parsed = "protocol Baz {}; class Bar: Baz {}; enum Foo { case optionA(Bar) }".parse()
-        let parsedItem = parsed.compactMap { $0 as? Enum }.first
+        let types = sut.compose("protocol Baz {}; class Bar: Baz {}; enum Foo { case optionA(Bar) }").types
+        let parsedEnum = types.compactMap { $0 as? Enum }.first
 
-        XCTAssertEqual(parsedItem, item)
-        XCTAssertEqual(associatedValue.type, parsedItem?.cases.first?.associatedValues.first?.type)
+        XCTAssertEqual(parsedEnum, Enum(name: "Foo", cases: [EnumCase(name: "optionA", associatedValues: [associatedValue])]))
+        XCTAssertEqual(associatedValue.type, parsedEnum?.cases.first?.associatedValues.first?.type)
     }
 
     func test_associatedValue_itExtractsOptionalType() {
         let associatedValue = AssociatedValue(typeName: TypeName(name: "Bar?"), type: Class(name: "Bar", inheritedTypes: ["Baz"]))
-        let item = Enum(name: "Foo", cases: [EnumCase(name: "optionA", associatedValues: [associatedValue])])
 
-        let parsed = "protocol Baz {}; class Bar: Baz {}; enum Foo { case optionA(Bar?) }".parse()
-        let parsedItem = parsed.compactMap { $0 as? Enum }.first
+        let types = sut.compose("protocol Baz {}; class Bar: Baz {}; enum Foo { case optionA(Bar?) }").types
+        let parsedEnum = types.compactMap { $0 as? Enum }.first
 
-        XCTAssertEqual(parsedItem, item)
-        XCTAssertEqual(associatedValue.type, parsedItem?.cases.first?.associatedValues.first?.type)
+        XCTAssertEqual(parsedEnum, Enum(name: "Foo", cases: [EnumCase(name: "optionA", associatedValues: [associatedValue])]))
+        XCTAssertEqual(associatedValue.type, parsedEnum?.cases.first?.associatedValues.first?.type)
     }
 
     func test_associatedValue_itExtractsTypealias() {
         let associatedValue = AssociatedValue(typeName: TypeName(name: "Bar2"), type: Class(name: "Bar", inheritedTypes: ["Baz"]))
-        let item = Enum(name: "Foo", cases: [EnumCase(name: "optionA", associatedValues: [associatedValue])])
 
-        let parsed = "typealias Bar2 = Bar; protocol Baz {}; class Bar: Baz {}; enum Foo { case optionA(Bar2) }".parse()
-        let parsedItem = parsed.compactMap { $0 as? Enum }.first
+        let types = sut.compose("typealias Bar2 = Bar; protocol Baz {}; class Bar: Baz {}; enum Foo { case optionA(Bar2) }").types
+        let parsedEnum = types.compactMap { $0 as? Enum }.first
 
-        XCTAssertEqual(parsedItem, item)
-        XCTAssertEqual(associatedValue.type, parsedItem?.cases.first?.associatedValues.first?.type)
+        XCTAssertEqual(parsedEnum, Enum(name: "Foo", cases: [EnumCase(name: "optionA", associatedValues: [associatedValue])]))
+        XCTAssertEqual(associatedValue.type, parsedEnum?.cases.first?.associatedValues.first?.type)
     }
 
     func test_associatedValue_itExtractsSameIndirectEnumType() {
         let associatedValue = AssociatedValue(typeName: TypeName(name: "Foo"))
-        let item = Enum(name: "Foo", inheritedTypes: ["Baz"], cases: [EnumCase(name: "optionA", associatedValues: [associatedValue])], modifiers: [
+        let expectedEnum = Enum(name: "Foo", inheritedTypes: ["Baz"], cases: [EnumCase(name: "optionA", associatedValues: [associatedValue])], modifiers: [
             Modifier(name: "indirect")
         ])
-        associatedValue.type = item
+        associatedValue.type = expectedEnum
 
-        let parsed = "protocol Baz {}; indirect enum Foo: Baz { case optionA(Foo) }".parse()
-        let parsedItem = parsed.compactMap { $0 as? Enum }.first
+        let types = sut.compose("protocol Baz {}; indirect enum Foo: Baz { case optionA(Foo) }").types
+        let parsedEnum = types.compactMap { $0 as? Enum }.first
 
-        XCTAssertEqual(parsedItem, item)
-        XCTAssertEqual(associatedValue.type, parsedItem?.cases.first?.associatedValues.first?.type)
+        XCTAssertEqual(parsedEnum, expectedEnum)
+        XCTAssertEqual(associatedValue.type, parsedEnum?.cases.first?.associatedValues.first?.type)
     }
 
     func test_associatedType_itExtractsTypeWhenConstrainedToTypealias() {
-        let code = """
-        protocol Foo {
-            typealias AEncodable = Encodable
-            associatedtype Bar: AEncodable
-        }
-        """
         let givenTypealias = Typealias(aliasName: "AEncodable", typeName: TypeName(name: "Encodable"))
         let expectedProtocol = Protocol(name: "Foo", typealiases: [givenTypealias])
         givenTypealias.parent = expectedProtocol
@@ -1726,7 +1779,14 @@ class ComposerTests: XCTestCase {
                 actualTypeName: givenTypealias.typeName
             )
         )
-        let actualProtocol = code.parse().first
+
+        let actualProtocol = sut.compose("""
+        protocol Foo {
+            typealias AEncodable = Encodable
+            associatedtype Bar: AEncodable
+        }
+        """).types.first
+
         XCTAssertEqual(actualProtocol, expectedProtocol)
         let actualTypeName = (actualProtocol as? SourceryProtocol)?.associatedTypes.first?.value.typeName?.actualTypeName
         XCTAssertEqual(actualTypeName, givenTypealias.actualTypeName)
@@ -1735,7 +1795,7 @@ class ComposerTests: XCTestCase {
     func test_nestedType_itExtractsDefinedInType() {
         let expectedMethod = Method(name: "some()", selectorName: "some", definedInTypeName: TypeName(name: "Foo.Bar"))
 
-        let types = "class Foo { class Bar { func some() } }".parse()
+        let types = sut.compose("class Foo { class Bar { func some() } }").types
         let method = types.last?.methods.first
 
         XCTAssertEqual(method, expectedMethod)
@@ -1749,7 +1809,7 @@ class ComposerTests: XCTestCase {
         expectedActualTypeName.generic = GenericType(name: "Blah.Foo", typeParameters: [GenericTypeParameter(typeName: TypeName(name: "Blah.FooBar"), type: expectedBlah.containedType["FooBar"])])
         expectedVariable.typeName.generic = expectedActualTypeName.generic
 
-        let types = """
+        let types = sut.compose("""
         struct Blah {
             struct FooBar {}
             struct Foo<T> {}
@@ -1757,7 +1817,7 @@ class ComposerTests: XCTestCase {
                 let foo: Foo<FooBar>?
             }
         }
-        """.parse()
+        """).types
         let bar = types.first { $0.name == "Blah.Bar" }
 
         XCTAssertEqual(bar?.variables.first, expectedVariable)
@@ -1768,7 +1828,7 @@ class ComposerTests: XCTestCase {
         let expectedVariable = Variable(name: "foo", typeName: TypeName(name: "Foo?", actualTypeName: TypeName(name: "Blah.Foo?")), accessLevel: (read: .internal, write: .none), definedInTypeName: TypeName(name: "Blah.Bar"))
         let expectedBlah = Struct(name: "Blah", containedTypes: [Struct(name: "Foo"), Struct(name: "Bar", variables: [expectedVariable])])
 
-        let types = "struct Blah { struct Foo {}; struct Bar { let foo: Foo? }}".parse()
+        let types = sut.compose("struct Blah { struct Foo {}; struct Bar { let foo: Foo? }}").types
         let blah = types.first { $0.name == "Blah" }
         let bar = types.first { $0.name == "Blah.Bar" }
 
@@ -1786,7 +1846,7 @@ class ComposerTests: XCTestCase {
         expectedActualTypeName.generic = GenericType(name: "Array", typeParameters: [GenericTypeParameter(typeName: TypeName(name: "Blah.Foo"), type: Struct(name: "Foo", parent: expectedBlah))])
         expectedVariable.typeName.generic = expectedActualTypeName.generic
 
-        let types = "struct Blah { struct Foo {}; struct Bar { let foo: [Foo]? }}".parse()
+        let types = sut.compose("struct Blah { struct Foo {}; struct Bar { let foo: [Foo]? }}").types
         let blah = types.first { $0.name == "Blah" }
         let bar = types.first { $0.name == "Blah.Bar" }
 
@@ -1804,7 +1864,7 @@ class ComposerTests: XCTestCase {
         expectedActualTypeName.generic = GenericType(name: "Dictionary", typeParameters: [GenericTypeParameter(typeName: TypeName(name: "Blah.Foo"), type: Struct(name: "Foo", parent: expectedBlah)), GenericTypeParameter(typeName: TypeName(name: "Blah.Foo"), type: Struct(name: "Foo", parent: expectedBlah))])
         expectedVariable.typeName.generic = expectedActualTypeName.generic
 
-        let types = "struct Blah { struct Foo {}; struct Bar { let foo: [Foo: Foo]? }}".parse()
+        let types = sut.compose("struct Blah { struct Foo {}; struct Bar { let foo: [Foo: Foo]? }}").types
         let blah = types.first { $0.name == "Blah" }
         let bar = types.first { $0.name == "Blah.Bar" }
 
@@ -1828,7 +1888,7 @@ class ComposerTests: XCTestCase {
         let expectedVariable = Variable(name: "foo", typeName: TypeName(name: "(a: Foo, _: Foo, Foo)?", actualTypeName: expectedActualTypeName, tuple: expectedActualTypeName.tuple), accessLevel: (read: .internal, write: .none), definedInTypeName: TypeName(name: "Blah.Bar"))
         let expectedBlah = Struct(name: "Blah", containedTypes: [Struct(name: "Foo"), Struct(name: "Bar", variables: [expectedVariable])])
 
-        let types = "struct Blah { struct Foo {}; struct Bar { let foo: (a: Foo, _: Foo, Foo)? }}".parse()
+        let types = sut.compose("struct Blah { struct Foo {}; struct Bar { let foo: (a: Foo, _: Foo, Foo)? }}").types
         let blah = types.first { $0.name == "Blah" }
         let bar = types.first { $0.name == "Blah.Bar" }
 
@@ -1850,13 +1910,13 @@ class ComposerTests: XCTestCase {
             )
         ]
 
-        let types = """
+        let types = sut.compose("""
         struct RightType {}
         protocol GenericProtocol {
             associatedtype LeftType
         }
         protocol SomeGenericProtocol: GenericProtocol where LeftType == RightType {}
-        """.parse()
+        """).types
         let parsedProtocol = types.first { $0.name == "SomeGenericProtocol" } as? SourceryProtocol
 
         XCTAssertEqual(parsedProtocol, expectedProtocol)
@@ -2159,7 +2219,7 @@ class ComposerTests: XCTestCase {
     }
 
     func test_freeFunction_itResolvesGenericReturnTypes() {
-        let functions = "func foo() -> Bar<String> { }".parse(\.1)
+        let functions = sut.compose("func foo() -> Bar<String> { }").functions
         XCTAssertEqual(functions[0], SourceryMethod(
             name: "foo()",
             selectorName: "foo",
@@ -2181,7 +2241,7 @@ class ComposerTests: XCTestCase {
     }
 
     func test_freeFunction_itResolvesTupleReturnTypes() {
-        let functions = "func foo() -> (bar: String, biz: Int) { }".parse(\.functions)
+        let functions = sut.compose("func foo() -> (bar: String, biz: Int) { }").functions
         XCTAssertEqual(functions[0], SourceryMethod(
             name: "foo()",
             selectorName: "foo",
@@ -2280,14 +2340,10 @@ class ComposerTests: XCTestCase {
     }
 }
 
-private extension String {
-    func parse<T>(
-        _ keyPath: KeyPath<(types: [Type], functions: [SourceryMethod], typealiases: [Typealias]), [T]> = \.types,
-        file: StaticString = #filePath,
-        line: UInt = #line
-    ) -> [T] {
-        let parserResult = SwiftSyntaxParser().parse(self)
-        return Composer().uniqueTypesAndFunctions(parserResult)[keyPath: keyPath]
+private extension Composer {
+    func compose(_ content: String) -> (types: [Type], functions: [SourceryMethod], typealiases: [Typealias]) {
+        let parserResult = SwiftSyntaxParser().parse(content)
+        return uniqueTypesAndFunctions(parserResult)
     }
 }
 
