@@ -1,9 +1,5 @@
 import Foundation
 
-private func currentTimestamp() -> TimeInterval {
-    return CFAbsoluteTimeGetCurrent()
-}
-
 /// Responsible for composing results of `FileParser`.
 public enum Composer {
 
