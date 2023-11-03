@@ -59,18 +59,18 @@ class BlockAnnotationParserTests: XCTestCase {
     }
 
     func test_inline_withoutIndentation() {
-        let source = """
+        var content = """
         // sourcery:inline:Type.AutoCoding
         var something: Int
         // sourcery:end
         """
 
-        let result = sut.parseAnnotations("inline", content: source, forceParse: [])
+        let annotations = sut.parseAnnotations("inline", content: &content, forceParse: [])
 
-        let annotatedRanges = result.annotations["Type.AutoCoding"]
+        let annotatedRanges = annotations["Type.AutoCoding"]
         XCTAssertEqual(annotatedRanges?.map { $0.range }, [NSRange(location: 35, length: 19)])
         XCTAssertEqual(annotatedRanges?.map { $0.indentation }, [""])
-        XCTAssertEqual(result.content,
+        XCTAssertEqual(content,
             "// sourcery:inline:Type.AutoCoding\n" +
             String(repeating: " ", count: 19) +
             "// sourcery:end"
@@ -78,18 +78,18 @@ class BlockAnnotationParserTests: XCTestCase {
     }
 
     func test_inline_withoutIndentation_andForceParse() {
-        let source = """
+        var content = """
         // sourcery:inline:Type.AutoCoding
         var something: Int
         // sourcery:end
         """
 
-        let result = sut.parseAnnotations("inline", content: source, forceParse: ["AutoCoding"])
+        let annotations = sut.parseAnnotations("inline", content: &content, forceParse: ["AutoCoding"])
 
-        let annotatedRanges = result.annotations["Type.AutoCoding"]
+        let annotatedRanges = annotations["Type.AutoCoding"]
         XCTAssertEqual(annotatedRanges?.map { $0.range }, [NSRange(location: 35, length: 19)])
         XCTAssertEqual(annotatedRanges?.map { $0.indentation }, [""])
-        XCTAssertEqual(result.content, """
+        XCTAssertEqual(content, """
         // sourcery:inline:Type.AutoCoding
         var something: Int
         // sourcery:end
@@ -97,18 +97,18 @@ class BlockAnnotationParserTests: XCTestCase {
     }
 
     func test_inline_withIndentation() {
-        let source = """
+        var content = """
             // sourcery:inline:Type.AutoCoding
             var something: Int
             // sourcery:end
         """
 
-        let result = sut.parseAnnotations("inline", content: source, forceParse: [])
+        let annotations = sut.parseAnnotations("inline", content: &content, forceParse: [])
 
-        let annotatedRanges = result.annotations["Type.AutoCoding"]
+        let annotatedRanges = annotations["Type.AutoCoding"]
         XCTAssertEqual(annotatedRanges?.map { $0.range }, [NSRange(location: 39, length: 23)])
         XCTAssertEqual(annotatedRanges?.map { $0.indentation }, ["    "])
-        XCTAssertEqual(result.content,
+        XCTAssertEqual(content,
             "    // sourcery:inline:Type.AutoCoding\n" +
             String(repeating: " ", count: 23) +
             "    // sourcery:end"
@@ -116,18 +116,18 @@ class BlockAnnotationParserTests: XCTestCase {
     }
 
     func test_inline_withIndentation_andForceParse() {
-        let source = """
+        var content = """
             // sourcery:inline:Type.AutoCoding
             var something: Int
             // sourcery:end
         """
 
-        let result = sut.parseAnnotations("inline", content: source, forceParse: ["AutoCoding"])
+        let annotations = sut.parseAnnotations("inline", content: &content, forceParse: ["AutoCoding"])
 
-        let annotatedRanges = result.annotations["Type.AutoCoding"]
+        let annotatedRanges = annotations["Type.AutoCoding"]
         XCTAssertEqual(annotatedRanges?.map { $0.range }, [NSRange(location: 39, length: 23)])
         XCTAssertEqual(annotatedRanges?.map { $0.indentation }, ["    "])
-        XCTAssertEqual(result.content,
+        XCTAssertEqual(content,
             "    // sourcery:inline:Type.AutoCoding\n" +
             "    var something: Int\n" +
             "    // sourcery:end"

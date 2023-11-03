@@ -31,7 +31,7 @@ class SwiftGeneratorTests: XCTestCase {
     func test_warnsAboutSkippedFiles() throws {
         let templateMock = TemplateMock(path: "Templates/Fake.stencil")
         templateMock.renderReturnValue = ""
-        blockAnnotationParserMock.parseAnnotationsReturnValue = (annotations: .init(), content: "")
+        blockAnnotationParserMock.parseAnnotationsReturnValue = .init()
         blockAnnotationParserMock.annotationRangesReturnValue = (annotations: .init(), rangesToReplace: [])
         blockAnnotationParserMock.removingEmptyAnnotationsReturnValue = ""
 
@@ -59,7 +59,7 @@ class SwiftGeneratorTests: XCTestCase {
     func test_warnsAboutSingleFileOutput() throws {
         let templateMock = TemplateMock()
         templateMock.renderReturnValue = ""
-        blockAnnotationParserMock.parseAnnotationsReturnValue = (annotations: .init(), content: "")
+        blockAnnotationParserMock.parseAnnotationsReturnValue = .init()
         blockAnnotationParserMock.annotationRangesReturnValue = (annotations: .init(), rangesToReplace: [])
         blockAnnotationParserMock.removingEmptyAnnotationsReturnValue = ""
 

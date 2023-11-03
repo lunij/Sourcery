@@ -4,7 +4,7 @@ typealias BlockAnnotations = [String: [(body: String, range: NSRange, indentatio
 
 protocol BlockAnnotationParsing {
     func annotationRanges(_ annotation: String, content: String, forceParse: [String]) -> (annotations: BlockAnnotations, rangesToReplace: Set<NSRange>)
-    func parseAnnotations(_ annotation: String, content: String, forceParse: [String]) -> (annotations: BlockAnnotations, content: String)
+    func parseAnnotations(_ annotation: String, content: inout String, forceParse: [String]) -> BlockAnnotations
     func removingEmptyAnnotations(from content: String) -> String
 }
 
@@ -55,7 +55,7 @@ class BlockAnnotationParser: BlockAnnotationParsing {
         return (annotations, rangesToReplace)
     }
 
-    func parseAnnotations(_ annotation: String, content: String, forceParse: [String]) -> (annotations: BlockAnnotations, content: String) {
+    func parseAnnotations(_ annotation: String, content: inout String, forceParse: [String]) -> BlockAnnotations {
         let (annotations, rangesToReplace) = annotationRanges(annotation, content: content, forceParse: forceParse)
 
         let strigView = StringView(content)
@@ -63,7 +63,8 @@ class BlockAnnotationParser: BlockAnnotationParsing {
         rangesToReplace
             .sorted { $0.location > $1.location }
             .forEach { bridged = bridged.replacingCharacters(in: $0, with: String(repeating: " ", count: strigView.NSRangeToByteRange($0)!.length.value)) as NSString }
-        return (annotations, bridged as String)
+        content = bridged as String
+        return annotations
     }
 
     func removingEmptyAnnotations(from content: String) -> String {
