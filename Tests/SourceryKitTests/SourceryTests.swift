@@ -990,6 +990,7 @@ class SourceryTests: XCTestCase {
             sources: [sourceFile],
             templates: [templatePath],
             output: output,
+            cacheBasePath: .systemCachePath,
             cacheDisabled: false
         ))
 
@@ -999,6 +1000,7 @@ class SourceryTests: XCTestCase {
             sources: [sourceFile],
             templates: [templatePath],
             output: output,
+            cacheBasePath: .systemCachePath,
             cacheDisabled: false
         ))
 

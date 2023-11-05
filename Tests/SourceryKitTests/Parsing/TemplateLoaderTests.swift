@@ -25,13 +25,14 @@ class TemplateLoaderTests: XCTestCase {
 
     func test_loadsTemplates_whenTemplatesPaths() throws {
         let templates = try sut.loadTemplates(from: .stub(templates: [Stubs.templateDirectory], cacheDisabled: true), buildPath: nil)
+        let templatesPath = Stubs.templateDirectory.relativeToCurrent
         XCTAssertEqual(templates.count, 5)
         XCTAssertEqual(loggerMock.calls, [
-            .info("Loading \(Stubs.templateDirectory)/Basic.stencil"),
-            .info("Loading \(Stubs.templateDirectory)/Other.stencil"),
-            .info("Loading \(Stubs.templateDirectory)/GenerationWays.stencil"),
-            .info("Loading \(Stubs.templateDirectory)/Partial.stencil"),
-            .info("Loading \(Stubs.templateDirectory)/Include.stencil"),
+            .info("Loading \(templatesPath)/Basic.stencil"),
+            .info("Loading \(templatesPath)/Other.stencil"),
+            .info("Loading \(templatesPath)/GenerationWays.stencil"),
+            .info("Loading \(templatesPath)/Partial.stencil"),
+            .info("Loading \(templatesPath)/Include.stencil"),
             .info("Loaded 5 templates in 0.1 seconds")
         ])
     }

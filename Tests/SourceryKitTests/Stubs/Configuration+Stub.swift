@@ -5,9 +5,9 @@ extension Configuration {
     static func stub(
         sources: [SourceFile] = [],
         templates: [Path] = [],
-        output: Path = "",
+        output: Path = "fakeOutput",
         xcode: Xcode? = nil,
-        cacheBasePath: Path = "",
+        cacheBasePath: Path = "fakeCacheBashePath",
         cacheDisabled: Bool = true,
         forceParse: [String] = [],
         parseDocumentation: Bool = false,
