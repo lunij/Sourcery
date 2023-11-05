@@ -9,7 +9,6 @@ let package = Package(
     ],
     products: [
         .executable(name: "sourcery", targets: ["sourcery"]),
-        .library(name: "SourceryRuntime", targets: ["SourceryRuntime"]),
         .plugin(name: "SourceryCommandPlugin", targets: ["SourceryCommandPlugin"])
     ],
     dependencies: [
@@ -30,10 +29,12 @@ let package = Package(
                 .product(name: "SwiftSyntax", package: "swift-syntax"),
                 "FileSystemEvents",
                 "PathKit",
-                "SourceryRuntime",
                 "Stencil",
                 "XcodeProj",
                 "Yams"
+            ],
+            exclude: [
+                "SourceryRuntime/Templates"
             ],
             swiftSettings: [
                 .enableUpcomingFeature("BareSlashRegexLiterals")
@@ -54,8 +55,6 @@ let package = Package(
                 .copy("Stub/Source")
             ]
         ),
-        .target(name: "SourceryRuntime", exclude: ["Templates"]),
-        .testTarget(name: "SourceryRuntimeTests", dependencies: ["SourceryRuntime"]),
         .target(name: "FileSystemEvents"),
         .testTarget(name: "FileSystemEventsTests", dependencies: ["FileSystemEvents"]),
         .target(name: "ContextExamples"),
