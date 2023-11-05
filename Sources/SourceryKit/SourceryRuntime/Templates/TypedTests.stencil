@@ -1,4 +1,4 @@
-//sourcery:file:../../../Tests/SourceryRuntimeTests/Models/TypedTests
+//sourcery:file:../../../../Tests/SourceryKitTests/SourceryRuntimeTests/Models/TypedTests
 import XCTest
 @testable import SourceryKit
 
