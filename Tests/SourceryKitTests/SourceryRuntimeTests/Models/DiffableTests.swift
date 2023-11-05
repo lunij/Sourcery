@@ -1,6 +1,6 @@
 import Foundation
 import XCTest
-@testable import SourceryRuntime
+@testable import SourceryKit
 
 class DiffableTests: XCTestCase {
     var sut = DiffableResult()

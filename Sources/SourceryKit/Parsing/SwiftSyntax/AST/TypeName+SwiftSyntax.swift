@@ -1,5 +1,4 @@
 import Foundation
-import SourceryRuntime
 import SwiftSyntax
 
 extension SyntaxProtocol {
@@ -203,7 +202,6 @@ extension TypeName {
 
 // TODO: when I don't need to adapt to old formats
 //import Foundation
-//import SourceryRuntime
 //import SwiftSyntax
 //
 //extension TypeName {

@@ -1,5 +1,5 @@
 import XCTest
-@testable import SourceryRuntime
+@testable import SourceryKit
 
 class StructTests: XCTestCase {
     var sut: Struct!

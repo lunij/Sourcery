@@ -1,4 +1,3 @@
-import SourceryRuntime
 import XcodeProj
 
 protocol XcodeProjProtocol {

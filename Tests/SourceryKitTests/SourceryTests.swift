@@ -3,7 +3,6 @@ import PathKit
 import class XcodeProj.XcodeProj
 import XCTest
 @testable import SourceryKit
-@testable import SourceryRuntime
 
 class SourceryTests: XCTestCase {
     var output: Path!

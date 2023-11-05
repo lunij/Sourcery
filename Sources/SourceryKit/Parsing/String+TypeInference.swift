@@ -1,5 +1,4 @@
 import Foundation
-import SourceryRuntime
 
 extension String {
     private static let optionalTypeName: TypeName = {

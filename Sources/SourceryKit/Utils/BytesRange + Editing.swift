@@ -1,5 +1,3 @@
-import class SourceryRuntime.BytesRange
-
 extension BytesRange {
     /*
      See ByteRange.changingContent(_:)

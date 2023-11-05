@@ -2,7 +2,6 @@ import Foundation
 import PathKit
 import XCTest
 @testable import SourceryKit
-@testable import SourceryRuntime
 
 final class ComposerTests: XCTestCase {
     var sut: Composer!
@@ -320,8 +319,8 @@ final class ComposerTests: XCTestCase {
         ])
     }
 
-    private func createOriginalDefinitionTypeScenario() -> (SourceryRuntime.Method, SourceryRuntime.Method) {
-        let method = Method(
+    private func createOriginalDefinitionTypeScenario() -> (SourceryMethod, SourceryMethod) {
+        let method = SourceryMethod(
             name: "fooMethod(bar: String)",
             selectorName: "fooMethod(bar:)",
             parameters: [
@@ -330,7 +329,7 @@ final class ComposerTests: XCTestCase {
             returnTypeName: TypeName(name: "Void"),
             definedInTypeName: TypeName(name: "Foo")
         )
-        let defaultedMethod = Method(
+        let defaultedMethod = SourceryMethod(
             name: "fooMethod(bar: String = \"Baz\")",
             selectorName: "fooMethod(bar:)",
             parameters: [

@@ -1,5 +1,4 @@
 import PathKit
-import SourceryRuntime
 import XCTest
 @testable import SourceryKit
 
@@ -135,7 +134,7 @@ extension Struct {
         accessLevel: AccessLevel = .internal,
         isExtension: Bool = false,
         variables: [Variable] = [],
-        methods: [SourceryRuntime.Method] = [],
+        methods: [SourceryMethod] = [],
         subscripts: [Subscript] = [],
         inheritedTypes: [String] = [],
         containedTypes: [Type] = [],

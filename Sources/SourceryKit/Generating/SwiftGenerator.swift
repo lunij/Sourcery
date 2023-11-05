@@ -1,6 +1,5 @@
 import Foundation
 import PathKit
-import SourceryRuntime
 
 public class SwiftGenerator {
     typealias SourceChange = (path: String, rangeInFile: NSRange, newRangeInFile: NSRange)

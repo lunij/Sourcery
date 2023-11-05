@@ -1,5 +1,4 @@
 import Foundation
-import SourceryRuntime
 @testable import SourceryKit
 
 extension ParsingResult {

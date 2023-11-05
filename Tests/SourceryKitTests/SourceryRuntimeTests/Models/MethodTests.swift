@@ -1,6 +1,6 @@
 import XCTest
 import Foundation
-@testable import SourceryRuntime
+@testable import SourceryKit
 
 class MethodTests: XCTestCase {
     var sut: SourceryMethod!

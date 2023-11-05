@@ -2,7 +2,6 @@ import Foundation
 import PathKit
 import XCTest
 @testable import SourceryKit
-@testable import SourceryRuntime
 
 class SwiftSyntaxParserTests: XCTestCase {
     func test_doesNotCrashOnLocalizedStrings() throws {

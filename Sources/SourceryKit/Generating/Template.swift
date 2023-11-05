@@ -1,6 +1,5 @@
 import Foundation
 import PathKit
-import SourceryRuntime
 
 /// Generic template that can be used for any of the Sourcery output variants
 public protocol Template {

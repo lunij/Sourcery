@@ -1,7 +1,5 @@
-
 import XCTest
 @testable import SourceryKit
-@testable import SourceryRuntime
 
 class VerifierTests: XCTestCase {
     func test_allowsEmptyStrings() {

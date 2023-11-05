@@ -1,6 +1,6 @@
 import XCTest
 import Foundation
-@testable import SourceryRuntime
+@testable import SourceryKit
 
 class TypeTests: XCTestCase {
     var sut: Type!
@@ -11,7 +11,7 @@ class TypeTests: XCTestCase {
     let supertypeVariable = Variable(name: "supertypeVariable", typeName: TypeName(name: "Int"), isComputed: true)
     let superTypeMethod = Method(name: "doSomething()", definedInTypeName: TypeName(name: "Protocol"))
     let secondMethod = Method(name: "doSomething()", returnTypeName: TypeName(name: "Int"))
-    var overrideMethod: SourceryRuntime.Method { superTypeMethod }
+    var overrideMethod: SourceryMethod { superTypeMethod }
     var overrideVariable: Variable { supertypeVariable }
     let initializer = Method(name: "init()", definedInTypeName: TypeName(name: "Foo"))
     let parentType = Type(name: "Parent")

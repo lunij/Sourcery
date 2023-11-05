@@ -1,5 +1,4 @@
 import SwiftSyntax
-import SourceryRuntime
 
 public struct Signature {
     /// The function inputs.

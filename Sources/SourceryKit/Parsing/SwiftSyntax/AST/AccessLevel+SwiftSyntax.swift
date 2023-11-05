@@ -1,4 +1,3 @@
-import SourceryRuntime
 import SwiftSyntax
 
 extension AccessLevel {

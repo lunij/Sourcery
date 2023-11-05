@@ -1,4 +1,4 @@
-import SourceryRuntime
+import SourceryKit
 
 class LoggerMock: Logging {
     enum Call: Equatable {

@@ -1,5 +1,4 @@
 import Foundation
-import SourceryRuntime
 
 struct ParsingResult {
     let parserResult: FileParserResult

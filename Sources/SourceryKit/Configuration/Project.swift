@@ -1,4 +1,3 @@
-import SourceryRuntime
 import XcodeProj
 
 public struct Project: Equatable {

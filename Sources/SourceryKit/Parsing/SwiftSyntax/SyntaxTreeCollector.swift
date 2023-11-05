@@ -1,6 +1,5 @@
-import SwiftSyntax
-import SourceryRuntime
 import Foundation
+import SwiftSyntax
 
 class SyntaxTreeCollector: SyntaxVisitor {
     var types = [Type]()
@@ -36,14 +35,14 @@ class SyntaxTreeCollector: SyntaxVisitor {
              .first(where: { $0.tokenKind == .rightBrace }) {
             let startLocation = open.endLocation(converter: sourceLocationConverter)
             let endLocation = close.startLocation(converter: sourceLocationConverter)
-            type.bodyBytesRange = SourceryRuntime.BytesRange(offset: Int64(startLocation.offset), length: Int64(endLocation.offset - startLocation.offset))
+            type.bodyBytesRange = BytesRange(offset: Int64(startLocation.offset), length: Int64(endLocation.offset - startLocation.offset))
         } else {
             logError("Unable to find bodyRange for \(type.name)")
         }
 
         let startLocation = node.startLocation(converter: sourceLocationConverter, afterLeadingTrivia: true)
         let endLocation = node.endLocation(converter: sourceLocationConverter, afterTrailingTrivia: false)
-        type.completeDeclarationRange = SourceryRuntime.BytesRange(offset: Int64(startLocation.offset), length: Int64(endLocation.offset - startLocation.offset))
+        type.completeDeclarationRange = BytesRange(offset: Int64(startLocation.offset), length: Int64(endLocation.offset - startLocation.offset))
 
         visitingType?.containedTypes.append(type)
         visitingType = type

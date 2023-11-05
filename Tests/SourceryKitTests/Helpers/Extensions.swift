@@ -1,7 +1,6 @@
 import Foundation
 import PathKit
 @testable import SourceryKit
-@testable import SourceryRuntime
 
 extension Path {
     static func createTestDirectory(suffixed suffix: String) throws -> Path {

@@ -1,6 +1,5 @@
 import Foundation
 import PathKit
-import SourceryRuntime
 import SwiftParser
 import SwiftSyntax
 

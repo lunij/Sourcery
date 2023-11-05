@@ -1,5 +1,5 @@
 import Foundation
-import SourceryRuntime
+import SourceryKit
 
 extension FileParserResult {
     static func stub(

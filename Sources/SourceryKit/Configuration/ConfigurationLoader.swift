@@ -1,6 +1,5 @@
 import Foundation
 import PathKit
-import SourceryRuntime
 
 protocol ConfigurationLoading {
     func loadConfigurations(options: ConfigurationOptions) throws -> [Configuration]

@@ -1,5 +1,3 @@
-import class SourceryRuntime.BytesRange
-
 extension ByteRange {
     init(bytesRange: BytesRange) {
         self.init(location: ByteCount(bytesRange.offset), length: ByteCount(bytesRange.length))

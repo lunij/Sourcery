@@ -1,4 +1,3 @@
-import SourceryRuntime
 
 protocol TemplateLoading {
     func loadTemplates(from config: Configuration, buildPath: Path?) throws -> [Template]

@@ -1,7 +1,6 @@
 import Foundation
 import XCTest
 @testable import SourceryKit
-@testable import SourceryRuntime
 
 class StencilTemplateTests2: XCTestCase {
     func test_typesAll_skippingProtocols() {

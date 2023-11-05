@@ -1,6 +1,5 @@
 import Foundation
 import PathKit
-import SourceryRuntime
 
 public class SwiftParser {
     typealias ParserWrapper = (path: Path, parse: () throws -> FileParserResult?)

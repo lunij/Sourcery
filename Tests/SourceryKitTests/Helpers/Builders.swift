@@ -1,5 +1,5 @@
 import Foundation
-import SourceryRuntime
+import SourceryKit
 
 extension TypeName {
     static func buildArray(of elementType: TypeName, useGenericName: Bool = false) -> TypeName {

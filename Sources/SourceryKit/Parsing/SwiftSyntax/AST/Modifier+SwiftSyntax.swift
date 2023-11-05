@@ -1,6 +1,5 @@
 import Foundation
 import SwiftSyntax
-import SourceryRuntime
 
 /// modifier can be thing like `private`, `class`, `nonmutating`
 /// if a declaration has modifier like `private(set)` it's name will be `private` and detail will be `set`

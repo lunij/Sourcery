@@ -1,5 +1,4 @@
 import PathKit
-import SourceryRuntime
 import XCTest
 @testable import SourceryKit
 

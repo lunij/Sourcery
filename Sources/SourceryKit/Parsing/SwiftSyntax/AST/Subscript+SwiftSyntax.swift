@@ -1,6 +1,5 @@
 import Foundation
 import SwiftSyntax
-import SourceryRuntime
 
 extension Subscript {
     convenience init(_ node: SubscriptDeclSyntax, parent: Type, getAnnotationUseCase: GetAnnotationUseCase) {

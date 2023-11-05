@@ -1,5 +1,4 @@
 import Foundation
-import SourceryRuntime
 import XCTest
 @testable import SourceryKit
 

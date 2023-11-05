@@ -2,7 +2,6 @@ import Foundation
 import PathKit
 import XCTest
 @testable import SourceryKit
-@testable import SourceryRuntime
 
 class SwiftSyntaxParserSubscriptTests: XCTestCase {
     var sut: SwiftSyntaxParser!

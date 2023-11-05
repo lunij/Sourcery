@@ -1,7 +1,7 @@
 // Generated using Sourcery
 
 import XCTest
-@testable import SourceryRuntime
+@testable import SourceryKit
 
 class TypedTests: XCTestCase {
 

@@ -1,5 +1,4 @@
 import SwiftSyntax
-import SourceryRuntime
 
 extension MethodParameter {
     convenience init(_ node: FunctionParameterSyntax, getAnnotationUseCase: GetAnnotationUseCase) {

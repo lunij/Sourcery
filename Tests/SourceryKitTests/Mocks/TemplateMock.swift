@@ -1,5 +1,4 @@
 import SourceryKit
-import SourceryRuntime
 
 class TemplateMock: Template {
     enum Call: Equatable {

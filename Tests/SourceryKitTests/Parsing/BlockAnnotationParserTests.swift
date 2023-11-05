@@ -2,7 +2,6 @@ import Foundation
 import PathKit
 import XCTest
 @testable import SourceryKit
-@testable import SourceryRuntime
 
 class BlockAnnotationParserTests: XCTestCase {
     var sut: BlockAnnotationParser!

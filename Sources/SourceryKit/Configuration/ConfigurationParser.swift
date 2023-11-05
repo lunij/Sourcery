@@ -1,7 +1,6 @@
 import Foundation
 import QuartzCore
 import PathKit
-import SourceryRuntime
 import XcodeProj
 import Yams
 

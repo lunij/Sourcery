@@ -1,5 +1,4 @@
 import FileSystemEvents
-import SourceryRuntime
 
 public class Sourcery {
     public static let version = "2.0.2"
