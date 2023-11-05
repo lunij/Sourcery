@@ -34,7 +34,7 @@ let package = Package(
                 "Yams"
             ],
             exclude: [
-                "SourceryRuntime/Templates"
+                "Templates"
             ],
             swiftSettings: [
                 .enableUpcomingFeature("BareSlashRegexLiterals")
