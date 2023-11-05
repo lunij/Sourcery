@@ -9,10 +9,7 @@ protocol AutoEquatable {}
 /// Phantom protocol for equality
 protocol AutoDescription {}
 
-/// Phantom protocol for NSCoding
-protocol AutoCoding {}
-
 /// Phantom protocol for NSCoding, Equatable and Diffable
-protocol SourceryModelWithoutDescription: AutoDiffable, AutoEquatable, AutoCoding {}
+protocol SourceryModelWithoutDescription: AutoDiffable, AutoEquatable {}
 
 protocol SourceryModel: SourceryModelWithoutDescription, AutoDescription {}
