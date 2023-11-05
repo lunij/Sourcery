@@ -9,13 +9,11 @@ import Foundation
     /// Tuple elements
     public var elements: [TupleElement]
 
-    /// :nodoc:
     public init(name: String, elements: [TupleElement]) {
         self.name = name
         self.elements = elements
     }
 
-    /// :nodoc:
     public init(elements: [TupleElement]) {
         self.name = elements.asSource
         self.elements = elements
@@ -35,7 +33,6 @@ import Foundation
     /// Tuple element type, if known
     public var type: Type?
 
-    /// :nodoc:
     public init(name: String? = nil, typeName: TypeName, type: Type? = nil) {
         self.name = name
         self.typeName = typeName

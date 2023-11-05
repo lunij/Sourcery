@@ -19,7 +19,6 @@ import Foundation
     /// Dictionary key type, if known
     public var keyType: Type?
 
-    /// :nodoc:
     public init(name: String, valueTypeName: TypeName, valueType: Type? = nil, keyTypeName: TypeName, keyType: Type? = nil) {
         self.name = name
         self.valueTypeName = valueTypeName

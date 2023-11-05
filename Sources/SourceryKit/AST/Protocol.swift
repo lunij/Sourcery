@@ -1,6 +1,5 @@
 import Foundation
 
-/// :nodoc:
 public typealias SourceryProtocol = Protocol
 
 /// Describes Swift protocol
@@ -23,7 +22,6 @@ public typealias SourceryProtocol = Protocol
         }
     }
 
-    /// :nodoc:
     public init(name: String = "",
                 parent: Type? = nil,
                 accessLevel: AccessLevel = .internal,

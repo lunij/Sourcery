@@ -12,10 +12,8 @@ import Foundation
     let _description: String
 
     // sourcery: skipEquality, skipDescription, skipCoding
-    /// :nodoc:
     public var __parserData: Any?
 
-    /// :nodoc:
     public init(name: String, arguments: [String: NSObject] = [:], description: String? = nil) {
         self.name = name
         self.arguments = arguments
@@ -32,7 +30,6 @@ import Foundation
         return _description
     }
 
-    /// :nodoc:
     public enum Identifier: String {
         case convenience
         case required

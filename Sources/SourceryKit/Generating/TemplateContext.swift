@@ -1,6 +1,5 @@
 import Foundation
 
-/// :nodoc:
 // sourcery: skipCoding
 @objcMembers public final class TemplateContext: NSObject, SourceryModel {
     public let parserResult: FileParserResult?
@@ -52,20 +51,17 @@ extension TemplateContext.Error: CustomStringConvertible {
 /// Collection of scanned types for accessing in templates
 @objcMembers public final class Types: NSObject, SourceryModel {
 
-    /// :nodoc:
     public let types: [Type]
 
     /// All known typealiases
     public let typealiases: [Typealias]
 
-    /// :nodoc:
     public init(types: [Type], typealiases: [Typealias] = []) {
         self.types = types
         self.typealiases = typealiases
     }
 
     // sourcery: skipDescription, skipEquality, skipCoding
-    /// :nodoc:
     public lazy internal(set) var typesByName: [String: Type] = {
         var typesByName = [String: Type]()
         self.types.forEach { typesByName[$0.globalName] = $0 }
@@ -73,7 +69,6 @@ extension TemplateContext.Error: CustomStringConvertible {
     }()
 
     // sourcery: skipDescription, skipEquality, skipCoding
-    /// :nodoc:
     public lazy internal(set) var typesaliasesByName: [String: Typealias] = {
         var typesaliasesByName = [String: Typealias]()
         self.typealiases.forEach { typesaliasesByName[$0.name] = $0 }
@@ -162,7 +157,6 @@ extension TemplateContext.Error: CustomStringConvertible {
     }()
 }
 
-/// :nodoc:
 @objcMembers public class TypesCollection: NSObject {
     let all: [Type]
     let types: [String: [Type]]
@@ -211,7 +205,6 @@ extension TemplateContext.Error: CustomStringConvertible {
         return []
     }
 
-    /// :nodoc:
     public override func value(forKey key: String) -> Any? {
         do {
             return try types(forKey: key)
@@ -221,7 +214,6 @@ extension TemplateContext.Error: CustomStringConvertible {
         }
     }
 
-    /// :nodoc:
     public subscript(_ key: String) -> [Type] {
         do {
             return try types(forKey: key)

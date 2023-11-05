@@ -1,6 +1,5 @@
 import Foundation
 
-/// :nodoc:
 public typealias SourceryMethod = Method
 
 /// Describes method parameter
@@ -37,7 +36,6 @@ public typealias SourceryMethod = Method
     /// Annotations, that were created with // sourcery: annotation1, other = "annotation value", alterantive = 2
     public var annotations: Annotations = [:]
 
-    /// :nodoc:
     public init(argumentLabel: String?, name: String = "", typeName: TypeName, type: Type? = nil, defaultValue: String? = nil, annotations: [String: NSObject] = [:], isInout: Bool = false, isVariadic: Bool = false) {
         self.typeName = typeName
         self.argumentLabel = argumentLabel
@@ -49,7 +47,6 @@ public typealias SourceryMethod = Method
         self.isVariadic = isVariadic
     }
 
-    /// :nodoc:
     public init(name: String = "", typeName: TypeName, type: Type? = nil, defaultValue: String? = nil, annotations: [String: NSObject] = [:], isInout: Bool = false, isVariadic: Bool = false) {
         self.typeName = typeName
         self.argumentLabel = name
@@ -110,7 +107,6 @@ extension Array where Element == MethodParameter {
     /// Annotations, that were created with // sourcery: annotation1, other = "annotation value", alterantive = 2
     public var annotations: Annotations = [:]
 
-    /// :nodoc:
     public init(argumentLabel: String? = nil, name: String? = nil, typeName: TypeName, type: Type? = nil,
                 defaultValue: String? = nil, annotations: [String: NSObject] = [:], isInout: Bool = false) {
         self.typeName = typeName
@@ -305,10 +301,8 @@ extension Array where Element == ClosureParameter {
 
     // Underlying parser data, never to be used by anything else
     // sourcery: skipEquality, skipDescription, skipCoding
-    /// :nodoc:
     public var __parserData: Any?
 
-    /// :nodoc:
     public init(name: String,
                 selectorName: String? = nil,
                 parameters: [MethodParameter] = [],

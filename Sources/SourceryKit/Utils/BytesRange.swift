@@ -1,6 +1,5 @@
 import Foundation
 
-/// :nodoc:
 @objcMembers public final class BytesRange: NSObject, SourceryModel {
 
     public let offset: Int64

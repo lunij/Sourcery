@@ -31,7 +31,6 @@ public extension String {
         return self
     }
 
-    /// :nodoc:
     /// - Parameter substring: Instance of a substring
     /// - Returns: Returns number of times a substring appears in self
     func countInstances(of substring: String) -> Int {
@@ -45,7 +44,6 @@ public extension String {
         return count
     }
 
-    /// :nodoc:
     /// Removes leading and trailing whitespace from str. Returns false if str was not altered.
     @discardableResult
     mutating func strip() -> Bool {
@@ -55,13 +53,11 @@ public extension String {
         return true
     }
 
-    /// :nodoc:
     /// Returns a copy of str with leading and trailing whitespace removed.
     func stripped() -> String {
         return String(self.trimmingCharacters(in: .whitespaces))
     }
 
-    /// :nodoc:
     @discardableResult
     mutating func trimPrefix(_ prefix: String) -> Bool {
         guard hasPrefix(prefix) else { return false }
@@ -69,13 +65,11 @@ public extension String {
         return true
     }
 
-    /// :nodoc:
     func trimmingPrefix(_ prefix: String) -> String {
         guard hasPrefix(prefix) else { return self }
         return String(self.suffix(self.count - prefix.count))
     }
 
-    /// :nodoc:
     @discardableResult
     mutating func trimSuffix(_ suffix: String) -> Bool {
         guard hasSuffix(suffix) else { return false }
@@ -83,23 +77,19 @@ public extension String {
         return true
     }
 
-    /// :nodoc:
     func trimmingSuffix(_ suffix: String) -> String {
         guard hasSuffix(suffix) else { return self }
         return String(self.prefix(self.count - suffix.count))
     }
 
-    /// :nodoc:
     func dropFirstAndLast(_ n: Int = 1) -> String {
         return drop(first: n, last: n)
     }
 
-    /// :nodoc:
     func drop(first: Int, last: Int) -> String {
         return String(self.dropFirst(first).dropLast(last))
     }
 
-    /// :nodoc:
     /// Wraps brackets if needed to make a valid type name
     func bracketsBalancing() -> String {
         if hasPrefix("(") && hasSuffix(")") {
@@ -111,7 +101,6 @@ public extension String {
         }
     }
 
-    /// :nodoc:
     /// Returns true if given string can represent a valid tuple type name
     func isValidTupleName() -> Bool {
         guard hasPrefix("(") && hasSuffix(")") else { return false }
@@ -119,7 +108,6 @@ public extension String {
         return trimmedBracketsName.isBracketsBalanced() && trimmedBracketsName.commaSeparated().count > 1
     }
 
-    /// :nodoc:
     func isValidArrayName() -> Bool {
         if hasPrefix("Array<") { return true }
         if hasPrefix("[") && hasSuffix("]") {
@@ -128,7 +116,6 @@ public extension String {
         return false
     }
 
-    /// :nodoc:
     func isValidDictionaryName() -> Bool {
         if hasPrefix("Dictionary<") { return true }
         if hasPrefix("[") && contains(":") && hasSuffix("]") {
@@ -137,12 +124,10 @@ public extension String {
         return false
     }
 
-    /// :nodoc:
     func isValidClosureName() -> Bool {
         return components(separatedBy: "->", excludingDelimiterBetween: (["(", "<"], [")", ">"])).count > 1
     }
 
-    /// :nodoc:
     /// Returns true if all opening brackets are balanced with closed brackets.
     func isBracketsBalanced() -> Bool {
         var bracketsCount: Int = 0
@@ -153,30 +138,25 @@ public extension String {
         return bracketsCount == 0
     }
 
-    /// :nodoc:
     /// Returns components separated with a comma respecting nested types
     func commaSeparated() -> [String] {
         return components(separatedBy: ",", excludingDelimiterBetween: ("<[({", "})]>"))
     }
 
-    /// :nodoc:
     /// Returns components separated with colon respecting nested types
     func colonSeparated() -> [String] {
         return components(separatedBy: ":", excludingDelimiterBetween: ("<[({", "})]>"))
     }
 
-    /// :nodoc:
     /// Returns components separated with semicolon respecting nested contexts
     func semicolonSeparated() -> [String] {
         return components(separatedBy: ";", excludingDelimiterBetween: ("{", "}"))
     }
 
-    /// :nodoc:
     func components(separatedBy delimiter: String, excludingDelimiterBetween between: (open: String, close: String)) -> [String] {
         return self.components(separatedBy: delimiter, excludingDelimiterBetween: (between.open.map { String($0) }, between.close.map { String($0) }))
     }
 
-    /// :nodoc:
     func components(separatedBy delimiter: String, excludingDelimiterBetween between: (open: [String], close: [String])) -> [String] {
         var boundingCharactersCount: Int = 0
         var quotesCount: Int = 0
@@ -220,7 +200,6 @@ public extension String {
 }
 
 public extension NSString {
-    /// :nodoc:
     var entireRange: NSRange {
         return NSRange(location: 0, length: self.length)
     }

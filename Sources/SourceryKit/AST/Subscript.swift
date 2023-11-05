@@ -80,10 +80,8 @@ import Foundation
 
     // Underlying parser data, never to be used by anything else
     // sourcery: skipEquality, skipDescription, skipCoding
-    /// :nodoc:
     public var __parserData: Any?
 
-    /// :nodoc:
     public init(parameters: [MethodParameter] = [],
                 returnTypeName: TypeName,
                 accessLevel: (read: AccessLevel, write: AccessLevel) = (.internal, .internal),

@@ -8,7 +8,6 @@ import Foundation
     /// Import path
     public var path: String
 
-    /// :nodoc:
     public init(path: String, kind: String? = nil) {
         self.path = path
         self.kind = kind

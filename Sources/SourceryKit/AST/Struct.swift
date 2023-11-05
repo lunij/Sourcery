@@ -7,7 +7,6 @@ import Foundation
     /// Returns "struct"
     public override var kind: String { return "struct" }
 
-    /// :nodoc:
     public override init(name: String = "",
                          parent: Type? = nil,
                          accessLevel: AccessLevel = .internal,

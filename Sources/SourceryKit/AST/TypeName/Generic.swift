@@ -8,7 +8,6 @@ import Foundation
     /// This generic type parameters
     public let typeParameters: [GenericTypeParameter]
 
-    /// :nodoc:
     public init(name: String, typeParameters: [GenericTypeParameter] = []) {
         self.name = name
         self.typeParameters = typeParameters
@@ -36,7 +35,6 @@ import Foundation
     /// Generic parameter type, if known
     public var type: Type?
 
-    /// :nodoc:
     public init(typeName: TypeName, type: Type? = nil) {
         self.typeName = typeName
         self.type = type

@@ -2,7 +2,6 @@ import Foundation
 
 /// Describes name of the type used in typed declaration (variable, method parameter or return value etc.)
 @objcMembers public final class TypeName: NSObject, SourceryModelWithoutDescription, LosslessStringConvertible {
-    /// :nodoc:
     public init(name: String,
                 actualTypeName: TypeName? = nil,
                 unwrappedTypeName: String? = nil,
@@ -162,7 +161,6 @@ import Foundation
     }
 
     // sourcery: skipEquality, skipDescription
-    /// :nodoc:
     public override var debugDescription: String {
         return name
     }

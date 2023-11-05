@@ -4,14 +4,12 @@
 
 
 extension Actor {
-    /// :nodoc:
     public override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? Actor else { return false }
         return super.isEqual(rhs)
     }
 }
 extension ArrayType {
-    /// :nodoc:
     public override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? ArrayType else { return false }
         if self.name != rhs.name { return false }
@@ -20,7 +18,6 @@ extension ArrayType {
     }
 }
 extension AssociatedType {
-    /// :nodoc:
     public override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? AssociatedType else { return false }
         if self.name != rhs.name { return false }
@@ -29,7 +26,6 @@ extension AssociatedType {
     }
 }
 extension AssociatedValue {
-    /// :nodoc:
     public override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? AssociatedValue else { return false }
         if self.localName != rhs.localName { return false }
@@ -41,7 +37,6 @@ extension AssociatedValue {
     }
 }
 extension Attribute {
-    /// :nodoc:
     public override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? Attribute else { return false }
         if self.name != rhs.name { return false }
@@ -51,7 +46,6 @@ extension Attribute {
     }
 }
 extension BytesRange {
-    /// :nodoc:
     public override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? BytesRange else { return false }
         if self.offset != rhs.offset { return false }
@@ -60,14 +54,12 @@ extension BytesRange {
     }
 }
 extension Class {
-    /// :nodoc:
     public override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? Class else { return false }
         return super.isEqual(rhs)
     }
 }
 extension ClosureParameter {
-    /// :nodoc:
     public override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? ClosureParameter else { return false }
         if self.argumentLabel != rhs.argumentLabel { return false }
@@ -80,7 +72,6 @@ extension ClosureParameter {
     }
 }
 extension ClosureType {
-    /// :nodoc:
     public override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? ClosureType else { return false }
         if self.name != rhs.name { return false }
@@ -94,7 +85,6 @@ extension ClosureType {
     }
 }
 extension DictionaryType {
-    /// :nodoc:
     public override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? DictionaryType else { return false }
         if self.name != rhs.name { return false }
@@ -104,7 +94,6 @@ extension DictionaryType {
     }
 }
 extension DiffableResult {
-    /// :nodoc:
     public override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? DiffableResult else { return false }
         if self.identifier != rhs.identifier { return false }
@@ -112,7 +101,6 @@ extension DiffableResult {
     }
 }
 extension Enum {
-    /// :nodoc:
     public override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? Enum else { return false }
         if self.cases != rhs.cases { return false }
@@ -121,7 +109,6 @@ extension Enum {
     }
 }
 extension EnumCase {
-    /// :nodoc:
     public override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? EnumCase else { return false }
         if self.name != rhs.name { return false }
@@ -134,7 +121,6 @@ extension EnumCase {
     }
 }
 extension FileParserResult {
-    /// :nodoc:
     public override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? FileParserResult else { return false }
         if self.path != rhs.path { return false }
@@ -149,7 +135,6 @@ extension FileParserResult {
     }
 }
 extension GenericRequirement {
-    /// :nodoc:
     public override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? GenericRequirement else { return false }
         if self.leftType != rhs.leftType { return false }
@@ -160,7 +145,6 @@ extension GenericRequirement {
     }
 }
 extension GenericType {
-    /// :nodoc:
     public override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? GenericType else { return false }
         if self.name != rhs.name { return false }
@@ -169,7 +153,6 @@ extension GenericType {
     }
 }
 extension GenericTypeParameter {
-    /// :nodoc:
     public override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? GenericTypeParameter else { return false }
         if self.typeName != rhs.typeName { return false }
@@ -177,7 +160,6 @@ extension GenericTypeParameter {
     }
 }
 extension Import {
-    /// :nodoc:
     public override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? Import else { return false }
         if self.kind != rhs.kind { return false }
@@ -186,7 +168,6 @@ extension Import {
     }
 }
 extension Method {
-    /// :nodoc:
     public override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? Method else { return false }
         if self.name != rhs.name { return false }
@@ -209,7 +190,6 @@ extension Method {
     }
 }
 extension MethodParameter {
-    /// :nodoc:
     public override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? MethodParameter else { return false }
         if self.argumentLabel != rhs.argumentLabel { return false }
@@ -223,7 +203,6 @@ extension MethodParameter {
     }
 }
 extension Modifier {
-    /// :nodoc:
     public override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? Modifier else { return false }
         if self.name != rhs.name { return false }
@@ -232,7 +211,6 @@ extension Modifier {
     }
 }
 extension Protocol {
-    /// :nodoc:
     public override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? Protocol else { return false }
         if self.associatedTypes != rhs.associatedTypes { return false }
@@ -241,7 +219,6 @@ extension Protocol {
     }
 }
 extension ProtocolComposition {
-    /// :nodoc:
     public override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? ProtocolComposition else { return false }
         if self.composedTypeNames != rhs.composedTypeNames { return false }
@@ -249,14 +226,12 @@ extension ProtocolComposition {
     }
 }
 extension Struct {
-    /// :nodoc:
     public override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? Struct else { return false }
         return super.isEqual(rhs)
     }
 }
 extension Subscript {
-    /// :nodoc:
     public override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? Subscript else { return false }
         if self.parameters != rhs.parameters { return false }
@@ -272,7 +247,6 @@ extension Subscript {
     }
 }
 extension TemplateContext {
-    /// :nodoc:
     public override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? TemplateContext else { return false }
         if self.parserResult != rhs.parserResult { return false }
@@ -283,7 +257,6 @@ extension TemplateContext {
     }
 }
 extension TupleElement {
-    /// :nodoc:
     public override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? TupleElement else { return false }
         if self.name != rhs.name { return false }
@@ -292,7 +265,6 @@ extension TupleElement {
     }
 }
 extension TupleType {
-    /// :nodoc:
     public override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? TupleType else { return false }
         if self.name != rhs.name { return false }
@@ -301,7 +273,6 @@ extension TupleType {
     }
 }
 extension Type {
-    /// :nodoc:
     public override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? Type else { return false }
         if self.module != rhs.module { return false }
@@ -329,7 +300,6 @@ extension Type {
     }
 }
 extension TypeName {
-    /// :nodoc:
     public override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? TypeName else { return false }
         if self.name != rhs.name { return false }
@@ -345,7 +315,6 @@ extension TypeName {
     }
 }
 extension Typealias {
-    /// :nodoc:
     public override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? Typealias else { return false }
         if self.aliasName != rhs.aliasName { return false }
@@ -357,7 +326,6 @@ extension Typealias {
     }
 }
 extension Types {
-    /// :nodoc:
     public override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? Types else { return false }
         if self.types != rhs.types { return false }
@@ -366,7 +334,6 @@ extension Types {
     }
 }
 extension Variable {
-    /// :nodoc:
     public override func isEqual(_ object: Any?) -> Bool {
         guard let rhs = object as? Variable else { return false }
         if self.name != rhs.name { return false }

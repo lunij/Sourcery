@@ -1,12 +1,10 @@
 import Foundation
 
-/// :nodoc:
 public typealias AttributeList = [String: [Attribute]]
 
 /// Defines Swift type
 @objcMembers public class Type: NSObject, SourceryModel, Annotated, Documented {
 
-    /// :nodoc:
     public var module: String?
 
     /// Imports that existed in the file that contained this type declaration
@@ -28,7 +26,6 @@ public typealias AttributeList = [String: [Attribute]]
     }
 
     // All local typealiases
-    /// :nodoc:
     public var typealiases: [String: Typealias] {
         didSet {
             typealiases.values.forEach { $0.parent = self }
@@ -305,7 +302,6 @@ public typealias AttributeList = [String: [Attribute]]
         }
     }
 
-    /// :nodoc:
     public var parentTypes: AnyIterator<Type> {
         var next: Type? = self
         return AnyIterator {
@@ -345,7 +341,6 @@ public typealias AttributeList = [String: [Attribute]]
     /// File name where the type was defined
     public var fileName: String?
 
-    /// :nodoc:
     public init(name: String = "",
                 parent: Type? = nil,
                 accessLevel: AccessLevel = .internal,
@@ -393,7 +388,6 @@ public typealias AttributeList = [String: [Attribute]]
         })
     }
 
-    /// :nodoc:
     public func extend(_ type: Type) {
         type.annotations.forEach { self.annotations[$0.key] = $0.value }
         type.inherits.forEach { self.inherits[$0.key] = $0.value }
@@ -410,7 +404,6 @@ public typealias AttributeList = [String: [Attribute]]
 extension Type {
 
     // sourcery: skipDescription
-    /// :nodoc:
     var isClass: Bool {
         let isNotClass = self is Struct || self is Enum || self is Protocol
         return !isNotClass && !isExtension
@@ -419,7 +412,6 @@ extension Type {
 
 /// Extends type so that inner types can be accessed via KVC e.g. Parent.Inner.Children
 extension Type {
-    /// :nodoc:
     override public func value(forUndefinedKey key: String) -> Any? {
         if let innerType = containedTypes.lazy.filter({ $0.localName == key }).first {
             return innerType

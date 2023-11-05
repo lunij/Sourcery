@@ -13,7 +13,6 @@ import Foundation
     /// Array element type, if known
     public var elementType: Type?
 
-    /// :nodoc:
     public init(name: String, elementTypeName: TypeName, elementType: Type? = nil) {
         self.name = name
         self.elementTypeName = elementTypeName

@@ -1,6 +1,5 @@
 import Foundation
 
-/// :nodoc:
 public typealias SourceryVariable = Variable
 
 /// Defines variable
@@ -83,7 +82,6 @@ public typealias SourceryVariable = Variable
     /// nil if defined outside of any `enum`, `struct`, `class` etc or type is unknown
     public var definedInType: Type?
 
-    /// :nodoc:
     public init(name: String = "",
                 typeName: TypeName,
                 type: Type? = nil,

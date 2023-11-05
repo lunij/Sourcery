@@ -1,6 +1,5 @@
 import Foundation
 
-/// :nodoc:
 public enum AccessLevel: String {
     case `internal` = "internal"
     case `private` = "private"

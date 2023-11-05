@@ -13,7 +13,6 @@ import Foundation
     /// The types composed to form this composition, if known
     public var composedTypes: [Type]?
 
-    /// :nodoc:
     public init(name: String = "",
                 parent: Type? = nil,
                 accessLevel: AccessLevel = .internal,

@@ -51,7 +51,6 @@ import Foundation
     /// throws or rethrows keyword
     public let throwsOrRethrowsKeyword: String?
 
-    /// :nodoc:
     public init(name: String, parameters: [ClosureParameter], returnTypeName: TypeName, returnType: Type? = nil, asyncKeyword: String? = nil, throwsOrRethrowsKeyword: String? = nil) {
         self.name = name
         self.parameters = parameters

@@ -24,7 +24,6 @@ import Foundation
     /// Annotations, that were created with // sourcery: annotation1, other = "annotation value", alterantive = 2
     public var annotations: Annotations = [:]
 
-    /// :nodoc:
     public init(localName: String?, externalName: String?, typeName: TypeName, type: Type? = nil, defaultValue: String? = nil, annotations: [String: NSObject] = [:]) {
         self.localName = localName
         self.externalName = externalName
@@ -66,10 +65,8 @@ import Foundation
 
     // Underlying parser data, never to be used by anything else
     // sourcery: skipEquality, skipDescription, skipCoding
-    /// :nodoc:
     public var __parserData: Any?
 
-    /// :nodoc:
     public init(name: String, rawValue: String? = nil, associatedValues: [AssociatedValue] = [], annotations: [String: NSObject] = [:], documentation: [String] = [], indirect: Bool = false) {
         self.name = name
         self.rawValue = rawValue
@@ -113,7 +110,6 @@ import Foundation
     }
 
     // sourcery: skipDescription, skipEquality
-    /// :nodoc:
     public private(set) var hasRawType: Bool
 
     // sourcery: skipDescription, skipEquality
@@ -135,7 +131,6 @@ import Foundation
         return cases.contains(where: { $0.hasAssociatedValue })
     }
 
-    /// :nodoc:
     public init(name: String = "",
                 parent: Type? = nil,
                 accessLevel: AccessLevel = .internal,

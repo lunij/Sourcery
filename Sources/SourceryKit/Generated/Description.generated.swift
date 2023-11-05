@@ -4,7 +4,6 @@
 
 
 extension Actor {
-    /// :nodoc:
     override public var description: String {
         var string = super.description
         string += ", "
@@ -14,7 +13,6 @@ extension Actor {
     }
 }
 extension ArrayType {
-    /// :nodoc:
     override public var description: String {
         var string = "\(Swift.type(of: self)): "
         string += "name = \(String(describing: self.name)), "
@@ -25,7 +23,6 @@ extension ArrayType {
     }
 }
 extension AssociatedType {
-    /// :nodoc:
     override public var description: String {
         var string = "\(Swift.type(of: self)): "
         string += "name = \(String(describing: self.name)), "
@@ -34,7 +31,6 @@ extension AssociatedType {
     }
 }
 extension AssociatedValue {
-    /// :nodoc:
     override public var description: String {
         var string = "\(Swift.type(of: self)): "
         string += "localName = \(String(describing: self.localName)), "
@@ -46,7 +42,6 @@ extension AssociatedValue {
     }
 }
 extension BytesRange {
-    /// :nodoc:
     override public var description: String {
         var string = "\(Swift.type(of: self)): "
         string += "offset = \(String(describing: self.offset)), "
@@ -55,7 +50,6 @@ extension BytesRange {
     }
 }
 extension Class {
-    /// :nodoc:
     override public var description: String {
         var string = super.description
         string += ", "
@@ -65,7 +59,6 @@ extension Class {
     }
 }
 extension ClosureParameter {
-    /// :nodoc:
     override public var description: String {
         var string = "\(Swift.type(of: self)): "
         string += "argumentLabel = \(String(describing: self.argumentLabel)), "
@@ -80,7 +73,6 @@ extension ClosureParameter {
     }
 }
 extension ClosureType {
-    /// :nodoc:
     override public var description: String {
         var string = "\(Swift.type(of: self)): "
         string += "name = \(String(describing: self.name)), "
@@ -96,7 +88,6 @@ extension ClosureType {
     }
 }
 extension DictionaryType {
-    /// :nodoc:
     override public var description: String {
         var string = "\(Swift.type(of: self)): "
         string += "name = \(String(describing: self.name)), "
@@ -108,7 +99,6 @@ extension DictionaryType {
     }
 }
 extension Enum {
-    /// :nodoc:
     override public var description: String {
         var string = super.description
         string += ", "
@@ -119,7 +109,6 @@ extension Enum {
     }
 }
 extension EnumCase {
-    /// :nodoc:
     override public var description: String {
         var string = "\(Swift.type(of: self)): "
         string += "name = \(String(describing: self.name)), "
@@ -133,7 +122,6 @@ extension EnumCase {
     }
 }
 extension FileParserResult {
-    /// :nodoc:
     override public var description: String {
         var string = "\(Swift.type(of: self)): "
         string += "path = \(String(describing: self.path)), "
@@ -149,7 +137,6 @@ extension FileParserResult {
     }
 }
 extension GenericRequirement {
-    /// :nodoc:
     override public var description: String {
         var string = "\(Swift.type(of: self)): "
         string += "leftType = \(String(describing: self.leftType)), "
@@ -160,7 +147,6 @@ extension GenericRequirement {
     }
 }
 extension GenericTypeParameter {
-    /// :nodoc:
     override public var description: String {
         var string = "\(Swift.type(of: self)): "
         string += "typeName = \(String(describing: self.typeName))"
@@ -168,7 +154,6 @@ extension GenericTypeParameter {
     }
 }
 extension Method {
-    /// :nodoc:
     override public var description: String {
         var string = "\(Swift.type(of: self)): "
         string += "name = \(String(describing: self.name)), "
@@ -191,7 +176,6 @@ extension Method {
     }
 }
 extension MethodParameter {
-    /// :nodoc:
     override public var description: String {
         var string = "\(Swift.type(of: self)): "
         string += "argumentLabel = \(String(describing: self.argumentLabel)), "
@@ -207,7 +191,6 @@ extension MethodParameter {
     }
 }
 extension Protocol {
-    /// :nodoc:
     override public var description: String {
         var string = super.description
         string += ", "
@@ -218,7 +201,6 @@ extension Protocol {
     }
 }
 extension ProtocolComposition {
-    /// :nodoc:
     override public var description: String {
         var string = super.description
         string += ", "
@@ -228,7 +210,6 @@ extension ProtocolComposition {
     }
 }
 extension Struct {
-    /// :nodoc:
     override public var description: String {
         var string = super.description
         string += ", "
@@ -237,7 +218,6 @@ extension Struct {
     }
 }
 extension Subscript {
-    /// :nodoc:
     override public var description: String {
         var string = "\(Swift.type(of: self)): "
         string += "parameters = \(String(describing: self.parameters)), "
@@ -257,7 +237,6 @@ extension Subscript {
     }
 }
 extension TemplateContext {
-    /// :nodoc:
     override public var description: String {
         var string = "\(Swift.type(of: self)): "
         string += "parserResult = \(String(describing: self.parserResult)), "
@@ -269,7 +248,6 @@ extension TemplateContext {
     }
 }
 extension TupleElement {
-    /// :nodoc:
     override public var description: String {
         var string = "\(Swift.type(of: self)): "
         string += "name = \(String(describing: self.name)), "
@@ -279,7 +257,6 @@ extension TupleElement {
     }
 }
 extension TupleType {
-    /// :nodoc:
     override public var description: String {
         var string = "\(Swift.type(of: self)): "
         string += "name = \(String(describing: self.name)), "
@@ -288,7 +265,6 @@ extension TupleType {
     }
 }
 extension Type {
-    /// :nodoc:
     override public var description: String {
         var string = "\(Swift.type(of: self)): "
         string += "module = \(String(describing: self.module)), "
@@ -327,7 +303,6 @@ extension Type {
     }
 }
 extension Typealias {
-    /// :nodoc:
     override public var description: String {
         var string = "\(Swift.type(of: self)): "
         string += "aliasName = \(String(describing: self.aliasName)), "
@@ -340,7 +315,6 @@ extension Typealias {
     }
 }
 extension Types {
-    /// :nodoc:
     override public var description: String {
         var string = "\(Swift.type(of: self)): "
         string += "types = \(String(describing: self.types)), "
@@ -349,7 +323,6 @@ extension Types {
     }
 }
 extension Variable {
-    /// :nodoc:
     override public var description: String {
         var string = "\(Swift.type(of: self)): "
         string += "name = \(String(describing: self.name)), "

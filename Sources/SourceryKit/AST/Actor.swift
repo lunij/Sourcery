@@ -11,7 +11,6 @@ import Foundation
         return modifiers.contains { $0.name == "final" }
     }
 
-    /// :nodoc:
     public override init(name: String = "",
                          parent: Type? = nil,
                          accessLevel: AccessLevel = .internal,
