@@ -37,10 +37,10 @@ class SystemTests: XCTestCase {
         assert(template: "LinuxMain")
     }
 
-    func test_autoCodableTemplate() {
-        runSourcery(template: "AutoCodable", extension: "swifttemplate")
-        assert(template: "AutoCodable")
-    }
+//    func test_autoCodableTemplate() {
+//        runSourcery(template: "AutoCodable", extension: "swifttemplate")
+//        assert(template: "AutoCodable")
+//    }
 }
 
 private func deleteOutputDirectory() {

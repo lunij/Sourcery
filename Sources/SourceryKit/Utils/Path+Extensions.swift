@@ -18,7 +18,7 @@ extension Path {
     }
 
     public var isTemplateFile: Bool {
-        ["stencil", "swifttemplate"].contains(`extension`)
+        `extension` == "stencil"
     }
 
     public var isSwiftSourceFile: Bool {

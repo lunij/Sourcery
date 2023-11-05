@@ -17,12 +17,7 @@ class TemplateLoader: TemplateLoading {
         let elapsedTime = try clock.measure {
             templates = try templatePaths.map {
                 logger.info("Loading \($0.relativeToCurrent)")
-                if $0.extension == "swifttemplate" {
-                    let cachePath = config.cacheDisabled ? nil : Path.cachesDir(sourcePath: $0, basePath: config.cacheBasePath)
-                    return try SwiftTemplate(path: $0, buildPath: buildPath, cachePath: cachePath)
-                } else {
-                    return try StencilTemplate(path: $0)
-                }
+                return try StencilTemplate(path: $0)
             }
         }
         logger.info("Loaded \(templates.count) templates in \(elapsedTime)")

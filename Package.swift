@@ -47,7 +47,6 @@ let package = Package(
             resources: [
                 .copy("Fixtures"),
                 .copy("Stub/Errors"),
-                .copy("Stub/SwiftTemplates"),
                 .copy("Stub/Performance-Code"),
                 .copy("Stub/DryRun-Code"),
                 .copy("Stub/Result"),

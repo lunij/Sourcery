@@ -1,1 +1,0 @@
-<%- include("Equality.swift") -%><%= EqualityGenerator.generate(for: types) %>
