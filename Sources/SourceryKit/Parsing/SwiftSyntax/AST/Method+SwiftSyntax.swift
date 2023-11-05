@@ -90,7 +90,7 @@ extension SourceryMethod {
     ) {
         let initializerNode = node as? InitializerDeclSyntax
 
-        let modifiers = modifiers?.map(Modifier.init) ?? []
+        let modifiers = modifiers?.map(SModifier.init) ?? []
         let baseModifiers = modifiers.baseModifiers(parent: parent)
 
         var returnTypeName: TypeName

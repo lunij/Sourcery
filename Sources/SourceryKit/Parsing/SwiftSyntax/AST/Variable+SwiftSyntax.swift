@@ -9,7 +9,7 @@ extension Variable {
         readAccess: AccessLevel,
         writeAccess: AccessLevel,
         isStatic: Bool,
-        modifiers: [Modifier],
+        modifiers: [SModifier],
         visitingType: Type?,
         getAnnotationUseCase: GetAnnotationUseCase
     ) {
@@ -91,7 +91,7 @@ extension Variable {
         visitingType: Type?,
         getAnnotationUseCase: GetAnnotationUseCase
     ) -> [Variable] {
-        let modifiers = variableNode.modifiers?.map(Modifier.init) ?? []
+        let modifiers = variableNode.modifiers?.map(SModifier.init) ?? []
         let baseModifiers = modifiers.baseModifiers(parent: visitingType)
 
         return variableNode.bindings.map { (node: PatternBindingSyntax) -> Variable in

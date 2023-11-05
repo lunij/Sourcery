@@ -4,7 +4,7 @@ import SwiftSyntax
 
 extension Struct {
     convenience init(_ node: StructDeclSyntax, parent: Type?, getAnnotationUseCase: GetAnnotationUseCase) {
-        let modifiers = node.modifiers?.map(Modifier.init) ?? []
+        let modifiers = node.modifiers?.map(SModifier.init) ?? []
 
         self.init(
             name: node.identifier.text.trimmed,

@@ -4,7 +4,7 @@ import SourceryRuntime
 
 /// modifier can be thing like `private`, `class`, `nonmutating`
 /// if a declaration has modifier like `private(set)` it's name will be `private` and detail will be `set`
-struct Modifier {
+struct SModifier {
     /// The declaration modifier name.
     public let name: String
 
@@ -23,7 +23,7 @@ struct Modifier {
 }
 
 extension SourceryModifier {
-    convenience init(modifier: Modifier) {
+    convenience init(modifier: SModifier) {
         self.init(name: modifier.name, detail: modifier.detail)
     }
 
@@ -32,7 +32,7 @@ extension SourceryModifier {
     }
 }
 
-extension Array where Element == Modifier {
+extension Array where Element == SModifier {
     func baseModifiers(parent: Type?) -> (readAccess: AccessLevel, writeAccess: AccessLevel, isStatic: Bool, isClass: Bool) {
 
         var readAccess: AccessLevel = .none

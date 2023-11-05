@@ -44,7 +44,7 @@ extension EnumCase {
             return value
         }()
 
-        let modifiers = parent.modifiers?.map(Modifier.init) ?? []
+        let modifiers = parent.modifiers?.map(SModifier.init) ?? []
         let indirect = modifiers.contains(where: {
             $0.tokenKind == TokenKind.contextualKeyword("indirect")
         })

@@ -4,7 +4,7 @@ import SourceryRuntime
 
 extension Subscript {
     convenience init(_ node: SubscriptDeclSyntax, parent: Type, getAnnotationUseCase: GetAnnotationUseCase) {
-        let modifiers = node.modifiers?.map(Modifier.init) ?? []
+        let modifiers = node.modifiers?.map(SModifier.init) ?? []
         let baseModifiers = modifiers.baseModifiers(parent: parent)
         let parentAccess = AccessLevel(rawValue: parent.accessLevel) ?? .internal
 
