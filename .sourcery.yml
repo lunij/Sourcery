@@ -1,13 +1,3 @@
-configurations:
-  # - sources:
-  #     - Sources/ContextExamples
-  #   templates:
-  #     - Templates/AutoCodable.swifttemplate
-  #   output:
-  #     Sources/ContextExamples/Generated
-  - sources:
-      - Sources/SourceryKit/SourceryRuntime
-    templates:
-      - Sources/SourceryKit/SourceryRuntime/Templates
-    output:
-      Sources/SourceryKit/SourceryRuntime/Generated
+sources: Sources/SourceryKit/SourceryRuntime
+templates: Sources/SourceryKit/SourceryRuntime/Templates
+output: Sources/SourceryKit/SourceryRuntime/Generated

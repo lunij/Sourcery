@@ -57,13 +57,6 @@ let package = Package(
         ),
         .target(name: "FileSystemEvents"),
         .testTarget(name: "FileSystemEventsTests", dependencies: ["FileSystemEvents"]),
-        .target(name: "ContextExamples"),
-        .testTarget(
-            name: "TemplateTests",
-            dependencies: [
-                "ContextExamples"
-            ]
-        ),
         .testTarget(
             name: "SystemTests",
             dependencies: [
