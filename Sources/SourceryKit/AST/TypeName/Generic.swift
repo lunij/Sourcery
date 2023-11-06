@@ -1,7 +1,7 @@
 import Foundation
 
 /// Descibes Swift generic type
-@objcMembers public final class GenericType: NSObject, SourceryModelWithoutDescription {
+@objcMembers public final class GenericType: NSObject {
     /// The name of the base type, i.e. `Array` for `Array<Int>`
     public var name: String
 
@@ -26,7 +26,7 @@ import Foundation
 }
 
 /// Descibes Swift generic type parameter
-@objcMembers public final class GenericTypeParameter: NSObject, SourceryModel {
+@objcMembers public final class GenericTypeParameter: NSObject {
 
     /// Generic parameter type name
     public var typeName: TypeName

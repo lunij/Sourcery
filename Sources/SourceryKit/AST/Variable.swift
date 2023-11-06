@@ -3,7 +3,7 @@ import Foundation
 public typealias SourceryVariable = Variable
 
 /// Defines variable
-@objcMembers public final class Variable: NSObject, SourceryModel, Typed, Annotated, Documented, Definition {
+@objcMembers public final class Variable: NSObject, Typed, Annotated, Documented, Definition {
     /// Variable name
     public let name: String
 

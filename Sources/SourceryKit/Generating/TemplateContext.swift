@@ -1,7 +1,7 @@
 import Foundation
 
 // sourcery: skipCoding
-@objcMembers public final class TemplateContext: NSObject, SourceryModel {
+@objcMembers public final class TemplateContext: NSObject {
     public let parserResult: FileParserResult?
     public let functions: [SourceryMethod]
     public let types: Types
@@ -59,7 +59,7 @@ extension TemplateContext.Error: CustomStringConvertible {
 }
 
 /// Collection of scanned types for accessing in templates
-@objcMembers public final class Types: NSObject, SourceryModel {
+@objcMembers public final class Types: NSObject {
 
     public let types: [Type]
 

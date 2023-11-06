@@ -3,7 +3,7 @@ import Foundation
 public typealias AttributeList = [String: [Attribute]]
 
 /// Defines Swift type
-@objcMembers public class Type: NSObject, SourceryModel, Annotated, Documented {
+@objcMembers public class Type: NSObject, Annotated, Documented {
 
     public var module: String?
 

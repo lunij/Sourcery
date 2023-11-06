@@ -1,6 +1,6 @@
 import Foundation
 
-@objcMembers public final class BytesRange: NSObject, SourceryModel {
+@objcMembers public final class BytesRange: NSObject {
 
     public let offset: Int64
     public let length: Int64

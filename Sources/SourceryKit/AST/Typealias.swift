@@ -1,6 +1,6 @@
 import Foundation
 
-@objcMembers public final class Typealias: NSObject, Typed, SourceryModel {
+@objcMembers public final class Typealias: NSObject, Typed {
     // New typealias name
     public let aliasName: String
 

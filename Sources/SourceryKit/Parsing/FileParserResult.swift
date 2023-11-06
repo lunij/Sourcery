@@ -1,6 +1,6 @@
 import Foundation
 
-@objcMembers public final class FileParserResult: NSObject, SourceryModel {
+@objcMembers public final class FileParserResult: NSObject {
     public let path: String?
     public let module: String?
     public var types = [Type]() {

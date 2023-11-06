@@ -1,7 +1,7 @@
 import Foundation
 
 /// Defines enum case associated value
-@objcMembers public final class AssociatedValue: NSObject, SourceryModel, Typed, Annotated {
+@objcMembers public final class AssociatedValue: NSObject, Typed, Annotated {
 
     /// Associated value local name.
     /// This is a name to be used to construct enum case value
@@ -49,7 +49,7 @@ import Foundation
 }
 
 /// Defines enum case
-@objcMembers public final class EnumCase: NSObject, SourceryModel, Annotated, Documented {
+@objcMembers public final class EnumCase: NSObject, Annotated, Documented {
 
     /// Enum case name
     public let name: String

@@ -1,7 +1,7 @@
 import Foundation
 
 /// Describes dictionary type
-@objcMembers public final class DictionaryType: NSObject, SourceryModel {
+@objcMembers public final class DictionaryType: NSObject {
     /// Type name used in declaration
     public var name: String
 

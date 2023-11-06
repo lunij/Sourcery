@@ -26,7 +26,7 @@ extension NSRange: Diffable {
     }
 }
 
-@objcMembers public class DiffableResult: NSObject, AutoEquatable {
+@objcMembers public class DiffableResult: NSObject {
     // sourcery: skipEquality
     private var results: [String]
     internal var identifier: String?

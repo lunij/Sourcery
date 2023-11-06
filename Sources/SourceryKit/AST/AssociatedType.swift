@@ -1,7 +1,7 @@
 import Foundation
 
 /// Describes Swift AssociatedType
-@objcMembers public final class AssociatedType: NSObject, SourceryModel {
+@objcMembers public final class AssociatedType: NSObject {
     /// Associated type name
     public let name: String
 

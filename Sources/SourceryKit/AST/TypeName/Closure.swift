@@ -1,7 +1,7 @@
 import Foundation
 
 /// Describes closure type
-@objcMembers public final class ClosureType: NSObject, SourceryModel {
+@objcMembers public final class ClosureType: NSObject {
 
     /// Type name used in declaration with stripped whitespaces and new lines
     public let name: String

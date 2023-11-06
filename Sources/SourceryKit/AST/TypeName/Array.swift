@@ -1,7 +1,7 @@
 import Foundation
 
 /// Describes array type
-@objcMembers public final class ArrayType: NSObject, SourceryModel {
+@objcMembers public final class ArrayType: NSObject {
 
     /// Type name used in declaration
     public var name: String
