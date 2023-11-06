@@ -39,22 +39,4 @@ import Foundation
     public var asSource: String {
         "[\(keyTypeName.asSource): \(valueTypeName.asSource)]"
     }
-
-    // sourcery:inline:DictionaryType.AutoCoding
-    public required init?(coder aDecoder: NSCoder) {
-        guard let name: String = aDecoder.decode(forKey: "name") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["name"])); fatalError() }; self.name = name
-        guard let valueTypeName: TypeName = aDecoder.decode(forKey: "valueTypeName") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["valueTypeName"])); fatalError() }; self.valueTypeName = valueTypeName
-        valueType = aDecoder.decode(forKey: "valueType")
-        guard let keyTypeName: TypeName = aDecoder.decode(forKey: "keyTypeName") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["keyTypeName"])); fatalError() }; self.keyTypeName = keyTypeName
-        keyType = aDecoder.decode(forKey: "keyType")
-    }
-
-    public func encode(with aCoder: NSCoder) {
-        aCoder.encode(name, forKey: "name")
-        aCoder.encode(valueTypeName, forKey: "valueTypeName")
-        aCoder.encode(valueType, forKey: "valueType")
-        aCoder.encode(keyTypeName, forKey: "keyTypeName")
-        aCoder.encode(keyType, forKey: "keyType")
-    }
-    // sourcery:end
 }

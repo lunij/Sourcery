@@ -66,28 +66,4 @@ import Foundation
     public var asSource: String {
         "\(parameters.asSource)\(asyncKeyword != nil ? " \(asyncKeyword!)" : "")\(throwsOrRethrowsKeyword != nil ? " \(throwsOrRethrowsKeyword!)" : "") -> \(returnTypeName.asSource)"
     }
-
-    // sourcery:inline:ClosureType.AutoCoding
-    public required init?(coder aDecoder: NSCoder) {
-        guard let name: String = aDecoder.decode(forKey: "name") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["name"])); fatalError() }; self.name = name
-        guard let parameters: [ClosureParameter] = aDecoder.decode(forKey: "parameters") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["parameters"])); fatalError() }; self.parameters = parameters
-        guard let returnTypeName: TypeName = aDecoder.decode(forKey: "returnTypeName") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["returnTypeName"])); fatalError() }; self.returnTypeName = returnTypeName
-        returnType = aDecoder.decode(forKey: "returnType")
-        isAsync = aDecoder.decode(forKey: "isAsync")
-        asyncKeyword = aDecoder.decode(forKey: "asyncKeyword")
-        `throws` = aDecoder.decode(forKey: "`throws`")
-        throwsOrRethrowsKeyword = aDecoder.decode(forKey: "throwsOrRethrowsKeyword")
-    }
-
-    public func encode(with aCoder: NSCoder) {
-        aCoder.encode(name, forKey: "name")
-        aCoder.encode(parameters, forKey: "parameters")
-        aCoder.encode(returnTypeName, forKey: "returnTypeName")
-        aCoder.encode(returnType, forKey: "returnType")
-        aCoder.encode(isAsync, forKey: "isAsync")
-        aCoder.encode(asyncKeyword, forKey: "asyncKeyword")
-        aCoder.encode(`throws`, forKey: "`throws`")
-        aCoder.encode(throwsOrRethrowsKeyword, forKey: "throwsOrRethrowsKeyword")
-    }
-    // sourcery:end
 }

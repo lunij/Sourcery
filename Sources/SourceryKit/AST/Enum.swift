@@ -37,26 +37,6 @@ import Foundation
     convenience init(name: String? = nil, typeName: TypeName, type: Type? = nil, defaultValue: String? = nil, annotations: [String: NSObject] = [:]) {
         self.init(localName: name, externalName: name, typeName: typeName, type: type, defaultValue: defaultValue, annotations: annotations)
     }
-
-    // sourcery:inline:AssociatedValue.AutoCoding
-    public required init?(coder aDecoder: NSCoder) {
-        localName = aDecoder.decode(forKey: "localName")
-        externalName = aDecoder.decode(forKey: "externalName")
-        guard let typeName: TypeName = aDecoder.decode(forKey: "typeName") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["typeName"])); fatalError() }; self.typeName = typeName
-        type = aDecoder.decode(forKey: "type")
-        defaultValue = aDecoder.decode(forKey: "defaultValue")
-        guard let annotations: Annotations = aDecoder.decode(forKey: "annotations") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["annotations"])); fatalError() }; self.annotations = annotations
-    }
-
-    public func encode(with aCoder: NSCoder) {
-        aCoder.encode(localName, forKey: "localName")
-        aCoder.encode(externalName, forKey: "externalName")
-        aCoder.encode(typeName, forKey: "typeName")
-        aCoder.encode(type, forKey: "type")
-        aCoder.encode(defaultValue, forKey: "defaultValue")
-        aCoder.encode(annotations, forKey: "annotations")
-    }
-    // sourcery:end
 }
 
 /// Defines enum case
@@ -98,26 +78,6 @@ import Foundation
         self.documentation = documentation
         self.indirect = indirect
     }
-
-    // sourcery:inline:EnumCase.AutoCoding
-    public required init?(coder aDecoder: NSCoder) {
-        guard let name: String = aDecoder.decode(forKey: "name") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["name"])); fatalError() }; self.name = name
-        rawValue = aDecoder.decode(forKey: "rawValue")
-        guard let associatedValues: [AssociatedValue] = aDecoder.decode(forKey: "associatedValues") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["associatedValues"])); fatalError() }; self.associatedValues = associatedValues
-        guard let annotations: Annotations = aDecoder.decode(forKey: "annotations") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["annotations"])); fatalError() }; self.annotations = annotations
-        guard let documentation: Documentation = aDecoder.decode(forKey: "documentation") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["documentation"])); fatalError() }; self.documentation = documentation
-        indirect = aDecoder.decode(forKey: "indirect")
-    }
-
-    public func encode(with aCoder: NSCoder) {
-        aCoder.encode(name, forKey: "name")
-        aCoder.encode(rawValue, forKey: "rawValue")
-        aCoder.encode(associatedValues, forKey: "associatedValues")
-        aCoder.encode(annotations, forKey: "annotations")
-        aCoder.encode(documentation, forKey: "documentation")
-        aCoder.encode(indirect, forKey: "indirect")
-    }
-    // sourcery:end
 }
 
 /// Defines Swift enum
@@ -203,22 +163,4 @@ import Foundation
             self.inheritedTypes.remove(at: index)
         }
     }
-
-    // sourcery:inline:Enum.AutoCoding
-    public required init?(coder aDecoder: NSCoder) {
-        guard let cases: [EnumCase] = aDecoder.decode(forKey: "cases") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["cases"])); fatalError() }; self.cases = cases
-        rawTypeName = aDecoder.decode(forKey: "rawTypeName")
-        hasRawType = aDecoder.decode(forKey: "hasRawType")
-        rawType = aDecoder.decode(forKey: "rawType")
-        super.init(coder: aDecoder)
-    }
-
-    override public func encode(with aCoder: NSCoder) {
-        super.encode(with: aCoder)
-        aCoder.encode(cases, forKey: "cases")
-        aCoder.encode(rawTypeName, forKey: "rawTypeName")
-        aCoder.encode(hasRawType, forKey: "hasRawType")
-        aCoder.encode(rawType, forKey: "rawType")
-    }
-    // sourcery:end
 }

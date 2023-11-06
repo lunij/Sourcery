@@ -106,44 +106,44 @@ public class SwiftParser {
     }
 
     private func loadOrParse(parser: ParserWrapper, cachePath: Path?) throws -> (changed: Bool, result: FileParserResult)? {
-        guard let cachePath else {
+//        guard let cachePath else {
             return try parser.parse().map { (changed: true, result: $0) }
-        }
-
-        let path = parser.path
-        let artifactsPath = cachePath + "\(path.string.hash).srf"
-
-        guard
-            artifactsPath.exists,
-            let modifiedDate = path.modificationDate,
-            let unarchived = loadArtifacts(path: artifactsPath, modifiedDate: modifiedDate)
-        else {
-            guard let result = try parser.parse() else {
-                return nil
-            }
-
-            do {
-                let data = try NSKeyedArchiver.archivedData(withRootObject: result, requiringSecureCoding: false)
-                try artifactsPath.write(data)
-            } catch {
-                fatalError("Unable to save artifacts for \(path) under \(artifactsPath), error: \(error)")
-            }
-
-            return (changed: true, result: result)
-        }
-
-        return (changed: false, result: unarchived)
+//        }
+//
+//        let path = parser.path
+//        let artifactsPath = cachePath + "\(path.string.hash).srf"
+//
+//        guard
+//            artifactsPath.exists,
+//            let modifiedDate = path.modificationDate,
+//            let unarchived = loadArtifacts(path: artifactsPath, modifiedDate: modifiedDate)
+//        else {
+//            guard let result = try parser.parse() else {
+//                return nil
+//            }
+//
+//            do {
+//                let data = try NSKeyedArchiver.archivedData(withRootObject: result, requiringSecureCoding: false)
+//                try artifactsPath.write(data)
+//            } catch {
+//                fatalError("Unable to save artifacts for \(path) under \(artifactsPath), error: \(error)")
+//            }
+//
+//            return (changed: true, result: result)
+//        }
+//
+//        return (changed: false, result: unarchived)
     }
 
     private func loadArtifacts(path: Path, modifiedDate: Date) -> FileParserResult? {
-        guard
-            let data = try? path.read(),
-            let result = try? NSKeyedUnarchiver.unarchivedRootObject(ofClass: FileParserResult.self, from: data),
-            result.modifiedDate == modifiedDate
-        else {
+//        guard
+//            let data = try? path.read(),
+//            let result = try? NSKeyedUnarchiver.unarchivedRootObject(ofClass: FileParserResult.self, from: data),
+//            result.modifiedDate == modifiedDate
+//        else {
             return nil
-        }
-        return result
+//        }
+//        return result
     }
 
     enum Error: Swift.Error {

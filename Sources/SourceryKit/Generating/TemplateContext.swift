@@ -2,7 +2,7 @@ import Foundation
 
 /// :nodoc:
 // sourcery: skipCoding
-@objcMembers public final class TemplateContext: NSObject, SourceryModel, NSCoding {
+@objcMembers public final class TemplateContext: NSObject, SourceryModel {
     public let parserResult: FileParserResult?
     public let functions: [SourceryMethod]
     public let types: Types
@@ -18,29 +18,6 @@ import Foundation
         self.types = types
         self.functions = functions
         self.argument = arguments
-    }
-
-    /// :nodoc:
-    required public init?(coder aDecoder: NSCoder) {
-        guard let parserResult: FileParserResult = aDecoder.decode(forKey: "parserResult") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found. FileParserResults are required for template context that needs persisting.", arguments: getVaList(["parserResult"])); fatalError() }
-        guard let argument: [String: NSObject] = aDecoder.decode(forKey: "argument") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["argument"])); fatalError() }
-
-        // if we want to support multiple cycles of encode / decode we need deep copy because composer changes reference types
-        let fileParserResultCopy: FileParserResult? = nil
-//      fileParserResultCopy = try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(NSKeyedArchiver.archivedData(withRootObject: parserResult)) as? FileParserResult
-
-        let composed = Composer().uniqueTypesAndFunctions(parserResult)
-        self.types = .init(types: composed.types, typealiases: composed.typealiases)
-        self.functions = composed.functions
-
-        self.parserResult = fileParserResultCopy
-        self.argument = argument
-    }
-
-    /// :nodoc:
-    public func encode(with aCoder: NSCoder) {
-        aCoder.encode(self.parserResult, forKey: "parserResult")
-        aCoder.encode(self.argument, forKey: "argument")
     }
 
     public var stencilContext: [String: Any] {
@@ -72,13 +49,6 @@ extension TemplateContext.Error: CustomStringConvertible {
     }
 }
 
-extension ProcessInfo {
-    public func unarchiveContext() throws -> TemplateContext? {
-        let data = try Data(contentsOf: URL(fileURLWithPath: arguments[1]))
-        return try NSKeyedUnarchiver.unarchivedRootObject(ofClass: TemplateContext.self, from: data)
-    }
-}
-
 /// Collection of scanned types for accessing in templates
 @objcMembers public final class Types: NSObject, SourceryModel {
 
@@ -93,18 +63,6 @@ extension ProcessInfo {
         self.types = types
         self.typealiases = typealiases
     }
-
-// sourcery:inline:Types.AutoCoding
-public required init?(coder aDecoder: NSCoder) {
-    guard let types: [Type] = aDecoder.decode(forKey: "types") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["types"])); fatalError() }; self.types = types
-    guard let typealiases: [Typealias] = aDecoder.decode(forKey: "typealiases") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["typealiases"])); fatalError() }; self.typealiases = typealiases
-}
-
-public func encode(with aCoder: NSCoder) {
-    aCoder.encode(types, forKey: "types")
-    aCoder.encode(typealiases, forKey: "typealiases")
-}
-// sourcery:end
 
     // sourcery: skipDescription, skipEquality, skipCoding
     /// :nodoc:

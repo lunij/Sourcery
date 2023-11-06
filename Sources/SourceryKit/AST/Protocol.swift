@@ -60,18 +60,4 @@ public typealias SourceryProtocol = Protocol
             isGeneric: !associatedTypes.isEmpty || !genericRequirements.isEmpty
         )
     }
-
-    // sourcery:inline:Protocol.AutoCoding
-    public required init?(coder aDecoder: NSCoder) {
-        guard let associatedTypes: [String: AssociatedType] = aDecoder.decode(forKey: "associatedTypes") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["associatedTypes"])); fatalError() }; self.associatedTypes = associatedTypes
-        guard let genericRequirements: [GenericRequirement] = aDecoder.decode(forKey: "genericRequirements") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["genericRequirements"])); fatalError() }; self.genericRequirements = genericRequirements
-        super.init(coder: aDecoder)
-    }
-
-    override public func encode(with aCoder: NSCoder) {
-        super.encode(with: aCoder)
-        aCoder.encode(associatedTypes, forKey: "associatedTypes")
-        aCoder.encode(genericRequirements, forKey: "genericRequirements")
-    }
-    // sourcery:end
 }

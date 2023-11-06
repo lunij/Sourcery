@@ -35,17 +35,4 @@ import Foundation
             return path
         }
     }
-
-    // sourcery:inline:Import.AutoCoding
-    public required init?(coder aDecoder: NSCoder) {
-        kind = aDecoder.decode(forKey: "kind")
-        guard let path: String = aDecoder.decode(forKey: "path") else { NSException.raise(NSExceptionName.parseErrorException, format: "Key '%@' not found.", arguments: getVaList(["path"])); fatalError() }; self.path = path
-    }
-
-    public func encode(with aCoder: NSCoder) {
-        aCoder.encode(kind, forKey: "kind")
-        aCoder.encode(path, forKey: "path")
-    }
-
-    // sourcery:end
 }

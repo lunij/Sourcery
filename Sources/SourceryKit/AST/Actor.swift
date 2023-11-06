@@ -45,14 +45,4 @@ import Foundation
             isGeneric: isGeneric
         )
     }
-
-    // sourcery:inline:Actor.AutoCoding
-    public required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-    }
-
-    override public func encode(with aCoder: NSCoder) {
-        super.encode(with: aCoder)
-    }
-    // sourcery:end
 }
