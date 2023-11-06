@@ -1,7 +1,7 @@
 import Foundation
 
 /// Descibes Swift generic type
-@objcMembers public final class GenericType: NSObject {
+@objcMembers public final class GenericType: NSObject, Diffable {
     /// The name of the base type, i.e. `Array` for `Array<Int>`
     public var name: String
 
@@ -23,10 +23,21 @@ import Foundation
     public override var description: String {
         asSource
     }
+
+    public func diffAgainst(_ object: Any?) -> DiffableResult {
+        let results = DiffableResult()
+        guard let castObject = object as? GenericType else {
+            results.append("Incorrect type <expected: GenericType, received: \(Swift.type(of: object))>")
+            return results
+        }
+        results.append(contentsOf: DiffableResult(identifier: "name").trackDifference(actual: self.name, expected: castObject.name))
+        results.append(contentsOf: DiffableResult(identifier: "typeParameters").trackDifference(actual: self.typeParameters, expected: castObject.typeParameters))
+        return results
+    }
 }
 
 /// Descibes Swift generic type parameter
-@objcMembers public final class GenericTypeParameter: NSObject {
+@objcMembers public final class GenericTypeParameter: NSObject, Diffable {
 
     /// Generic parameter type name
     public var typeName: TypeName
@@ -38,6 +49,16 @@ import Foundation
     public init(typeName: TypeName, type: Type? = nil) {
         self.typeName = typeName
         self.type = type
+    }
+
+    public func diffAgainst(_ object: Any?) -> DiffableResult {
+        let results = DiffableResult()
+        guard let castObject = object as? GenericTypeParameter else {
+            results.append("Incorrect type <expected: GenericTypeParameter, received: \(Swift.type(of: object))>")
+            return results
+        }
+        results.append(contentsOf: DiffableResult(identifier: "typeName").trackDifference(actual: self.typeName, expected: castObject.typeName))
+        return results
     }
 
     public override var description: String {

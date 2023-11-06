@@ -1,7 +1,7 @@
 import Foundation
 
 /// Describes tuple type
-@objcMembers public final class TupleType: NSObject {
+@objcMembers public final class TupleType: NSObject, Diffable {
 
     /// Type name used in declaration
     public var name: String
@@ -19,6 +19,17 @@ import Foundation
         self.elements = elements
     }
 
+    public func diffAgainst(_ object: Any?) -> DiffableResult {
+        let results = DiffableResult()
+        guard let castObject = object as? TupleType else {
+            results.append("Incorrect type <expected: TupleType, received: \(Swift.type(of: object))>")
+            return results
+        }
+        results.append(contentsOf: DiffableResult(identifier: "name").trackDifference(actual: self.name, expected: castObject.name))
+        results.append(contentsOf: DiffableResult(identifier: "elements").trackDifference(actual: self.elements, expected: castObject.elements))
+        return results
+    }
+
     public override var description: String {
         var string = "\(Swift.type(of: self)): "
         string += "name = \(String(describing: name)), "
@@ -28,7 +39,7 @@ import Foundation
 }
 
 /// Describes tuple type element
-@objcMembers public final class TupleElement: NSObject, Typed {
+@objcMembers public final class TupleElement: NSObject, Diffable, Typed {
 
     /// Tuple element name
     public let name: String?
@@ -49,6 +60,17 @@ import Foundation
     public var asSource: String {
         // swiftlint:disable:next force_unwrapping
         "\(name != nil ? "\(name!): " : "")\(typeName.asSource)"
+    }
+
+    public func diffAgainst(_ object: Any?) -> DiffableResult {
+        let results = DiffableResult()
+        guard let castObject = object as? TupleElement else {
+            results.append("Incorrect type <expected: TupleElement, received: \(Swift.type(of: object))>")
+            return results
+        }
+        results.append(contentsOf: DiffableResult(identifier: "name").trackDifference(actual: self.name, expected: castObject.name))
+        results.append(contentsOf: DiffableResult(identifier: "typeName").trackDifference(actual: self.typeName, expected: castObject.typeName))
+        return results
     }
 
     public override var description: String {

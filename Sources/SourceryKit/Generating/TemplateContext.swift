@@ -1,7 +1,7 @@
 import Foundation
 
 // sourcery: skipCoding
-@objcMembers public final class TemplateContext: NSObject {
+@objcMembers public final class TemplateContext: NSObject, Diffable {
     public let parserResult: FileParserResult?
     public let functions: [SourceryMethod]
     public let types: Types
@@ -28,6 +28,18 @@ import Foundation
         ]
     }
 
+    public func diffAgainst(_ object: Any?) -> DiffableResult {
+        let results = DiffableResult()
+        guard let castObject = object as? TemplateContext else {
+            results.append("Incorrect type <expected: TemplateContext, received: \(Swift.type(of: object))>")
+            return results
+        }
+        results.append(contentsOf: DiffableResult(identifier: "parserResult").trackDifference(actual: self.parserResult, expected: castObject.parserResult))
+        results.append(contentsOf: DiffableResult(identifier: "functions").trackDifference(actual: self.functions, expected: castObject.functions))
+        results.append(contentsOf: DiffableResult(identifier: "types").trackDifference(actual: self.types, expected: castObject.types))
+        results.append(contentsOf: DiffableResult(identifier: "argument").trackDifference(actual: self.argument, expected: castObject.argument))
+        return results
+    }
 
     public override var description: String {
         var string = "\(Swift.type(of: self)): "
@@ -59,7 +71,7 @@ extension TemplateContext.Error: CustomStringConvertible {
 }
 
 /// Collection of scanned types for accessing in templates
-@objcMembers public final class Types: NSObject {
+@objcMembers public final class Types: NSObject, Diffable {
 
     public let types: [Type]
 
@@ -165,6 +177,17 @@ extension TemplateContext.Error: CustomStringConvertible {
             }
         )
     }()
+
+    public func diffAgainst(_ object: Any?) -> DiffableResult {
+        let results = DiffableResult()
+        guard let castObject = object as? Types else {
+            results.append("Incorrect type <expected: Types, received: \(Swift.type(of: object))>")
+            return results
+        }
+        results.append(contentsOf: DiffableResult(identifier: "types").trackDifference(actual: self.types, expected: castObject.types))
+        results.append(contentsOf: DiffableResult(identifier: "typealiases").trackDifference(actual: self.typealiases, expected: castObject.typealiases))
+        return results
+    }
 
     public override var description: String {
         var string = "\(Swift.type(of: self)): "

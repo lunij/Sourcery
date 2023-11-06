@@ -1,7 +1,7 @@
 import Foundation
 
 /// Describes array type
-@objcMembers public final class ArrayType: NSObject {
+@objcMembers public final class ArrayType: NSObject, Diffable {
 
     /// Type name used in declaration
     public var name: String
@@ -28,6 +28,17 @@ import Foundation
 
     public var asSource: String {
         "[\(elementTypeName.asSource)]"
+    }
+
+    public func diffAgainst(_ object: Any?) -> DiffableResult {
+        let results = DiffableResult()
+        guard let castObject = object as? ArrayType else {
+            results.append("Incorrect type <expected: ArrayType, received: \(Swift.type(of: object))>")
+            return results
+        }
+        results.append(contentsOf: DiffableResult(identifier: "name").trackDifference(actual: self.name, expected: castObject.name))
+        results.append(contentsOf: DiffableResult(identifier: "elementTypeName").trackDifference(actual: self.elementTypeName, expected: castObject.elementTypeName))
+        return results
     }
 
     public override var description: String {
