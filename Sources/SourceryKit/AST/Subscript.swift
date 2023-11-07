@@ -101,4 +101,22 @@ import Foundation
         self.documentation = documentation
         self.definedInTypeName = definedInTypeName
     }
+
+    public override var description: String {
+        var string = "\(Swift.type(of: self)): "
+        string += "parameters = \(String(describing: parameters)), "
+        string += "returnTypeName = \(String(describing: returnTypeName)), "
+        string += "actualReturnTypeName = \(String(describing: actualReturnTypeName)), "
+        string += "isFinal = \(String(describing: isFinal)), "
+        string += "readAccess = \(String(describing: readAccess)), "
+        string += "writeAccess = \(String(describing: writeAccess)), "
+        string += "isMutable = \(String(describing: isMutable)), "
+        string += "annotations = \(String(describing: annotations)), "
+        string += "documentation = \(String(describing: documentation)), "
+        string += "definedInTypeName = \(String(describing: definedInTypeName)), "
+        string += "actualDefinedInTypeName = \(String(describing: actualDefinedInTypeName)), "
+        string += "attributes = \(String(describing: attributes)), "
+        string += "modifiers = \(String(describing: modifiers))"
+        return string
+    }
 }

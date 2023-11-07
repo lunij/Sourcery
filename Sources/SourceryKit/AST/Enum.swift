@@ -1,7 +1,7 @@
 import Foundation
 
 /// Defines enum case associated value
-@objcMembers public final class AssociatedValue: NSObject, SourceryModel, AutoDescription, Typed, Annotated {
+@objcMembers public final class AssociatedValue: NSObject, SourceryModel, Typed, Annotated {
 
     /// Associated value local name.
     /// This is a name to be used to construct enum case value
@@ -36,10 +36,20 @@ import Foundation
     convenience init(name: String? = nil, typeName: TypeName, type: Type? = nil, defaultValue: String? = nil, annotations: [String: NSObject] = [:]) {
         self.init(localName: name, externalName: name, typeName: typeName, type: type, defaultValue: defaultValue, annotations: annotations)
     }
+
+    public override var description: String {
+        var string = "\(Swift.type(of: self)): "
+        string += "localName = \(String(describing: localName)), "
+        string += "externalName = \(String(describing: externalName)), "
+        string += "typeName = \(String(describing: typeName)), "
+        string += "defaultValue = \(String(describing: defaultValue)), "
+        string += "annotations = \(String(describing: annotations))"
+        return string
+    }
 }
 
 /// Defines enum case
-@objcMembers public final class EnumCase: NSObject, SourceryModel, AutoDescription, Annotated, Documented {
+@objcMembers public final class EnumCase: NSObject, SourceryModel, Annotated, Documented {
 
     /// Enum case name
     public let name: String
@@ -75,6 +85,19 @@ import Foundation
         self.documentation = documentation
         self.indirect = indirect
     }
+
+    public override var description: String {
+        var string = "\(Swift.type(of: self)): "
+        string += "name = \(String(describing: name)), "
+        string += "rawValue = \(String(describing: rawValue)), "
+        string += "associatedValues = \(String(describing: associatedValues)), "
+        string += "annotations = \(String(describing: annotations)), "
+        string += "documentation = \(String(describing: documentation)), "
+        string += "indirect = \(String(describing: indirect)), "
+        string += "hasAssociatedValue = \(String(describing: hasAssociatedValue))"
+        return string
+    }
+
 }
 
 /// Defines Swift enum
@@ -157,5 +180,14 @@ import Foundation
         if let rawTypeName = rawTypeName?.name, let index = self.inheritedTypes.firstIndex(of: rawTypeName) {
             self.inheritedTypes.remove(at: index)
         }
+    }
+
+    public override var description: String {
+        var string = super.description
+        string += ", "
+        string += "cases = \(String(describing: cases)), "
+        string += "rawTypeName = \(String(describing: rawTypeName)), "
+        string += "hasAssociatedValues = \(String(describing: hasAssociatedValues))"
+        return string
     }
 }

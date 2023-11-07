@@ -70,6 +70,20 @@ public typealias SourceryMethod = Method
 
         return (labels.nilIfEmpty ?? "_") + typeSuffix
     }
+
+    public override var description: String {
+        var string = "\(Swift.type(of: self)): "
+        string += "argumentLabel = \(String(describing: argumentLabel)), "
+        string += "name = \(String(describing: name)), "
+        string += "typeName = \(String(describing: typeName)), "
+        string += "`inout` = \(String(describing: `inout`)), "
+        string += "isVariadic = \(String(describing: isVariadic)), "
+        string += "typeAttributes = \(String(describing: typeAttributes)), "
+        string += "defaultValue = \(String(describing: defaultValue)), "
+        string += "annotations = \(String(describing: annotations)), "
+        string += "asSource = \(String(describing: asSource))"
+        return string
+    }
 }
 
 extension Array where Element == MethodParameter {
@@ -134,6 +148,19 @@ extension Array where Element == MethodParameter {
           .joined(separator: " ")
 
         return (labels.nilIfEmpty ?? "_") + typeSuffix
+    }
+
+    override public var description: String {
+        var string = "\(Swift.type(of: self)): "
+        string += "argumentLabel = \(String(describing: argumentLabel)), "
+        string += "name = \(String(describing: name)), "
+        string += "typeName = \(String(describing: typeName)), "
+        string += "`inout` = \(String(describing: `inout`)), "
+        string += "typeAttributes = \(String(describing: typeAttributes)), "
+        string += "defaultValue = \(String(describing: defaultValue)), "
+        string += "annotations = \(String(describing: annotations)), "
+        string += "asSource = \(String(describing: asSource))"
+        return string
     }
 }
 
@@ -336,5 +363,26 @@ extension Array where Element == ClosureParameter {
         self.annotations = annotations
         self.documentation = documentation
         self.definedInTypeName = definedInTypeName
+    }
+
+    override public var description: String {
+        var string = "\(Swift.type(of: self)): "
+        string += "name = \(String(describing: name)), "
+        string += "selectorName = \(String(describing: selectorName)), "
+        string += "parameters = \(String(describing: parameters)), "
+        string += "returnTypeName = \(String(describing: returnTypeName)), "
+        string += "isAsync = \(String(describing: isAsync)), "
+        string += "`throws` = \(String(describing: `throws`)), "
+        string += "`rethrows` = \(String(describing: `rethrows`)), "
+        string += "accessLevel = \(String(describing: accessLevel)), "
+        string += "isStatic = \(String(describing: isStatic)), "
+        string += "isClass = \(String(describing: isClass)), "
+        string += "isFailableInitializer = \(String(describing: isFailableInitializer)), "
+        string += "annotations = \(String(describing: annotations)), "
+        string += "documentation = \(String(describing: documentation)), "
+        string += "definedInTypeName = \(String(describing: definedInTypeName)), "
+        string += "attributes = \(String(describing: attributes)), "
+        string += "modifiers = \(String(describing: modifiers))"
+        return string
     }
 }

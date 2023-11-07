@@ -65,4 +65,18 @@ import Foundation
     public var asSource: String {
         "\(parameters.asSource)\(asyncKeyword != nil ? " \(asyncKeyword!)" : "")\(throwsOrRethrowsKeyword != nil ? " \(throwsOrRethrowsKeyword!)" : "") -> \(returnTypeName.asSource)"
     }
+
+    public override var description: String {
+        var string = "\(Swift.type(of: self)): "
+        string += "name = \(String(describing: name)), "
+        string += "parameters = \(String(describing: parameters)), "
+        string += "returnTypeName = \(String(describing: returnTypeName)), "
+        string += "actualReturnTypeName = \(String(describing: actualReturnTypeName)), "
+        string += "isAsync = \(String(describing: isAsync)), "
+        string += "asyncKeyword = \(String(describing: asyncKeyword)), "
+        string += "`throws` = \(String(describing: `throws`)), "
+        string += "throwsOrRethrowsKeyword = \(String(describing: throwsOrRethrowsKeyword)), "
+        string += "asSource = \(String(describing: asSource))"
+        return string
+    }
 }

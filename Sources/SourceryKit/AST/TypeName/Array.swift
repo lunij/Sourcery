@@ -29,4 +29,13 @@ import Foundation
     public var asSource: String {
         "[\(elementTypeName.asSource)]"
     }
+
+    public override var description: String {
+        var string = "\(Swift.type(of: self)): "
+        string += "name = \(String(describing: name)), "
+        string += "elementTypeName = \(String(describing: elementTypeName)), "
+        string += "asGeneric = \(String(describing: asGeneric)), "
+        string += "asSource = \(String(describing: asSource))"
+        return string
+    }
 }

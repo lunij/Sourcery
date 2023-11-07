@@ -33,4 +33,13 @@ import Foundation
         self.relationship = relationship.rawValue
         self.relationshipSyntax = relationship.syntax
     }
+
+    public override var description: String {
+        var string = "\(Swift.type(of: self)): "
+        string += "leftType = \(String(describing: leftType)), "
+        string += "rightType = \(String(describing: rightType)), "
+        string += "relationship = \(String(describing: relationship)), "
+        string += "relationshipSyntax = \(String(describing: relationshipSyntax))"
+        return string
+    }
 }

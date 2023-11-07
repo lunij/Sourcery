@@ -39,4 +39,10 @@ import Foundation
         self.typeName = typeName
         self.type = type
     }
+
+    public override var description: String {
+        var string = "\(Swift.type(of: self)): "
+        string += "typeName = \(String(describing: typeName))"
+        return string
+    }
 }

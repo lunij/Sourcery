@@ -41,4 +41,15 @@ import Foundation
         self.parentName = parent?.name
         self.module = module
     }
+
+    public override var description: String {
+        var string = "\(Swift.type(of: self)): "
+        string += "aliasName = \(String(describing: aliasName)), "
+        string += "typeName = \(String(describing: typeName)), "
+        string += "module = \(String(describing: module)), "
+        string += "accessLevel = \(String(describing: accessLevel)), "
+        string += "parentName = \(String(describing: parentName)), "
+        string += "name = \(String(describing: name))"
+        return string
+    }
 }

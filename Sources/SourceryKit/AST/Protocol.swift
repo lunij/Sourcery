@@ -58,4 +58,13 @@ public typealias SourceryProtocol = Protocol
             isGeneric: !associatedTypes.isEmpty || !genericRequirements.isEmpty
         )
     }
+
+    public override var description: String {
+        var string = super.description
+        string += ", "
+        string += "kind = \(String(describing: self.kind)), "
+        string += "associatedTypes = \(String(describing: self.associatedTypes)), "
+        string += "genericRequirements = \(String(describing: self.genericRequirements))"
+        return string
+    }
 }

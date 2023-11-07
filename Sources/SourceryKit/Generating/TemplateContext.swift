@@ -28,6 +28,16 @@ import Foundation
         ]
     }
 
+
+    public override var description: String {
+        var string = "\(Swift.type(of: self)): "
+        string += "parserResult = \(String(describing: parserResult)), "
+        string += "functions = \(String(describing: functions)), "
+        string += "types = \(String(describing: types)), "
+        string += "argument = \(String(describing: argument)), "
+        string += "stencilContext = \(String(describing: stencilContext))"
+        return string
+    }
     enum Error: Swift.Error, Equatable {
         case notAClass(String)
         case notAProtocol(String)
@@ -155,6 +165,13 @@ extension TemplateContext.Error: CustomStringConvertible {
             }
         )
     }()
+
+    public override var description: String {
+        var string = "\(Swift.type(of: self)): "
+        string += "types = \(String(describing: types)), "
+        string += "typealiases = \(String(describing: typealiases))"
+        return string
+    }
 }
 
 @objcMembers public class TypesCollection: NSObject {

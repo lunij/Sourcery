@@ -113,4 +113,28 @@ public typealias SourceryVariable = Variable
         self.documentation = documentation
         self.definedInTypeName = definedInTypeName
     }
+
+    public override var description: String {
+        var string = "\(Swift.type(of: self)): "
+        string += "name = \(String(describing: name)), "
+        string += "typeName = \(String(describing: typeName)), "
+        string += "isComputed = \(String(describing: isComputed)), "
+        string += "isAsync = \(String(describing: isAsync)), "
+        string += "`throws` = \(String(describing: `throws`)), "
+        string += "isStatic = \(String(describing: isStatic)), "
+        string += "readAccess = \(String(describing: readAccess)), "
+        string += "writeAccess = \(String(describing: writeAccess)), "
+        string += "accessLevel = \(String(describing: accessLevel)), "
+        string += "isMutable = \(String(describing: isMutable)), "
+        string += "defaultValue = \(String(describing: defaultValue)), "
+        string += "annotations = \(String(describing: annotations)), "
+        string += "documentation = \(String(describing: documentation)), "
+        string += "attributes = \(String(describing: attributes)), "
+        string += "modifiers = \(String(describing: modifiers)), "
+        string += "isFinal = \(String(describing: isFinal)), "
+        string += "isLazy = \(String(describing: isLazy)), "
+        string += "definedInTypeName = \(String(describing: definedInTypeName)), "
+        string += "actualDefinedInTypeName = \(String(describing: actualDefinedInTypeName))"
+        return string
+    }
 }

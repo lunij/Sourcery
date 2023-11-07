@@ -48,4 +48,18 @@ import Foundation
             self.types = types
         }
     }
+
+    public override var description: String {
+        var string = "\(Swift.type(of: self)): "
+        string += "path = \(String(describing: path)), "
+        string += "module = \(String(describing: module)), "
+        string += "types = \(String(describing: types)), "
+        string += "functions = \(String(describing: functions)), "
+        string += "typealiases = \(String(describing: typealiases)), "
+        string += "inlineRanges = \(String(describing: inlineRanges)), "
+        string += "inlineIndentations = \(String(describing: inlineIndentations)), "
+        string += "modifiedDate = \(String(describing: modifiedDate)), "
+        string += "isEmpty = \(String(describing: isEmpty))"
+        return string
+    }
 }

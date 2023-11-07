@@ -49,8 +49,7 @@ extension NSRange: Diffable {
     var isEmpty: Bool { return results.isEmpty }
 
     public override var description: String {
-        guard !results.isEmpty else { return "" }
-        return "\(identifier.flatMap { "\($0) " } ?? "")" + results.joined(separator: "\n")
+        results.isEmpty ? "" : "\(identifier.flatMap { "\($0) " } ?? "")" + results.joined(separator: "\n")
     }
 }
 

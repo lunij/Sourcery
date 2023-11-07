@@ -18,6 +18,13 @@ import Foundation
         self.name = elements.asSource
         self.elements = elements
     }
+
+    public override var description: String {
+        var string = "\(Swift.type(of: self)): "
+        string += "name = \(String(describing: name)), "
+        string += "elements = \(String(describing: elements))"
+        return string
+    }
 }
 
 /// Describes tuple type element
@@ -42,6 +49,14 @@ import Foundation
     public var asSource: String {
         // swiftlint:disable:next force_unwrapping
         "\(name != nil ? "\(name!): " : "")\(typeName.asSource)"
+    }
+
+    public override var description: String {
+        var string = "\(Swift.type(of: self)): "
+        string += "name = \(String(describing: name)), "
+        string += "typeName = \(String(describing: typeName)), "
+        string += "asSource = \(String(describing: asSource))"
+        return string
     }
 }
 

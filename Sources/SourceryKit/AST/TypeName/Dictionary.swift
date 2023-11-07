@@ -38,4 +38,14 @@ import Foundation
     public var asSource: String {
         "[\(keyTypeName.asSource): \(valueTypeName.asSource)]"
     }
+
+    public override var description: String {
+        var string = "\(Swift.type(of: self)): "
+        string += "name = \(String(describing: name)), "
+        string += "valueTypeName = \(String(describing: valueTypeName)), "
+        string += "keyTypeName = \(String(describing: keyTypeName)), "
+        string += "asGeneric = \(String(describing: asGeneric)), "
+        string += "asSource = \(String(describing: asSource))"
+        return string
+    }
 }

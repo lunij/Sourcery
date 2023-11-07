@@ -43,4 +43,12 @@ import Foundation
             isGeneric: isGeneric
         )
     }
+
+    public override var description: String {
+        var string = super.description
+        string += ", "
+        string += "kind = \(String(describing: kind)), "
+        string += "isFinal = \(String(describing: isFinal))"
+        return string
+    }
 }
