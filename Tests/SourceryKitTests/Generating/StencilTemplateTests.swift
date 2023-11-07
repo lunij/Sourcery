@@ -174,7 +174,7 @@ class StencilTemplateTests: XCTestCase {
 
     func test_rethrowsTemplateParsingErrors() {
         XCTAssertThrowsError(
-            try StencilTemplate(templateString: "{% tag %}").render(.init(parserResult: nil, types: Types(types: []), functions: [], arguments: [:]))
+            try StencilTemplate(templateString: "{% tag %}").render(.init(types: Types(types: []), functions: [], arguments: [:]))
         ) { error in
             XCTAssertEqual("\(error)", ": Unknown template tag 'tag'")
         }
@@ -205,13 +205,11 @@ class StencilTemplateTests: XCTestCase {
 
 private extension TemplateContext {
     static func fake(
-        parserResult: FileParserResult? = nil,
         types: Types = .init(types: []),
         functions: [SourceryMethod] = [],
         arguments: [String: NSObject] = [:]
     ) -> Self {
         .init(
-            parserResult: parserResult,
             types: types,
             functions: functions,
             arguments: arguments
@@ -225,7 +223,6 @@ private func generate(_ template: String) -> String {
     let singleAnnotation = Variable(name: "annotated2", typeName: TypeName(name: "MyClass"))
     singleAnnotation.annotations = ["Foo": "HelloWorld" as NSString]
     let result = try? StencilTemplate(content: template).render(TemplateContext(
-        parserResult: nil,
         types: Types(types: [
             Class(name: "MyClass", variables: [
                 Variable(name: "lowerFirstLetter", typeName: TypeName(name: "myClass")),

@@ -75,7 +75,6 @@ public class SwiftGenerator {
 
     private func generate(from parsingResult: ParsingResult, using template: Template, config: Configuration) throws -> GenerationResult {
         let content = try template.render(.init(
-            parserResult: parsingResult.parserResult,
             types: parsingResult.types,
             functions: parsingResult.functions,
             arguments: config.arguments

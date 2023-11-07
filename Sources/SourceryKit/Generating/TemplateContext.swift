@@ -2,7 +2,6 @@ import Foundation
 
 // sourcery: skipCoding
 @objcMembers public final class TemplateContext: NSObject, Diffable {
-    public let parserResult: FileParserResult?
     public let functions: [SourceryMethod]
     public let types: Types
     public let argument: [String: NSObject]
@@ -12,8 +11,7 @@ import Foundation
         return types.typesByName
     }
 
-    public init(parserResult: FileParserResult?, types: Types, functions: [SourceryMethod], arguments: [String: NSObject]) {
-        self.parserResult = parserResult
+    public init(types: Types, functions: [SourceryMethod], arguments: [String: NSObject]) {
         self.types = types
         self.functions = functions
         self.argument = arguments
@@ -34,7 +32,6 @@ import Foundation
             results.append("Incorrect type <expected: TemplateContext, received: \(Swift.type(of: object))>")
             return results
         }
-        results.append(contentsOf: DiffableResult(identifier: "parserResult").trackDifference(actual: self.parserResult, expected: castObject.parserResult))
         results.append(contentsOf: DiffableResult(identifier: "functions").trackDifference(actual: self.functions, expected: castObject.functions))
         results.append(contentsOf: DiffableResult(identifier: "types").trackDifference(actual: self.types, expected: castObject.types))
         results.append(contentsOf: DiffableResult(identifier: "argument").trackDifference(actual: self.argument, expected: castObject.argument))
@@ -43,7 +40,6 @@ import Foundation
 
     public override var description: String {
         var string = "\(Swift.type(of: self)): "
-        string += "parserResult = \(String(describing: parserResult)), "
         string += "functions = \(String(describing: functions)), "
         string += "types = \(String(describing: types)), "
         string += "argument = \(String(describing: argument)), "
