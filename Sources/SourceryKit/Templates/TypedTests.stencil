@@ -1,4 +1,4 @@
-//sourcery:file:../../../../Tests/SourceryKitTests/SourceryRuntimeTests/Models/TypedTests
+//sourcery:file:../../../Tests/SourceryKitTests/AST/TypedTests
 import XCTest
 @testable import SourceryKit
 
@@ -7,40 +7,40 @@ class TypedTests: XCTestCase {
 
     // MARK: - {{ type.name }}
 
-    func test_{{ type.name }}_canReportOptionalViaKVC() {
-        XCTAssertEqual({{ type.name }}(typeName: .optionalInt).value(forKeyPath: "isOptional") as? Bool, true)
-        XCTAssertEqual({{ type.name }}(typeName: .optionalInt).value(forKeyPath: "isImplicitlyUnwrappedOptional") as? Bool, false)
-        XCTAssertEqual({{ type.name }}(typeName: .optionalInt).value(forKeyPath: "unwrappedTypeName") as? String, "Int")
-        XCTAssertEqual({{ type.name }}(typeName: .implicitlyUnwrappedOptionalInt).value(forKeyPath: "isOptional") as? Bool, true)
-        XCTAssertEqual({{ type.name }}(typeName: .implicitlyUnwrappedOptionalInt).value(forKeyPath: "isImplicitlyUnwrappedOptional") as? Bool, true)
+    func test_{{ type.name }}_canReportOptional() {
+        XCTAssertEqual({{ type.name }}(typeName: .optionalInt).isOptional, true)
+        XCTAssertEqual({{ type.name }}(typeName: .optionalInt).isImplicitlyUnwrappedOptional, false)
+        XCTAssertEqual({{ type.name }}(typeName: .optionalInt).unwrappedTypeName, "Int")
+        XCTAssertEqual({{ type.name }}(typeName: .implicitlyUnwrappedOptionalInt).isOptional, true)
+        XCTAssertEqual({{ type.name }}(typeName: .implicitlyUnwrappedOptionalInt).isImplicitlyUnwrappedOptional, true)
     }
 
-    func test_{{ type.name }}_canReportTupleTypeViaKVC() {
+    func test_{{ type.name }}_canReportTupleType() {
         let sut = {{ type.name }}(typeName: .doubleIntTuple)
-        XCTAssertEqual(sut.value(forKeyPath: "isTuple") as? Bool, true)
+        XCTAssertEqual(sut.isTuple, true)
     }
 
-    func test_{{ type.name }}_canReportClosureTypeViaKVC() {
+    func test_{{ type.name }}_canReportClosureType() {
         let sut = {{ type.name }}(typeName: .closure)
-        XCTAssertEqual(sut.value(forKeyPath: "isClosure") as? Bool, true)
+        XCTAssertEqual(sut.isClosure, true)
     }
 
-    func test_{{ type.name }}_canReportArrayTypeViaKVC() {
+    func test_{{ type.name }}_canReportArrayType() {
         let sut = {{ type.name }}(typeName: .intArray)
-        XCTAssertEqual(sut.value(forKeyPath: "isArray") as? Bool, true)
+        XCTAssertEqual(sut.isArray, true)
     }
 
-    func test_{{ type.name }}_canReportDictionaryTypeViaKVC() {
+    func test_{{ type.name }}_canReportDictionaryType() {
         let sut = {{ type.name }}(typeName: .intIntDictionary)
-        XCTAssertEqual(sut.value(forKeyPath: "isDictionary") as? Bool, true)
+        XCTAssertEqual(sut.isDictionary, true)
     }
 
-    func test_{{ type.name }}_canReportActualTypeNameViaKVC() {
+    func test_{{ type.name }}_canReportActualTypeName() {
         let sut = {{ type.name }}(typeName: "Alias".typeName)
-        XCTAssertEqual(sut.value(forKeyPath: "actualTypeName") as? TypeName, "Alias".typeName)
+        XCTAssertEqual(sut.actualTypeName, "Alias".typeName)
 
         sut.typeName.actualTypeName = "Int".typeName
-        XCTAssertEqual(sut.value(forKeyPath: "actualTypeName") as? TypeName, "Int".typeName)
+        XCTAssertEqual(sut.actualTypeName, "Int".typeName)
     }
     {% endfor %}
 }
