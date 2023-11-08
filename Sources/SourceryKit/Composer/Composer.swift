@@ -18,7 +18,8 @@ public struct Composer {
         typealiases: [Typealias],
         types: [Type]
     ) -> (types: [Type], functions: [SourceryMethod], typealiases: [Typealias]) {
-        let composed = ParserResultsComposed(typealiases: typealiases, types: types)
+        let composedTypealiases = composeTypealiases(typealiases, types: types)
+        let composed = ParserResultsComposed(types: types, composedTypealiases: composedTypealiases)
 
         let resolveType = { (typeName: TypeName, containingType: Type?) -> Type? in
             return composed.resolveType(typeName: typeName, containingType: containingType)
@@ -57,8 +58,46 @@ public struct Composer {
         return (
             types: composed.types.sorted { $0.globalName < $1.globalName },
             functions: functions.sorted { $0.name < $1.name },
-            typealiases: composed.unresolvedTypealiases.values.sorted(by: { $0.name < $1.name })
+            typealiases: composedTypealiases.unresolved.values.sorted { $0.name < $1.name }
         )
+    }
+
+    struct ComposedTypealiases {
+        let resolved: [String: Typealias]
+        let unresolved: [String: Typealias]
+    }
+
+    /// returns typealiases map to their full names, with `resolved` removing intermediate
+    /// typealises and `unresolved` including typealiases that reference other typealiases.
+    private func composeTypealiases(_ typealiases: [Typealias], types: [Type]) -> ComposedTypealiases {
+        // For any resolution we need to be looking at accessLevel and module boundaries
+        // e.g. there might be a typealias `private typealias Something = MyType` in one module and same name in another with public modifier, one could be accessed and the other could not
+        var typealiasesByNames = [String: Typealias]()
+        typealiases.forEach { typealiasesByNames[$0.name] = $0 }
+        types.forEach { type in
+            type.typealiases.forEach({ (_, alias) in
+                // TODO: should I deal with the fact that alias.name depends on type name but typenames might be updated later on
+                // maybe just handle non extension case here and extension aliases after resolving them?
+                typealiasesByNames[alias.name] = alias
+            })
+        }
+
+        let unresolved = typealiasesByNames
+
+        // ! if a typealias leads to another typealias, follow through and replace with final type
+        typealiasesByNames.forEach { _, alias in
+            var aliasNamesToReplace = [alias.name]
+            var finalAlias = alias
+            while let targetAlias = typealiasesByNames[finalAlias.typeName.name] {
+                aliasNamesToReplace.append(targetAlias.name)
+                finalAlias = targetAlias
+            }
+
+            // ! replace all keys
+            aliasNamesToReplace.forEach { typealiasesByNames[$0] = finalAlias }
+        }
+
+        return ComposedTypealiases(resolved: typealiasesByNames, unresolved: unresolved)
     }
 
     typealias TypeResolver = (TypeName, Type?) -> Type?
