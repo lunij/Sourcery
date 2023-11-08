@@ -18,6 +18,8 @@ public struct Composer {
         typealiases: [Typealias],
         types: [Type]
     ) -> (types: [Type], functions: [SourceryMethod], typealiases: [Typealias]) {
+        types.forEach { $0.setMembersDefinedInType() }
+
         let composedTypealiases = composeTypealiases(typealiases, types: types)
         let composed = ParserResultsComposed(types: types, composedTypealiases: composedTypealiases)
 
@@ -278,5 +280,13 @@ public struct Composer {
 
             type.basedTypes[globalName] = baseType
         }
+    }
+}
+
+private extension Type {
+    func setMembersDefinedInType() {
+        variables.forEach { $0.definedInType = self }
+        methods.forEach { $0.definedInType = self }
+        subscripts.forEach { $0.definedInType = self }
     }
 }

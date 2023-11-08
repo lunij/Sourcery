@@ -17,14 +17,6 @@ internal struct ParserResultsComposed {
         unresolvedTypealiases = composedTypealiases.unresolved
         parsedTypes = types
 
-        // set definedInType for all methods and variables
-        parsedTypes
-            .forEach { type in
-                type.variables.forEach { $0.definedInType = type }
-                type.methods.forEach { $0.definedInType = type }
-                type.subscripts.forEach { $0.definedInType = type }
-            }
-
         // map all known types to their names
         parsedTypes
             .filter { !$0.isExtension }
