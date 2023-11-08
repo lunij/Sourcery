@@ -176,7 +176,7 @@ class StencilTemplateTests2: XCTestCase {
     }
 
     func test_specificType_canRenderVariableIsOptional() {
-        XCTAssertEqual("{{ type.Complex.variables.first.isOptional }}".generate(), "0")
+        XCTAssertEqual("{{ type.Complex.variables.first.isOptional }}".generate(), "false")
     }
 
     func test_specificType_canRenderVariableDefinedInType() {
