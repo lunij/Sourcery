@@ -10,15 +10,18 @@ internal struct ParserResultsComposed {
     let resolvedTypealiases: [String: Typealias]
     let unresolvedTypealiases: [String: Typealias]
 
-    init(parserResult: FileParserResult) {
-        // TODO: This logic should really be more complicated
+    init(
+        functions: [SourceryMethod],
+        typealiases: [Typealias],
+        types: [Type]
+    ) {
         // For any resolution we need to be looking at accessLevel and module boundaries
         // e.g. there might be a typealias `private typealias Something = MyType` in one module and same name in another with public modifier, one could be accessed and the other could not
-        self.functions = parserResult.functions
-        let aliases = Self.typealiases(parserResult)
+        self.functions = functions
+        let aliases = Self.typealiases(typealiases, types: types)
         resolvedTypealiases = aliases.resolved
         unresolvedTypealiases = aliases.unresolved
-        parsedTypes = parserResult.types
+        parsedTypes = types
 
         // set definedInType for all methods and variables
         parsedTypes
@@ -46,7 +49,7 @@ internal struct ParserResultsComposed {
             alias.type = resolveType(typeName: alias.typeName, containingType: alias.parent)
         }
 
-        types = unifyTypes()
+        self.types = unifyTypes()
     }
 
     private func resolveExtensionOfNestedType(_ type: Type) {
@@ -150,10 +153,10 @@ internal struct ParserResultsComposed {
 
     /// returns typealiases map to their full names, with `resolved` removing intermediate
     /// typealises and `unresolved` including typealiases that reference other typealiases.
-    private static func typealiases(_ parserResult: FileParserResult) -> (resolved: [String: Typealias], unresolved: [String: Typealias]) {
+    private static func typealiases(_ typealiases: [Typealias], types: [Type]) -> (resolved: [String: Typealias], unresolved: [String: Typealias]) {
         var typealiasesByNames = [String: Typealias]()
-        parserResult.typealiases.forEach { typealiasesByNames[$0.name] = $0 }
-        parserResult.types.forEach { type in
+        typealiases.forEach { typealiasesByNames[$0.name] = $0 }
+        types.forEach { type in
             type.typealiases.forEach({ (_, alias) in
                 // TODO: should I deal with the fact that alias.name depends on type name but typenames might be updated later on
                 // maybe just handle non extension case here and extension aliases after resolving them?

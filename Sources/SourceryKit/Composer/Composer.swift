@@ -13,8 +13,16 @@ public struct Composer {
     ///
     /// - Parameter parserResult: Result of parsing source code.
     /// - Returns: Final types and extensions of unknown types.
-    public func uniqueTypesAndFunctions(_ parserResult: FileParserResult) -> (types: [Type], functions: [SourceryMethod], typealiases: [Typealias]) {
-        let composed = ParserResultsComposed(parserResult: parserResult)
+    public func uniqueTypesAndFunctions(
+        functions: [SourceryMethod],
+        typealiases: [Typealias],
+        types: [Type]
+    ) -> (types: [Type], functions: [SourceryMethod], typealiases: [Typealias]) {
+        let composed = ParserResultsComposed(
+            functions: functions,
+            typealiases: typealiases,
+            types: types
+        )
 
         let resolveType = { (typeName: TypeName, containingType: Type?) -> Type? in
             return composed.resolveType(typeName: typeName, containingType: containingType)

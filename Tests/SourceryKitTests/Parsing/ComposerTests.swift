@@ -2342,7 +2342,11 @@ final class ComposerTests: XCTestCase {
 private extension Composer {
     func compose(_ content: String) -> (types: [Type], functions: [SourceryMethod], typealiases: [Typealias]) {
         let parserResult = SwiftSyntaxParser().parse(content)
-        return uniqueTypesAndFunctions(parserResult)
+        return uniqueTypesAndFunctions(
+            functions: parserResult.functions,
+            typealiases: parserResult.typealiases,
+            types: parserResult.types
+        )
     }
 }
 
@@ -2357,13 +2361,20 @@ private extension Array where Element == Module {
             SwiftSyntaxParser().parse($0.content, module: $0.name)
         }
 
-        let combinedResult = results.reduce(FileParserResult(path: nil, module: nil, types: [], functions: [], typealiases: [])) { acc, next in
-            acc.typealiases += next.typealiases
-            acc.types += next.types
-            acc.functions += next.functions
-            return acc
+        var allFunctions: [SourceryMethod] = []
+        var allTypealiases: [Typealias] = []
+        var allTypes: [Type] = []
+
+        for result in results {
+            allFunctions += result.functions
+            allTypealiases += result.typealiases
+            allTypes += result.types
         }
 
-        return Composer().uniqueTypesAndFunctions(combinedResult)
+        return Composer().uniqueTypesAndFunctions(
+            functions: allFunctions,
+            typealiases: allTypealiases,
+            types: allTypes
+        )
     }
 }
