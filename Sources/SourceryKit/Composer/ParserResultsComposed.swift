@@ -5,19 +5,16 @@ internal struct ParserResultsComposed {
     private(set) var modules = [String: [String: Type]]()
     private(set) var types = [Type]()
 
-    let parsedTypes: [Type]
-    let functions: [SourceryMethod]
+    private let parsedTypes: [Type]
     let resolvedTypealiases: [String: Typealias]
     let unresolvedTypealiases: [String: Typealias]
 
     init(
-        functions: [SourceryMethod],
         typealiases: [Typealias],
         types: [Type]
     ) {
         // For any resolution we need to be looking at accessLevel and module boundaries
         // e.g. there might be a typealias `private typealias Something = MyType` in one module and same name in another with public modifier, one could be accessed and the other could not
-        self.functions = functions
         let aliases = Self.typealiases(typealiases, types: types)
         resolvedTypealiases = aliases.resolved
         unresolvedTypealiases = aliases.unresolved

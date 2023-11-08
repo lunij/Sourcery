@@ -18,11 +18,7 @@ public struct Composer {
         typealiases: [Typealias],
         types: [Type]
     ) -> (types: [Type], functions: [SourceryMethod], typealiases: [Typealias]) {
-        let composed = ParserResultsComposed(
-            functions: functions,
-            typealiases: typealiases,
-            types: types
-        )
+        let composed = ParserResultsComposed(typealiases: typealiases, types: types)
 
         let resolveType = { (typeName: TypeName, containingType: Type?) -> Type? in
             return composed.resolveType(typeName: typeName, containingType: containingType)
@@ -52,7 +48,7 @@ public struct Composer {
             }
         }
 
-        composed.functions.parallelPerform { function in
+        functions.parallelPerform { function in
             resolveMethodTypes(function, of: nil, resolve: resolveType)
         }
 
@@ -60,7 +56,7 @@ public struct Composer {
 
         return (
             types: composed.types.sorted { $0.globalName < $1.globalName },
-            functions: composed.functions.sorted { $0.name < $1.name },
+            functions: functions.sorted { $0.name < $1.name },
             typealiases: composed.unresolvedTypealiases.values.sorted(by: { $0.name < $1.name })
         )
     }
