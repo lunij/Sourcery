@@ -98,11 +98,10 @@ public class Composer {
         var typealiasesByNames = [String: Typealias]()
         typealiases.forEach { typealiasesByNames[$0.name] = $0 }
         types.forEach { type in
-            type.typealiases.forEach({ (_, alias) in
-                // TODO: should I deal with the fact that alias.name depends on type name but typenames might be updated later on
+            type.typealiases.forEach { _, alias in
                 // maybe just handle non extension case here and extension aliases after resolving them?
                 typealiasesByNames[alias.name] = alias
-            })
+            }
         }
 
         let unresolved = typealiasesByNames
@@ -137,7 +136,7 @@ public class Composer {
     }
 
     private func resolveSubscriptTypes(_ subscript: Subscript, of type: Type, resolve: TypeResolver) {
-        `subscript`.parameters.forEach { (parameter) in
+        `subscript`.parameters.forEach { parameter in
             parameter.type = resolve(parameter.typeName, type)
         }
 
@@ -201,7 +200,8 @@ public class Composer {
         } else if let rawTypeName = enumeration.inheritedTypes.first {
             // enums with no cases or enums with cases that contain associated values can't have raw type
             guard !enumeration.cases.isEmpty,
-                  !enumeration.hasAssociatedValues else {
+                  !enumeration.hasAssociatedValues
+            else {
                 return enumeration.rawTypeName = nil
             }
 
@@ -225,7 +225,7 @@ public class Composer {
     }
 
     private func resolveProtocolTypes(_ sourceryProtocol: SourceryProtocol, resolve: TypeResolver) {
-        sourceryProtocol.associatedTypes.forEach { (_, value) in
+        sourceryProtocol.associatedTypes.forEach { _, value in
             guard let typeName = value.typeName,
                   let type = resolve(typeName, sourceryProtocol)
             else { return }
@@ -295,7 +295,6 @@ public class Composer {
                     }
                 }
             } else if baseType is ProtocolComposition {
-                // TODO: associated types?
                 type.implements[globalName] = baseType
             }
 
@@ -305,7 +304,7 @@ public class Composer {
 
     private func resolveType(typeName: TypeName, containingType: Type?) -> Type? {
         let resolveTypeWithName = { (typeName: TypeName) -> Type? in
-            return self.resolveType(typeName: typeName, containingType: containingType)
+            self.resolveType(typeName: typeName, containingType: containingType)
         }
 
         let unique = typeMap
@@ -336,20 +335,20 @@ public class Composer {
                 }
                 tupleCopy.name = tupleCopy.elements.asTypeName
 
-                typeName.tuple = tupleCopy // TODO: really don't like this old behaviour
-                typeName.actualTypeName = TypeName(name: tupleCopy.name,
-                                                   isOptional: typeName.isOptional,
-                                                   isImplicitlyUnwrappedOptional: typeName.isImplicitlyUnwrappedOptional,
-                                                   tuple: tupleCopy,
-                                                   array: lookupName.array,
-                                                   dictionary: lookupName.dictionary,
-                                                   closure: lookupName.closure,
-                                                   generic: lookupName.generic
+                typeName.tuple = tupleCopy
+                typeName.actualTypeName = TypeName(
+                    name: tupleCopy.name,
+                    isOptional: typeName.isOptional,
+                    isImplicitlyUnwrappedOptional: typeName.isImplicitlyUnwrappedOptional,
+                    tuple: tupleCopy,
+                    array: lookupName.array,
+                    dictionary: lookupName.dictionary,
+                    closure: lookupName.closure,
+                    generic: lookupName.generic
                 )
             }
             return nil
-        } else
-        if let array = lookupName.array {
+        } else if let array = lookupName.array {
             array.elementType = resolveTypeWithName(array.elementTypeName)
 
             if array.elementTypeName.actualTypeName != nil || retrievedName != nil {
@@ -357,48 +356,48 @@ public class Composer {
                 array.elementTypeName = array.elementTypeName.actualTypeName ?? array.elementTypeName
                 array.elementTypeName.actualTypeName = nil
                 array.name = array.asSource
-                typeName.array = array // TODO: really don't like this old behaviour
-                typeName.generic = array.asGeneric // TODO: really don't like this old behaviour
+                typeName.array = array
+                typeName.generic = array.asGeneric
 
-                typeName.actualTypeName = TypeName(name: array.name,
-                                                   isOptional: typeName.isOptional,
-                                                   isImplicitlyUnwrappedOptional: typeName.isImplicitlyUnwrappedOptional,
-                                                   tuple: lookupName.tuple,
-                                                   array: array,
-                                                   dictionary: lookupName.dictionary,
-                                                   closure: lookupName.closure,
-                                                   generic: typeName.generic
+                typeName.actualTypeName = TypeName(
+                    name: array.name,
+                    isOptional: typeName.isOptional,
+                    isImplicitlyUnwrappedOptional: typeName.isImplicitlyUnwrappedOptional,
+                    tuple: lookupName.tuple,
+                    array: array,
+                    dictionary: lookupName.dictionary,
+                    closure: lookupName.closure,
+                    generic: typeName.generic
                 )
             }
-        } else
-        if let dictionary = lookupName.dictionary {
+        } else if let dictionary = lookupName.dictionary {
             dictionary.keyType = resolveTypeWithName(dictionary.keyTypeName)
             dictionary.valueType = resolveTypeWithName(dictionary.valueTypeName)
 
             if dictionary.keyTypeName.actualTypeName != nil || dictionary.valueTypeName.actualTypeName != nil || retrievedName != nil {
                 let dictionary = DictionaryType(name: dictionary.name, valueTypeName: dictionary.valueTypeName, valueType: dictionary.valueType, keyTypeName: dictionary.keyTypeName, keyType: dictionary.keyType)
                 dictionary.keyTypeName = dictionary.keyTypeName.actualTypeName ?? dictionary.keyTypeName
-                dictionary.keyTypeName.actualTypeName = nil // TODO: really don't like this old behaviour
+                dictionary.keyTypeName.actualTypeName = nil
                 dictionary.valueTypeName = dictionary.valueTypeName.actualTypeName ?? dictionary.valueTypeName
-                dictionary.valueTypeName.actualTypeName = nil // TODO: really don't like this old behaviour
+                dictionary.valueTypeName.actualTypeName = nil
 
                 dictionary.name = dictionary.asSource
 
-                typeName.dictionary = dictionary // TODO: really don't like this old behaviour
-                typeName.generic = dictionary.asGeneric // TODO: really don't like this old behaviour
+                typeName.dictionary = dictionary
+                typeName.generic = dictionary.asGeneric
 
-                typeName.actualTypeName = TypeName(name: dictionary.asSource,
-                                                   isOptional: typeName.isOptional,
-                                                   isImplicitlyUnwrappedOptional: typeName.isImplicitlyUnwrappedOptional,
-                                                   tuple: lookupName.tuple,
-                                                   array: lookupName.array,
-                                                   dictionary: dictionary,
-                                                   closure: lookupName.closure,
-                                                   generic: dictionary.asGeneric
+                typeName.actualTypeName = TypeName(
+                    name: dictionary.asSource,
+                    isOptional: typeName.isOptional,
+                    isImplicitlyUnwrappedOptional: typeName.isImplicitlyUnwrappedOptional,
+                    tuple: lookupName.tuple,
+                    array: lookupName.array,
+                    dictionary: dictionary,
+                    closure: lookupName.closure,
+                    generic: dictionary.asGeneric
                 )
             }
-        } else
-        if let closure = lookupName.closure {
+        } else if let closure = lookupName.closure {
             var needsUpdate = false
 
             closure.returnType = resolveTypeWithName(closure.returnTypeName)
@@ -410,22 +409,22 @@ public class Composer {
             }
 
             if closure.returnTypeName.actualTypeName != nil || needsUpdate || retrievedName != nil {
-                typeName.closure = closure // TODO: really don't like this old behaviour
+                typeName.closure = closure
 
-                typeName.actualTypeName = TypeName(name: closure.asSource,
-                                                   isOptional: typeName.isOptional,
-                                                   isImplicitlyUnwrappedOptional: typeName.isImplicitlyUnwrappedOptional,
-                                                   tuple: lookupName.tuple,
-                                                   array: lookupName.array,
-                                                   dictionary: lookupName.dictionary,
-                                                   closure: closure,
-                                                   generic: lookupName.generic
+                typeName.actualTypeName = TypeName(
+                    name: closure.asSource,
+                    isOptional: typeName.isOptional,
+                    isImplicitlyUnwrappedOptional: typeName.isImplicitlyUnwrappedOptional,
+                    tuple: lookupName.tuple,
+                    array: lookupName.array,
+                    dictionary: lookupName.dictionary,
+                    closure: closure,
+                    generic: lookupName.generic
                 )
             }
 
             return nil
-        } else
-        if let generic = lookupName.generic {
+        } else if let generic = lookupName.generic {
             var needsUpdate = false
 
             generic.typeParameters.forEach { parameter in
@@ -439,22 +438,23 @@ public class Composer {
                 let generic = GenericType(name: generic.name, typeParameters: generic.typeParameters)
                 generic.typeParameters.forEach {
                     $0.typeName = $0.typeName.actualTypeName ?? $0.typeName
-                    $0.typeName.actualTypeName = nil // TODO: really don't like this old behaviour
+                    $0.typeName.actualTypeName = nil
                 }
-                typeName.generic = generic // TODO: really don't like this old behaviour
-                typeName.array = lookupName.array // TODO: really don't like this old behaviour
-                typeName.dictionary = lookupName.dictionary // TODO: really don't like this old behaviour
+                typeName.generic = generic
+                typeName.array = lookupName.array
+                typeName.dictionary = lookupName.dictionary
 
-                let params = generic.typeParameters.map { $0.typeName.asSource }.joined(separator: ", ")
+                let params = generic.typeParameters.map(\.typeName.asSource).joined(separator: ", ")
 
-                typeName.actualTypeName = TypeName(name: "\(generic.name)<\(params)>",
-                                                   isOptional: typeName.isOptional,
-                                                   isImplicitlyUnwrappedOptional: typeName.isImplicitlyUnwrappedOptional,
-                                                   tuple: lookupName.tuple,
-                                                   array: lookupName.array, // TODO: asArray
-                                                   dictionary: lookupName.dictionary, // TODO: asDictionary
-                                                   closure: lookupName.closure,
-                                                   generic: generic
+                typeName.actualTypeName = TypeName(
+                    name: "\(generic.name)<\(params)>",
+                    isOptional: typeName.isOptional,
+                    isImplicitlyUnwrappedOptional: typeName.isImplicitlyUnwrappedOptional,
+                    tuple: lookupName.tuple,
+                    array: lookupName.array,
+                    dictionary: lookupName.dictionary,
+                    closure: lookupName.closure,
+                    generic: generic
                 )
             }
         }
@@ -483,7 +483,6 @@ public class Composer {
             return nil
         }
 
-        /// TODO: verify
         let generic = typeName.generic.map { GenericType(name: $0.name, typeParameters: $0.typeParameters) }
         generic?.name = aliased.name
         let dictionary = typeName.dictionary.map { DictionaryType(name: $0.name, valueTypeName: $0.valueTypeName, valueType: $0.valueType, keyTypeName: $0.keyTypeName, keyType: $0.keyType) }
@@ -491,14 +490,15 @@ public class Composer {
         let array = typeName.array.map { ArrayType(name: $0.name, elementTypeName: $0.elementTypeName, elementType: $0.elementType) }
         array?.name = aliased.name
 
-        return TypeName(name: aliased.name,
-                        isOptional: typeName.isOptional,
-                        isImplicitlyUnwrappedOptional: typeName.isImplicitlyUnwrappedOptional,
-                        tuple: aliased.typealias?.typeName.tuple ?? typeName.tuple, // TODO: verify
-                        array: aliased.typealias?.typeName.array ?? array,
-                        dictionary: aliased.typealias?.typeName.dictionary ?? dictionary,
-                        closure: aliased.typealias?.typeName.closure ?? typeName.closure,
-                        generic: aliased.typealias?.typeName.generic ?? generic
+        return TypeName(
+            name: aliased.name,
+            isOptional: typeName.isOptional,
+            isImplicitlyUnwrappedOptional: typeName.isImplicitlyUnwrappedOptional,
+            tuple: aliased.typealias?.typeName.tuple ?? typeName.tuple,
+            array: aliased.typealias?.typeName.array ?? array,
+            dictionary: aliased.typealias?.typeName.dictionary ?? dictionary,
+            closure: aliased.typealias?.typeName.closure ?? typeName.closure,
+            generic: aliased.typealias?.typeName.generic ?? generic
         )
     }
 
@@ -511,7 +511,7 @@ public class Composer {
         typealiases: [String: Typealias]
     ) -> (name: String, typealias: Typealias?)? {
         // if the type exists for this name and isn't an extension just return it's name
-        // if it's extension we need to check if there aren't other options TODO: verify
+        // if it's extension we need to check if there aren't other options
         if let realType = unique?[type], realType.isExtension == false {
             return (name: realType.globalName, typealias: nil)
         }
@@ -520,14 +520,13 @@ public class Composer {
             return (name: alias.type?.globalName ?? alias.typeName.name, typealias: alias)
         }
 
-        if let containingType = containingType {
+        if let containingType {
             if type == "Self" {
                 return (name: containingType.globalName, typealias: nil)
             }
 
             var currentContainer: Type? = containingType
             while currentContainer != nil, let parentName = currentContainer?.globalName {
-                /// TODO: no parent for sure?
                 /// manually walk the containment tree
                 if let name = resolveGlobalName(for: "\(parentName).\(type)", containingType: nil, unique: unique, modules: modules, typealiases: typealiases) {
                     return name
@@ -535,15 +534,6 @@ public class Composer {
 
                 currentContainer = currentContainer?.parent
             }
-
-//            if let name = resolveGlobalName(for: "\(containingType.globalName).\(type)", containingType: containingType.parent, unique: unique, modules: modules, typealiases: typealiases) {
-//                return name
-//            }
-
-//             last check it's via module
-//            if let module = containingType.module, let name = resolveGlobalName(for: "\(module).\(type)", containingType: nil, unique: unique, modules: modules, typealiases: typealiases) {
-//                return name
-//            }
         }
 
         if let inferred = inferTypeNameFromModules(from: type, containedInType: containingType, uniqueTypes: unique ?? [:], modules: modules) {
@@ -559,19 +549,19 @@ public class Composer {
         }
 
         func type(for module: String) -> Type? {
-            return modules[module]?[typeIdentifier]
+            modules[module]?[typeIdentifier]
         }
 
         func ambiguousErrorMessage(from types: [Type]) -> String? {
-            logger.astWarning("Ambiguous type \(typeIdentifier), found \(types.map { $0.globalName }.joined(separator: ", ")). Specify module name at declaration site to disambiguate.")
+            logger.astWarning("Ambiguous type \(typeIdentifier), found \(types.map(\.globalName).joined(separator: ", ")). Specify module name at declaration site to disambiguate.")
             return nil
         }
 
         let explicitModulesAtDeclarationSite: [String] = [
-            containedInType?.module.map { [$0] } ?? [],    // main module for this typename
-            containedInType?.imports.map { $0.moduleName } ?? []    // imported modules
+            containedInType?.module.map { [$0] } ?? [], // main module for this typename
+            containedInType?.imports.map(\.moduleName) ?? [] // imported modules
         ]
-            .flatMap { $0 }
+        .flatMap { $0 }
 
         let remainingModules = Set(modules.keys).subtracting(explicitModulesAtDeclarationSite)
 
@@ -638,7 +628,7 @@ public class Composer {
     private func unifyTypes(_ types: [Type]) -> [Type] {
         /// Resolve actual names of extensions, as they could have been done on typealias and note updated child names in uniques if needed
         types
-            .filter { $0.isExtension }
+            .filter(\.isExtension)
             .forEach {
                 let oldName = $0.globalName
 
@@ -705,12 +695,12 @@ public class Composer {
 
         let values = typeMap.values
         var processed = Set<String>(minimumCapacity: values.count)
-        return typeMap.values.filter({
+        return typeMap.values.filter {
             let name = $0.globalName
             let wasProcessed = processed.contains(name)
             processed.insert(name)
             return !wasProcessed
-        })
+        }
     }
 }
 
