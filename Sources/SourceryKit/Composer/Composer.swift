@@ -5,9 +5,6 @@ public class Composer {
     private var typeMap: [String: Type] = [:]
     private var modules: [String: [String: Type]] = [:]
 
-    private var resolvedTypealiases: [String: Typealias] = [:]
-    private var unresolvedTypealiases: [String: Typealias] = [:]
-
     public init() {}
 
     /// Performs final processing of discovered types:
@@ -26,8 +23,7 @@ public class Composer {
         types.forEach { $0.setMembersDefinedInType() }
 
         let composedTypealiases = composeTypealiases(typealiases, types: types)
-        resolvedTypealiases = composedTypealiases.resolved
-        unresolvedTypealiases = composedTypealiases.unresolved
+        let resolvedTypealiasMap = composedTypealiases.resolved
 
         types
             .filter { !$0.isExtension }
@@ -43,37 +39,37 @@ public class Composer {
         /// Resolve typealiases
         let typealiases = Array(composedTypealiases.unresolved.values)
         typealiases.forEach { alias in
-            alias.type = resolveType(typeName: alias.typeName, containingType: alias.parent)
+            alias.type = resolveType(named: alias.typeName, in: alias.parent, typealiases: resolvedTypealiasMap)
         }
 
-        let unifiedTypes = unifyTypes(types)
+        let unifiedTypes = unifyTypes(types, typealiases: resolvedTypealiasMap)
 
         unifiedTypes.parallelPerform { type in
             type.variables.forEach {
-                resolveVariableTypes($0, of: type, resolve: resolveType)
+                resolveVariableTypes($0, of: type, typealiases: resolvedTypealiasMap)
             }
             type.methods.forEach {
-                resolveMethodTypes($0, of: type, resolve: resolveType)
+                resolveMethodTypes($0, of: type, typealiases: resolvedTypealiasMap)
             }
             type.subscripts.forEach {
-                resolveSubscriptTypes($0, of: type, resolve: resolveType)
+                resolveSubscriptTypes($0, of: type, typealiases: resolvedTypealiasMap)
             }
 
             if let enumeration = type as? Enum {
-                resolveEnumTypes(enumeration, types: typeMap, resolve: resolveType)
+                resolveEnumTypes(enumeration, types: typeMap, typealiases: resolvedTypealiasMap)
             }
 
             if let composition = type as? ProtocolComposition {
-                resolveProtocolCompositionTypes(composition, resolve: resolveType)
+                resolveProtocolCompositionTypes(composition, typealiases: resolvedTypealiasMap)
             }
 
             if let sourceryProtocol = type as? SourceryProtocol {
-                resolveProtocolTypes(sourceryProtocol, resolve: resolveType)
+                resolveProtocolTypes(sourceryProtocol, typealiases: resolvedTypealiasMap)
             }
         }
 
         functions.parallelPerform { function in
-            resolveMethodTypes(function, of: nil, resolve: resolveType)
+            resolveMethodTypes(function, of: nil, typealiases: resolvedTypealiasMap)
         }
 
         updateTypeRelationships(types: unifiedTypes)
@@ -122,33 +118,31 @@ public class Composer {
         return ComposedTypealiases(resolved: typealiasesByNames, unresolved: unresolved)
     }
 
-    typealias TypeResolver = (TypeName, Type?) -> Type?
-
-    private func resolveVariableTypes(_ variable: Variable, of type: Type, resolve: TypeResolver) {
-        variable.type = resolve(variable.typeName, type)
+    private func resolveVariableTypes(_ variable: Variable, of type: Type, typealiases: [String: Typealias]) {
+        variable.type = resolveType(named: variable.typeName, in: type, typealiases: typealiases)
 
         /// The actual `definedInType` is assigned in `uniqueTypes` but we still
         /// need to resolve the type to correctly parse typealiases
         /// @see https://github.com/krzysztofzablocki/Sourcery/pull/374
         if let definedInTypeName = variable.definedInTypeName {
-            _ = resolve(definedInTypeName, type)
+            _ = resolveType(named: definedInTypeName, in: type, typealiases: typealiases)
         }
     }
 
-    private func resolveSubscriptTypes(_ subscript: Subscript, of type: Type, resolve: TypeResolver) {
+    private func resolveSubscriptTypes(_ subscript: Subscript, of type: Type, typealiases: [String: Typealias]) {
         `subscript`.parameters.forEach { parameter in
-            parameter.type = resolve(parameter.typeName, type)
+            parameter.type = resolveType(named: parameter.typeName, in: type, typealiases: typealiases)
         }
 
-        `subscript`.returnType = resolve(`subscript`.returnTypeName, type)
+        `subscript`.returnType = resolveType(named: `subscript`.returnTypeName, in: type, typealiases: typealiases)
         if let definedInTypeName = `subscript`.definedInTypeName {
-            _ = resolve(definedInTypeName, type)
+            _ = resolveType(named: definedInTypeName, in: type, typealiases: typealiases)
         }
     }
 
-    private func resolveMethodTypes(_ method: SourceryMethod, of type: Type?, resolve: TypeResolver) {
+    private func resolveMethodTypes(_ method: SourceryMethod, of type: Type?, typealiases: [String: Typealias]) {
         method.parameters.forEach { parameter in
-            parameter.type = resolve(parameter.typeName, type)
+            parameter.type = resolveType(named: parameter.typeName, in: type, typealiases: typealiases)
         }
 
         /// The actual `definedInType` is assigned in `uniqueTypes` but we still
@@ -156,7 +150,7 @@ public class Composer {
         /// @see https://github.com/krzysztofzablocki/Sourcery/pull/374
         var definedInType: Type?
         if let definedInTypeName = method.definedInTypeName {
-            definedInType = resolve(definedInTypeName, type)
+            definedInType = resolveType(named: definedInTypeName, in: type, typealiases: typealiases)
         }
 
         guard !method.returnTypeName.isVoid else { return }
@@ -181,14 +175,14 @@ public class Composer {
                 }
             }
         } else {
-            method.returnType = resolve(method.returnTypeName, type)
+            method.returnType = resolveType(named: method.returnTypeName, in: type, typealiases: typealiases)
         }
     }
 
-    private func resolveEnumTypes(_ enumeration: Enum, types: [String: Type], resolve: TypeResolver) {
+    private func resolveEnumTypes(_ enumeration: Enum, types: [String: Type], typealiases: [String: Typealias]) {
         enumeration.cases.forEach { enumCase in
             enumCase.associatedValues.forEach { associatedValue in
-                associatedValue.type = resolve(associatedValue.typeName, enumeration)
+                associatedValue.type = resolveType(named: associatedValue.typeName, in: enumeration, typealiases: typealiases)
             }
         }
 
@@ -216,18 +210,18 @@ public class Composer {
         }
     }
 
-    private func resolveProtocolCompositionTypes(_ protocolComposition: ProtocolComposition, resolve: TypeResolver) {
+    private func resolveProtocolCompositionTypes(_ protocolComposition: ProtocolComposition, typealiases: [String: Typealias]) {
         let composedTypes = protocolComposition.composedTypeNames.compactMap { typeName in
-            resolve(typeName, protocolComposition)
+            resolveType(named: typeName, in: protocolComposition, typealiases: typealiases)
         }
 
         protocolComposition.composedTypes = composedTypes
     }
 
-    private func resolveProtocolTypes(_ sourceryProtocol: SourceryProtocol, resolve: TypeResolver) {
+    private func resolveProtocolTypes(_ sourceryProtocol: SourceryProtocol, typealiases: [String: Typealias]) {
         sourceryProtocol.associatedTypes.forEach { _, value in
             guard let typeName = value.typeName,
-                  let type = resolve(typeName, sourceryProtocol)
+                  let type = resolveType(named: typeName, in: sourceryProtocol, typealiases: typealiases)
             else { return }
             value.type = type
         }
@@ -236,7 +230,7 @@ public class Composer {
             if let knownAssociatedType = sourceryProtocol.associatedTypes[requirment.leftType.name] {
                 requirment.leftType = knownAssociatedType
             }
-            requirment.rightType.type = resolve(requirment.rightType.typeName, sourceryProtocol)
+            requirment.rightType.type = resolveType(named: requirment.rightType.typeName, in: sourceryProtocol, typealiases: typealiases)
         }
     }
 
@@ -302,9 +296,9 @@ public class Composer {
         }
     }
 
-    private func resolveType(typeName: TypeName, containingType: Type?) -> Type? {
+    private func resolveType(named typeName: TypeName, in containingType: Type?, typealiases: [String: Typealias]) -> Type? {
         let resolveTypeWithName = { (typeName: TypeName) -> Type? in
-            self.resolveType(typeName: typeName, containingType: containingType)
+            self.resolveType(named: typeName, in: containingType, typealiases: typealiases)
         }
 
         let unique = typeMap
@@ -314,7 +308,7 @@ public class Composer {
             return unique[resolvedIdentifier]
         }
 
-        let retrievedName = actualTypeName(for: typeName, containingType: containingType)
+        let retrievedName = actualTypeName(for: typeName, containingType: containingType, typealiases: typealiases)
         let lookupName = retrievedName ?? typeName
 
         if let tuple = lookupName.tuple {
@@ -470,9 +464,8 @@ public class Composer {
         return unique[resolvedIdentifier]
     }
 
-    private func actualTypeName(for typeName: TypeName, containingType: Type? = nil) -> TypeName? {
+    private func actualTypeName(for typeName: TypeName, containingType: Type? = nil, typealiases: [String: Typealias]) -> TypeName? {
         let unique = typeMap
-        let typealiases = resolvedTypealiases
 
         var unwrapped = typeName.unwrappedTypeName
         if let generic = typeName.generic {
@@ -625,7 +618,7 @@ public class Composer {
         }
     }
 
-    private func unifyTypes(_ types: [Type]) -> [Type] {
+    private func unifyTypes(_ types: [Type], typealiases: [String: Typealias]) -> [Type] {
         /// Resolve actual names of extensions, as they could have been done on typealias and note updated child names in uniques if needed
         types
             .filter(\.isExtension)
@@ -636,7 +629,7 @@ public class Composer {
                     resolveExtensionOfNestedType($0)
                 }
 
-                if let resolved = resolveGlobalName(for: oldName, containingType: $0.parent, unique: typeMap, modules: modules, typealiases: resolvedTypealiases)?.name {
+                if let resolved = resolveGlobalName(for: oldName, containingType: $0.parent, unique: typeMap, modules: modules, typealiases: typealiases)?.name {
                     $0.localName = resolved.replacingOccurrences(of: "\($0.module != nil ? "\($0.module!)." : "")", with: "")
                 } else {
                     return
@@ -661,7 +654,7 @@ public class Composer {
         // extend all types with their extensions
         types.forEach { type in
             type.inheritedTypes = type.inheritedTypes.map { inheritedName in
-                resolveGlobalName(for: inheritedName, containingType: type.parent, unique: typeMap, modules: modules, typealiases: resolvedTypealiases)?.name ?? inheritedName
+                resolveGlobalName(for: inheritedName, containingType: type.parent, unique: typeMap, modules: modules, typealiases: typealiases)?.name ?? inheritedName
             }
 
             let uniqueType = typeMap[type.globalName] ?? // this check will only fail on an extension?
