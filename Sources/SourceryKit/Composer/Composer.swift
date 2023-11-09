@@ -22,12 +22,13 @@ public struct Composer {
 
         let composedTypealiases = composeTypealiases(typealiases, types: types)
         let composed = ParserResultsComposed(types: types, composedTypealiases: composedTypealiases)
+        let unifiedTypes = composed.unifiedTypes()
 
         let resolveType = { (typeName: TypeName, containingType: Type?) -> Type? in
             return composed.resolveType(typeName: typeName, containingType: containingType)
         }
 
-        composed.types.parallelPerform { type in
+        unifiedTypes.parallelPerform { type in
             type.variables.forEach {
                 resolveVariableTypes($0, of: type, resolve: resolveType)
             }
@@ -55,10 +56,10 @@ public struct Composer {
             resolveMethodTypes(function, of: nil, resolve: resolveType)
         }
 
-        updateTypeRelationships(types: composed.types)
+        updateTypeRelationships(types: unifiedTypes)
 
         return (
-            types: composed.types.sorted { $0.globalName < $1.globalName },
+            types: unifiedTypes.sorted { $0.globalName < $1.globalName },
             functions: functions.sorted { $0.name < $1.name },
             typealiases: composedTypealiases.unresolved.values.sorted { $0.name < $1.name }
         )

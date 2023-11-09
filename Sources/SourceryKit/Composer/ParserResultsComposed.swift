@@ -1,9 +1,8 @@
 import Foundation
 
-internal struct ParserResultsComposed {
+internal class ParserResultsComposed {
     private(set) var typeMap = [String: Type]()
     private(set) var modules = [String: [String: Type]]()
-    private(set) var types = [Type]()
 
     private let parsedTypes: [Type]
     private let resolvedTypealiases: [String: Typealias]
@@ -34,8 +33,6 @@ internal struct ParserResultsComposed {
         typealiases.forEach { alias in
             alias.type = resolveType(typeName: alias.typeName, containingType: alias.parent)
         }
-
-        self.types = unifyTypes()
     }
 
     private func resolveExtensionOfNestedType(_ type: Type) {
@@ -59,7 +56,7 @@ internal struct ParserResultsComposed {
         }
     }
 
-    private mutating func unifyTypes() -> [Type] {
+    func unifiedTypes() -> [Type] {
         /// Resolve actual names of extensions, as they could have been done on typealias and note updated child names in uniques if needed
         parsedTypes
             .filter { $0.isExtension }
