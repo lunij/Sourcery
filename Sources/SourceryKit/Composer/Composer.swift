@@ -46,30 +46,30 @@ public class Composer {
 
         unifiedTypes.parallelPerform { type in
             type.variables.forEach {
-                resolveVariableTypes($0, of: type, typealiases: resolvedTypealiasMap)
+                resolveTypes(of: $0, in: type, typealiases: resolvedTypealiasMap)
             }
             type.methods.forEach {
-                resolveMethodTypes($0, of: type, typealiases: resolvedTypealiasMap)
+                resolveTypes(of: $0, in: type, typealiases: resolvedTypealiasMap)
             }
             type.subscripts.forEach {
-                resolveSubscriptTypes($0, of: type, typealiases: resolvedTypealiasMap)
+                resolveTypes(of: $0, in: type, typealiases: resolvedTypealiasMap)
             }
 
             if let enumeration = type as? Enum {
-                resolveEnumTypes(enumeration, types: typeMap, typealiases: resolvedTypealiasMap)
+                resolveTypes(of: enumeration, types: typeMap, typealiases: resolvedTypealiasMap)
             }
 
             if let composition = type as? ProtocolComposition {
-                resolveProtocolCompositionTypes(composition, typealiases: resolvedTypealiasMap)
+                resolveTypes(of: composition, typealiases: resolvedTypealiasMap)
             }
 
             if let sourceryProtocol = type as? SourceryProtocol {
-                resolveProtocolTypes(sourceryProtocol, typealiases: resolvedTypealiasMap)
+                resolveTypes(of: sourceryProtocol, typealiases: resolvedTypealiasMap)
             }
         }
 
         functions.parallelPerform { function in
-            resolveMethodTypes(function, of: nil, typealiases: resolvedTypealiasMap)
+            resolveTypes(of: function, in: nil, typealiases: resolvedTypealiasMap)
         }
 
         updateTypeRelationships(types: unifiedTypes)
@@ -118,18 +118,15 @@ public class Composer {
         return ComposedTypealiases(resolved: typealiasesByNames, unresolved: unresolved)
     }
 
-    private func resolveVariableTypes(_ variable: Variable, of type: Type, typealiases: [String: Typealias]) {
+    private func resolveTypes(of variable: Variable, in type: Type, typealiases: [String: Typealias]) {
         variable.type = resolveType(named: variable.typeName, in: type, typealiases: typealiases)
 
-        /// The actual `definedInType` is assigned in `uniqueTypes` but we still
-        /// need to resolve the type to correctly parse typealiases
-        /// @see https://github.com/krzysztofzablocki/Sourcery/pull/374
         if let definedInTypeName = variable.definedInTypeName {
             _ = resolveType(named: definedInTypeName, in: type, typealiases: typealiases)
         }
     }
 
-    private func resolveSubscriptTypes(_ subscript: Subscript, of type: Type, typealiases: [String: Typealias]) {
+    private func resolveTypes(of subscript: Subscript, in type: Type, typealiases: [String: Typealias]) {
         `subscript`.parameters.forEach { parameter in
             parameter.type = resolveType(named: parameter.typeName, in: type, typealiases: typealiases)
         }
@@ -140,14 +137,11 @@ public class Composer {
         }
     }
 
-    private func resolveMethodTypes(_ method: SourceryMethod, of type: Type?, typealiases: [String: Typealias]) {
+    private func resolveTypes(of method: SourceryMethod, in type: Type?, typealiases: [String: Typealias]) {
         method.parameters.forEach { parameter in
             parameter.type = resolveType(named: parameter.typeName, in: type, typealiases: typealiases)
         }
 
-        /// The actual `definedInType` is assigned in `uniqueTypes` but we still
-        /// need to resolve the type to correctly parse typealiases
-        /// @see https://github.com/krzysztofzablocki/Sourcery/pull/374
         var definedInType: Type?
         if let definedInTypeName = method.definedInTypeName {
             definedInType = resolveType(named: definedInTypeName, in: type, typealiases: typealiases)
@@ -179,7 +173,7 @@ public class Composer {
         }
     }
 
-    private func resolveEnumTypes(_ enumeration: Enum, types: [String: Type], typealiases: [String: Typealias]) {
+    private func resolveTypes(of enumeration: Enum, types: [String: Type], typealiases: [String: Typealias]) {
         enumeration.cases.forEach { enumCase in
             enumCase.associatedValues.forEach { associatedValue in
                 associatedValue.type = resolveType(named: associatedValue.typeName, in: enumeration, typealiases: typealiases)
@@ -210,7 +204,7 @@ public class Composer {
         }
     }
 
-    private func resolveProtocolCompositionTypes(_ protocolComposition: ProtocolComposition, typealiases: [String: Typealias]) {
+    private func resolveTypes(of protocolComposition: ProtocolComposition, typealiases: [String: Typealias]) {
         let composedTypes = protocolComposition.composedTypeNames.compactMap { typeName in
             resolveType(named: typeName, in: protocolComposition, typealiases: typealiases)
         }
@@ -218,7 +212,7 @@ public class Composer {
         protocolComposition.composedTypes = composedTypes
     }
 
-    private func resolveProtocolTypes(_ sourceryProtocol: SourceryProtocol, typealiases: [String: Typealias]) {
+    private func resolveTypes(of sourceryProtocol: SourceryProtocol, typealiases: [String: Typealias]) {
         sourceryProtocol.associatedTypes.forEach { _, value in
             guard let typeName = value.typeName,
                   let type = resolveType(named: typeName, in: sourceryProtocol, typealiases: typealiases)
