@@ -22,8 +22,7 @@ public class Composer {
     ) -> (types: [Type], functions: [SourceryMethod], typealiases: [Typealias]) {
         types.forEach { $0.setMembersDefinedInType() }
 
-        let composedTypealiases = composeTypealiases(typealiases, types: types)
-        let resolvedTypealiasMap = composedTypealiases.resolved
+        let (resolvedTypealiasMap, unresolvedTypealiases) = composeTypealiases(typealiases, types: types)
 
         types
             .filter { !$0.isExtension }
@@ -36,7 +35,7 @@ public class Composer {
                 }
             }
 
-        resolveTypes(of: Array(composedTypealiases.unresolved.values), typealiasMap: resolvedTypealiasMap)
+        resolveTypes(of: unresolvedTypealiases, typealiasMap: resolvedTypealiasMap)
 
         let unifiedTypes = unifyTypes(types, typealiases: resolvedTypealiasMap)
 
@@ -73,14 +72,11 @@ public class Composer {
         return (
             types: unifiedTypes.sorted { $0.globalName < $1.globalName },
             functions: functions.sorted { $0.name < $1.name },
-            typealiases: composedTypealiases.unresolved.values.sorted { $0.name < $1.name }
+            typealiases: unresolvedTypealiases.sorted { $0.name < $1.name }
         )
     }
 
-    struct ComposedTypealiases {
-        let resolved: [String: Typealias]
-        let unresolved: [String: Typealias]
-    }
+    private typealias ComposedTypealiases = (resolvedTypealiasMap: [String: Typealias], unresolvedTypealiases: [Typealias])
 
     /// returns typealiases map to their full names, with `resolved` removing intermediate
     /// typealises and `unresolved` including typealiases that reference other typealiases.
@@ -111,7 +107,10 @@ public class Composer {
             aliasNamesToReplace.forEach { typealiasesByNames[$0] = finalAlias }
         }
 
-        return ComposedTypealiases(resolved: typealiasesByNames, unresolved: unresolved)
+        return (
+            resolvedTypealiasMap: typealiasesByNames,
+            unresolvedTypealiases: Array(unresolved.values)
+        )
     }
 
     private func resolveTypes(of typealiases: [Typealias], typealiasMap: [String: Typealias]) {
