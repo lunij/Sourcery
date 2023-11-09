@@ -1,4 +1,5 @@
 import Foundation
+import OrderedCollections
 
 public typealias AttributeList = [String: [Attribute]]
 
@@ -160,8 +161,8 @@ public typealias AttributeList = [String: [Attribute]]
     /// Bytes position of the whole declaration of this type in its declaration file if available.
     public var completeDeclarationRange: BytesRange?
 
-    private func flattenAll<T>(_ extraction: @escaping (Type) -> [T], isExtension: (T) -> Bool, filter: ([T], T) -> Bool) -> [T] {
-        let all = NSMutableOrderedSet()
+    private func flattenAll<T: Hashable>(_ extraction: @escaping (Type) -> [T], isExtension: (T) -> Bool, filter: ([T], T) -> Bool) -> [T] {
+        var all = OrderedSet<T>()
         let allObjects = extraction(self)
 
         /// The order of importance for properties is:
@@ -181,35 +182,29 @@ public typealias AttributeList = [String: [Attribute]]
             }
         }
 
-        all.addObjects(from: baseObjects)
+        all.append(contentsOf: baseObjects)
 
         func filteredExtraction(_ target: Type) -> [T] {
-            // swiftlint:disable:next force_cast
-            let all = all.array as! [T]
-            let extracted = extraction(target).filter { filter(all, $0) }
+            let extracted = extraction(target).filter { filter(all.elements, $0) }
             return extracted
         }
 
-        inherits.values.sorted(by: { $0.name < $1.name }).forEach { all.addObjects(from: filteredExtraction($0)) }
-        implements.values.sorted(by: { $0.name < $1.name }).forEach { all.addObjects(from: filteredExtraction($0)) }
+        inherits.values.sorted(by: { $0.name < $1.name }).forEach { all.append(contentsOf: filteredExtraction($0)) }
+        implements.values.sorted(by: { $0.name < $1.name }).forEach { all.append(contentsOf: filteredExtraction($0)) }
 
-        // swiftlint:disable:next force_cast
-        let array = all.array as! [T]
-        all.addObjects(from: extensions.filter { filter(array, $0) })
+        all.append(contentsOf: extensions.filter { filter(all.elements, $0) })
 
-        return all.array.compactMap { $0 as? T }
+        return all.elements
     }
 
-    private func unique<T>(_ extraction: @escaping (Type) -> [T], filter: (T, T) -> Bool) -> [T] {
-        let all = NSMutableOrderedSet()
+    private func unique<T: Hashable>(_ extraction: @escaping (Type) -> [T], filter: (T, T) -> Bool) -> [T] {
+        var all = OrderedSet<T>()
         for nextItem in extraction(self) {
-            // swiftlint:disable:next force_cast
-            if !all.contains(where: { filter($0 as! T, nextItem) }) {
-                all.add(nextItem)
+            if !all.contains(where: { filter($0, nextItem) }) {
+                all.append(nextItem)
             }
         }
-
-        return all.array.compactMap { $0 as? T }
+        return all.elements
     }
 
     /// All initializers defined in this type
