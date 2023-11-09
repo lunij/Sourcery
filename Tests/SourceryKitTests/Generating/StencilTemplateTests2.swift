@@ -302,7 +302,7 @@ private func beforeEachGenerate() -> ([Type], [String: NSObject]) {
 private extension String {
     func generate() -> String {
         let (types, arguments) = beforeEachGenerate()
-        let (uniqueTypes, _, _) = Composer().uniqueTypesAndFunctions(functions: [], typealiases: [], types: types)
+        let (uniqueTypes, _, _) = Composer().compose(functions: [], typealiases: [], types: types)
         let result = try? StencilTemplate(content: self).render(TemplateContext(
             types: Types(types: uniqueTypes),
             functions: [],

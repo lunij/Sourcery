@@ -15,7 +15,7 @@ public class Composer {
     ///
     /// - Parameter parserResult: Result of parsing source code.
     /// - Returns: Final types and extensions of unknown types.
-    public func uniqueTypesAndFunctions(
+    public func compose(
         functions: [SourceryMethod],
         typealiases: [Typealias],
         types: [Type]
