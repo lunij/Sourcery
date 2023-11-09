@@ -36,11 +36,7 @@ public class Composer {
                 }
             }
 
-        /// Resolve typealiases
-        let typealiases = Array(composedTypealiases.unresolved.values)
-        typealiases.forEach { alias in
-            alias.type = resolveType(named: alias.typeName, in: alias.parent, typealiases: resolvedTypealiasMap)
-        }
+        resolveTypes(of: Array(composedTypealiases.unresolved.values), typealiasMap: resolvedTypealiasMap)
 
         let unifiedTypes = unifyTypes(types, typealiases: resolvedTypealiasMap)
 
@@ -116,6 +112,12 @@ public class Composer {
         }
 
         return ComposedTypealiases(resolved: typealiasesByNames, unresolved: unresolved)
+    }
+
+    private func resolveTypes(of typealiases: [Typealias], typealiasMap: [String: Typealias]) {
+        typealiases.forEach { alias in
+            alias.type = resolveType(named: alias.typeName, in: alias.parent, typealiases: typealiasMap)
+        }
     }
 
     private func resolveTypes(of variable: Variable, in type: Type, typealiases: [String: Typealias]) {
