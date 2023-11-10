@@ -37,7 +37,7 @@ final class SwiftSyntaxParser: SwiftSyntaxParsing {
 
         let tree = Parser.parse(source: content)
         let fileName = path ?? "in-memory"
-        let sourceLocationConverter = SourceLocationConverter(file: fileName, tree: tree)
+        let sourceLocationConverter = SourceLocationConverter(fileName: fileName, tree: tree)
         let collector = SyntaxTreeCollector(
             file: fileName,
             module: module,

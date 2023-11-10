@@ -11,7 +11,7 @@ extension SourceryMethod {
         self.init(
             node: node,
             parent: parent,
-            identifier: node.identifier.text.trimmed,
+            identifier: node.name.text.trimmed,
             typeName: typeName,
             signature: Signature(node.signature, getAnnotationUseCase: getAnnotationUseCase),
             modifiers: node.modifiers,
@@ -35,10 +35,10 @@ extension SourceryMethod {
             identifier: "init\(node.optionalMark?.text.trimmed ?? "")",
             typeName: typeName,
             signature: Signature(
-                parameters: signature.input.parameterList,
+                parameters: signature.parameterClause.parameters,
                 output: nil,
                 asyncKeyword: nil,
-                throwsOrRethrowsKeyword: signature.throwsOrRethrowsKeyword?.description.trimmed,
+                throwsOrRethrowsKeyword: signature.effectSpecifiers?.throwsSpecifier?.description.trimmed,
                 getAnnotationUseCase: getAnnotationUseCase
             ),
             modifiers: node.modifiers,
@@ -81,7 +81,7 @@ extension SourceryMethod {
       identifier: String,
       typeName: TypeName?,
       signature: Signature,
-      modifiers: ModifierListSyntax?,
+      modifiers: DeclModifierListSyntax?,
       attributes: AttributeListSyntax?,
       genericParameterClause: GenericParameterClauseSyntax?,
       genericWhereClause: GenericWhereClauseSyntax?,
@@ -105,14 +105,14 @@ extension SourceryMethod {
 
         let funcName = identifier.last == "?" ? String(identifier.dropLast()) : identifier
         var fullName = identifier
-        if let generics = genericParameterClause?.genericParameterList {
+        if let generics = genericParameterClause?.parameters {
             fullName = funcName + "<\(generics.description.trimmed)>"
         }
 
         if let genericWhereClause = genericWhereClause {
             // TODO: add generic requirement to method
             // TODO: TBR
-            returnTypeName = TypeName(name: returnTypeName.name + " \(genericWhereClause.withoutTrivia().description.trimmed)",
+            returnTypeName = TypeName(name: returnTypeName.name + " \(genericWhereClause.trimmedDescription)",
                                       unwrappedTypeName: returnTypeName.unwrappedTypeName,
                                       attributes: returnTypeName.attributes,
                                       isOptional: returnTypeName.isOptional,

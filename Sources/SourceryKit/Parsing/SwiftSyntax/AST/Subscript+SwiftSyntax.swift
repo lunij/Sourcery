@@ -3,7 +3,7 @@ import SwiftSyntax
 
 extension Subscript {
     convenience init(_ node: SubscriptDeclSyntax, parent: Type, getAnnotationUseCase: GetAnnotationUseCase) {
-        let modifiers = node.modifiers?.map(SModifier.init) ?? []
+        let modifiers = node.modifiers.map(SModifier.init)
         let baseModifiers = modifiers.baseModifiers(parent: parent)
         let parentAccess = AccessLevel(rawValue: parent.accessLevel) ?? .internal
 
@@ -13,16 +13,23 @@ extension Subscript {
         var hadSetter = false
 
         if let block = node
-          .accessor?
+          .accessorBlock?
           .as(AccessorBlockSyntax.self) {
             enum Kind: String {
                 case get
                 case set
             }
 
-            let computeAccessors = Set(block.accessors.compactMap { accessor in
-                Kind(rawValue: accessor.accessorKind.text.trimmed)
-            })
+            let computeAccessors = switch block.accessors {
+            case let .accessors(accessors):
+                Set(accessors.compactMap { accessor in
+                    Kind(rawValue: accessor.accessorSpecifier.text.trimmed)
+                })
+            case let .getter(itemList):
+                Set(itemList.compactMap { item in
+                    Kind(rawValue: item.trimmedDescription)
+                })
+            }
 
             if !computeAccessors.isEmpty {
                 if !computeAccessors.contains(Kind.set) {
@@ -36,7 +43,7 @@ extension Subscript {
                     hadGetter = true
                 }
             }
-        } else if node.accessor != nil {
+        } else if node.accessorBlock != nil {
             hadGetter = true
         }
 
@@ -49,13 +56,13 @@ extension Subscript {
         }
 
         self.init(
-            parameters: node.indices.parameterList.map { MethodParameter($0, getAnnotationUseCase: getAnnotationUseCase) },
-            returnTypeName: TypeName(node.result.returnType.description.trimmed),
+            parameters: node.parameterClause.parameters.map { MethodParameter($0, getAnnotationUseCase: getAnnotationUseCase) },
+            returnTypeName: TypeName(node.returnClause.type.description.trimmed),
             accessLevel: (read: readAccess, write: isWritable ? writeAccess : .none),
             attributes: Attribute.from(node.attributes),
             modifiers: modifiers.map(SourceryModifier.init),
-            annotations: node.firstToken.map { getAnnotationUseCase.annotations(fromToken: $0) } ?? [:],
-            documentation: node.firstToken.map { getAnnotationUseCase.documentation(fromToken: $0) } ?? [],
+            annotations: node.firstToken(viewMode: .sourceAccurate).map { getAnnotationUseCase.annotations(fromToken: $0) } ?? [:],
+            documentation: node.firstToken(viewMode: .sourceAccurate).map { getAnnotationUseCase.documentation(fromToken: $0) } ?? [],
             definedInTypeName: TypeName(parent.name)
         )
     }

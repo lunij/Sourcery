@@ -19,25 +19,35 @@ extension Variable {
         var hadThrowable = false
 
         if let block = node
-          .accessor?
+          .accessorBlock?
           .as(AccessorBlockSyntax.self) {
             enum Kind: Hashable {
                 case get(isAsync: Bool, throws: Bool)
                 case set
             }
 
-            let computeAccessors = Set(block.accessors.compactMap { accessor -> Kind? in
-                let kindRaw = accessor.accessorKind.text.trimmed
-                if kindRaw == "get" {
-                    return Kind.get(isAsync: accessor.fixedAsyncKeyword != nil, throws: accessor.fixedThrowsKeyword != nil)
-                }
-                
-                if kindRaw == "set" {
-                    return Kind.set
-                }
-                
-                return nil
-            })
+            let computeAccessors = switch block.accessors {
+            case let .accessors(accessors):
+                Set(accessors.compactMap { accessor in
+                    let kindRaw = accessor.accessorSpecifier.text.trimmed
+                    if kindRaw == "get" {
+                        return Kind.get(
+                            isAsync: accessor.effectSpecifiers?.asyncSpecifier != nil,
+                            throws: accessor.effectSpecifiers?.throwsSpecifier != nil
+                        )
+                    }
+
+                    if kindRaw == "set" {
+                        return Kind.set
+                    }
+
+                    return nil
+                })
+            case let .getter(itemList):
+                Set(itemList.compactMap { item in
+                    Kind.get(isAsync: false, throws: false)
+                })
+            }
 
             if !computeAccessors.isEmpty {
                 if !computeAccessors.contains(Kind.set) {
@@ -55,20 +65,20 @@ extension Variable {
                     }
                 }
             }
-        } else if node.accessor != nil {
+        } else if node.accessorBlock != nil {
             hadGetter = true
         }
 
         let isComputed = node.initializer == nil && hadGetter && !(visitingType is SourceryProtocol)
         let isAsync = hadAsync
         let `throws` = hadThrowable
-        let isWritable = variableNode.letOrVarKeyword.tokens(viewMode: .fixedUp).contains { $0.tokenKind == .varKeyword } && (!isComputed || hadSetter)
+        let isWritable = variableNode.bindingSpecifier.tokens(viewMode: .fixedUp).contains { $0.tokenKind == .keyword(.var) } && (!isComputed || hadSetter)
 
         let typeName = node.typeAnnotation.map { TypeName($0.type) } ??
           node.initializer.flatMap { Self.inferType($0.value.description.trimmed) }
 
         self.init(
-          name: node.pattern.withoutTrivia().description.trimmed,
+            name: node.pattern.trimmedDescription,
           typeName: typeName ?? TypeName.unknown(description: node.description.trimmed),
           type: nil,
           accessLevel: (read: readAccess, write: isWritable ? writeAccess : .none),
@@ -79,8 +89,8 @@ extension Variable {
           defaultValue: node.initializer?.value.description.trimmingCharacters(in: .whitespacesAndNewlines),
           attributes: Attribute.from(variableNode.attributes),
           modifiers: modifiers.map(SourceryModifier.init),
-          annotations: getAnnotationUseCase.annotations(fromToken: variableNode.letOrVarKeyword),
-          documentation: getAnnotationUseCase.documentation(fromToken: variableNode.letOrVarKeyword),
+          annotations: getAnnotationUseCase.annotations(fromToken: variableNode.bindingSpecifier),
+          documentation: getAnnotationUseCase.documentation(fromToken: variableNode.bindingSpecifier),
           definedInTypeName: visitingType.map { TypeName($0.name) }
         )
     }
@@ -90,7 +100,7 @@ extension Variable {
         visitingType: Type?,
         getAnnotationUseCase: GetAnnotationUseCase
     ) -> [Variable] {
-        let modifiers = variableNode.modifiers?.map(SModifier.init) ?? []
+        let modifiers = variableNode.modifiers.map(SModifier.init)
         let baseModifiers = modifiers.baseModifiers(parent: visitingType)
 
         return variableNode.bindings.map { (node: PatternBindingSyntax) -> Variable in

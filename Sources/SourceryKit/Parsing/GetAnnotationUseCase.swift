@@ -45,14 +45,14 @@ public class GetAnnotationUseCase {
     func annotations(from node: IdentifierSyntax) -> Annotations {
         from(
             location: findLocation(syntax: node.identifier),
-            precedingComments: node.leadingTrivia?.compactMap({ $0.comment }) ?? []
+            precedingComments: node.leadingTrivia.compactMap(\.comment)
         )
     }
 
     func annotations(fromToken token: SyntaxProtocol) -> Annotations {
         from(
             location: findLocation(syntax: token),
-            precedingComments: token.leadingTrivia?.compactMap({ $0.comment }) ?? []
+            precedingComments: token.leadingTrivia.compactMap(\.comment)
         )
     }
 
@@ -62,7 +62,7 @@ public class GetAnnotationUseCase {
         }
         return documentationFrom(
             location: findLocation(syntax: node.identifier),
-            precedingComments: node.leadingTrivia?.compactMap({ $0.comment }) ?? []
+            precedingComments: node.leadingTrivia.compactMap(\.comment)
         )
     }
 
@@ -72,18 +72,17 @@ public class GetAnnotationUseCase {
         }
         return documentationFrom(
             location: findLocation(syntax: token),
-            precedingComments: token.leadingTrivia?.compactMap({ $0.comment }) ?? []
+            precedingComments: token.leadingTrivia.compactMap(\.comment)
         )
     }
 
     private func documentationFrom(location: SwiftSyntax.SourceLocation, precedingComments: [String]) -> Documentation {
-        guard parseDocumentation,
-              let lineNumber = location.line, let column = location.column else {
+        guard parseDocumentation else {
             return []
         }
 
         // Inline documentation not currently supported
-        _ = column
+        _ = location.column
 
         // var stop = false
         // var documentation = inlineDocumentationFrom(line: (lineNumber, column), stop: &stop)
@@ -91,7 +90,7 @@ public class GetAnnotationUseCase {
 
         var documentation: Documentation = []
 
-        for line in lines[0..<lineNumber-1].reversed() {
+        for line in lines[0 ..< location.line - 1].reversed() {
             if line.type == .documentationComment {
                 documentation.append(line.content.trimmingCharacters(in: .whitespaces).trimmingPrefix("///").trimmingPrefix("/**").trimmingPrefix(" "))
             }
@@ -160,15 +159,11 @@ public class GetAnnotationUseCase {
     }
 
     func from(location: SwiftSyntax.SourceLocation, precedingComments: [String]) -> Annotations {
-        guard let lineNumber = location.line, let column = location.column else {
-            return [:]
-        }
-
         var stop = false
-        var annotations = inlineFrom(line: (lineNumber, column), stop: &stop)
+        var annotations = inlineFrom(line: (location.line, location.column), stop: &stop)
         guard !stop else { return annotations }
 
-        for line in lines[0..<lineNumber-1].reversed() {
+        for line in lines[0 ..< location.line - 1].reversed() {
             line.annotations.forEach { annotation in
                 annotationParser.append(key: annotation.key, value: annotation.value, to: &annotations)
             }
@@ -177,7 +172,7 @@ public class GetAnnotationUseCase {
             }
         }
 
-        lines[lineNumber-1].annotations.forEach { annotation in
+        lines[location.line - 1].annotations.forEach { annotation in
             annotationParser.append(key: annotation.key, value: annotation.value, to: &annotations)
         }
 

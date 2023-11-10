@@ -5,7 +5,7 @@ extension EnumCase {
 
     convenience init(_ node: EnumCaseElementSyntax, parent: EnumCaseDeclSyntax, getAnnotationUseCase: GetAnnotationUseCase) {
         var associatedValues: [AssociatedValue] = []
-        if let paramList = node.associatedValue?.parameterList {
+        if let paramList = node.parameterClause?.parameters {
             let hasManyValues = paramList.count > 1
             associatedValues = paramList
               .enumerated()
@@ -13,20 +13,18 @@ extension EnumCase {
                   let name = param.firstName?.text.trimmed.nilIfNotValidParameterName
                   let secondName = param.secondName?.text.trimmed
 
-                  let defaultValue = param.defaultArgument?.value.description.trimmed
+                  let defaultValue = param.defaultValue?.value.description.trimmed
                   var externalName: String? = secondName
                   if externalName == nil, hasManyValues {
                       externalName = name ?? "\(idx)"
                   }
 
                   var collectedAnnotations = Annotations()
-                  if let typeSyntax = param.type {
-                      collectedAnnotations = getAnnotationUseCase.annotations(fromToken: typeSyntax)
-                  }
+                  collectedAnnotations = getAnnotationUseCase.annotations(fromToken: param.type)
 
                   return AssociatedValue(localName: name,
                                          externalName: externalName,
-                                         typeName: param.type.map { TypeName($0) } ?? TypeName.unknown(description: parent.description.trimmed),
+                                         typeName: .init(param.type),
                                          type: nil,
                                          defaultValue: defaultValue,
                                          annotations: collectedAnnotations
@@ -34,22 +32,19 @@ extension EnumCase {
               }
         }
 
-        let rawValue: String? = {
-            var value = node.rawValue?.withEqual(nil).description.trimmed
-            if let unwrapped = value, unwrapped.hasPrefix("\""), unwrapped.hasSuffix("\""), unwrapped.count > 2 {
-                let substring = unwrapped[unwrapped.index(after: unwrapped.startIndex) ..< unwrapped.index(before: unwrapped.endIndex)]
-                value = String(substring)
-            }
-            return value
-        }()
+        var rawValue = node.rawValue?.value.trimmedDescription
+        if let unwrapped = rawValue, unwrapped.hasPrefix("\""), unwrapped.hasSuffix("\""), unwrapped.count > 2 {
+            let substring = unwrapped[unwrapped.index(after: unwrapped.startIndex) ..< unwrapped.index(before: unwrapped.endIndex)]
+            rawValue = String(substring)
+        }
 
-        let modifiers = parent.modifiers?.map(SModifier.init) ?? []
+        let modifiers = parent.modifiers.map(SModifier.init)
         let indirect = modifiers.contains(where: {
-            $0.tokenKind == TokenKind.contextualKeyword("indirect")
+            $0.tokenKind == .keyword(.indirect)
         })
 
         self.init(
-          name: node.identifier.text.trimmed,
+          name: node.name.text.trimmed,
           rawValue: rawValue,
           associatedValues: associatedValues,
           annotations: getAnnotationUseCase.annotations(from: node),

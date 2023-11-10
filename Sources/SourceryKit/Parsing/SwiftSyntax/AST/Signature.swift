@@ -15,10 +15,10 @@ public struct Signature {
 
     public init(_ node: FunctionSignatureSyntax, getAnnotationUseCase: GetAnnotationUseCase) {
         self.init(
-            parameters: node.input.parameterList,
-            output: node.output.map { TypeName($0.returnType) },
-            asyncKeyword: node.asyncOrReasyncKeyword?.text,
-            throwsOrRethrowsKeyword: node.throwsOrRethrowsKeyword?.description.trimmed,
+            parameters: node.parameterClause.parameters,
+            output: node.returnClause.map { TypeName($0.type) },
+            asyncKeyword: node.effectSpecifiers?.asyncSpecifier?.text,
+            throwsOrRethrowsKeyword: node.effectSpecifiers?.throwsSpecifier?.trimmedDescription,
             getAnnotationUseCase: getAnnotationUseCase
         )
     }

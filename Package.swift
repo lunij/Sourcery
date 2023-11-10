@@ -18,7 +18,7 @@ let package = Package(
         .package(url: "https://github.com/lunij/Stencil.git", branch: "marc/wip"),
         .package(url: "https://github.com/tuist/XcodeProj.git", exact: "8.3.1"),
         .package(url: "https://github.com/apple/swift-collections.git", .upToNextMajor(from: "1.0.5")),
-        .package(url: "https://github.com/apple/swift-syntax.git", from: "508.0.0")
+        .package(url: "https://github.com/apple/swift-syntax.git", from: "509.0.0")
     ],
     targets: [
         .executableTarget(name: "sourcery", dependencies: ["SourceryKit"]),
