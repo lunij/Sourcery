@@ -12,6 +12,24 @@ class SourceryTests: XCTestCase {
         output = try .init(.createTestDirectory(suffixed: "SourceryTests"))
     }
 
+    func test_foobar() throws {
+        let sourceFile = SourceFile(path: .autoMockableSourcePath)
+        let templatePath = Path.autoMockableTemplatePath
+
+        try Sourcery().processConfiguration(.stub(
+            sources: [sourceFile],
+            templates: [templatePath],
+            output: output
+        ))
+
+        var expectedFileContent = try Path.autoMockableExpectedPath.read(.utf8)
+        var generatedFileContent = try output.appending(templatePath.generatedFileName).read(.utf8)
+
+        expectedFileContent = expectedFileContent.components(separatedBy: .newlines).filter(\.isNotEmpty).joined(separator: "\n")
+        generatedFileContent = generatedFileContent.components(separatedBy: .newlines).filter(\.isNotEmpty).joined(separator: "\n")
+        XCTAssertEqual(generatedFileContent, expectedFileContent)
+    }
+
     private func createExistingFiles() -> (SourceFile, Path) {
         let sourceFile = SourceFile(path: output + Path("Source.swift"))
         let templatePath = Path.otherStencilPath
@@ -1264,8 +1282,13 @@ class SourceryTests: XCTestCase {
 }
 
 private extension Path {
+    static let autoMockableExpectedPath = fixturesPath.appending("AutoMockable.expected.swift")
+    static let autoMockableSourcePath = fixturesPath.appending("AutoMockable.swift")
+    static let autoMockableTemplatePath = fixturesPath.appending("AutoMockable.stencil")
     static let basicStencilPath = Stubs.templateDirectory + Path("Basic.stencil")
     static let otherStencilPath = Stubs.templateDirectory + Path("Other.stencil")
+    static let bundleResourcePath = Path(Bundle.module.resourcePath!)
+    static let fixturesPath = bundleResourcePath.appending("Fixtures")
 }
 
 private extension String {
