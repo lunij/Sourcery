@@ -140,5 +140,5 @@ public protocol AccessLevelProtocol: AutoMockable {
 }
 
 protocol StaticMethodProtocol:AutoMockable {
-    static func staticFunction(String) -> String
+    static func staticFunction(_: String) -> String
 }
