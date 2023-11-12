@@ -1,8 +1,10 @@
+import DynamicMemberLookup
 import Foundation
 
 public typealias SourceryMethod = Method
 
 /// Describes method parameter
+@DynamicMemberLookup
 @objcMembers public class MethodParameter: NSObject, Diffable, Typed, Annotated {
     /// Parameter external name
     public var argumentLabel: String?
@@ -187,6 +189,7 @@ extension Array where Element == ClosureParameter {
 }
 
 /// Describes method
+@DynamicMemberLookup
 @objc(SwiftMethod) @objcMembers public final class Method: NSObject, Annotated, Diffable, Documented, Definition {
 
     /// Full method name, including generic constraints, i.e. `foo<T>(bar: T)`

@@ -1,6 +1,8 @@
+import DynamicMemberLookup
 import Foundation
 
 /// Defines enum case associated value
+@DynamicMemberLookup
 @objcMembers public final class AssociatedValue: NSObject, Diffable, Typed, Annotated {
 
     /// Associated value local name.
@@ -63,6 +65,7 @@ import Foundation
 }
 
 /// Defines enum case
+@DynamicMemberLookup
 @objcMembers public final class EnumCase: NSObject, Annotated, Diffable, Documented {
 
     /// Enum case name
@@ -130,6 +133,7 @@ import Foundation
 }
 
 /// Defines Swift enum
+@DynamicMemberLookup
 @objcMembers public final class Enum: Type {
 
     // sourcery: skipDescription

@@ -1,3 +1,4 @@
+import DynamicMemberLookup
 import Foundation
 
 // sourcery: skipCoding
@@ -67,6 +68,7 @@ extension TemplateContext.Error: CustomStringConvertible {
 }
 
 /// Collection of scanned types for accessing in templates
+@DynamicMemberLookup
 @objcMembers public final class Types: NSObject, Diffable {
 
     public let types: [Type]
@@ -193,6 +195,7 @@ extension TemplateContext.Error: CustomStringConvertible {
     }
 }
 
+@DynamicMemberLookup
 @objcMembers public class TypesCollection: NSObject {
     let all: [Type]
     let types: [String: [Type]]

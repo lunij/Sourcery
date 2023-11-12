@@ -1,7 +1,9 @@
+import DynamicMemberLookup
 import Foundation
 
 // sourcery: skipDescription
 /// Describes Swift struct
+@DynamicMemberLookup
 @objcMembers public final class Struct: Type {
 
     /// Returns "struct"

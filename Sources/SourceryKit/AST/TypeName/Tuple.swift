@@ -1,6 +1,8 @@
+import DynamicMemberLookup
 import Foundation
 
 /// Describes tuple type
+@DynamicMemberLookup
 @objcMembers public final class TupleType: NSObject, Diffable {
 
     /// Type name used in declaration
@@ -39,6 +41,7 @@ import Foundation
 }
 
 /// Describes tuple type element
+@DynamicMemberLookup
 @objcMembers public final class TupleElement: NSObject, Diffable, Typed {
 
     /// Tuple element name

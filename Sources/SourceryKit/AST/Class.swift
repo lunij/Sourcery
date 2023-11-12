@@ -1,6 +1,9 @@
+import DynamicMemberLookup
 import Foundation
+
 // sourcery: skipDescription
 /// Descibes Swift class
+@DynamicMemberLookup
 @objc(SwiftClass) @objcMembers public final class Class: Type {
     /// Returns "class"
     public override var kind: String { return "class" }

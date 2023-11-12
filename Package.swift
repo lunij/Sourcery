@@ -30,6 +30,7 @@ let package = Package(
                 .product(name: "Collections", package: "swift-collections"),
                 .product(name: "SwiftParser", package: "swift-syntax"),
                 .product(name: "SwiftSyntax", package: "swift-syntax"),
+                "DynamicMemberLookup",
                 "FileSystemEvents",
                 "PathKit",
                 "Stencil",

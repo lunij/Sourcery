@@ -1,8 +1,10 @@
+import DynamicMemberLookup
 import Foundation
 
 public typealias SourceryVariable = Variable
 
 /// Defines variable
+@DynamicMemberLookup
 @objcMembers public final class Variable: NSObject, Diffable, Typed, Annotated, Documented, Definition {
     /// Variable name
     public let name: String

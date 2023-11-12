@@ -1,9 +1,11 @@
+import DynamicMemberLookup
 import Foundation
 import OrderedCollections
 
 public typealias AttributeList = [String: [Attribute]]
 
 /// Defines Swift type
+@DynamicMemberLookup
 @objcMembers public class Type: NSObject, Annotated, Diffable, Documented {
     public var module: String?
 
