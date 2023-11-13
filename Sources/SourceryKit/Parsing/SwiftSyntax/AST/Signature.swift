@@ -37,10 +37,7 @@ public struct Signature {
     }
 
     public func definition(with name: String) -> String {
-        let parameters = input
-          .map { $0.asSource }
-          .joined(separator: ", ")
-
+        let parameters = input.map(\.description).joined(separator: ", ")
         let final = "\(name)(\(parameters))"
         return final
     }
