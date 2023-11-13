@@ -1,10 +1,6 @@
-import Foundation
-
-public typealias SourceryModifier = Modifier
-/// modifier can be thing like `private`, `class`, `nonmutating`
-/// if a declaration has modifier like `private(set)` it's name will be `private` and detail will be `set`
-public class Modifier: Diffable, Equatable, Hashable {
-
+/// A modifier can be something like `private`, `class`, `nonmutating`.
+/// If a declaration has a modifier like `private(set)` it's name will be `private` and detail will be `set`.
+public struct Modifier: Diffable, Hashable {
     /// The declaration modifier name.
     public let name: String
 
@@ -16,33 +12,24 @@ public class Modifier: Diffable, Equatable, Hashable {
         self.detail = detail
     }
 
-    public var asSource: String {
-        if let detail = detail {
-            return "\(name)(\(detail))"
-        } else {
-            return name
-        }
-    }
-
     public func diffAgainst(_ object: Any?) -> DiffableResult {
         let results = DiffableResult()
         guard let castObject = object as? Modifier else {
             results.append("Incorrect type <expected: Modifier, received: \(Swift.type(of: object))>")
             return results
         }
-        results.append(contentsOf: DiffableResult(identifier: "name").trackDifference(actual: self.name, expected: castObject.name))
-        results.append(contentsOf: DiffableResult(identifier: "detail").trackDifference(actual: self.detail, expected: castObject.detail))
+        results.append(contentsOf: DiffableResult(identifier: "name").trackDifference(actual: name, expected: castObject.name))
+        results.append(contentsOf: DiffableResult(identifier: "detail").trackDifference(actual: detail, expected: castObject.detail))
         return results
     }
+}
 
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(name)
-        hasher.combine(detail)
-    }
-
-    public static func == (lhs: Modifier, rhs: Modifier) -> Bool {
-        if lhs.name != rhs.name { return false }
-        if lhs.detail != rhs.detail { return false }
-        return true
+extension Modifier: CustomStringConvertible {
+    public var description: String {
+        if let detail {
+            "\(name)(\(detail))"
+        } else {
+            name
+        }
     }
 }

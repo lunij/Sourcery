@@ -3,7 +3,7 @@ import SwiftSyntax
 
 extension SourceryProtocol {
     convenience init(_ node: ProtocolDeclSyntax, parent: Type?, getAnnotationParser: GetAnnotationUseCase) {
-        let modifiers = node.modifiers.map(SModifier.init)
+        let modifiers = node.modifiers.map(Modifier.init)
 
         let genericRequirements: [GenericRequirement] = node.genericWhereClause?.requirements.compactMap { requirement in
             if let sameType = requirement.requirement.as(SameTypeRequirementSyntax.self) {
@@ -27,7 +27,7 @@ extension SourceryProtocol {
           typealiases: [],
           genericRequirements: genericRequirements,
           attributes: .init(from: node.attributes),
-          modifiers: modifiers.map(SourceryModifier.init),
+          modifiers: modifiers,
           annotations: getAnnotationParser.annotations(from: node),
           documentation: getAnnotationParser.documentation(from: node)
         )

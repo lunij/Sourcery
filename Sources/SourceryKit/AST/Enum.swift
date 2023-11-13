@@ -280,7 +280,7 @@ public final class Enum: Type {
                 containedTypes: [Type] = [],
                 typealiases: [Typealias] = [],
                 attributes: AttributeList = [:],
-                modifiers: [SourceryModifier] = [],
+                modifiers: [Modifier] = [],
                 annotations: [String: NSObject] = [:],
                 documentation: [String] = [],
                 isGeneric: Bool = false) {

@@ -3,7 +3,7 @@ import SwiftSyntax
 
 extension Struct {
     convenience init(_ node: StructDeclSyntax, parent: Type?, getAnnotationUseCase: GetAnnotationUseCase) {
-        let modifiers = node.modifiers.map(SModifier.init)
+        let modifiers = node.modifiers.map(Modifier.init)
 
         self.init(
             name: node.name.text.trimmed,
@@ -17,7 +17,7 @@ extension Struct {
             containedTypes: [],
             typealiases: [],
             attributes: .init(from: node.attributes),
-            modifiers: modifiers.map(SourceryModifier.init),
+            modifiers: modifiers,
             annotations: getAnnotationUseCase.annotations(from: node),
             documentation: getAnnotationUseCase.documentation(from: node),
             isGeneric: node.genericParameterClause?.parameters.isEmpty == false

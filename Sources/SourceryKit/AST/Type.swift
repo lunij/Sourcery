@@ -374,7 +374,7 @@ public class Type: Diffable, Annotated, Documented, Equatable, Hashable, CustomS
     public var attributes: AttributeList
 
     /// Type modifiers, i.e. `private`, `final`
-    public var modifiers: [SourceryModifier]
+    public var modifiers: [Modifier]
 
     /// Path to file where the type is defined
     // sourcery: skipDescription, skipEquality
@@ -407,7 +407,7 @@ public class Type: Diffable, Annotated, Documented, Equatable, Hashable, CustomS
         containedTypes: [Type] = [],
         typealiases: [Typealias] = [],
         attributes: AttributeList = [:],
-        modifiers: [SourceryModifier] = [],
+        modifiers: [Modifier] = [],
         annotations: [String: NSObject] = [:],
         documentation: [String] = [],
         isGeneric: Bool = false

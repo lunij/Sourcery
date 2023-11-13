@@ -3,7 +3,7 @@ import SwiftSyntax
 
 extension Enum {
     convenience init(_ node: EnumDeclSyntax, parent: Type?, getAnnotationUseCase: GetAnnotationUseCase) {
-        let modifiers = node.modifiers.map(SModifier.init)
+        let modifiers = node.modifiers.map(Modifier.init)
 
         //let rawTypeName: String? = node.inheritanceClause?.inheritedTypeCollection.first?.typeName.description.trimmed ?? nil
         self.init(
@@ -19,7 +19,7 @@ extension Enum {
           containedTypes: [],
           typealiases: [],
             attributes: .init(from: node.attributes),
-          modifiers: modifiers.map(SourceryModifier.init),
+          modifiers: modifiers,
           annotations: getAnnotationUseCase.annotations(from: node),
           documentation: getAnnotationUseCase.documentation(from: node),
             isGeneric: node.genericParameterClause?.parameters.isEmpty == false

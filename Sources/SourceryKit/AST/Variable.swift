@@ -94,7 +94,7 @@ public final class Variable: Diffable, Typed, Annotated, Documented, Definition,
     public var attributes: AttributeList
 
     /// Modifiers, i.e. `private`
-    public var modifiers: [SourceryModifier]
+    public var modifiers: [Modifier]
 
     /// Whether variable is final or not
     public var isFinal: Bool {
@@ -130,7 +130,7 @@ public final class Variable: Diffable, Typed, Annotated, Documented, Definition,
                 isStatic: Bool = false,
                 defaultValue: String? = nil,
                 attributes: AttributeList = [:],
-                modifiers: [SourceryModifier] = [],
+                modifiers: [Modifier] = [],
                 annotations: [String: NSObject] = [:],
                 documentation: [String] = [],
                 definedInTypeName: TypeName? = nil) {

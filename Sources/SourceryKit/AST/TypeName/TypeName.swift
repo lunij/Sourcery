@@ -97,7 +97,7 @@ public final class TypeName: Diffable, LosslessStringConvertible, Equatable, Has
     public var attributes: AttributeList
 
     /// Modifiers, i.e. `escaping`
-    public var modifiers: [SourceryModifier]
+    public var modifiers: [Modifier]
 
     // sourcery: skipEquality
     /// Whether type is optional
@@ -156,7 +156,7 @@ public final class TypeName: Diffable, LosslessStringConvertible, Equatable, Has
 
         var description = (
             attributes.flatMap({ $0.value }).map(\.description).sorted() +
-            modifiers.map({ $0.asSource }) +
+            modifiers.map(\.description) +
             [specialTreatment ? name : unwrappedTypeName]
         ).joined(separator: " ")
 
@@ -202,7 +202,7 @@ public final class TypeName: Diffable, LosslessStringConvertible, Equatable, Has
     public var description: String {
        (
           attributes.flatMap({ $0.value }).map(\.description).sorted() +
-          modifiers.map({ $0.asSource }) +
+          modifiers.map(\.description) +
           [name]
         ).joined(separator: " ")
     }

@@ -463,7 +463,7 @@ public final class Method: Diffable, Annotated, Documented, Definition, Equatabl
     public let attributes: AttributeList
 
     /// Method modifiers, i.e. `private`
-    public let modifiers: [SourceryModifier]
+    public let modifiers: [Modifier]
 
     // Underlying parser data, never to be used by anything else
     // sourcery: skipEquality, skipDescription, skipCoding
@@ -481,7 +481,7 @@ public final class Method: Diffable, Annotated, Documented, Definition, Equatabl
                 isClass: Bool = false,
                 isFailableInitializer: Bool = false,
                 attributes: AttributeList = [:],
-                modifiers: [SourceryModifier] = [],
+                modifiers: [Modifier] = [],
                 annotations: [String: NSObject] = [:],
                 documentation: [String] = [],
                 definedInTypeName: TypeName? = nil) {

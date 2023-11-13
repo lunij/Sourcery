@@ -38,10 +38,8 @@ extension EnumCase {
             rawValue = String(substring)
         }
 
-        let modifiers = parent.modifiers.map(SModifier.init)
-        let indirect = modifiers.contains(where: {
-            $0.tokenKind == .keyword(.indirect)
-        })
+        let modifiers = parent.modifiers.map(Modifier.init)
+        let indirect = modifiers.contains { $0.name == "indirect" }
 
         self.init(
           name: node.name.text.trimmed,

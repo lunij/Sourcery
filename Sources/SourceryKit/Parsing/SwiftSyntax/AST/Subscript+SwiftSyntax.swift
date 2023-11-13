@@ -3,7 +3,7 @@ import SwiftSyntax
 
 extension Subscript {
     convenience init(_ node: SubscriptDeclSyntax, parent: Type, getAnnotationUseCase: GetAnnotationUseCase) {
-        let modifiers = node.modifiers.map(SModifier.init)
+        let modifiers = node.modifiers.map(Modifier.init)
         let baseModifiers = modifiers.baseModifiers(parent: parent)
         let parentAccess = AccessLevel(rawValue: parent.accessLevel) ?? .internal
 
@@ -60,7 +60,7 @@ extension Subscript {
             returnTypeName: TypeName(node.returnClause.type.description.trimmed),
             accessLevel: (read: readAccess, write: isWritable ? writeAccess : .none),
             attributes: .init(from: node.attributes),
-            modifiers: modifiers.map(SourceryModifier.init),
+            modifiers: modifiers,
             annotations: node.firstToken(viewMode: .sourceAccurate).map { getAnnotationUseCase.annotations(fromToken: $0) } ?? [:],
             documentation: node.firstToken(viewMode: .sourceAccurate).map { getAnnotationUseCase.documentation(fromToken: $0) } ?? [],
             definedInTypeName: TypeName(parent.name)

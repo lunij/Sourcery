@@ -8,7 +8,7 @@ extension Variable {
         readAccess: AccessLevel,
         writeAccess: AccessLevel,
         isStatic: Bool,
-        modifiers: [SModifier],
+        modifiers: [Modifier],
         visitingType: Type?,
         getAnnotationUseCase: GetAnnotationUseCase
     ) {
@@ -88,7 +88,7 @@ extension Variable {
           isStatic: isStatic,
           defaultValue: node.initializer?.value.description.trimmingCharacters(in: .whitespacesAndNewlines),
             attributes: .init(from: variableNode.attributes),
-          modifiers: modifiers.map(SourceryModifier.init),
+          modifiers: modifiers,
           annotations: getAnnotationUseCase.annotations(fromToken: variableNode.bindingSpecifier),
           documentation: getAnnotationUseCase.documentation(fromToken: variableNode.bindingSpecifier),
           definedInTypeName: visitingType.map { TypeName($0.name) }
@@ -100,7 +100,7 @@ extension Variable {
         visitingType: Type?,
         getAnnotationUseCase: GetAnnotationUseCase
     ) -> [Variable] {
-        let modifiers = variableNode.modifiers.map(SModifier.init)
+        let modifiers = variableNode.modifiers.map(Modifier.init)
         let baseModifiers = modifiers.baseModifiers(parent: visitingType)
 
         return variableNode.bindings.map { (node: PatternBindingSyntax) -> Variable in

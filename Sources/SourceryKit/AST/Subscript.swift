@@ -76,7 +76,7 @@ public final class Subscript: Diffable, Annotated, Documented, Definition, Equat
     public let attributes: AttributeList
 
     /// Method modifiers, i.e. `private`
-    public let modifiers: [SourceryModifier]
+    public let modifiers: [Modifier]
 
     // Underlying parser data, never to be used by anything else
     // sourcery: skipEquality, skipDescription, skipCoding
@@ -86,7 +86,7 @@ public final class Subscript: Diffable, Annotated, Documented, Definition, Equat
                 returnTypeName: TypeName,
                 accessLevel: (read: AccessLevel, write: AccessLevel) = (.internal, .internal),
                 attributes: AttributeList = [:],
-                modifiers: [SourceryModifier] = [],
+                modifiers: [Modifier] = [],
                 annotations: [String: NSObject] = [:],
                 documentation: [String] = [],
                 definedInTypeName: TypeName? = nil) {
