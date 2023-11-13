@@ -15,14 +15,14 @@ class SwiftSyntaxParserAttributeTests: XCTestCase {
         """
         XCTAssertEqual(
             string.parse().first?.attributes,
-            ["objc": [Attribute(name: "objc", arguments: ["0": "WAGiveRecognitionCoordinator" as NSString], description: "@objc(WAGiveRecognitionCoordinator)")]]
+            ["objc": [Attribute(name: "objc", arguments: ["WAGiveRecognitionCoordinator"])]]
         )
 
         XCTAssertEqual(
             "class Foo { func some(param: @convention(swift) @escaping ()->()) {} }".parse().first?.methods.first?.parameters.first?.typeAttributes,
             [
                 "escaping": [Attribute(name: "escaping")],
-                "convention": [Attribute(name: "convention", arguments: ["0": "swift" as NSString], description: "@convention(swift)")]
+                "convention": [Attribute(name: "convention", arguments: ["swift"])]
             ]
         )
 
@@ -33,15 +33,15 @@ class SwiftSyntaxParserAttributeTests: XCTestCase {
         XCTAssertEqual(("final class Foo { }".parse().first as? Class)?.isFinal, true)
 
         XCTAssertEqual("@objc class Foo {}".parse().first?.attributes, [
-            "objc": [Attribute(name: "objc", arguments: [:], description: "@objc")]
+            "objc": [Attribute(name: "objc")]
         ])
 
         XCTAssertEqual("@objc(Bar) class Foo {}".parse().first?.attributes, [
-            "objc": [Attribute(name: "objc", arguments: ["0": "Bar" as NSString], description: "@objc(Bar)")]
+            "objc": [Attribute(name: "objc", arguments: ["Bar"])]
         ])
 
         XCTAssertEqual("@objcMembers class Foo {}".parse().first?.attributes, [
-            "objcMembers": [Attribute(name: "objcMembers", arguments: [:], description: "@objcMembers")]
+            "objcMembers": [Attribute(name: "objcMembers")]
         ])
 
         XCTAssertEqual("public class Foo {}".parse().first?.modifiers, [
@@ -55,11 +55,7 @@ class SwiftSyntaxParserAttributeTests: XCTestCase {
         protocol Foo {}
         """.parse().first?.attributes, [
             "available": [
-                Attribute(name: "available", arguments: [
-                    "0": "*" as NSString,
-                    "1": "unavailable" as NSString,
-                    "renamed": "NewFoo" as NSString
-                ], description: "@available(*, unavailable, renamed: \"NewFoo\")")
+                Attribute(name: "available", arguments: ["*", "unavailable", "renamed: \"NewFoo\""])
             ]
         ])
 
@@ -68,11 +64,7 @@ class SwiftSyntaxParserAttributeTests: XCTestCase {
         protocol Foo {}
         """.parse().first?.attributes, [
             "available": [
-                Attribute(name: "available", arguments: [
-                    "0": "iOS 10.0" as NSString,
-                    "1": "macOS 10.12" as NSString,
-                    "2": "*" as NSString
-                ], description: "@available(iOS 10.0, macOS 10.12, *)")
+                Attribute(name: "available", arguments: ["iOS 10.0", "macOS 10.12", "*"])
             ]
         ])
     }
@@ -80,7 +72,7 @@ class SwiftSyntaxParserAttributeTests: XCTestCase {
     func test_parsesMethodAttributesAndModifiers() {
         XCTAssertEqual("class Foo { @discardableResult\n@objc(some)\nfunc some() {} }".parse().first?.methods.first?.attributes, [
             "discardableResult": [Attribute(name: "discardableResult")],
-            "objc": [Attribute(name: "objc", arguments: ["0": "some" as NSString], description: "@objc(some)")]
+            "objc": [Attribute(name: "objc", arguments: ["some"])]
         ])
 
         XCTAssertEqual("class Foo { @nonobjc convenience required init() {} }".parse().first?.initializers.first?.attributes, [
@@ -128,8 +120,8 @@ class SwiftSyntaxParserAttributeTests: XCTestCase {
 
     func test_parsesVariableAttributesAndModifiers() {
         XCTAssertEqual("class Foo { @NSCopying @objc(objcName) var name: NSString = \"\" }".parse().first?.variables.first?.attributes, [
-            "NSCopying": [Attribute(name: "NSCopying", description: "@NSCopying")],
-            "objc": [Attribute(name: "objc", arguments: ["0": "objcName" as NSString], description: "@objc(objcName)")]
+            "NSCopying": [Attribute(name: "NSCopying")],
+            "objc": [Attribute(name: "objc", arguments: ["objcName"])]
         ])
         XCTAssertEqual("struct Foo { mutating var some: Int }".parse().first?.variables.first?.modifiers, [Modifier(name: "mutating")])
         XCTAssertEqual("class Foo { final var some: Int }".parse().first?.variables.first?.modifiers, [Modifier(name: "final")])
@@ -176,13 +168,7 @@ class SwiftSyntaxParserAttributeTests: XCTestCase {
             var name: String = "abc"
         }
         """.parse().first?.variables.first?.attributes, [
-            "UserDefaults": [
-                Attribute(
-                    name: "UserDefaults",
-                    arguments: ["key": "user_name" as NSString, "1": "123" as NSString],
-                    description: "@UserDefaults(key: \"user_name\", 123)"
-                )
-            ]
+            "UserDefaults": [Attribute(name: "UserDefaults", arguments: ["key: \"user_name\"", "123"])]
         ])
     }
 }

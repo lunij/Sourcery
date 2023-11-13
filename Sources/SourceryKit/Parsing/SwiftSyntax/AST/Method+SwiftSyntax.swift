@@ -150,7 +150,7 @@ extension SourceryMethod {
           isStatic: initializerNode != nil ? true : baseModifiers.isStatic,
           isClass: baseModifiers.isClass,
           isFailableInitializer: initializerNode?.optionalMark != nil,
-          attributes: Attribute.from(attributes),
+          attributes: .init(from: attributes),
           modifiers: modifiers.map(SourceryModifier.init),
           annotations: annotations,
           documentation: documentation,

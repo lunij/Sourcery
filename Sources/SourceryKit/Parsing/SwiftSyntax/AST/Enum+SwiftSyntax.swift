@@ -18,7 +18,7 @@ extension Enum {
           methods: [],
           containedTypes: [],
           typealiases: [],
-          attributes: Attribute.from(node.attributes),
+            attributes: .init(from: node.attributes),
           modifiers: modifiers.map(SourceryModifier.init),
           annotations: getAnnotationUseCase.annotations(from: node),
           documentation: getAnnotationUseCase.documentation(from: node),

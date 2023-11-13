@@ -277,7 +277,13 @@ class SwiftSyntaxParserVariableTests: XCTestCase {
         @SomeWrapper
         var variable2 // some comment
         """.structVariable
-        let expectedVariable = Variable(name: "variable2", typeName: TypeName(name: "UnknownTypeSoAddTypeAttributionToVariable"), accessLevel: (read: .internal, write: .internal), isComputed: false, attributes: ["SomeWrapper": [Attribute(name: "SomeWrapper", arguments: [:])]])
+        let expectedVariable = Variable(
+            name: "variable2",
+            typeName: TypeName(name: "UnknownTypeSoAddTypeAttributionToVariable"),
+            accessLevel: (read: .internal, write: .internal),
+            isComputed: false,
+            attributes: ["SomeWrapper": [Attribute(name: "SomeWrapper")]]
+        )
         XCTAssertEqual(variable, expectedVariable)
     }
 

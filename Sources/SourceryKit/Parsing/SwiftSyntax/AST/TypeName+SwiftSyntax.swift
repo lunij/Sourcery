@@ -157,10 +157,9 @@ extension TypeName {
             )
         } else if let typeIdentifier = node.as(AttributedTypeSyntax.self) {
             let type = TypeName(typeIdentifier.baseType) // TODO: add test for nested type with attributes at multiple level?
-            let attributes = Attribute.from(typeIdentifier.attributes)
 
             self.init(name: type.name,
-                      attributes: attributes,
+                      attributes: .init(from: typeIdentifier.attributes),
                       isOptional: type.isOptional,
                       isImplicitlyUnwrappedOptional: type.isImplicitlyUnwrappedOptional,
                       tuple: type.tuple,

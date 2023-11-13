@@ -59,7 +59,7 @@ extension Subscript {
             parameters: node.parameterClause.parameters.map { MethodParameter($0, getAnnotationUseCase: getAnnotationUseCase) },
             returnTypeName: TypeName(node.returnClause.type.description.trimmed),
             accessLevel: (read: readAccess, write: isWritable ? writeAccess : .none),
-            attributes: Attribute.from(node.attributes),
+            attributes: .init(from: node.attributes),
             modifiers: modifiers.map(SourceryModifier.init),
             annotations: node.firstToken(viewMode: .sourceAccurate).map { getAnnotationUseCase.annotations(fromToken: $0) } ?? [:],
             documentation: node.firstToken(viewMode: .sourceAccurate).map { getAnnotationUseCase.documentation(fromToken: $0) } ?? [],

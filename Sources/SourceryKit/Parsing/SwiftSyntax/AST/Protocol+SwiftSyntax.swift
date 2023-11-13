@@ -26,7 +26,7 @@ extension SourceryProtocol {
           containedTypes: [],
           typealiases: [],
           genericRequirements: genericRequirements,
-          attributes: Attribute.from(node.attributes),
+          attributes: .init(from: node.attributes),
           modifiers: modifiers.map(SourceryModifier.init),
           annotations: getAnnotationParser.annotations(from: node),
           documentation: getAnnotationParser.documentation(from: node)

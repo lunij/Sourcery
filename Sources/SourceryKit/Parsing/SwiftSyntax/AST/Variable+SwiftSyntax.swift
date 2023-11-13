@@ -87,7 +87,7 @@ extension Variable {
           throws: `throws`,
           isStatic: isStatic,
           defaultValue: node.initializer?.value.description.trimmingCharacters(in: .whitespacesAndNewlines),
-          attributes: Attribute.from(variableNode.attributes),
+            attributes: .init(from: variableNode.attributes),
           modifiers: modifiers.map(SourceryModifier.init),
           annotations: getAnnotationUseCase.annotations(fromToken: variableNode.bindingSpecifier),
           documentation: getAnnotationUseCase.documentation(fromToken: variableNode.bindingSpecifier),

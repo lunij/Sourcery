@@ -16,7 +16,7 @@ extension Struct {
             inheritedTypes: node.inheritanceClause?.inheritedTypes.map { $0.type.description.trimmed } ?? [],
             containedTypes: [],
             typealiases: [],
-            attributes: Attribute.from(node.attributes),
+            attributes: .init(from: node.attributes),
             modifiers: modifiers.map(SourceryModifier.init),
             annotations: getAnnotationUseCase.annotations(from: node),
             documentation: getAnnotationUseCase.documentation(from: node),

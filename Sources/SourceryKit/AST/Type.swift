@@ -2,8 +2,6 @@ import Foundation
 import OrderedCollections
 import Stencil
 
-public typealias AttributeList = [String: [Attribute]]
-
 /// Defines Swift type
 public class Type: Diffable, Annotated, Documented, Equatable, Hashable, CustomStringConvertible, DynamicMemberLookup {
     public subscript(dynamicMember member: String) -> Any? {

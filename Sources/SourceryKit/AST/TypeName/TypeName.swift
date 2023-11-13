@@ -155,9 +155,9 @@ public final class TypeName: Diffable, LosslessStringConvertible, Equatable, Has
         let specialTreatment = isOptional && name.hasPrefix("Optional<")
 
         var description = (
-          attributes.flatMap({ $0.value }).map({ $0.asSource }).sorted() +
-          modifiers.map({ $0.asSource }) +
-          [specialTreatment ? name : unwrappedTypeName]
+            attributes.flatMap({ $0.value }).map(\.description).sorted() +
+            modifiers.map({ $0.asSource }) +
+            [specialTreatment ? name : unwrappedTypeName]
         ).joined(separator: " ")
 
         if let _ = self.dictionary { // array and dictionary cases are covered by the unwrapped type name
@@ -201,7 +201,7 @@ public final class TypeName: Diffable, LosslessStringConvertible, Equatable, Has
 
     public var description: String {
        (
-          attributes.flatMap({ $0.value }).map({ $0.asSource }).sorted() +
+          attributes.flatMap({ $0.value }).map(\.description).sorted() +
           modifiers.map({ $0.asSource }) +
           [name]
         ).joined(separator: " ")
