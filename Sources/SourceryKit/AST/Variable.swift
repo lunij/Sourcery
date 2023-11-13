@@ -1,9 +1,47 @@
 import Foundation
+import Stencil
 
 public typealias SourceryVariable = Variable
 
 /// Defines variable
-public final class Variable: Diffable, Typed, Annotated, Documented, Definition, Equatable, Hashable, CustomStringConvertible {
+public final class Variable: Diffable, Typed, Annotated, Documented, Definition, Equatable, Hashable, CustomStringConvertible, DynamicMemberLookup {
+    public subscript(dynamicMember member: String) -> Any? {
+        switch member {
+        case "accessLevel": accessLevel
+        case "actualDefinedInTypeName": actualDefinedInTypeName
+        case "actualTypeName": typeName.actualTypeName
+        case "annotations": annotations
+        case "attributes": attributes
+        case "defaultValue": defaultValue
+        case "definedInType": definedInType
+        case "definedInTypeName": definedInTypeName
+        case "description": description
+        case "documentation": documentation
+        case "isArray": typeName.isArray
+        case "isAsync": isAsync
+        case "isClosure": typeName.isClosure
+        case "isComputed": isComputed
+        case "isDictionary": typeName.isDictionary
+        case "isFinal": isFinal
+        case "isImplicitlyUnwrappedOptional": typeName.isImplicitlyUnwrappedOptional
+        case "isLazy": isLazy
+        case "isMutable": isMutable
+        case "isOptional": typeName.isOptional
+        case "isStatic": isStatic
+        case "isTuple": typeName.isTuple
+        case "modifiers": modifiers
+        case "name": name
+        case "readAccess": readAccess
+        case "throws": `throws`
+        case "type": type
+        case "typeName": typeName
+        case "unwrappedTypeName": typeName.unwrappedTypeName
+        case "writeAccess": writeAccess
+        default:
+            preconditionFailure("Member named '\(member)' does not exist.")
+        }
+    }
+
     /// Variable name
     public let name: String
 

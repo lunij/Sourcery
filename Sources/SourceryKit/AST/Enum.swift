@@ -1,7 +1,29 @@
 import Foundation
+import Stencil
 
 /// Defines enum case associated value
-public final class AssociatedValue: Diffable, Typed, Annotated, Equatable, Hashable, CustomStringConvertible {
+public final class AssociatedValue: Diffable, Typed, Annotated, Equatable, Hashable, CustomStringConvertible, DynamicMemberLookup {
+    public subscript(dynamicMember member: String) -> Any? {
+        switch member {
+        case "actualTypeName": typeName.actualTypeName
+        case "annotations": annotations
+        case "defaultValue": defaultValue
+        case "description": description
+        case "externalName": externalName
+        case "isArray": typeName.isArray
+        case "isClosure": typeName.isClosure
+        case "isDictionary": typeName.isDictionary
+        case "isImplicitlyUnwrappedOptional": typeName.isImplicitlyUnwrappedOptional
+        case "isOptional": typeName.isOptional
+        case "isTuple": typeName.isTuple
+        case "localName": localName
+        case "type": type
+        case "typeName": typeName
+        case "unwrappedTypeName": typeName.unwrappedTypeName
+        default:
+            preconditionFailure("Member named '\(member)' does not exist.")
+        }
+    }
 
     /// Associated value local name.
     /// This is a name to be used to construct enum case value
@@ -80,7 +102,22 @@ public final class AssociatedValue: Diffable, Typed, Annotated, Equatable, Hasha
 }
 
 /// Defines enum case
-public final class EnumCase: Diffable, Annotated, Documented, Equatable, Hashable, CustomStringConvertible {
+public final class EnumCase: Diffable, Annotated, Documented, Equatable, Hashable, CustomStringConvertible, DynamicMemberLookup {
+    public subscript(dynamicMember member: String) -> Any? {
+        switch member {
+        case "name": name
+        case "rawValue": rawValue
+        case "associatedValues": associatedValues
+        case "annotations": annotations
+        case "documentation": documentation
+        case "indirect": indirect
+        case "hasAssociatedValue": hasAssociatedValue
+        case "__parserData": __parserData
+        case "description": description
+        default:
+            preconditionFailure("Member named '\(member)' does not exist.")
+        }
+    }
 
     /// Enum case name
     public let name: String
@@ -166,6 +203,19 @@ public final class EnumCase: Diffable, Annotated, Documented, Equatable, Hashabl
 
 /// Defines Swift enum
 public final class Enum: Type {
+    public override subscript(dynamicMember member: String) -> Any? {
+        switch member {
+        case "based": based
+        case "cases": cases
+        case "description": description
+        case "hasAssociatedValues": hasAssociatedValues
+        case "hasRawType": hasRawType
+        case "kind": kind
+        case "rawType": rawType
+        case "rawTypeName": rawTypeName
+        default: super[dynamicMember: member]
+        }
+    }
 
     // sourcery: skipDescription
     /// Returns "enum"

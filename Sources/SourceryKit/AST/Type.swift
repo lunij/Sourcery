@@ -1,10 +1,68 @@
 import Foundation
 import OrderedCollections
+import Stencil
 
 public typealias AttributeList = [String: [Attribute]]
 
 /// Defines Swift type
-public class Type: Diffable, Annotated, Documented, Equatable, Hashable, CustomStringConvertible {
+public class Type: Diffable, Annotated, Documented, Equatable, Hashable, CustomStringConvertible, DynamicMemberLookup {
+    public subscript(dynamicMember member: String) -> Any? {
+        switch member {
+        case "accessLevel": accessLevel
+        case "allImports": allImports
+        case "allMethods": allMethods
+        case "allSubscripts": allSubscripts
+        case "allVariables": allVariables
+        case "annotations": annotations
+        case "attributes": attributes
+        case "based": based
+        case "basedTypes": basedTypes
+        case "bodyBytesRange": bodyBytesRange
+        case "classMethods": classMethods
+        case "completeDeclarationRange": completeDeclarationRange
+        case "computedVariables": computedVariables
+        case "containedType": containedType
+        case "containedTypes": containedTypes
+        case "description": description
+        case "directory": directory
+        case "documentation": documentation
+        case "fileName": fileName
+        case "globalName": globalName
+        case "implements": implements
+        case "imports": imports
+        case "inheritedTypes": inheritedTypes
+        case "inherits": inherits
+        case "initializers": initializers
+        case "instanceMethods": instanceMethods
+        case "instanceVariables": instanceVariables
+        case "isExtension": isExtension
+        case "isGeneric": isGeneric
+        case "isUnknownExtension": isUnknownExtension
+        case "kind": kind
+        case "localName": localName
+        case "methods": methods
+        case "modifiers": modifiers
+        case "module": module
+        case "name": name
+        case "parent": parent
+        case "parentName": parentName
+        case "parentTypes": parentTypes
+        case "path": path
+        case "rawMethods": rawMethods
+        case "rawSubscripts": rawSubscripts
+        case "rawVariables": rawVariables
+        case "staticMethods": staticMethods
+        case "staticVariables": staticVariables
+        case "storedVariables": storedVariables
+        case "subscripts": subscripts
+        case "supertype": supertype
+        case "typealiases": typealiases
+        case "variables": variables
+        default:
+            preconditionFailure("Member named '\(member)' does not exist.")
+        }
+    }
+
     public var module: String?
 
     /// Imports that existed in the file that contained this type declaration

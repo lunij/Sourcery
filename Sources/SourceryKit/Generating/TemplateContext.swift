@@ -1,4 +1,5 @@
 import Foundation
+import Stencil
 
 // sourcery: skipCoding
 public final class TemplateContext: Diffable, Equatable, Hashable, CustomStringConvertible {
@@ -80,7 +81,23 @@ extension TemplateContext.Error: CustomStringConvertible {
 }
 
 /// Collection of scanned types for accessing in templates
-public final class Types: Diffable, Equatable, Hashable, CustomStringConvertible {
+public final class Types: Diffable, Equatable, Hashable, CustomStringConvertible, DynamicMemberLookup {
+    public subscript(dynamicMember member: String) -> Any? {
+        switch member {
+        case "all": all
+        case "based": based
+        case "classes": classes
+        case "enums": enums
+        case "extensions": extensions
+        case "implementing": implementing
+        case "inheriting": inheriting
+        case "protocols": protocols
+        case "structs": structs
+        case "types": types
+        default:
+            preconditionFailure("Member named '\(member)' does not exist.")
+        }
+    }
 
     public let types: [Type]
 
@@ -215,7 +232,16 @@ public final class Types: Diffable, Equatable, Hashable, CustomStringConvertible
     }
 }
 
-public class TypesCollection {
+public class TypesCollection: DynamicMemberLookup {
+    public subscript(dynamicMember member: String) -> Any? {
+        do {
+            return try types(forKey: member)
+        } catch {
+            logger.error(error)
+            return nil
+        }
+    }
+
     let all: [Type]
     let types: [String: [Type]]
     let validate: ((Type) throws -> Void)?
@@ -263,15 +289,6 @@ public class TypesCollection {
         return []
     }
 
-    public func value(forKey key: String) -> Any? {
-        do {
-            return try types(forKey: key)
-        } catch {
-            logger.error(error)
-            return nil
-        }
-    }
-
     public subscript(_ key: String) -> [Type] {
         do {
             return try types(forKey: key)
@@ -279,9 +296,5 @@ public class TypesCollection {
             logger.error(error)
             return []
         }
-    }
-
-    public func responds(to aSelector: Selector!) -> Bool {
-        return true
     }
 }

@@ -3,6 +3,11 @@ import Foundation
 // sourcery: skipDescription
 /// Describes Swift struct
 public final class Struct: Type {
+    public override subscript(dynamicMember member: String) -> Any? {
+        switch member {
+        default: super[dynamicMember: member]
+        }
+    }
 
     /// Returns "struct"
     public override var kind: String { return "struct" }

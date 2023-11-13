@@ -1,7 +1,37 @@
 import Foundation
+import Stencil
 
 /// Describes name of the type used in typed declaration (variable, method parameter or return value etc.)
-public final class TypeName: Diffable, LosslessStringConvertible, Equatable, Hashable, CustomStringConvertible, CustomDebugStringConvertible {
+public final class TypeName: Diffable, LosslessStringConvertible, Equatable, Hashable, CustomStringConvertible, CustomDebugStringConvertible, DynamicMemberLookup {
+    public subscript(dynamicMember member: String) -> Any? {
+        switch member {
+        case "actualTypeName": actualTypeName
+        case "array": array
+        case "asSource": asSource
+        case "attributes": attributes
+        case "closure": closure
+        case "debugDescription": debugDescription
+        case "description": description
+        case "dictionary": dictionary
+        case "generic": generic
+        case "isArray": isArray
+        case "isClosure": isClosure
+        case "isDictionary": isDictionary
+        case "isGeneric": isGeneric
+        case "isImplicitlyUnwrappedOptional": isImplicitlyUnwrappedOptional
+        case "isOptional": isOptional
+        case "isProtocolComposition": isProtocolComposition
+        case "isTuple": isTuple
+        case "isVoid": isVoid
+        case "modifiers": modifiers
+        case "name": name
+        case "tuple": tuple
+        case "unwrappedTypeName": unwrappedTypeName
+        default:
+            preconditionFailure("Member named '\(member)' does not exist.")
+        }
+    }
+
     public init(name: String,
                 actualTypeName: TypeName? = nil,
                 unwrappedTypeName: String? = nil,

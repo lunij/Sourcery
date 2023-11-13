@@ -1,7 +1,15 @@
 import Foundation
+import Stencil
 
 /// Describes tuple type
-public final class TupleType: Diffable, Equatable, Hashable, CustomStringConvertible {
+public final class TupleType: Diffable, Equatable, Hashable, CustomStringConvertible, DynamicMemberLookup {
+    public subscript(dynamicMember member: String) -> Any? {
+        switch member {
+        case "elements": elements
+        default:
+            preconditionFailure("Member named '\(member)' does not exist.")
+        }
+    }
 
     /// Type name used in declaration
     public var name: String
@@ -50,7 +58,24 @@ public final class TupleType: Diffable, Equatable, Hashable, CustomStringConvert
 }
 
 /// Describes tuple type element
-public final class TupleElement: Diffable, Typed, Equatable, Hashable, CustomStringConvertible {
+public final class TupleElement: Diffable, Typed, Equatable, Hashable, CustomStringConvertible, DynamicMemberLookup {
+    public subscript(dynamicMember member: String) -> Any? {
+        switch member {
+        case "actualTypeName": typeName.actualTypeName
+        case "isArray": typeName.isArray
+        case "isClosure": typeName.isClosure
+        case "isDictionary": typeName.isDictionary
+        case "isImplicitlyUnwrappedOptional": typeName.isImplicitlyUnwrappedOptional
+        case "isOptional": typeName.isOptional
+        case "isTuple": typeName.isTuple
+        case "name": name
+        case "type": type
+        case "typeName": typeName
+        case "unwrappedTypeName": typeName.unwrappedTypeName
+        default:
+            preconditionFailure("Member named '\(member)' does not exist.")
+        }
+    }
 
     /// Tuple element name
     public let name: String?

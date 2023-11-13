@@ -1,7 +1,15 @@
 import Foundation
+
 // sourcery: skipDescription
 /// Descibes Swift class
 public final class Class: Type {
+    public override subscript(dynamicMember member: String) -> Any? {
+        switch member {
+        case "kind": kind
+        default: super[dynamicMember: member]
+        }
+    }
+
     /// Returns "class"
     public override var kind: String { return "class" }
 

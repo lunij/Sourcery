@@ -1,6 +1,22 @@
 import Foundation
+import Stencil
 
-public final class Typealias: Diffable, Typed, Equatable, Hashable {
+public final class Typealias: Diffable, Typed, Equatable, Hashable, DynamicMemberLookup {
+    public subscript(dynamicMember member: String) -> Any? {
+        switch member {
+        case "actualTypeName": typeName.actualTypeName
+        case "isArray": typeName.isArray
+        case "isClosure": typeName.isClosure
+        case "isDictionary": typeName.isDictionary
+        case "isImplicitlyUnwrappedOptional": typeName.isImplicitlyUnwrappedOptional
+        case "isOptional": typeName.isOptional
+        case "isTuple": typeName.isTuple
+        case "unwrappedTypeName": typeName.unwrappedTypeName
+        default:
+            preconditionFailure("Member named '\(member)' does not exist.")
+        }
+    }
+
     // New typealias name
     public let aliasName: String
 

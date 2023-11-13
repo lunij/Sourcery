@@ -1,9 +1,36 @@
 import Foundation
+import Stencil
 
 public typealias SourceryMethod = Method
 
 /// Describes method parameter
-public class MethodParameter: Diffable, Typed, Annotated, Equatable, Hashable, CustomStringConvertible {
+public class MethodParameter: Diffable, Typed, Annotated, Equatable, Hashable, CustomStringConvertible, DynamicMemberLookup {
+    public subscript(dynamicMember member: String) -> Any? {
+        switch member {
+        case "actualTypeName": typeName.actualTypeName
+        case "isArray": typeName.isArray
+        case "isClosure": typeName.isClosure
+        case "isDictionary": typeName.isDictionary
+        case "isImplicitlyUnwrappedOptional": typeName.isImplicitlyUnwrappedOptional
+        case "isOptional": typeName.isOptional
+        case "isTuple": typeName.isTuple
+        case "unwrappedTypeName": typeName.unwrappedTypeName
+        case "annotations": annotations
+        case "argumentLabel": argumentLabel
+        case "asSource": asSource
+        case "defaultValue": defaultValue
+        case "description": description
+        case "inout": `inout`
+        case "isVariadic": isVariadic
+        case "name": name
+        case "type": type
+        case "typeAttributes": typeAttributes
+        case "typeName": typeName
+        default:
+            preconditionFailure("Member named '\(member)' does not exist.")
+        }
+    }
+
     /// Parameter external name
     public var argumentLabel: String?
 
@@ -129,7 +156,22 @@ extension Array where Element == MethodParameter {
     }
 }
 
-public final class ClosureParameter: Typed, Annotated, Equatable, Hashable, CustomStringConvertible {
+public final class ClosureParameter: Typed, Annotated, Equatable, Hashable, CustomStringConvertible, DynamicMemberLookup {
+    public subscript(dynamicMember member: String) -> Any? {
+        switch member {
+        case "actualTypeName": typeName.actualTypeName
+        case "isArray": typeName.isArray
+        case "isClosure": typeName.isClosure
+        case "isDictionary": typeName.isDictionary
+        case "isImplicitlyUnwrappedOptional": typeName.isImplicitlyUnwrappedOptional
+        case "isOptional": typeName.isOptional
+        case "isTuple": typeName.isTuple
+        case "unwrappedTypeName": typeName.unwrappedTypeName
+        default:
+            preconditionFailure("Member named '\(member)' does not exist.")
+        }
+    }
+
     /// Parameter external name
     public var argumentLabel: String?
 
@@ -226,7 +268,49 @@ extension Array where Element == ClosureParameter {
 }
 
 /// Describes method
-public final class Method: Diffable, Annotated, Documented, Definition, Equatable, Hashable, CustomStringConvertible {
+public final class Method: Diffable, Annotated, Documented, Definition, Equatable, Hashable, CustomStringConvertible, DynamicMemberLookup {
+    public subscript(dynamicMember member: String) -> Any? {
+        switch member {
+        case "__parserData": __parserData
+        case "accessLevel": accessLevel
+        case "actualDefinedInTypeName": actualDefinedInTypeName
+        case "actualReturnTypeName": actualReturnTypeName
+        case "annotations": annotations
+        case "attributes": attributes
+        case "callName": callName
+        case "definedInType": definedInType
+        case "definedInTypeName": definedInTypeName
+        case "description": description
+        case "documentation": documentation
+        case "isAsync": isAsync
+        case "isClass": isClass
+        case "isConvenienceInitializer": isConvenienceInitializer
+        case "isDeinitializer": isDeinitializer
+        case "isFailableInitializer": isFailableInitializer
+        case "isFinal": isFinal
+        case "isGeneric": isGeneric
+        case "isImplicitlyUnwrappedOptionalReturnType": isImplicitlyUnwrappedOptionalReturnType
+        case "isInitializer": isInitializer
+        case "isMutating": isMutating
+        case "isNonisolated": isNonisolated
+        case "isOptional": isOptional
+        case "isOptionalReturnType": isOptionalReturnType
+        case "isRequired": isRequired
+        case "isStatic": isStatic
+        case "modifiers": modifiers
+        case "name": name
+        case "parameters": parameters
+        case "rethrows": `rethrows`
+        case "returnType": returnType
+        case "returnTypeName": returnTypeName
+        case "selectorName": selectorName
+        case "shortName": shortName
+        case "throws": `throws`
+        case "unwrappedReturnTypeName": unwrappedReturnTypeName
+        default:
+            preconditionFailure("Member named '\(member)' does not exist.")
+        }
+    }
 
     /// Full method name, including generic constraints, i.e. `foo<T>(bar: T)`
     public let name: String
