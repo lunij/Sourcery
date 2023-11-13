@@ -1,7 +1,7 @@
 import Foundation
 
 /// Describes Swift AssociatedType
-@objcMembers public final class AssociatedType: NSObject, Diffable {
+public final class AssociatedType: Diffable, Equatable, Hashable, CustomStringConvertible {
     /// Associated type name
     public let name: String
 
@@ -29,10 +29,21 @@ import Foundation
         return results
     }
 
-    public override var description: String {
+    public var description: String {
         var string = "\(Swift.type(of: self)): "
         string += "name = \(String(describing: name)), "
         string += "typeName = \(String(describing: typeName))"
         return string
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(name)
+        hasher.combine(typeName)
+    }
+
+    public static func == (lhs: AssociatedType, rhs: AssociatedType) -> Bool {
+        if lhs.name != rhs.name { return false }
+        if lhs.typeName != rhs.typeName { return false }
+        return true
     }
 }

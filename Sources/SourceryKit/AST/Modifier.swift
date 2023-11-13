@@ -3,7 +3,7 @@ import Foundation
 public typealias SourceryModifier = Modifier
 /// modifier can be thing like `private`, `class`, `nonmutating`
 /// if a declaration has modifier like `private(set)` it's name will be `private` and detail will be `set`
-@objcMembers public class Modifier: NSObject, Diffable {
+public class Modifier: Diffable, Equatable, Hashable {
 
     /// The declaration modifier name.
     public let name: String
@@ -33,5 +33,16 @@ public typealias SourceryModifier = Modifier
         results.append(contentsOf: DiffableResult(identifier: "name").trackDifference(actual: self.name, expected: castObject.name))
         results.append(contentsOf: DiffableResult(identifier: "detail").trackDifference(actual: self.detail, expected: castObject.detail))
         return results
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(name)
+        hasher.combine(detail)
+    }
+
+    public static func == (lhs: Modifier, rhs: Modifier) -> Bool {
+        if lhs.name != rhs.name { return false }
+        if lhs.detail != rhs.detail { return false }
+        return true
     }
 }

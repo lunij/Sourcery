@@ -2,7 +2,7 @@ import Foundation
 
 // sourcery: skipDescription
 /// Describes Swift struct
-@objcMembers public final class Struct: Type {
+public final class Struct: Type {
 
     /// Returns "struct"
     public override var kind: String { return "struct" }
@@ -56,5 +56,9 @@ import Foundation
         string += ", "
         string += "kind = \(String(describing: kind))"
         return string
+    }
+
+    public override func hash(into hasher: inout Hasher) {
+        super.hash(into: &hasher)
     }
 }

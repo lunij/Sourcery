@@ -1,6 +1,6 @@
 import Foundation
 
-@objcMembers public final class Typealias: NSObject, Diffable, Typed {
+public final class Typealias: Diffable, Typed, Equatable, Hashable {
     // New typealias name
     public let aliasName: String
 
@@ -56,7 +56,7 @@ import Foundation
         return results
     }
 
-    public override var description: String {
+    public var description: String {
         var string = "\(Swift.type(of: self)): "
         string += "aliasName = \(String(describing: aliasName)), "
         string += "typeName = \(String(describing: typeName)), "
@@ -65,5 +65,22 @@ import Foundation
         string += "parentName = \(String(describing: parentName)), "
         string += "name = \(String(describing: name))"
         return string
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(aliasName)
+        hasher.combine(typeName)
+        hasher.combine(module)
+        hasher.combine(accessLevel)
+        hasher.combine(parentName)
+    }
+
+    public static func == (lhs: Typealias, rhs: Typealias) -> Bool {
+        if lhs.aliasName != rhs.aliasName { return false }
+        if lhs.typeName != rhs.typeName { return false }
+        if lhs.module != rhs.module { return false }
+        if lhs.accessLevel != rhs.accessLevel { return false }
+        if lhs.parentName != rhs.parentName { return false }
+        return true
     }
 }

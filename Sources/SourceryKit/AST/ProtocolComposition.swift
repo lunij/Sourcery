@@ -1,7 +1,7 @@
 import Foundation
 
 /// Describes a Swift [protocol composition](https://docs.swift.org/swift-book/ReferenceManual/Types.html#ID454).
-@objcMembers public final class ProtocolComposition: Type {
+public final class ProtocolComposition: Type {
 
     /// Returns "protocolComposition"
     public override var kind: String { return "protocolComposition" }
@@ -63,5 +63,17 @@ import Foundation
         string += "kind = \(String(describing: kind)), "
         string += "composedTypeNames = \(String(describing: composedTypeNames))"
         return string
+    }
+
+    public override func hash(into hasher: inout Hasher) {
+        hasher.combine(composedTypeNames)
+        super.hash(into: &hasher)
+    }
+
+    override func isEqual(to instance: Type) -> Bool {
+        guard super.isEqual(to: instance), let instance = instance as? ProtocolComposition else {
+            return false
+        }
+        return composedTypeNames == instance.composedTypeNames
     }
 }

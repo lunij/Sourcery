@@ -1,7 +1,7 @@
 import Foundation
 
 /// Describes array type
-@objcMembers public final class ArrayType: NSObject, Diffable {
+public final class ArrayType: Diffable, Equatable, Hashable, CustomStringConvertible {
 
     /// Type name used in declaration
     public var name: String
@@ -41,12 +41,23 @@ import Foundation
         return results
     }
 
-    public override var description: String {
+    public var description: String {
         var string = "\(Swift.type(of: self)): "
         string += "name = \(String(describing: name)), "
         string += "elementTypeName = \(String(describing: elementTypeName)), "
         string += "asGeneric = \(String(describing: asGeneric)), "
         string += "asSource = \(String(describing: asSource))"
         return string
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(name)
+        hasher.combine(elementTypeName)
+    }
+
+    public static func == (lhs: ArrayType, rhs: ArrayType) -> Bool {
+        if lhs.name != rhs.name { return false }
+        if lhs.elementTypeName != rhs.elementTypeName { return false }
+        return true
     }
 }

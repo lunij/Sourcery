@@ -1,7 +1,7 @@
 import Foundation
 
 /// Describes subscript
-@objcMembers public final class Subscript: NSObject, Annotated, Diffable, Documented, Definition {
+public final class Subscript: Diffable, Annotated, Documented, Definition, Equatable, Hashable {
 
     /// Method parameters
     public var parameters: [MethodParameter]
@@ -120,7 +120,7 @@ import Foundation
         return results
     }
 
-    public override var description: String {
+    public var description: String {
         var string = "\(Swift.type(of: self)): "
         string += "parameters = \(String(describing: parameters)), "
         string += "returnTypeName = \(String(describing: returnTypeName)), "
@@ -136,5 +136,30 @@ import Foundation
         string += "attributes = \(String(describing: attributes)), "
         string += "modifiers = \(String(describing: modifiers))"
         return string
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(parameters)
+        hasher.combine(returnTypeName)
+        hasher.combine(readAccess)
+        hasher.combine(writeAccess)
+        hasher.combine(annotations)
+        hasher.combine(documentation)
+        hasher.combine(definedInTypeName)
+        hasher.combine(attributes)
+        hasher.combine(modifiers)
+    }
+
+    public static func == (lhs: Subscript, rhs: Subscript) -> Bool {
+        if lhs.parameters != rhs.parameters { return false }
+        if lhs.returnTypeName != rhs.returnTypeName { return false }
+        if lhs.readAccess != rhs.readAccess { return false }
+        if lhs.writeAccess != rhs.writeAccess { return false }
+        if lhs.annotations != rhs.annotations { return false }
+        if lhs.documentation != rhs.documentation { return false }
+        if lhs.definedInTypeName != rhs.definedInTypeName { return false }
+        if lhs.attributes != rhs.attributes { return false }
+        if lhs.modifiers != rhs.modifiers { return false }
+        return true
     }
 }

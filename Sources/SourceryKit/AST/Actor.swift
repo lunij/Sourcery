@@ -2,7 +2,7 @@ import Foundation
 
 // sourcery: skipDescription
 /// Descibes Swift actor
-@objc(SwiftActor) @objcMembers public final class Actor: Type {
+public final class Actor: Type {
     /// Returns "actor"
     public override var kind: String { return "actor" }
 
@@ -61,5 +61,9 @@ import Foundation
         string += "kind = \(String(describing: kind)), "
         string += "isFinal = \(String(describing: isFinal))"
         return string
+    }
+
+    public override func hash(into hasher: inout Hasher) {
+        super.hash(into: &hasher)
     }
 }

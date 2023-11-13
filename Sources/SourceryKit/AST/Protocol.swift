@@ -3,7 +3,7 @@ import Foundation
 public typealias SourceryProtocol = Protocol
 
 /// Describes Swift protocol
-@objcMembers public final class Protocol: Type {
+public final class Protocol: Type {
 
     /// Returns "protocol"
     public override var kind: String { return "protocol" }
@@ -78,5 +78,19 @@ public typealias SourceryProtocol = Protocol
         string += "associatedTypes = \(String(describing: self.associatedTypes)), "
         string += "genericRequirements = \(String(describing: self.genericRequirements))"
         return string
+    }
+
+    public override func hash(into hasher: inout Hasher) {
+        hasher.combine(associatedTypes)
+        hasher.combine(genericRequirements)
+        super.hash(into: &hasher)
+    }
+
+    override func isEqual(to instance: Type) -> Bool {
+        guard super.isEqual(to: instance), let instance = instance as? Protocol else {
+            return false
+        }
+        return associatedTypes == instance.associatedTypes
+            && genericRequirements == instance.genericRequirements
     }
 }

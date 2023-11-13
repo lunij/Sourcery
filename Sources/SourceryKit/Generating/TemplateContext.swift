@@ -1,7 +1,7 @@
 import Foundation
 
 // sourcery: skipCoding
-@objcMembers public final class TemplateContext: NSObject, Diffable {
+public final class TemplateContext: Diffable, Equatable, Hashable, CustomStringConvertible {
     public let functions: [SourceryMethod]
     public let types: Types
     public let argument: [String: NSObject]
@@ -38,7 +38,7 @@ import Foundation
         return results
     }
 
-    public override var description: String {
+    public var description: String {
         var string = "\(Swift.type(of: self)): "
         string += "functions = \(String(describing: functions)), "
         string += "types = \(String(describing: types)), "
@@ -46,6 +46,19 @@ import Foundation
         string += "stencilContext = \(String(describing: stencilContext))"
         return string
     }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(functions)
+        hasher.combine(types)
+        hasher.combine(argument)
+    }
+
+    public static func == (lhs: TemplateContext, rhs: TemplateContext) -> Bool {
+        lhs.functions == rhs.functions
+            && lhs.types == rhs.types
+            && lhs.argument == rhs.argument
+    }
+
     enum Error: Swift.Error, Equatable {
         case notAClass(String)
         case notAProtocol(String)
@@ -67,7 +80,7 @@ extension TemplateContext.Error: CustomStringConvertible {
 }
 
 /// Collection of scanned types for accessing in templates
-@objcMembers public final class Types: NSObject, Diffable {
+public final class Types: Diffable, Equatable, Hashable, CustomStringConvertible {
 
     public let types: [Type]
 
@@ -185,15 +198,24 @@ extension TemplateContext.Error: CustomStringConvertible {
         return results
     }
 
-    public override var description: String {
+    public var description: String {
         var string = "\(Swift.type(of: self)): "
         string += "types = \(String(describing: types)), "
         string += "typealiases = \(String(describing: typealiases))"
         return string
     }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(types)
+        hasher.combine(typealiases)
+    }
+
+    public static func == (lhs: Types, rhs: Types) -> Bool {
+        lhs.types == rhs.types && lhs.typealiases == rhs.typealiases
+    }
 }
 
-@objcMembers public class TypesCollection: NSObject {
+public class TypesCollection {
     let all: [Type]
     let types: [String: [Type]]
     let validate: ((Type) throws -> Void)?
@@ -241,7 +263,7 @@ extension TemplateContext.Error: CustomStringConvertible {
         return []
     }
 
-    public override func value(forKey key: String) -> Any? {
+    public func value(forKey key: String) -> Any? {
         do {
             return try types(forKey: key)
         } catch {
@@ -259,7 +281,7 @@ extension TemplateContext.Error: CustomStringConvertible {
         }
     }
 
-    public override func responds(to aSelector: Selector!) -> Bool {
+    public func responds(to aSelector: Selector!) -> Bool {
         return true
     }
 }

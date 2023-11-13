@@ -4,7 +4,7 @@ import OrderedCollections
 public typealias AttributeList = [String: [Attribute]]
 
 /// Defines Swift type
-@objcMembers public class Type: NSObject, Annotated, Diffable, Documented {
+public class Type: Diffable, Annotated, Documented, Equatable, Hashable, CustomStringConvertible {
     public var module: String?
 
     /// Imports that existed in the file that contained this type declaration
@@ -373,7 +373,6 @@ public typealias AttributeList = [String: [Attribute]]
         self.documentation = documentation
         self.isGeneric = isGeneric
 
-        super.init()
         containedTypes.forEach {
             containedType[$0.localName] = $0
             $0.parent = self
@@ -428,7 +427,7 @@ public typealias AttributeList = [String: [Attribute]]
         return results
     }
 
-    override public var description: String {
+    public var description: String {
         var string = "\(Swift.type(of: self)): "
         string += "module = \(String(describing: module)), "
         string += "imports = \(String(describing: imports)), "
@@ -463,6 +462,59 @@ public typealias AttributeList = [String: [Attribute]]
         string += "modifiers = \(String(describing: modifiers)), "
         string += "fileName = \(String(describing: fileName))"
         return string
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(module)
+        hasher.combine(imports)
+        hasher.combine(typealiases)
+        hasher.combine(isExtension)
+        hasher.combine(accessLevel)
+        hasher.combine(isUnknownExtension)
+        hasher.combine(isGeneric)
+        hasher.combine(localName)
+        hasher.combine(rawVariables)
+        hasher.combine(rawMethods)
+        hasher.combine(rawSubscripts)
+        hasher.combine(annotations)
+        hasher.combine(documentation)
+        hasher.combine(inheritedTypes)
+        hasher.combine(inherits)
+        hasher.combine(containedTypes)
+        hasher.combine(parentName)
+        hasher.combine(attributes)
+        hasher.combine(modifiers)
+        hasher.combine(fileName)
+        hasher.combine(kind)
+    }
+
+    func isEqual(to instance: Type) -> Bool {
+        if module != instance.module { return false }
+        if imports != instance.imports { return false }
+        if typealiases != instance.typealiases { return false }
+        if isExtension != instance.isExtension { return false }
+        if accessLevel != instance.accessLevel { return false }
+        if isUnknownExtension != instance.isUnknownExtension { return false }
+        if isGeneric != instance.isGeneric { return false }
+        if localName != instance.localName { return false }
+        if rawVariables != instance.rawVariables { return false }
+        if rawMethods != instance.rawMethods { return false }
+        if rawSubscripts != instance.rawSubscripts { return false }
+        if annotations != instance.annotations { return false }
+        if documentation != instance.documentation { return false }
+        if inheritedTypes != instance.inheritedTypes { return false }
+        if inherits != instance.inherits { return false }
+        if containedTypes != instance.containedTypes { return false }
+        if parentName != instance.parentName { return false }
+        if attributes != instance.attributes { return false }
+        if modifiers != instance.modifiers { return false }
+        if fileName != instance.fileName { return false }
+        if kind != instance.kind { return false }
+        return true
+    }
+
+    public static func == (lhs: Type, rhs: Type) -> Bool {
+        type(of: lhs) == type(of: rhs) && lhs.isEqual(to: rhs)
     }
 }
 

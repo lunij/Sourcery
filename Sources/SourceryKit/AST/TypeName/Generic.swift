@@ -1,7 +1,7 @@
 import Foundation
 
 /// Descibes Swift generic type
-@objcMembers public final class GenericType: NSObject, Diffable {
+public final class GenericType: Diffable, Equatable, Hashable {
     /// The name of the base type, i.e. `Array` for `Array<Int>`
     public var name: String
 
@@ -20,10 +20,6 @@ import Foundation
         return "\(name)<\(arguments)>"
     }
 
-    public override var description: String {
-        asSource
-    }
-
     public func diffAgainst(_ object: Any?) -> DiffableResult {
         let results = DiffableResult()
         guard let castObject = object as? GenericType else {
@@ -34,15 +30,29 @@ import Foundation
         results.append(contentsOf: DiffableResult(identifier: "typeParameters").trackDifference(actual: self.typeParameters, expected: castObject.typeParameters))
         return results
     }
+
+    public var description: String {
+        asSource
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(name)
+        hasher.combine(typeParameters)
+    }
+
+    public static func == (lhs: GenericType, rhs: GenericType) -> Bool {
+        if lhs.name != rhs.name { return false }
+        if lhs.typeParameters != rhs.typeParameters { return false }
+        return true
+    }
 }
 
 /// Descibes Swift generic type parameter
-@objcMembers public final class GenericTypeParameter: NSObject, Diffable {
+public final class GenericTypeParameter: Diffable, Equatable, Hashable, CustomStringConvertible {
 
     /// Generic parameter type name
     public var typeName: TypeName
 
-    // sourcery: skipEquality, skipDescription
     /// Generic parameter type, if known
     public var type: Type?
 
@@ -61,9 +71,18 @@ import Foundation
         return results
     }
 
-    public override var description: String {
+    public var description: String {
         var string = "\(Swift.type(of: self)): "
         string += "typeName = \(String(describing: typeName))"
         return string
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(typeName)
+    }
+
+    public static func == (lhs: GenericTypeParameter, rhs: GenericTypeParameter) -> Bool {
+        if lhs.typeName != rhs.typeName { return false }
+        return true
     }
 }

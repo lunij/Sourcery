@@ -1,7 +1,7 @@
 import Foundation
 
 /// Describes name of the type used in typed declaration (variable, method parameter or return value etc.)
-@objcMembers public final class TypeName: NSObject, LosslessStringConvertible, Diffable {
+public final class TypeName: Diffable, LosslessStringConvertible, Equatable, Hashable, CustomStringConvertible, CustomDebugStringConvertible {
     public init(name: String,
                 actualTypeName: TypeName? = nil,
                 unwrappedTypeName: String? = nil,
@@ -43,7 +43,6 @@ import Foundation
 
         self.attributes = attributes
         self.modifiers = []
-        super.init()
     }
 
     /// Type name used in declaration
@@ -170,7 +169,7 @@ import Foundation
         return results
     }
 
-    public override var description: String {
+    public var description: String {
        (
           attributes.flatMap({ $0.value }).map({ $0.asSource }).sorted() +
           modifiers.map({ $0.asSource }) +
@@ -179,12 +178,37 @@ import Foundation
     }
 
     // sourcery: skipEquality, skipDescription
-    public override var debugDescription: String {
+    public var debugDescription: String {
         return name
     }
 
     public convenience init(_ description: String) {
         self.init(name: description, actualTypeName: nil)
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(name)
+        hasher.combine(generic)
+        hasher.combine(isProtocolComposition)
+        hasher.combine(attributes)
+        hasher.combine(modifiers)
+        hasher.combine(tuple)
+        hasher.combine(array)
+        hasher.combine(dictionary)
+        hasher.combine(closure)
+    }
+
+    public static func == (lhs: TypeName, rhs: TypeName) -> Bool {
+        if lhs.name != rhs.name { return false }
+        if lhs.generic != rhs.generic { return false }
+        if lhs.isProtocolComposition != rhs.isProtocolComposition { return false }
+        if lhs.attributes != rhs.attributes { return false }
+        if lhs.modifiers != rhs.modifiers { return false }
+        if lhs.tuple != rhs.tuple { return false }
+        if lhs.array != rhs.array { return false }
+        if lhs.dictionary != rhs.dictionary { return false }
+        if lhs.closure != rhs.closure { return false }
+        return true
     }
 }
 

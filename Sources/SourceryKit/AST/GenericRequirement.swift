@@ -2,7 +2,7 @@ import Foundation
 
 /// modifier can be thing like `private`, `class`, `nonmutating`
 /// if a declaration has modifier like `private(set)` it's name will be `private` and detail will be `set`
-@objcMembers public class GenericRequirement: NSObject, Diffable {
+public class GenericRequirement: Diffable, Equatable, Hashable, CustomStringConvertible {
 
     public enum Relationship: String {
         case equals
@@ -47,12 +47,27 @@ import Foundation
         return results
     }
 
-    public override var description: String {
+    public var description: String {
         var string = "\(Swift.type(of: self)): "
         string += "leftType = \(String(describing: leftType)), "
         string += "rightType = \(String(describing: rightType)), "
         string += "relationship = \(String(describing: relationship)), "
         string += "relationshipSyntax = \(String(describing: relationshipSyntax))"
         return string
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(leftType)
+        hasher.combine(rightType)
+        hasher.combine(relationship)
+        hasher.combine(relationshipSyntax)
+    }
+
+    public static func == (lhs: GenericRequirement, rhs: GenericRequirement) -> Bool {
+        if lhs.leftType != rhs.leftType { return false }
+        if lhs.rightType != rhs.rightType { return false }
+        if lhs.relationship != rhs.relationship { return false }
+        if lhs.relationshipSyntax != rhs.relationshipSyntax { return false }
+        return true
     }
 }

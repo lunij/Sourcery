@@ -1,6 +1,6 @@
 import Foundation
 
-@objcMembers public final class BytesRange: NSObject, Diffable {
+public final class BytesRange: Diffable, Equatable, Hashable, CustomStringConvertible {
 
     public let offset: Int64
     public let length: Int64
@@ -25,10 +25,19 @@ import Foundation
         return results
     }
 
-    public override var description: String {
+    public var description: String {
         var string = "\(Swift.type(of: self)): "
         string += "offset = \(String(describing: offset)), "
         string += "length = \(String(describing: length))"
         return string
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(offset)
+        hasher.combine(length)
+    }
+
+    public static func == (lhs: BytesRange, rhs: BytesRange) -> Bool {
+        lhs.offset == rhs.offset && lhs.length == rhs.length
     }
 }

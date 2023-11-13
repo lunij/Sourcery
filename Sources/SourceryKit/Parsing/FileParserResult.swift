@@ -1,6 +1,6 @@
 import Foundation
 
-@objcMembers public final class FileParserResult: NSObject, Diffable {
+public final class FileParserResult: Diffable, Equatable, Hashable, CustomStringConvertible {
     public let path: String?
     public let module: String?
     public var types = [Type]() {
@@ -42,8 +42,6 @@ import Foundation
         self.inlineIndentations = inlineIndentations
         self.modifiedDate = modifiedDate
 
-        super.init()
-
         defer {
             self.types = types
         }
@@ -66,7 +64,7 @@ import Foundation
         return results
     }
 
-    public override var description: String {
+    public var description: String {
         var string = "\(Swift.type(of: self)): "
         string += "path = \(String(describing: path)), "
         string += "module = \(String(describing: module)), "
@@ -78,5 +76,27 @@ import Foundation
         string += "modifiedDate = \(String(describing: modifiedDate)), "
         string += "isEmpty = \(String(describing: isEmpty))"
         return string
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(path)
+        hasher.combine(module)
+        hasher.combine(types)
+        hasher.combine(functions)
+        hasher.combine(typealiases)
+        hasher.combine(inlineRanges)
+        hasher.combine(inlineIndentations)
+        hasher.combine(modifiedDate)
+    }
+
+    public static func == (lhs: FileParserResult, rhs: FileParserResult) -> Bool {
+        lhs.path == rhs.path
+            && lhs.module == rhs.module
+            && lhs.types == rhs.types
+            && lhs.functions == rhs.functions
+            && lhs.typealiases == rhs.typealiases
+            && lhs.inlineRanges == rhs.inlineRanges
+            && lhs.inlineIndentations == rhs.inlineIndentations
+            && lhs.modifiedDate == rhs.modifiedDate
     }
 }

@@ -3,7 +3,7 @@ import Foundation
 public typealias SourceryMethod = Method
 
 /// Describes method parameter
-@objcMembers public class MethodParameter: NSObject, Diffable, Typed, Annotated {
+public class MethodParameter: Diffable, Typed, Annotated, Equatable, Hashable, CustomStringConvertible {
     /// Parameter external name
     public var argumentLabel: String?
 
@@ -87,7 +87,7 @@ public typealias SourceryMethod = Method
         return results
     }
 
-    public override var description: String {
+    public var description: String {
         var string = "\(Swift.type(of: self)): "
         string += "argumentLabel = \(String(describing: argumentLabel)), "
         string += "name = \(String(describing: name)), "
@@ -100,6 +100,27 @@ public typealias SourceryMethod = Method
         string += "asSource = \(String(describing: asSource))"
         return string
     }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(argumentLabel)
+        hasher.combine(name)
+        hasher.combine(typeName)
+        hasher.combine(`inout`)
+        hasher.combine(isVariadic)
+        hasher.combine(defaultValue)
+        hasher.combine(annotations)
+    }
+
+    public static func == (lhs: MethodParameter, rhs: MethodParameter) -> Bool {
+        if lhs.argumentLabel != rhs.argumentLabel { return false }
+        if lhs.name != rhs.name { return false }
+        if lhs.typeName != rhs.typeName { return false }
+        if lhs.`inout` != rhs.`inout` { return false }
+        if lhs.isVariadic != rhs.isVariadic { return false }
+        if lhs.defaultValue != rhs.defaultValue { return false }
+        if lhs.annotations != rhs.annotations { return false }
+        return true
+    }
 }
 
 extension Array where Element == MethodParameter {
@@ -108,8 +129,7 @@ extension Array where Element == MethodParameter {
     }
 }
 
-// sourcery: skipDiffing
-@objcMembers public final class ClosureParameter: NSObject, Typed, Annotated {
+public final class ClosureParameter: Typed, Annotated, Equatable, Hashable, CustomStringConvertible {
     /// Parameter external name
     public var argumentLabel: String?
 
@@ -166,7 +186,7 @@ extension Array where Element == MethodParameter {
         return (labels.nilIfEmpty ?? "_") + typeSuffix
     }
 
-    override public var description: String {
+    public var description: String {
         var string = "\(Swift.type(of: self)): "
         string += "argumentLabel = \(String(describing: argumentLabel)), "
         string += "name = \(String(describing: name)), "
@@ -178,6 +198,25 @@ extension Array where Element == MethodParameter {
         string += "asSource = \(String(describing: asSource))"
         return string
     }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(argumentLabel)
+        hasher.combine(name)
+        hasher.combine(typeName)
+        hasher.combine(`inout`)
+        hasher.combine(defaultValue)
+        hasher.combine(annotations)
+    }
+
+    public static func == (lhs: ClosureParameter, rhs: ClosureParameter) -> Bool {
+        if lhs.argumentLabel != rhs.argumentLabel { return false }
+        if lhs.name != rhs.name { return false }
+        if lhs.typeName != rhs.typeName { return false }
+        if lhs.`inout` != rhs.`inout` { return false }
+        if lhs.defaultValue != rhs.defaultValue { return false }
+        if lhs.annotations != rhs.annotations { return false }
+        return true
+    }
 }
 
 extension Array where Element == ClosureParameter {
@@ -187,7 +226,7 @@ extension Array where Element == ClosureParameter {
 }
 
 /// Describes method
-@objc(SwiftMethod) @objcMembers public final class Method: NSObject, Annotated, Diffable, Documented, Definition {
+public final class Method: Diffable, Annotated, Documented, Definition, Equatable, Hashable, CustomStringConvertible {
 
     /// Full method name, including generic constraints, i.e. `foo<T>(bar: T)`
     public let name: String
@@ -406,7 +445,7 @@ extension Array where Element == ClosureParameter {
         return results
     }
 
-    override public var description: String {
+    public var description: String {
         var string = "\(Swift.type(of: self)): "
         string += "name = \(String(describing: name)), "
         string += "selectorName = \(String(describing: selectorName)), "
@@ -425,5 +464,44 @@ extension Array where Element == ClosureParameter {
         string += "attributes = \(String(describing: attributes)), "
         string += "modifiers = \(String(describing: modifiers))"
         return string
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(name)
+        hasher.combine(selectorName)
+        hasher.combine(parameters)
+        hasher.combine(returnTypeName)
+        hasher.combine(isAsync)
+        hasher.combine(`throws`)
+        hasher.combine(`rethrows`)
+        hasher.combine(accessLevel)
+        hasher.combine(isStatic)
+        hasher.combine(isClass)
+        hasher.combine(isFailableInitializer)
+        hasher.combine(annotations)
+        hasher.combine(documentation)
+        hasher.combine(definedInTypeName)
+        hasher.combine(attributes)
+        hasher.combine(modifiers)
+    }
+
+    public static func == (lhs: Method, rhs: Method) -> Bool {
+        if lhs.name != rhs.name { return false }
+        if lhs.selectorName != rhs.selectorName { return false }
+        if lhs.parameters != rhs.parameters { return false }
+        if lhs.returnTypeName != rhs.returnTypeName { return false }
+        if lhs.isAsync != rhs.isAsync { return false }
+        if lhs.`throws` != rhs.`throws` { return false }
+        if lhs.`rethrows` != rhs.`rethrows` { return false }
+        if lhs.accessLevel != rhs.accessLevel { return false }
+        if lhs.isStatic != rhs.isStatic { return false }
+        if lhs.isClass != rhs.isClass { return false }
+        if lhs.isFailableInitializer != rhs.isFailableInitializer { return false }
+        if lhs.annotations != rhs.annotations { return false }
+        if lhs.documentation != rhs.documentation { return false }
+        if lhs.definedInTypeName != rhs.definedInTypeName { return false }
+        if lhs.attributes != rhs.attributes { return false }
+        if lhs.modifiers != rhs.modifiers { return false }
+        return true
     }
 }

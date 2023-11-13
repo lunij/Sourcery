@@ -1,7 +1,7 @@
 import Foundation
 
 /// Defines import type
-@objcMembers public class Import: NSObject, Diffable {
+public class Import: Diffable, Equatable, Hashable, CustomStringConvertible {
     /// Import kind, e.g. class, struct in `import class Module.ClassName`
     public var kind: String?
 
@@ -14,7 +14,7 @@ import Foundation
     }
 
     /// Full import value e.g. `import struct Module.StructName`
-    public override var description: String {
+    public var description: String {
         if let kind = kind {
             return "\(kind) \(path)"
         }
@@ -44,5 +44,16 @@ import Foundation
         results.append(contentsOf: DiffableResult(identifier: "kind").trackDifference(actual: self.kind, expected: castObject.kind))
         results.append(contentsOf: DiffableResult(identifier: "path").trackDifference(actual: self.path, expected: castObject.path))
         return results
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(kind)
+        hasher.combine(path)
+    }
+
+    public static func == (lhs: Import, rhs: Import) -> Bool {
+        if lhs.kind != rhs.kind { return false }
+        if lhs.path != rhs.path { return false }
+        return true
     }
 }

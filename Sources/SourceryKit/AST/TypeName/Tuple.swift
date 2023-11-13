@@ -1,7 +1,7 @@
 import Foundation
 
 /// Describes tuple type
-@objcMembers public final class TupleType: NSObject, Diffable {
+public final class TupleType: Diffable, Equatable, Hashable, CustomStringConvertible {
 
     /// Type name used in declaration
     public var name: String
@@ -30,16 +30,27 @@ import Foundation
         return results
     }
 
-    public override var description: String {
+    public var description: String {
         var string = "\(Swift.type(of: self)): "
         string += "name = \(String(describing: name)), "
         string += "elements = \(String(describing: elements))"
         return string
     }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(name)
+        hasher.combine(elements)
+    }
+
+    public static func == (lhs: TupleType, rhs: TupleType) -> Bool {
+        if lhs.name != rhs.name { return false }
+        if lhs.elements != rhs.elements { return false }
+        return true
+    }
 }
 
 /// Describes tuple type element
-@objcMembers public final class TupleElement: NSObject, Diffable, Typed {
+public final class TupleElement: Diffable, Typed, Equatable, Hashable, CustomStringConvertible {
 
     /// Tuple element name
     public let name: String?
@@ -73,12 +84,23 @@ import Foundation
         return results
     }
 
-    public override var description: String {
+    public var description: String {
         var string = "\(Swift.type(of: self)): "
         string += "name = \(String(describing: name)), "
         string += "typeName = \(String(describing: typeName)), "
         string += "asSource = \(String(describing: asSource))"
         return string
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(name)
+        hasher.combine(typeName)
+    }
+
+    public static func == (lhs: TupleElement, rhs: TupleElement) -> Bool {
+        if lhs.name != rhs.name { return false }
+        if lhs.typeName != rhs.typeName { return false }
+        return true
     }
 }
 

@@ -1,7 +1,7 @@
 import Foundation
 
 /// Describes dictionary type
-@objcMembers public final class DictionaryType: NSObject, Diffable {
+public final class DictionaryType: Diffable, Equatable, Hashable, CustomStringConvertible {
     /// Type name used in declaration
     public var name: String
 
@@ -51,7 +51,7 @@ import Foundation
         return results
     }
 
-    public override var description: String {
+    public var description: String {
         var string = "\(Swift.type(of: self)): "
         string += "name = \(String(describing: name)), "
         string += "valueTypeName = \(String(describing: valueTypeName)), "
@@ -59,5 +59,18 @@ import Foundation
         string += "asGeneric = \(String(describing: asGeneric)), "
         string += "asSource = \(String(describing: asSource))"
         return string
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(name)
+        hasher.combine(valueTypeName)
+        hasher.combine(keyTypeName)
+    }
+
+    public static func == (lhs: DictionaryType, rhs: DictionaryType) -> Bool {
+        if lhs.name != rhs.name { return false }
+        if lhs.valueTypeName != rhs.valueTypeName { return false }
+        if lhs.keyTypeName != rhs.keyTypeName { return false }
+        return true
     }
 }

@@ -26,7 +26,7 @@ extension NSRange: Diffable {
     }
 }
 
-@objcMembers public class DiffableResult: NSObject {
+public class DiffableResult: CustomStringConvertible, Equatable, Hashable {
     // sourcery: skipEquality
     private var results: [String]
     internal var identifier: String?
@@ -48,8 +48,16 @@ extension NSRange: Diffable {
 
     var isEmpty: Bool { return results.isEmpty }
 
-    public override var description: String {
+    public var description: String {
         results.isEmpty ? "" : "\(identifier.flatMap { "\($0) " } ?? "")" + results.joined(separator: "\n")
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(identifier)
+    }
+
+    public static func == (lhs: DiffableResult, rhs: DiffableResult) -> Bool {
+        lhs.identifier == rhs.identifier
     }
 }
 

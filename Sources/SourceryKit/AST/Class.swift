@@ -1,7 +1,7 @@
 import Foundation
 // sourcery: skipDescription
 /// Descibes Swift class
-@objc(SwiftClass) @objcMembers public final class Class: Type {
+public final class Class: Type {
     /// Returns "class"
     public override var kind: String { return "class" }
 
@@ -60,5 +60,9 @@ import Foundation
         string += "kind = \(String(describing: kind)), "
         string += "isFinal = \(String(describing: isFinal))"
         return string
+    }
+
+    public override func hash(into hasher: inout Hasher) {
+        super.hash(into: &hasher)
     }
 }

@@ -1,7 +1,7 @@
 import Foundation
 
 /// Describes Swift attribute
-@objcMembers public class Attribute: NSObject, Diffable {
+public class Attribute: Diffable, Equatable, Hashable, CustomStringConvertible {
 
     /// Attribute name
     public let name: String
@@ -26,7 +26,7 @@ import Foundation
     }
 
     /// Attribute description that can be used in a template.
-    public override var description: String {
+    public var description: String {
         return _description
     }
 
@@ -153,5 +153,18 @@ import Foundation
         results.append(contentsOf: DiffableResult(identifier: "arguments").trackDifference(actual: self.arguments, expected: castObject.arguments))
         results.append(contentsOf: DiffableResult(identifier: "_description").trackDifference(actual: self._description, expected: castObject._description))
         return results
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(name)
+        hasher.combine(arguments)
+        hasher.combine(_description)
+    }
+
+    public static func == (lhs: Attribute, rhs: Attribute) -> Bool {
+        if lhs.name != rhs.name { return false }
+        if lhs.arguments != rhs.arguments { return false }
+        if lhs._description != rhs._description { return false }
+        return true
     }
 }

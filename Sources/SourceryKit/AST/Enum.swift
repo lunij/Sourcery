@@ -1,7 +1,7 @@
 import Foundation
 
 /// Defines enum case associated value
-@objcMembers public final class AssociatedValue: NSObject, Diffable, Typed, Annotated {
+public final class AssociatedValue: Diffable, Typed, Annotated, Equatable, Hashable, CustomStringConvertible {
 
     /// Associated value local name.
     /// This is a name to be used to construct enum case value
@@ -51,7 +51,7 @@ import Foundation
         return results
     }
 
-    public override var description: String {
+    public var description: String {
         var string = "\(Swift.type(of: self)): "
         string += "localName = \(String(describing: localName)), "
         string += "externalName = \(String(describing: externalName)), "
@@ -60,10 +60,27 @@ import Foundation
         string += "annotations = \(String(describing: annotations))"
         return string
     }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(localName)
+        hasher.combine(externalName)
+        hasher.combine(typeName)
+        hasher.combine(defaultValue)
+        hasher.combine(annotations)
+    }
+
+    public static func == (lhs: AssociatedValue, rhs: AssociatedValue) -> Bool {
+        if lhs.localName != rhs.localName { return false }
+        if lhs.externalName != rhs.externalName { return false }
+        if lhs.typeName != rhs.typeName { return false }
+        if lhs.defaultValue != rhs.defaultValue { return false }
+        if lhs.annotations != rhs.annotations { return false }
+        return true
+    }
 }
 
 /// Defines enum case
-@objcMembers public final class EnumCase: NSObject, Annotated, Diffable, Documented {
+public final class EnumCase: Diffable, Annotated, Documented, Equatable, Hashable, CustomStringConvertible {
 
     /// Enum case name
     public let name: String
@@ -115,7 +132,7 @@ import Foundation
         return results
     }
 
-    public override var description: String {
+    public var description: String {
         var string = "\(Swift.type(of: self)): "
         string += "name = \(String(describing: name)), "
         string += "rawValue = \(String(describing: rawValue)), "
@@ -127,10 +144,28 @@ import Foundation
         return string
     }
 
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(name)
+        hasher.combine(rawValue)
+        hasher.combine(associatedValues)
+        hasher.combine(annotations)
+        hasher.combine(documentation)
+        hasher.combine(indirect)
+    }
+
+    public static func == (lhs: EnumCase, rhs: EnumCase) -> Bool {
+        if lhs.name != rhs.name { return false }
+        if lhs.rawValue != rhs.rawValue { return false }
+        if lhs.associatedValues != rhs.associatedValues { return false }
+        if lhs.annotations != rhs.annotations { return false }
+        if lhs.documentation != rhs.documentation { return false }
+        if lhs.indirect != rhs.indirect { return false }
+        return true
+    }
 }
 
 /// Defines Swift enum
-@objcMembers public final class Enum: Type {
+public final class Enum: Type {
 
     // sourcery: skipDescription
     /// Returns "enum"
@@ -230,5 +265,19 @@ import Foundation
         string += "rawTypeName = \(String(describing: rawTypeName)), "
         string += "hasAssociatedValues = \(String(describing: hasAssociatedValues))"
         return string
+    }
+
+    public override func hash(into hasher: inout Hasher) {
+        hasher.combine(cases)
+        hasher.combine(rawTypeName)
+        super.hash(into: &hasher)
+    }
+
+    override func isEqual(to instance: Type) -> Bool {
+        guard super.isEqual(to: instance), let instance = instance as? Enum else {
+            return false
+        }
+        return cases == instance.cases
+            && rawTypeName == instance.rawTypeName
     }
 }

@@ -1,7 +1,7 @@
 import Foundation
 
 /// Describes closure type
-@objcMembers public final class ClosureType: NSObject, Diffable {
+public final class ClosureType: Diffable, Equatable, Hashable, CustomStringConvertible {
 
     /// Type name used in declaration with stripped whitespaces and new lines
     public let name: String
@@ -82,7 +82,7 @@ import Foundation
         return results
     }
 
-    public override var description: String {
+    public var description: String {
         var string = "\(Swift.type(of: self)): "
         string += "name = \(String(describing: name)), "
         string += "parameters = \(String(describing: parameters)), "
@@ -94,5 +94,26 @@ import Foundation
         string += "throwsOrRethrowsKeyword = \(String(describing: throwsOrRethrowsKeyword)), "
         string += "asSource = \(String(describing: asSource))"
         return string
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(name)
+        hasher.combine(parameters)
+        hasher.combine(returnTypeName)
+        hasher.combine(isAsync)
+        hasher.combine(asyncKeyword)
+        hasher.combine(`throws`)
+        hasher.combine(throwsOrRethrowsKeyword)
+    }
+
+    public static func == (lhs: ClosureType, rhs: ClosureType) -> Bool {
+        if lhs.name != rhs.name { return false }
+        if lhs.parameters != rhs.parameters { return false }
+        if lhs.returnTypeName != rhs.returnTypeName { return false }
+        if lhs.isAsync != rhs.isAsync { return false }
+        if lhs.asyncKeyword != rhs.asyncKeyword { return false }
+        if lhs.`throws` != rhs.`throws` { return false }
+        if lhs.throwsOrRethrowsKeyword != rhs.throwsOrRethrowsKeyword { return false }
+        return true
     }
 }

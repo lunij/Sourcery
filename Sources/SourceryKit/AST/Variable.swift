@@ -3,7 +3,7 @@ import Foundation
 public typealias SourceryVariable = Variable
 
 /// Defines variable
-@objcMembers public final class Variable: NSObject, Diffable, Typed, Annotated, Documented, Definition {
+public final class Variable: Diffable, Typed, Annotated, Documented, Definition, Equatable, Hashable, CustomStringConvertible {
     /// Variable name
     public let name: String
 
@@ -137,7 +137,7 @@ public typealias SourceryVariable = Variable
         return results
     }
 
-    public override var description: String {
+    public var description: String {
         var string = "\(Swift.type(of: self)): "
         string += "name = \(String(describing: name)), "
         string += "typeName = \(String(describing: typeName)), "
@@ -159,5 +159,40 @@ public typealias SourceryVariable = Variable
         string += "definedInTypeName = \(String(describing: definedInTypeName)), "
         string += "actualDefinedInTypeName = \(String(describing: actualDefinedInTypeName))"
         return string
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(name)
+        hasher.combine(typeName)
+        hasher.combine(isComputed)
+        hasher.combine(isAsync)
+        hasher.combine(`throws`)
+        hasher.combine(isStatic)
+        hasher.combine(readAccess)
+        hasher.combine(writeAccess)
+        hasher.combine(defaultValue)
+        hasher.combine(annotations)
+        hasher.combine(documentation)
+        hasher.combine(attributes)
+        hasher.combine(modifiers)
+        hasher.combine(definedInTypeName)
+    }
+
+    public static func == (lhs: Variable, rhs: Variable) -> Bool {
+        if lhs.name != rhs.name { return false }
+        if lhs.typeName != rhs.typeName { return false }
+        if lhs.isComputed != rhs.isComputed { return false }
+        if lhs.isAsync != rhs.isAsync { return false }
+        if lhs.`throws` != rhs.`throws` { return false }
+        if lhs.isStatic != rhs.isStatic { return false }
+        if lhs.readAccess != rhs.readAccess { return false }
+        if lhs.writeAccess != rhs.writeAccess { return false }
+        if lhs.defaultValue != rhs.defaultValue { return false }
+        if lhs.annotations != rhs.annotations { return false }
+        if lhs.documentation != rhs.documentation { return false }
+        if lhs.attributes != rhs.attributes { return false }
+        if lhs.modifiers != rhs.modifiers { return false }
+        if lhs.definedInTypeName != rhs.definedInTypeName { return false }
+        return true
     }
 }
