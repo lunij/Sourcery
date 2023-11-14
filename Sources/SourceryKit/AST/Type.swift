@@ -3,7 +3,7 @@ import OrderedCollections
 import Stencil
 
 /// Defines Swift type
-public class Type: Diffable, Annotated, Documented, Equatable, Hashable, CustomStringConvertible, DynamicMemberLookup {
+public class Type: Diffable, Annotated, Documented, CustomStringConvertible, Hashable, DynamicMemberLookup {
     public subscript(dynamicMember member: String) -> Any? {
         switch member {
         case "accessLevel": accessLevel
@@ -21,7 +21,6 @@ public class Type: Diffable, Annotated, Documented, Equatable, Hashable, CustomS
         case "computedVariables": computedVariables
         case "containedType": containedType
         case "containedTypes": containedTypes
-        case "description": description
         case "directory": directory
         case "documentation": documentation
         case "fileName": fileName
@@ -61,25 +60,34 @@ public class Type: Diffable, Annotated, Documented, Equatable, Hashable, CustomS
         }
     }
 
+    // MARK: - Stored Properties
+
     public var module: String?
 
     /// Imports that existed in the file that contained this type declaration
     public var imports: [Import] = []
 
-    // sourcery: skipEquality
-    /// Imports existed in all files containing this type and all its super classes/protocols
-    public var allImports: [Import] {
-        unique({ $0.gatherAllImports() }, filter: { $0 == $1 })
-    }
+    /// Bytes position of the body of this type in its declaration file if available.
+    public var bodyBytesRange: BytesRange?
 
-    private func gatherAllImports() -> [Import] {
-        var allImports: [Import] = Array(imports)
+    /// Bytes position of the whole declaration of this type in its declaration file if available.
+    public var completeDeclarationRange: BytesRange?
 
-        basedTypes.values.forEach { basedType in
-            allImports.append(contentsOf: basedType.imports)
-        }
-        return allImports
-    }
+    /// Whether declaration is an extension of some type
+    public var isExtension: Bool
+
+    /// Whether type is generic
+    public var isGeneric: Bool
+
+    /// Whether the type has been resolved as unknown extension
+    public var isUnknownExtension: Bool = false
+
+    /// Type name in its own scope.
+    public var localName: String
+
+    /// Unfiltered (can contain duplications from extensions) methods defined in this type only, inluding methods defined in its extensions,
+    /// but not including methods inherited from superclasses (for classes only) and protocols
+    public var rawMethods: [Function]
 
     // All local typealiases
     public var typealiases: [String: Typealias] {
@@ -88,9 +96,6 @@ public class Type: Diffable, Annotated, Documented, Equatable, Hashable, CustomS
         }
     }
 
-    /// Whether declaration is an extension of some type
-    public var isExtension: Bool
-
     // sourcery: forceEquality
     /// Kind of type declaration, i.e. `enum`, `struct`, `class`, `protocol` or `extension`
     public var kind: String { isExtension ? "extension" : "unknown" }
@@ -98,30 +103,107 @@ public class Type: Diffable, Annotated, Documented, Equatable, Hashable, CustomS
     /// Type access level, i.e. `internal`, `private`, `fileprivate`, `public`, `open`
     public let accessLevel: String
 
+    /// All annotations for this type
+    public var annotations: Annotations = [:]
+
+    public var documentation: Documentation = []
+
+    /// Names of types or protocols this type inherits from, including unknown (not scanned) types
+    public var based = [String: String]()
+
+    /// Types this type inherits from or implements, including unknown (not scanned) types with extensions defined
+    public var basedTypes = [String: Type]()
+
+    /// Types this type inherits from
+    public var inherits = [String: Type]()
+
+    /// Protocols this type implements
+    public var implements = [String: Type]()
+
+    /// Contained types
+    public var containedTypes: [Type] {
+        didSet {
+            containedTypes.forEach {
+                containedType[$0.localName] = $0
+                $0.parent = self
+            }
+        }
+    }
+
+    /// Contained types groupd by their names
+    public private(set) var containedType: [String: Type] = [:]
+
+    /// Name of parent type (for contained types only)
+    public private(set) var parentName: String?
+
+    /// Parent type, if known (for contained types only)
+    public var parent: Type? {
+        didSet {
+            parentName = parent?.name
+        }
+    }
+
+    /// Unfiltered (can contain duplications from extensions) Subscripts defined in this type only, inluding subscripts defined in its extensions,
+    /// but not including subscripts inherited from superclasses (for classes only) and protocols
+    public var rawSubscripts: [Subscript]
+
+    /// Names of types this type inherits from (for classes only) and protocols it implements, in order of definition
+    public var inheritedTypes: [String] {
+        didSet {
+            based.removeAll()
+            inheritedTypes.forEach { name in
+                self.based[name] = name
+            }
+        }
+    }
+
+    /// Superclass type, if known (only for classes)
+    public var supertype: Type?
+
+    /// Type attributes, i.e. `@objc`
+    public var attributes: AttributeList
+
+    /// Type modifiers, i.e. `private`, `final`
+    public var modifiers: [Modifier]
+
+    /// Path to file where the type is defined
+    // sourcery: skipDescription, skipEquality
+    public var path: String? {
+        didSet {
+            if let path {
+                fileName = (path as NSString).lastPathComponent
+            }
+        }
+    }
+
+    /// File name where the type was defined
+    public var fileName: String?
+
+    // MARK: - Computed Properties
+
+    // sourcery: skipEquality
+    /// Imports existed in all files containing this type and all its super classes/protocols
+    public var allImports: [Import] {
+        unique({ $0.gatherAllImports() }, filter: { $0 == $1 })
+    }
+
     /// Type name in global scope. For inner types includes the name of its containing type, i.e. `Type.Inner`
     public var name: String {
         guard let parentName = parent?.name else { return localName }
         return "\(parentName).\(localName)"
     }
 
-    // sourcery: skipCoding
-    /// Whether the type has been resolved as unknown extension
-    public var isUnknownExtension: Bool = false
-
-    // sourcery: skipDescription
     /// Global type name including module name, unless it's an extension of unknown type
     public var globalName: String {
         guard let module, !isUnknownExtension else { return name }
         return "\(module).\(name)"
     }
 
-    /// Whether type is generic
-    public var isGeneric: Bool
+    var isClass: Bool {
+        let isNotClass = self is Struct || self is Enum || self is Protocol
+        return !isNotClass && !isExtension
+    }
 
-    /// Type name in its own scope.
-    public var localName: String
-
-    // sourcery: skipEquality, skipDescription
     /// Variables defined in this type only, inluding variables defined in its extensions,
     /// but not including variables inherited from superclasses (for classes only) and protocols
     public var variables: [Variable] {
@@ -132,7 +214,6 @@ public class Type: Diffable, Annotated, Documented, Equatable, Hashable, CustomS
     /// but not including variables inherited from superclasses (for classes only) and protocols
     public var rawVariables: [Variable]
 
-    // sourcery: skipEquality, skipDescription
     /// All variables defined for this type, including variables defined in extensions,
     /// in superclasses (for classes only) and protocols
     public var allVariables: [Variable] {
@@ -151,18 +232,12 @@ public class Type: Diffable, Annotated, Documented, Equatable, Hashable, CustomS
         lhs.name == rhs.name && lhs.isStatic == rhs.isStatic && lhs.typeName == rhs.typeName
     }
 
-    // sourcery: skipEquality, skipDescription
     /// Methods defined in this type only, inluding methods defined in its extensions,
     /// but not including methods inherited from superclasses (for classes only) and protocols
     public var methods: [Function] {
         unique({ $0.rawMethods }, filter: Self.uniqueMethodFilter)
     }
 
-    /// Unfiltered (can contain duplications from extensions) methods defined in this type only, inluding methods defined in its extensions,
-    /// but not including methods inherited from superclasses (for classes only) and protocols
-    public var rawMethods: [Function]
-
-    // sourcery: skipEquality, skipDescription
     /// All methods defined for this type, including methods defined in extensions,
     /// in superclasses (for classes only) and protocols
     public var allMethods: [Function] {
@@ -181,18 +256,12 @@ public class Type: Diffable, Annotated, Documented, Equatable, Hashable, CustomS
         lhs.name == rhs.name && lhs.isStatic == rhs.isStatic && lhs.isClass == rhs.isClass && lhs.actualReturnTypeName == rhs.actualReturnTypeName
     }
 
-    // sourcery: skipEquality, skipDescription
     /// Subscripts defined in this type only, inluding subscripts defined in its extensions,
     /// but not including subscripts inherited from superclasses (for classes only) and protocols
     public var subscripts: [Subscript] {
         unique({ $0.rawSubscripts }, filter: Self.uniqueSubscriptFilter)
     }
 
-    /// Unfiltered (can contain duplications from extensions) Subscripts defined in this type only, inluding subscripts defined in its extensions,
-    /// but not including subscripts inherited from superclasses (for classes only) and protocols
-    public var rawSubscripts: [Subscript]
-
-    // sourcery: skipEquality, skipDescription
     /// All subscripts defined for this type, including subscripts defined in extensions,
     /// in superclasses (for classes only) and protocols
     public var allSubscripts: [Subscript] {
@@ -205,73 +274,10 @@ public class Type: Diffable, Annotated, Documented, Equatable, Hashable, CustomS
         )
     }
 
-    private static func uniqueSubscriptFilter(_ lhs: Subscript, rhs: Subscript) -> Bool {
-        lhs.parameters == rhs.parameters && lhs.returnTypeName == rhs.returnTypeName && lhs.readAccess == rhs.readAccess && lhs.writeAccess == rhs.writeAccess
-    }
-
-    // sourcery: skipEquality, skipDescription
-    /// Bytes position of the body of this type in its declaration file if available.
-    public var bodyBytesRange: BytesRange?
-
-    // sourcery: skipEquality, skipDescription
-    /// Bytes position of the whole declaration of this type in its declaration file if available.
-    public var completeDeclarationRange: BytesRange?
-
-    private func flattenAll<T: Hashable>(_ extraction: @escaping (Type) -> [T], isExtension: (T) -> Bool, filter: ([T], T) -> Bool) -> [T] {
-        var all = OrderedSet<T>()
-        let allObjects = extraction(self)
-
-        /// The order of importance for properties is:
-        /// Base class
-        /// Inheritance
-        /// Protocol conformance
-        /// Extension
-
-        var extensions = [T]()
-        var baseObjects = [T]()
-
-        allObjects.forEach {
-            if isExtension($0) {
-                extensions.append($0)
-            } else {
-                baseObjects.append($0)
-            }
-        }
-
-        all.append(contentsOf: baseObjects)
-
-        func filteredExtraction(_ target: Type) -> [T] {
-            let extracted = extraction(target).filter { filter(all.elements, $0) }
-            return extracted
-        }
-
-        inherits.values.sorted(by: { $0.name < $1.name }).forEach { all.append(contentsOf: filteredExtraction($0)) }
-        implements.values.sorted(by: { $0.name < $1.name }).forEach { all.append(contentsOf: filteredExtraction($0)) }
-
-        all.append(contentsOf: extensions.filter { filter(all.elements, $0) })
-
-        return all.elements
-    }
-
-    private func unique<T: Hashable>(_ extraction: @escaping (Type) -> [T], filter: (T, T) -> Bool) -> [T] {
-        var all = OrderedSet<T>()
-        for nextItem in extraction(self) {
-            if !all.contains(where: { filter($0, nextItem) }) {
-                all.append(nextItem)
-            }
-        }
-        return all.elements
-    }
-
     /// All initializers defined in this type
     public var initializers: [Function] {
         methods.filter(\.isInitializer)
     }
-
-    /// All annotations for this type
-    public var annotations: Annotations = [:]
-
-    public var documentation: Documentation = []
 
     /// Static variables defined in this type
     public var staticVariables: [Variable] {
@@ -308,81 +314,11 @@ public class Type: Diffable, Annotated, Documented, Equatable, Hashable, CustomS
         variables.filter { !$0.isComputed && !$0.isStatic }
     }
 
-    /// Names of types this type inherits from (for classes only) and protocols it implements, in order of definition
-    public var inheritedTypes: [String] {
-        didSet {
-            based.removeAll()
-            inheritedTypes.forEach { name in
-                self.based[name] = name
-            }
-        }
-    }
-
-    // sourcery: skipEquality, skipDescription
-    /// Names of types or protocols this type inherits from, including unknown (not scanned) types
-    public var based = [String: String]()
-
-    // sourcery: skipEquality, skipDescription
-    /// Types this type inherits from or implements, including unknown (not scanned) types with extensions defined
-    public var basedTypes = [String: Type]()
-
-    /// Types this type inherits from
-    public var inherits = [String: Type]()
-
-    // sourcery: skipEquality, skipDescription
-    /// Protocols this type implements
-    public var implements = [String: Type]()
-
-    /// Contained types
-    public var containedTypes: [Type] {
-        didSet {
-            containedTypes.forEach {
-                containedType[$0.localName] = $0
-                $0.parent = self
-            }
-        }
-    }
-
-    // sourcery: skipEquality, skipDescription
-    /// Contained types groupd by their names
-    public private(set) var containedType: [String: Type] = [:]
-
-    /// Name of parent type (for contained types only)
-    public private(set) var parentName: String?
-
-    // sourcery: skipEquality, skipDescription
-    /// Parent type, if known (for contained types only)
-    public var parent: Type? {
-        didSet {
-            parentName = parent?.name
-        }
-    }
-
     public var parentTypes: AnyIterator<Type> {
         var next: Type? = self
         return AnyIterator {
             next = next?.parent
             return next
-        }
-    }
-
-    // sourcery: skipEquality, skipDescription
-    /// Superclass type, if known (only for classes)
-    public var supertype: Type?
-
-    /// Type attributes, i.e. `@objc`
-    public var attributes: AttributeList
-
-    /// Type modifiers, i.e. `private`, `final`
-    public var modifiers: [Modifier]
-
-    /// Path to file where the type is defined
-    // sourcery: skipDescription, skipEquality
-    public var path: String? {
-        didSet {
-            if let path {
-                fileName = (path as NSString).lastPathComponent
-            }
         }
     }
 
@@ -392,8 +328,7 @@ public class Type: Diffable, Annotated, Documented, Equatable, Hashable, CustomS
         (path as? NSString)?.deletingLastPathComponent
     }
 
-    /// File name where the type was defined
-    public var fileName: String?
+    // MARK: - Methods
 
     public init(
         name: String = "",
@@ -440,6 +375,65 @@ public class Type: Diffable, Annotated, Documented, Equatable, Hashable, CustomS
             $0.parent = self
             self.typealiases[$0.aliasName] = $0
         }
+    }
+
+    private static func uniqueSubscriptFilter(_ lhs: Subscript, rhs: Subscript) -> Bool {
+        lhs.parameters == rhs.parameters && lhs.returnTypeName == rhs.returnTypeName && lhs.readAccess == rhs.readAccess && lhs.writeAccess == rhs.writeAccess
+    }
+
+    private func gatherAllImports() -> [Import] {
+        var allImports: [Import] = Array(imports)
+
+        basedTypes.values.forEach { basedType in
+            allImports.append(contentsOf: basedType.imports)
+        }
+        return allImports
+    }
+
+    private func flattenAll<T: Hashable>(_ extraction: @escaping (Type) -> [T], isExtension: (T) -> Bool, filter: ([T], T) -> Bool) -> [T] {
+        var all = OrderedSet<T>()
+        let allObjects = extraction(self)
+
+        /// The order of importance for properties is:
+        /// Base class
+        /// Inheritance
+        /// Protocol conformance
+        /// Extension
+
+        var extensions = [T]()
+        var baseObjects = [T]()
+
+        allObjects.forEach {
+            if isExtension($0) {
+                extensions.append($0)
+            } else {
+                baseObjects.append($0)
+            }
+        }
+
+        all.append(contentsOf: baseObjects)
+
+        func filteredExtraction(_ target: Type) -> [T] {
+            let extracted = extraction(target).filter { filter(all.elements, $0) }
+            return extracted
+        }
+
+        inherits.values.sorted(by: { $0.name < $1.name }).forEach { all.append(contentsOf: filteredExtraction($0)) }
+        implements.values.sorted(by: { $0.name < $1.name }).forEach { all.append(contentsOf: filteredExtraction($0)) }
+
+        all.append(contentsOf: extensions.filter { filter(all.elements, $0) })
+
+        return all.elements
+    }
+
+    private func unique<T: Hashable>(_ extraction: @escaping (Type) -> [T], filter: (T, T) -> Bool) -> [T] {
+        var all = OrderedSet<T>()
+        for nextItem in extraction(self) {
+            if !all.contains(where: { filter($0, nextItem) }) {
+                all.append(nextItem)
+            }
+        }
+        return all.elements
     }
 
     public func extend(_ type: Type) {
@@ -568,16 +562,10 @@ public class Type: Diffable, Annotated, Documented, Equatable, Hashable, CustomS
         if kind != instance.kind { return false }
         return true
     }
-
-    public static func == (lhs: Type, rhs: Type) -> Bool {
-        type(of: lhs) == type(of: rhs) && lhs.isEqual(to: rhs)
-    }
 }
 
-extension Type {
-    // sourcery: skipDescription
-    var isClass: Bool {
-        let isNotClass = self is Struct || self is Enum || self is Protocol
-        return !isNotClass && !isExtension
+extension Type: Equatable {
+    public static func == (lhs: Type, rhs: Type) -> Bool {
+        type(of: lhs) == type(of: rhs) && lhs.isEqual(to: rhs)
     }
 }
