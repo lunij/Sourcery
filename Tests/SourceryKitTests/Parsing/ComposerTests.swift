@@ -2062,7 +2062,7 @@ final class ComposerTests: XCTestCase {
 
         let expectedFoo = Struct(name: "Foo", variables: [Variable(name: "bar", typeName: TypeName(name: "Bar"), type: expectedBarA, definedInTypeName: TypeName(name: "Foo"))])
         expectedFoo.module = "ModuleB"
-        expectedFoo.imports = [Import(path: "ModuleA")]
+        expectedFoo.imports = [Import("ModuleA")]
 
         let expectedBarC = Struct(name: "Bar")
         expectedBarC.module = "ModuleC"
@@ -2113,7 +2113,7 @@ final class ComposerTests: XCTestCase {
 
         let expectedFoo = Struct(name: "Foo", variables: [Variable(name: "bar", typeName: TypeName(name: "Bar"), type: expectedBarA, definedInTypeName: TypeName(name: "Foo"))])
         expectedFoo.module = "ModuleB"
-        expectedFoo.imports = [Import(path: "ModuleA.Submodule.Bar", kind: "struct")]
+        expectedFoo.imports = [Import(kind: "struct", path: "ModuleA.Submodule.Bar")]
 
         let expectedBarC = Struct(name: "Bar")
         expectedBarC.module = "ModuleC"

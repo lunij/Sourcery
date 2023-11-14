@@ -171,7 +171,10 @@ class SyntaxTreeCollector: SyntaxVisitor {
     }
 
     public override func visit(_ node: ImportDeclSyntax) -> SyntaxVisitorContinueKind {
-        imports.append(Import(path: node.path.description.trimmed, kind: node.importKindSpecifier?.text.trimmed))
+        imports.append(Import(
+            kind: node.importKindSpecifier?.text.trimmed,
+            path: node.path.description.trimmed
+        ))
         return .skipChildren
     }
 

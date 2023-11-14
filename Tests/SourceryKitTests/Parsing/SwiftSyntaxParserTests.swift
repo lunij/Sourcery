@@ -80,8 +80,8 @@ class SwiftSyntaxParserTests: XCTestCase {
     func test_struct_parsesImport() {
         let expectedStruct = Struct(name: "Foo", accessLevel: .internal, isExtension: false, variables: [])
         expectedStruct.imports = [
-            Import(path: "SimpleModule"),
-            Import(path: "SpecificModule.ClassName")
+            Import("SimpleModule"),
+            Import("SpecificModule.ClassName")
         ]
 
         XCTAssertEqual("""

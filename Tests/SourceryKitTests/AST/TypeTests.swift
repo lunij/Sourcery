@@ -166,13 +166,13 @@ class TypeTests: XCTestCase {
 
     func test_allImports_returnsImportsAfterRemovingDuplicatesForTypeWithSuperType() {
         let superType = Type(name: "Bar")
-        let superTypeImports = [Import(path: "cModule"), Import(path: "aModule")]
+        let superTypeImports = [Import("cModule"), Import("aModule")]
         superType.imports = superTypeImports
         let type = Type(name: "Foo", inheritedTypes: [superType.name])
-        let typeImports = [Import(path: "aModule"), Import(path: "bModule")]
+        let typeImports = [Import("aModule"), Import("bModule")]
         type.imports = typeImports
         type.basedTypes[superType.name] = superType
-        let expectedImports = [Import(path: "aModule"), Import(path: "bModule"), Import(path: "cModule")]
+        let expectedImports = [Import("aModule"), Import("bModule"), Import("cModule")]
 
         XCTAssertEqual(type.allImports.sorted { $0.path < $1.path }, expectedImports)
     }
