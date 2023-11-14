@@ -12,7 +12,7 @@ public final class FileParserResult: Diffable, Equatable, Hashable, CustomString
         }
     }
 
-    public var functions: [SourceryMethod]
+    public var functions: [Function]
     public var typealiases: [Typealias]
     public var inlineRanges: [String: NSRange]
     public var inlineIndentations: [String: String]
@@ -27,7 +27,7 @@ public final class FileParserResult: Diffable, Equatable, Hashable, CustomString
         path: String?,
         module: String?,
         types: [Type],
-        functions: [SourceryMethod],
+        functions: [Function],
         typealiases: [Typealias] = [],
         inlineRanges: [String: NSRange] = [:],
         inlineIndentations: [String: String] = [:],

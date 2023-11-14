@@ -16,10 +16,10 @@ public class Composer {
     /// - Parameter parserResult: Result of parsing source code.
     /// - Returns: Final types and extensions of unknown types.
     public func compose(
-        functions: [SourceryMethod],
+        functions: [Function],
         typealiases: [Typealias],
         types: [Type]
-    ) -> (types: [Type], functions: [SourceryMethod], typealiases: [Typealias]) {
+    ) -> (types: [Type], functions: [Function], typealiases: [Typealias]) {
         types.forEach { $0.setMembersDefinedInType() }
 
         let (resolvedTypealiasMap, unresolvedTypealiases) = composeTypealiases(typealiases, types: types)
@@ -138,7 +138,7 @@ public class Composer {
         }
     }
 
-    private func resolveTypes(of method: SourceryMethod, in type: Type?, typealiases: [String: Typealias]) {
+    private func resolveTypes(of method: Function, in type: Type?, typealiases: [String: Typealias]) {
         method.parameters.forEach { parameter in
             parameter.type = resolveType(named: parameter.typeName, in: type, typealiases: typealiases)
         }

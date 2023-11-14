@@ -23,7 +23,7 @@ public final class Class: Type {
                          accessLevel: AccessLevel = .internal,
                          isExtension: Bool = false,
                          variables: [Variable] = [],
-                         methods: [Method] = [],
+                         methods: [Function] = [],
                          subscripts: [Subscript] = [],
                          inheritedTypes: [String] = [],
                          containedTypes: [Type] = [],

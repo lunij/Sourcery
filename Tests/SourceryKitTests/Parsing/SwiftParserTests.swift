@@ -134,7 +134,7 @@ extension Struct {
         accessLevel: AccessLevel = .internal,
         isExtension: Bool = false,
         variables: [Variable] = [],
-        methods: [SourceryMethod] = [],
+        methods: [Function] = [],
         subscripts: [Subscript] = [],
         inheritedTypes: [String] = [],
         containedTypes: [Type] = [],

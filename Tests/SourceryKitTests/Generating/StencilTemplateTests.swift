@@ -206,7 +206,7 @@ class StencilTemplateTests: XCTestCase {
 private extension TemplateContext {
     static func fake(
         types: Types = .init(types: []),
-        functions: [SourceryMethod] = [],
+        functions: [Function] = [],
         arguments: [String: NSObject] = [:]
     ) -> Self {
         .init(

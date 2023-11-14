@@ -6,7 +6,7 @@ extension FileParserResult {
         path: String? = nil,
         module: String? = nil,
         types: [Type] = [],
-        functions: [SourceryMethod] = [],
+        functions: [Function] = [],
         typealiases: [Typealias] = [],
         inlineRanges: [String: NSRange] = [:],
         inlineIndentations: [String: String] = [:],

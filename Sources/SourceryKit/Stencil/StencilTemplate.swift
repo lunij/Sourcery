@@ -105,16 +105,16 @@ public final class StencilTemplate: Stencil.StencilSwiftTemplate {
             }
         }
 
-        ext.registerBoolFilter("initializer", filter: { (m: SourceryMethod) in m.isInitializer })
+        ext.registerBoolFilter("initializer", filter: { (m: Function) in m.isInitializer })
         ext.registerBoolFilterOr("class",
                                  filter: { (t: Type) in t is Class },
-                                 other: { (m: SourceryMethod) in m.isClass })
+                                 other: { (m: Function) in m.isClass })
         ext.registerBoolFilterOr("static",
                                  filter: { (v: SourceryVariable) in v.isStatic },
-                                 other: { (m: SourceryMethod) in m.isStatic })
+                                 other: { (m: Function) in m.isStatic })
         ext.registerBoolFilterOr("instance",
                                  filter: { (v: SourceryVariable) in !v.isStatic },
-                                 other: { (m: SourceryMethod) in !(m.isStatic || m.isClass) })
+                                 other: { (m: Function) in !(m.isStatic || m.isClass) })
 
         ext.registerBoolFilterWithArguments("annotated", filter: { (a: Annotated, annotation) in a.isAnnotated(with: annotation) })
         ext.registerTag("newline", parser: NewLineNode.parse)
@@ -251,11 +251,11 @@ public extension Stencil.Extension {
     func registerAccessLevelFilters(_ accessLevel: AccessLevel) {
         registerBoolFilterOr(accessLevel.rawValue,
                              filter: { (t: Type) in t.accessLevel == accessLevel.rawValue && t.accessLevel != AccessLevel.none.rawValue },
-                             other: { (m: SourceryMethod) in m.accessLevel == accessLevel.rawValue && m.accessLevel != AccessLevel.none.rawValue }
+                             other: { (m: Function) in m.accessLevel == accessLevel.rawValue && m.accessLevel != AccessLevel.none.rawValue }
         )
         registerBoolFilterOr("!\(accessLevel.rawValue)",
                              filter: { (t: Type) in t.accessLevel != accessLevel.rawValue && t.accessLevel != AccessLevel.none.rawValue },
-                             other: { (m: SourceryMethod) in m.accessLevel != accessLevel.rawValue && m.accessLevel != AccessLevel.none.rawValue }
+                             other: { (m: Function) in m.accessLevel != accessLevel.rawValue && m.accessLevel != AccessLevel.none.rawValue }
         )
         registerBoolFilter("\(accessLevel.rawValue)Get", filter: { (v: SourceryVariable) in v.readAccess == accessLevel.rawValue && v.readAccess != AccessLevel.none.rawValue })
         registerBoolFilter("!\(accessLevel.rawValue)Get", filter: { (v: SourceryVariable) in v.readAccess != accessLevel.rawValue && v.readAccess != AccessLevel.none.rawValue })

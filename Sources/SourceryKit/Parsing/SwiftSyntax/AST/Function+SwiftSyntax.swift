@@ -1,7 +1,7 @@
 import Foundation
 import SwiftSyntax
 
-extension SourceryMethod {
+extension Function {
     convenience init(
         _ node: FunctionDeclSyntax,
         parent: Type?,
@@ -76,31 +76,30 @@ extension SourceryMethod {
     }
 
     convenience init(
-      node: DeclSyntaxProtocol,
-      parent: Type?,
-      identifier: String,
-      typeName: TypeName?,
-      signature: Signature,
-      modifiers: DeclModifierListSyntax?,
-      attributes: AttributeListSyntax?,
-      genericParameterClause: GenericParameterClauseSyntax?,
-      genericWhereClause: GenericWhereClauseSyntax?,
-      getAnnotationUseCase: GetAnnotationUseCase
+        node: DeclSyntaxProtocol,
+        parent: Type?,
+        identifier: String,
+        typeName: TypeName?,
+        signature: Signature,
+        modifiers: DeclModifierListSyntax?,
+        attributes: AttributeListSyntax?,
+        genericParameterClause: GenericParameterClauseSyntax?,
+        genericWhereClause: GenericWhereClauseSyntax?,
+        getAnnotationUseCase: GetAnnotationUseCase
     ) {
         let initializerNode = node as? InitializerDeclSyntax
 
         let modifiers = modifiers?.map(Modifier.init) ?? []
         let baseModifiers = modifiers.baseModifiers(parent: parent)
 
-        var returnTypeName: TypeName
-        if let initializer = initializerNode, let typeName = typeName {
+        var returnTypeName: TypeName = if let initializer = initializerNode, let typeName {
             if let optional = initializer.optionalMark {
-                returnTypeName = TypeName(name: typeName.name + optional.text.trimmed)
+                TypeName(name: typeName.name + optional.text.trimmed)
             } else {
-                returnTypeName = typeName
+                typeName
             }
         } else {
-            returnTypeName = signature.output ?? TypeName(name: "Void")
+            signature.output ?? TypeName(name: "Void")
         }
 
         let funcName = identifier.last == "?" ? String(identifier.dropLast()) : identifier
@@ -109,19 +108,20 @@ extension SourceryMethod {
             fullName = funcName + "<\(generics.description.trimmed)>"
         }
 
-        if let genericWhereClause = genericWhereClause {
+        if let genericWhereClause {
             // TODO: add generic requirement to method
             // TODO: TBR
-            returnTypeName = TypeName(name: returnTypeName.name + " \(genericWhereClause.trimmedDescription)",
-                                      unwrappedTypeName: returnTypeName.unwrappedTypeName,
-                                      attributes: returnTypeName.attributes,
-                                      isOptional: returnTypeName.isOptional,
-                                      isImplicitlyUnwrappedOptional: returnTypeName.isImplicitlyUnwrappedOptional,
-                                      tuple: returnTypeName.tuple,
-                                      array: returnTypeName.array,
-                                      dictionary: returnTypeName.dictionary,
-                                      closure: returnTypeName.closure,
-                                      generic: returnTypeName.generic
+            returnTypeName = TypeName(
+                name: returnTypeName.name + " \(genericWhereClause.trimmedDescription)",
+                unwrappedTypeName: returnTypeName.unwrappedTypeName,
+                attributes: returnTypeName.attributes,
+                isOptional: returnTypeName.isOptional,
+                isImplicitlyUnwrappedOptional: returnTypeName.isImplicitlyUnwrappedOptional,
+                tuple: returnTypeName.tuple,
+                array: returnTypeName.array,
+                dictionary: returnTypeName.dictionary,
+                closure: returnTypeName.closure,
+                generic: returnTypeName.generic
             )
         }
 
@@ -139,23 +139,22 @@ extension SourceryMethod {
         }
 
         self.init(
-          name: name,
-          selectorName: selectorName,
-          parameters: signature.input,
-          returnTypeName: returnTypeName,
-          isAsync: signature.asyncKeyword == "async",
-          throws: signature.throwsOrRethrowsKeyword == "throws",
-          rethrows: signature.throwsOrRethrowsKeyword == "rethrows",
-          accessLevel: baseModifiers.readAccess,
-          isStatic: initializerNode != nil ? true : baseModifiers.isStatic,
-          isClass: baseModifiers.isClass,
-          isFailableInitializer: initializerNode?.optionalMark != nil,
-          attributes: .init(from: attributes),
-          modifiers: modifiers,
-          annotations: annotations,
-          documentation: documentation,
-          definedInTypeName: typeName
+            name: name,
+            selectorName: selectorName,
+            parameters: signature.input,
+            returnTypeName: returnTypeName,
+            isAsync: signature.asyncKeyword == "async",
+            throws: signature.throwsOrRethrowsKeyword == "throws",
+            rethrows: signature.throwsOrRethrowsKeyword == "rethrows",
+            accessLevel: baseModifiers.readAccess,
+            isStatic: initializerNode != nil ? true : baseModifiers.isStatic,
+            isClass: baseModifiers.isClass,
+            isFailableInitializer: initializerNode?.optionalMark != nil,
+            attributes: .init(from: attributes),
+            modifiers: modifiers,
+            annotations: annotations,
+            documentation: documentation,
+            definedInTypeName: typeName
         )
     }
-
 }

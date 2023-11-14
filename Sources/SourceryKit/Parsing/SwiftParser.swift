@@ -67,7 +67,7 @@ public class SwiftParser {
 
         var allTypealiases: [Typealias] = []
         var allTypes: [Type] = []
-        var allFunctions: [SourceryMethod] = []
+        var allFunctions: [Function] = []
 
         for (_, result) in allResults {
             allTypealiases += result.typealiases

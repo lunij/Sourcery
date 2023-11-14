@@ -3,7 +3,7 @@ import Stencil
 
 // sourcery: skipCoding
 public final class TemplateContext: Diffable, Equatable, Hashable, CustomStringConvertible {
-    public let functions: [SourceryMethod]
+    public let functions: [Function]
     public let types: Types
     public let argument: [String: NSObject]
 
@@ -12,7 +12,7 @@ public final class TemplateContext: Diffable, Equatable, Hashable, CustomStringC
         return types.typesByName
     }
 
-    public init(types: Types, functions: [SourceryMethod], arguments: [String: NSObject]) {
+    public init(types: Types, functions: [Function], arguments: [String: NSObject]) {
         self.types = types
         self.functions = functions
         self.argument = arguments

@@ -9,11 +9,11 @@ class TypeTests: XCTestCase {
     let computedVariable = Variable(name: "variable", typeName: TypeName(name: "Int"), isComputed: true)
     let storedVariable = Variable(name: "otherVariable", typeName: TypeName(name: "Int"), isComputed: false)
     let supertypeVariable = Variable(name: "supertypeVariable", typeName: TypeName(name: "Int"), isComputed: true)
-    let superTypeMethod = Method(name: "doSomething()", definedInTypeName: TypeName(name: "Protocol"))
-    let secondMethod = Method(name: "doSomething()", returnTypeName: TypeName(name: "Int"))
-    var overrideMethod: SourceryMethod { superTypeMethod }
+    let superTypeMethod = Function(name: "doSomething()", definedInTypeName: TypeName(name: "Protocol"))
+    let secondMethod = Function(name: "doSomething()", returnTypeName: TypeName(name: "Int"))
+    var overrideMethod: Function { superTypeMethod }
     var overrideVariable: Variable { supertypeVariable }
-    let initializer = Method(name: "init()", definedInTypeName: TypeName(name: "Foo"))
+    let initializer = Function(name: "init()", definedInTypeName: TypeName(name: "Foo"))
     let parentType = Type(name: "Parent")
     var protocolType: Type!
     var superType: Type!
@@ -120,7 +120,7 @@ class TypeTests: XCTestCase {
     }
 
     func test_extend_addsMethods() {
-        let extraMethod = Method(name: "foo()", definedInTypeName: TypeName(name: "Foo"))
+        let extraMethod = Function(name: "foo()", definedInTypeName: TypeName(name: "Foo"))
         let type = Type(name: "Foo", isExtension: true, methods: [extraMethod])
 
         sut.extend(type)
@@ -129,12 +129,12 @@ class TypeTests: XCTestCase {
     }
 
     func test_extend_doesNotAddDuplicateMethodsWithProtocolExtension() {
-        let aExtension = Type(name: "Foo", isExtension: true, methods: [Method(name: "foo()", definedInTypeName: TypeName(name: "Foo"))])
-        let aProtocol = Protocol(name: "Foo", methods: [Method(name: "foo()", definedInTypeName: TypeName(name: "Foo"))])
+        let aExtension = Type(name: "Foo", isExtension: true, methods: [Function(name: "foo()", definedInTypeName: TypeName(name: "Foo"))])
+        let aProtocol = Protocol(name: "Foo", methods: [Function(name: "foo()", definedInTypeName: TypeName(name: "Foo"))])
 
         aProtocol.extend(aExtension)
 
-        XCTAssertEqual(aProtocol.methods, [Method(name: "foo()", definedInTypeName: TypeName(name: "Foo"))])
+        XCTAssertEqual(aProtocol.methods, [Function(name: "foo()", definedInTypeName: TypeName(name: "Foo"))])
     }
 
     func test_extend_addsAnnotations() {

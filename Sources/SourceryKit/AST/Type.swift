@@ -154,18 +154,18 @@ public class Type: Diffable, Annotated, Documented, Equatable, Hashable, CustomS
     // sourcery: skipEquality, skipDescription
     /// Methods defined in this type only, inluding methods defined in its extensions,
     /// but not including methods inherited from superclasses (for classes only) and protocols
-    public var methods: [Method] {
+    public var methods: [Function] {
         unique({ $0.rawMethods }, filter: Self.uniqueMethodFilter)
     }
 
     /// Unfiltered (can contain duplications from extensions) methods defined in this type only, inluding methods defined in its extensions,
     /// but not including methods inherited from superclasses (for classes only) and protocols
-    public var rawMethods: [Method]
+    public var rawMethods: [Function]
 
     // sourcery: skipEquality, skipDescription
     /// All methods defined for this type, including methods defined in extensions,
     /// in superclasses (for classes only) and protocols
-    public var allMethods: [Method] {
+    public var allMethods: [Function] {
         flattenAll(
             {
                 $0.methods
@@ -177,7 +177,7 @@ public class Type: Diffable, Annotated, Documented, Equatable, Hashable, CustomS
         )
     }
 
-    private static func uniqueMethodFilter(_ lhs: Method, rhs: Method) -> Bool {
+    private static func uniqueMethodFilter(_ lhs: Function, rhs: Function) -> Bool {
         lhs.name == rhs.name && lhs.isStatic == rhs.isStatic && lhs.isClass == rhs.isClass && lhs.actualReturnTypeName == rhs.actualReturnTypeName
     }
 
@@ -264,7 +264,7 @@ public class Type: Diffable, Annotated, Documented, Equatable, Hashable, CustomS
     }
 
     /// All initializers defined in this type
-    public var initializers: [Method] {
+    public var initializers: [Function] {
         methods.filter(\.isInitializer)
     }
 
@@ -279,12 +279,12 @@ public class Type: Diffable, Annotated, Documented, Equatable, Hashable, CustomS
     }
 
     /// Static methods defined in this type
-    public var staticMethods: [Method] {
+    public var staticMethods: [Function] {
         methods.filter(\.isStatic)
     }
 
     /// Class methods defined in this type
-    public var classMethods: [Method] {
+    public var classMethods: [Function] {
         methods.filter(\.isClass)
     }
 
@@ -294,7 +294,7 @@ public class Type: Diffable, Annotated, Documented, Equatable, Hashable, CustomS
     }
 
     /// Instance methods defined in this type
-    public var instanceMethods: [Method] {
+    public var instanceMethods: [Function] {
         methods.filter { !$0.isStatic && !$0.isClass }
     }
 
@@ -401,7 +401,7 @@ public class Type: Diffable, Annotated, Documented, Equatable, Hashable, CustomS
         accessLevel: AccessLevel = .internal,
         isExtension: Bool = false,
         variables: [Variable] = [],
-        methods: [Method] = [],
+        methods: [Function] = [],
         subscripts: [Subscript] = [],
         inheritedTypes: [String] = [],
         containedTypes: [Type] = [],

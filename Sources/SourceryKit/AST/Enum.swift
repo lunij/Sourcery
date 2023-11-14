@@ -276,7 +276,7 @@ public final class Enum: Type {
                 rawTypeName: TypeName? = nil,
                 cases: [EnumCase] = [],
                 variables: [Variable] = [],
-                methods: [Method] = [],
+                methods: [Function] = [],
                 containedTypes: [Type] = [],
                 typealiases: [Typealias] = [],
                 attributes: AttributeList = [:],

@@ -120,9 +120,9 @@ final class ComposerTests: XCTestCase {
 
     func test_initializer_itExtractsInitializer() {
         let fooType = Class(name: "Foo")
-        let expectedInitializer = Method(name: "init()", selectorName: "init", returnTypeName: TypeName(name: "Foo"), isStatic: true, definedInTypeName: TypeName(name: "Foo"))
+        let expectedInitializer = Function(name: "init()", selectorName: "init", returnTypeName: TypeName(name: "Foo"), isStatic: true, definedInTypeName: TypeName(name: "Foo"))
         expectedInitializer.returnType = fooType
-        fooType.rawMethods = [Method(name: "foo()", selectorName: "foo", definedInTypeName: TypeName(name: "Foo")), expectedInitializer]
+        fooType.rawMethods = [Function(name: "foo()", selectorName: "foo", definedInTypeName: TypeName(name: "Foo")), expectedInitializer]
 
         let type = sut.compose("class Foo { func foo() {}; init() {} }").types.first
         let initializer = type?.initializers.first
@@ -133,9 +133,9 @@ final class ComposerTests: XCTestCase {
 
     func test_initializer_itExtractsFailableInitializer() {
         let fooType = Class(name: "Foo")
-        let expectedInitializer = Method(name: "init?()", selectorName: "init", returnTypeName: TypeName(name: "Foo?"), isStatic: true, isFailableInitializer: true, definedInTypeName: TypeName(name: "Foo"))
+        let expectedInitializer = Function(name: "init?()", selectorName: "init", returnTypeName: TypeName(name: "Foo?"), isStatic: true, isFailableInitializer: true, definedInTypeName: TypeName(name: "Foo"))
         expectedInitializer.returnType = fooType
-        fooType.rawMethods = [Method(name: "foo()", selectorName: "foo", definedInTypeName: TypeName(name: "Foo")), expectedInitializer]
+        fooType.rawMethods = [Function(name: "foo()", selectorName: "foo", definedInTypeName: TypeName(name: "Foo")), expectedInitializer]
 
         let type = sut.compose("class Foo { func foo() {}; init?() {} }").types.first
         let initializer = type?.initializers.first
@@ -265,7 +265,7 @@ final class ComposerTests: XCTestCase {
         let types = sut.compose("class Baz {}; extension Baz { func foo() {} }").types
         XCTAssertEqual(types, [
             Class(name: "Baz", methods: [
-                Method(name: "foo()", selectorName: "foo", accessLevel: .internal, definedInTypeName: TypeName(name: "Baz"))
+                Function(name: "foo()", selectorName: "foo", accessLevel: .internal, definedInTypeName: TypeName(name: "Baz"))
             ])
         ])
     }
@@ -319,8 +319,8 @@ final class ComposerTests: XCTestCase {
         ])
     }
 
-    private func createOriginalDefinitionTypeScenario() -> (SourceryMethod, SourceryMethod) {
-        let method = SourceryMethod(
+    private func createOriginalDefinitionTypeScenario() -> (Function, Function) {
+        let method = Function(
             name: "fooMethod(bar: String)",
             selectorName: "fooMethod(bar:)",
             parameters: [
@@ -329,7 +329,7 @@ final class ComposerTests: XCTestCase {
             returnTypeName: TypeName(name: "Void"),
             definedInTypeName: TypeName(name: "Foo")
         )
-        let defaultedMethod = SourceryMethod(
+        let defaultedMethod = Function(
             name: "fooMethod(bar: String = \"Baz\")",
             selectorName: "fooMethod(bar:)",
             parameters: [
@@ -453,7 +453,7 @@ final class ComposerTests: XCTestCase {
                         )
                     ],
                     methods: [
-                        Method(
+                        Function(
                             name: "init?(rawValue: String)",
                             selectorName: "init(rawValue:)",
                             parameters: [FunctionParameter(name: "rawValue",typeName: TypeName(name: "String"))],
@@ -495,7 +495,7 @@ final class ComposerTests: XCTestCase {
                         )
                     ],
                     methods: [
-                        Method(
+                        Function(
                             name: "init?(rawValue: RawValue)",
                             selectorName: "init(rawValue:)",
                             parameters: [FunctionParameter(name: "rawValue", typeName: TypeName(name: "RawValue"))],
@@ -538,7 +538,7 @@ final class ComposerTests: XCTestCase {
                         )
                     ],
                     methods: [
-                        Method(
+                        Function(
                             name: "init?(rawValue: RawValue)",
                             selectorName: "init(rawValue:)",
                             parameters: [FunctionParameter(name: "rawValue", typeName: TypeName(name: "RawValue"))],
@@ -1031,7 +1031,7 @@ final class ComposerTests: XCTestCase {
     }
 
     func test_selfInsteadOfTypeName_itReplacesMethodTypesWithActualTypes() {
-        let expectedMethod = Method(
+        let expectedMethod = Function(
             name: "myMethod()",
             selectorName: "myMethod",
             returnTypeName: TypeName(name: "Self", actualTypeName: TypeName(name: "Foo.SubType")),
@@ -1291,7 +1291,7 @@ final class ComposerTests: XCTestCase {
     }
 
     func test_typealiases_andMethodReturnType_itReplacesMethodReturnTypeAliasWithActualType() {
-        let expectedMethod = Method(
+        let expectedMethod = Function(
             name: "some()",
             selectorName: "some",
             returnTypeName: TypeName(name: "FooAlias", actualTypeName: TypeName(name: "Foo")),
@@ -1312,7 +1312,7 @@ final class ComposerTests: XCTestCase {
             TupleElement(name: "0", typeName: TypeName(name: "Foo"), type: Class(name: "Foo")),
             TupleElement(name: "1", typeName: TypeName(name: "Int"))
         ])
-        let expectedMethod = Method(
+        let expectedMethod = Function(
             name: "some()",
             selectorName: "some",
             returnTypeName: TypeName(name: "(FooAlias, Int)", actualTypeName: expectedActualTypeName, tuple: expectedActualTypeName.tuple),
@@ -1334,7 +1334,7 @@ final class ComposerTests: XCTestCase {
             TupleElement(name: "0", typeName: TypeName(name: "Foo"), type: Class(name: "Foo")),
             TupleElement(name: "1", typeName: TypeName(name: "Int"))
         ])
-        let expectedMethod = Method(
+        let expectedMethod = Function(
             name: "some()",
             selectorName: "some",
             returnTypeName: TypeName(name: "GlobalAlias", actualTypeName: expectedActualTypeName, tuple: expectedActualTypeName.tuple),
@@ -1792,7 +1792,7 @@ final class ComposerTests: XCTestCase {
     }
 
     func test_nestedType_itExtractsDefinedInType() {
-        let expectedMethod = Method(name: "some()", selectorName: "some", definedInTypeName: TypeName(name: "Foo.Bar"))
+        let expectedMethod = Function(name: "some()", selectorName: "some", definedInTypeName: TypeName(name: "Foo.Bar"))
 
         let types = sut.compose("class Foo { class Bar { func some() } }").types
         let method = types.last?.methods.first
@@ -2219,7 +2219,7 @@ final class ComposerTests: XCTestCase {
 
     func test_freeFunction_itResolvesGenericReturnTypes() {
         let functions = sut.compose("func foo() -> Bar<String> { }").functions
-        XCTAssertEqual(functions[0], SourceryMethod(
+        XCTAssertEqual(functions[0], Function(
             name: "foo()",
             selectorName: "foo",
             parameters: [],
@@ -2241,7 +2241,7 @@ final class ComposerTests: XCTestCase {
 
     func test_freeFunction_itResolvesTupleReturnTypes() {
         let functions = sut.compose("func foo() -> (bar: String, biz: Int) { }").functions
-        XCTAssertEqual(functions[0], SourceryMethod(
+        XCTAssertEqual(functions[0], Function(
             name: "foo()",
             selectorName: "foo",
             parameters: [],
@@ -2340,7 +2340,7 @@ final class ComposerTests: XCTestCase {
 }
 
 private extension Composer {
-    func compose(_ content: String) -> (types: [Type], functions: [SourceryMethod], typealiases: [Typealias]) {
+    func compose(_ content: String) -> (types: [Type], functions: [Function], typealiases: [Typealias]) {
         let parserResult = SwiftSyntaxParser().parse(content)
         return compose(
             functions: parserResult.functions,
@@ -2356,12 +2356,12 @@ private struct Module {
 }
 
 private extension Array where Element == Module {
-    func parse() -> (types: [Type], functions: [SourceryMethod], typealiases: [Typealias]) {
+    func parse() -> (types: [Type], functions: [Function], typealiases: [Typealias]) {
         let results = map {
             SwiftSyntaxParser().parse($0.content, module: $0.name)
         }
 
-        var allFunctions: [SourceryMethod] = []
+        var allFunctions: [Function] = []
         var allTypealiases: [Typealias] = []
         var allTypes: [Type] = []
 

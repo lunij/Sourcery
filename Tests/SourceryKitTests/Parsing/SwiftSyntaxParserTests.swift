@@ -339,9 +339,9 @@ class SwiftSyntaxParserTests: XCTestCase {
     }
 
     func test_protocolComposition_parsesReturnType() {
-        let expectedFoo = Method(name: "foo()", selectorName: "foo", returnTypeName: TypeName(name: "ProtocolA & ProtocolB", isProtocolComposition: true), definedInTypeName: TypeName(name: "Foo"))
+        let expectedFoo = Function(name: "foo()", selectorName: "foo", returnTypeName: TypeName(name: "ProtocolA & ProtocolB", isProtocolComposition: true), definedInTypeName: TypeName(name: "Foo"))
         expectedFoo.returnType = ProtocolComposition(name: "ProtocolA & Protocol B")
-        let expectedFooOptional = Method(name: "fooOptional()", selectorName: "fooOptional", returnTypeName: TypeName(name: "(ProtocolA & ProtocolB)", isOptional: true, isProtocolComposition: true), definedInTypeName: TypeName(name: "Foo"))
+        let expectedFooOptional = Function(name: "fooOptional()", selectorName: "fooOptional", returnTypeName: TypeName(name: "(ProtocolA & ProtocolB)", isOptional: true, isProtocolComposition: true), definedInTypeName: TypeName(name: "Foo"))
         expectedFooOptional.returnType = ProtocolComposition(name: "ProtocolA & Protocol B")
 
         let methods = """
@@ -808,7 +808,7 @@ class SwiftSyntaxParserTests: XCTestCase {
     func test_protocol_setsMemberAccessLevelToProtocolAccessLevel() {
         func assert(_ accessLevel: AccessLevel, line: UInt = #line) {
             XCTAssertEqual("\(accessLevel) protocol Foo { var some: Int { get }; func foo() -> Void }".parse().types, [
-                Protocol(name: "Foo", accessLevel: accessLevel, variables: [Variable(name: "some", typeName: TypeName(name: "Int"), accessLevel: (accessLevel, .none), isComputed: false, definedInTypeName: TypeName(name: "Foo"))], methods: [Method(name: "foo()", selectorName: "foo", returnTypeName: TypeName(name: "Void"), throws: false, rethrows: false, accessLevel: accessLevel, definedInTypeName: TypeName(name: "Foo"))], modifiers: [Modifier(name: "\(accessLevel)")])
+                Protocol(name: "Foo", accessLevel: accessLevel, variables: [Variable(name: "some", typeName: TypeName(name: "Int"), accessLevel: (accessLevel, .none), isComputed: false, definedInTypeName: TypeName(name: "Foo"))], methods: [Function(name: "foo()", selectorName: "foo", returnTypeName: TypeName(name: "Void"), throws: false, rethrows: false, accessLevel: accessLevel, definedInTypeName: TypeName(name: "Foo"))], modifiers: [Modifier(name: "\(accessLevel)")])
             ], line: line)
         }
 

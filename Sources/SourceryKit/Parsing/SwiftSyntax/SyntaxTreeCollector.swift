@@ -4,7 +4,7 @@ import SwiftSyntax
 class SyntaxTreeCollector: SyntaxVisitor {
     var types = [Type]()
     var typealiases = [Typealias]()
-    var methods = [SourceryMethod]()
+    var methods = [Function]()
     var imports = [Import]()
     private var visitingType: Type?
 
@@ -119,7 +119,7 @@ class SyntaxTreeCollector: SyntaxVisitor {
             return .skipChildren
         }
         visitingType.rawMethods.append(
-            SourceryMethod(node, parent: visitingType, typeName: TypeName(visitingType.name), getAnnotationUseCase: getAnnotationUseCase)
+            Function(node, parent: visitingType, typeName: TypeName(visitingType.name), getAnnotationUseCase: getAnnotationUseCase)
         )
         return .skipChildren
     }
@@ -155,7 +155,7 @@ class SyntaxTreeCollector: SyntaxVisitor {
     }
 
     public override func visit(_ node: FunctionDeclSyntax) -> SyntaxVisitorContinueKind {
-        let method = SourceryMethod(
+        let method = Function(
             node,
             parent: visitingType,
             typeName: visitingType.map { TypeName($0.name) },
@@ -180,7 +180,7 @@ class SyntaxTreeCollector: SyntaxVisitor {
             logError("init shouldn't appear outside of type declaration \(node.description.trimmed)")
             return .skipChildren
         }
-        let method = SourceryMethod(
+        let method = Function(
             node,
             parent: visitingType,
             typeName: TypeName(visitingType.name),
