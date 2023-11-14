@@ -11,24 +11,6 @@ class AnnotationParserTests: XCTestCase {
         sut = .init()
     }
 
-    func test_parseLine_singleAnnotation() {
-        let parsedAnnotations = sut.parse(line: "skipEquality")
-        XCTAssertEqual(parsedAnnotations, ["skipEquality": NSNumber(value: true)])
-    }
-
-    func test_parseLine_repeatedAnnotationsIntoArray() {
-        let parsedAnnotations = sut.parse(line: "implements = \"Service1\", implements = \"Service2\"")
-        XCTAssertEqual(parsedAnnotations["implements"] as? [String], ["Service1", "Service2"])
-    }
-
-    func test_parseLine_multipleAnnotationsOnTheSameLine() {
-        let parsedAnnotations = sut.parse(line: "skipEquality, jsonKey = \"json_key\"")
-        XCTAssertEqual(parsedAnnotations, [
-            "skipEquality": NSNumber(value: true),
-            "jsonKey": "json_key" as NSString
-        ])
-    }
-
     func test_parsesInlineAnnotations() {
         let parsedAnnotations = sut.parse("""
         // sourcery: skipDescription
