@@ -21,6 +21,7 @@ struct AnnotationParser {
             case inlineEnd
             case file
         }
+
         let content: String
         let type: LineType
         let annotations: Annotations
@@ -89,10 +90,12 @@ struct AnnotationParser {
                     annotations[annotation.key] = annotation.value
                 }
 
-                return Line(content: line.content,
-                            type: type,
-                            annotations: annotations,
-                            blockAnnotations: annotationsBlock ?? [:])
+                return Line(
+                    content: line.content,
+                    type: type,
+                    annotations: annotations,
+                    blockAnnotations: annotationsBlock ?? [:]
+                )
             }
     }
 
@@ -101,19 +104,21 @@ struct AnnotationParser {
         if blockComponents.count > 1,
            let lastBlockComponent = blockComponents.last,
            let endBlockRange = lastBlockComponent.range(of: "*/"),
-           let lowerBound = lastBlockComponent.range(of: "sourcery:")?.upperBound {
+           let lowerBound = lastBlockComponent.range(of: "sourcery:")?.upperBound
+        {
             let trailingStart = endBlockRange.upperBound
             let trailing = String(lastBlockComponent[trailingStart...])
             if trailing.components(separatedBy: "//", excludingDelimiterBetween: ("", "")).first?.trimmed.count == 0 {
                 let upperBound = endBlockRange.lowerBound
-                return parse(line: String(lastBlockComponent[lowerBound..<upperBound]))
+                return parse(line: String(lastBlockComponent[lowerBound ..< upperBound]))
             }
         }
 
         let components = codeLine.components(separatedBy: "//", excludingDelimiterBetween: ("", ""))
         if components.count > 1,
            let trailingComment = components.last?.stripped(),
-           let lowerBound = trailingComment.range(of: "sourcery:")?.upperBound {
+           let lowerBound = trailingComment.range(of: "sourcery:")?.upperBound
+        {
             return parse(line: String(trailingComment[lowerBound...]))
         }
 
@@ -131,8 +136,8 @@ struct AnnotationParser {
 
         let lowerBound: String.Index?
         let upperBound: String.Index?
-        var insideBlock: Bool = false
-        var insideFileBlock: Bool = false
+        var insideBlock = false
+        var insideFileBlock = false
 
         if comment.hasPrefix("sourcery:begin:") {
             lowerBound = commentLine.range(of: "sourcery:begin:")?.upperBound
@@ -153,8 +158,8 @@ struct AnnotationParser {
             }
         }
 
-        if let lowerBound = lowerBound, let upperBound = upperBound {
-            let annotations = parse(line: String(commentLine[lowerBound..<upperBound]))
+        if let lowerBound, let upperBound {
+            let annotations = parse(line: String(commentLine[lowerBound ..< upperBound]))
             if insideBlock {
                 return .begin(annotations)
             } else if insideFileBlock {
@@ -179,10 +184,9 @@ struct AnnotationParser {
         annotationDefinitions.forEach { annotation in
             let parts = annotation
                 .components(separatedBy: "=", excludingDelimiterBetween: ("", ""))
-                .map({ $0.trimmingCharacters(in: .whitespaces) })
+                .map { $0.trimmingCharacters(in: .whitespaces) }
 
             if let name = parts.first, !name.isEmpty {
-
                 guard parts.count > 1, var value = parts.last, value.isEmpty == false else {
                     append(key: name, value: NSNumber(value: true), to: &annotations)
                     return
@@ -197,7 +201,8 @@ struct AnnotationParser {
                     }
 
                     guard let data = (value as String).data(using: .utf8),
-                          let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) else {
+                          let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments)
+                    else {
                         append(key: name, value: value as NSString, to: &annotations)
                         return
                     }
@@ -233,9 +238,9 @@ struct AnnotationParser {
                     annotations[key] = array as NSObject
                 }
             } else if var oldDict = oldValue as? [String: NSObject], let newDict = value as? [String: NSObject] {
-                newDict.forEach({ (key, value) in
+                newDict.forEach { key, value in
                     append(key: key, value: value, to: &oldDict)
-                })
+                }
                 annotations[key] = oldDict as NSObject
             } else if oldValue != value {
                 annotations[key] = [oldValue, value] as NSObject
