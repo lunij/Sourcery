@@ -33,7 +33,7 @@ struct AnnotationParser {
         var annotations = Annotations()
         for line in lines {
             for annotation in line.annotations {
-                append(key: annotation.key, value: annotation.value, to: &annotations)
+                annotations.append(key: annotation.key, value: annotation.value)
             }
         }
         return annotations
@@ -188,12 +188,12 @@ struct AnnotationParser {
 
             if let name = parts.first, !name.isEmpty {
                 guard parts.count > 1, var value = parts.last, value.isEmpty == false else {
-                    append(key: name, value: NSNumber(value: true), to: &annotations)
+                    annotations.append(key: name, value: NSNumber(value: true))
                     return
                 }
 
                 if let number = Float(value) {
-                    append(key: name, value: NSNumber(value: number), to: &annotations)
+                    annotations.append(key: name, value: NSNumber(value: number))
                 } else {
                     if (value.hasPrefix("'") && value.hasSuffix("'")) || (value.hasPrefix("\"") && value.hasSuffix("\"")) {
                         value = String(value[value.index(after: value.startIndex) ..< value.index(before: value.endIndex)])
@@ -203,15 +203,15 @@ struct AnnotationParser {
                     guard let data = (value as String).data(using: .utf8),
                           let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments)
                     else {
-                        append(key: name, value: value as NSString, to: &annotations)
+                        annotations.append(key: name, value: value as NSString)
                         return
                     }
                     if let array = json as? [Any] {
-                        append(key: name, value: array as NSArray, to: &annotations)
+                        annotations.append(key: name, value: array as NSArray)
                     } else if let dict = json as? [String: Any] {
-                        append(key: name, value: dict as NSDictionary, to: &annotations)
+                        annotations.append(key: name, value: dict as NSDictionary)
                     } else {
-                        append(key: name, value: value as NSString, to: &annotations)
+                        annotations.append(key: name, value: value as NSString)
                     }
                 }
             }
@@ -227,26 +227,6 @@ struct AnnotationParser {
                 namespaced = Annotations()
             }
             return annotations
-        }
-    }
-
-    func append(key: String, value: NSObject, to annotations: inout Annotations) {
-        if let oldValue = annotations[key] {
-            if var array = oldValue as? [NSObject] {
-                if !array.contains(value) {
-                    array.append(value)
-                    annotations[key] = array as NSObject
-                }
-            } else if var oldDict = oldValue as? [String: NSObject], let newDict = value as? [String: NSObject] {
-                newDict.forEach { key, value in
-                    append(key: key, value: value, to: &oldDict)
-                }
-                annotations[key] = oldDict as NSObject
-            } else if oldValue != value {
-                annotations[key] = [oldValue, value] as NSObject
-            }
-        } else {
-            annotations[key] = value
         }
     }
 }

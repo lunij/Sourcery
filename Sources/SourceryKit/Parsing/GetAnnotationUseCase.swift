@@ -10,7 +10,7 @@ public class GetAnnotationUseCase {
         var all = Annotations()
         lines.forEach {
             $0.annotations.forEach {
-                annotationParser.append(key: $0.key, value: $0.value, to: &all)
+                all.append(key: $0.key, value: $0.value)
             }
         }
         return all
@@ -115,7 +115,7 @@ public class GetAnnotationUseCase {
         guard !prefix.isEmpty else { return [:] }
         var annotations = sourceLine.blockAnnotations // get block annotations for this line
         sourceLine.annotations.forEach { annotation in  // TODO: verify
-            annotationParser.append(key: annotation.key, value: annotation.value, to: &annotations)
+            annotations.append(key: annotation.key, value: annotation.value)
         }
 
         // `case` is not included in the key of enum case definition, so we strip it manually
@@ -132,7 +132,7 @@ public class GetAnnotationUseCase {
 
             let comment = String(prefix[commentStart.lowerBound...])
             for annotation in annotationParser.parse(contents: comment)[0].annotations {
-                annotationParser.append(key: annotation.key, value: annotation.value, to: &annotations)
+                annotations.append(key: annotation.key, value: annotation.value)
             }
             prefix = prefix[..<commentStart.lowerBound].trimmingCharacters(in: .whitespaces)
         }
@@ -165,7 +165,7 @@ public class GetAnnotationUseCase {
 
         for line in lines[0 ..< location.line - 1].reversed() {
             line.annotations.forEach { annotation in
-                annotationParser.append(key: annotation.key, value: annotation.value, to: &annotations)
+                annotations.append(key: annotation.key, value: annotation.value)
             }
             if line.type != .comment && line.type != .documentationComment {
                 break
@@ -173,7 +173,7 @@ public class GetAnnotationUseCase {
         }
 
         lines[location.line - 1].annotations.forEach { annotation in
-            annotationParser.append(key: annotation.key, value: annotation.value, to: &annotations)
+            annotations.append(key: annotation.key, value: annotation.value)
         }
 
         return annotations

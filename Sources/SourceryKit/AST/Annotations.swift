@@ -24,3 +24,25 @@ public protocol Annotated {
     */
     var annotations: Annotations { get }
 }
+
+extension Annotations {
+    mutating func append(key: String, value: NSObject) {
+        if let oldValue = self[key] {
+            if var array = oldValue as? [NSObject] {
+                if !array.contains(value) {
+                    array.append(value)
+                    self[key] = array as NSObject
+                }
+            } else if var oldDict = oldValue as? [String: NSObject], let newDict = value as? [String: NSObject] {
+                newDict.forEach { key, value in
+                    oldDict.append(key: key, value: value)
+                }
+                self[key] = oldDict as NSObject
+            } else if oldValue != value {
+                self[key] = [oldValue, value] as NSObject
+            }
+        } else {
+            self[key] = value
+        }
+    }
+}
