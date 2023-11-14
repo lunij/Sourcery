@@ -17,22 +17,19 @@ public final class Enum: Type {
         }
     }
 
-    // sourcery: skipDescription
     /// Returns "enum"
-    public override var kind: String { return "enum" }
+    public override var kind: String { "enum" }
 
     /// Enum cases
     public var cases: [EnumCase]
 
-    /**
-     Enum raw value type name, if any. This type is removed from enum's `based` and `inherited` types collections.
-
-        - important: Unless raw type is specified explicitly via type alias RawValue it will be set to the first type in the inheritance chain.
-     So if your enum does not have raw value but implements protocols you'll have to specify conformance to these protocols via extension to get enum with nil raw value type and all based and inherited types.
-     */
+    /// Enum raw value type name, if any. This type is removed from enum's `based` and `inherited` types collections.
+    ///
+    ///   - important: Unless raw type is specified explicitly via type alias RawValue it will be set to the first type in the inheritance chain.
+    /// So if your enum does not have raw value but implements protocols you'll have to specify conformance to these protocols via extension to get enum with nil raw value type and all based and inherited types.
     public var rawTypeName: TypeName? {
         didSet {
-            if let rawTypeName = rawTypeName {
+            if let rawTypeName {
                 hasRawType = true
                 if let index = inheritedTypes.firstIndex(of: rawTypeName.name) {
                     inheritedTypes.remove(at: index)
@@ -46,18 +43,15 @@ public final class Enum: Type {
         }
     }
 
-    // sourcery: skipDescription, skipEquality
     public private(set) var hasRawType: Bool
 
-    // sourcery: skipDescription, skipEquality
     /// Enum raw value type, if known
     public var rawType: Type?
 
-    // sourcery: skipEquality, skipDescription, skipCoding
     /// Names of types or protocols this type inherits from, including unknown (not scanned) types
     public override var based: [String: String] {
         didSet {
-            if let rawTypeName = rawTypeName, based[rawTypeName.name] != nil {
+            if let rawTypeName, based[rawTypeName.name] != nil {
                 based[rawTypeName.name] = nil
             }
         }
@@ -65,31 +59,47 @@ public final class Enum: Type {
 
     /// Whether enum contains any associated values
     public var hasAssociatedValues: Bool {
-        return cases.contains(where: { $0.hasAssociatedValue })
+        cases.contains(where: \.hasAssociatedValue)
     }
 
-    public init(name: String = "",
-                parent: Type? = nil,
-                accessLevel: AccessLevel = .internal,
-                isExtension: Bool = false,
-                inheritedTypes: [String] = [],
-                rawTypeName: TypeName? = nil,
-                cases: [EnumCase] = [],
-                variables: [Variable] = [],
-                methods: [Function] = [],
-                containedTypes: [Type] = [],
-                typealiases: [Typealias] = [],
-                attributes: AttributeList = [:],
-                modifiers: [Modifier] = [],
-                annotations: [String: NSObject] = [:],
-                documentation: [String] = [],
-                isGeneric: Bool = false) {
-
+    public init(
+        name: String = "",
+        parent: Type? = nil,
+        accessLevel: AccessLevel = .internal,
+        isExtension: Bool = false,
+        inheritedTypes: [String] = [],
+        rawTypeName: TypeName? = nil,
+        cases: [EnumCase] = [],
+        variables: [Variable] = [],
+        methods: [Function] = [],
+        containedTypes: [Type] = [],
+        typealiases: [Typealias] = [],
+        attributes: AttributeList = [:],
+        modifiers: [Modifier] = [],
+        annotations: [String: NSObject] = [:],
+        documentation: [String] = [],
+        isGeneric: Bool = false
+    ) {
         self.cases = cases
         self.rawTypeName = rawTypeName
-        self.hasRawType = rawTypeName != nil || !inheritedTypes.isEmpty
+        hasRawType = rawTypeName != nil || !inheritedTypes.isEmpty
 
-        super.init(name: name, parent: parent, accessLevel: accessLevel, isExtension: isExtension, variables: variables, methods: methods, inheritedTypes: inheritedTypes, containedTypes: containedTypes, typealiases: typealiases, attributes: attributes, modifiers: modifiers, annotations: annotations, documentation: documentation, isGeneric: isGeneric)
+        super.init(
+            name: name,
+            parent: parent,
+            accessLevel: accessLevel,
+            isExtension: isExtension,
+            variables: variables,
+            methods: methods,
+            inheritedTypes: inheritedTypes,
+            containedTypes: containedTypes,
+            typealiases: typealiases,
+            attributes: attributes,
+            modifiers: modifiers,
+            annotations: annotations,
+            documentation: documentation,
+            isGeneric: isGeneric
+        )
 
         if let rawTypeName = rawTypeName?.name, let index = self.inheritedTypes.firstIndex(of: rawTypeName) {
             self.inheritedTypes.remove(at: index)
@@ -102,8 +112,8 @@ public final class Enum: Type {
             results.append("Incorrect type <expected: Enum, received: \(Swift.type(of: object))>")
             return results
         }
-        results.append(contentsOf: DiffableResult(identifier: "cases").trackDifference(actual: self.cases, expected: castObject.cases))
-        results.append(contentsOf: DiffableResult(identifier: "rawTypeName").trackDifference(actual: self.rawTypeName, expected: castObject.rawTypeName))
+        results.append(contentsOf: DiffableResult(identifier: "cases").trackDifference(actual: cases, expected: castObject.cases))
+        results.append(contentsOf: DiffableResult(identifier: "rawTypeName").trackDifference(actual: rawTypeName, expected: castObject.rawTypeName))
         results.append(contentsOf: super.diffAgainst(castObject))
         return results
     }
