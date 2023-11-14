@@ -29,8 +29,8 @@ class SwiftSyntaxParserSubscriptTests: XCTestCase {
             subscripts?.first,
             Subscript(
                 parameters: [
-                    MethodParameter(argumentLabel: nil, name: "index", typeName: TypeName(name: "Int")),
-                    MethodParameter(argumentLabel: "a", name: "a", typeName: TypeName(name: "String"))
+                    FunctionParameter(argumentLabel: nil, name: "index", typeName: TypeName(name: "Int")),
+                    FunctionParameter(argumentLabel: "a", name: "a", typeName: TypeName(name: "String"))
                 ],
                 returnTypeName: TypeName(name: "Int"),
                 accessLevel: (.private, .private),
@@ -47,7 +47,7 @@ class SwiftSyntaxParserSubscriptTests: XCTestCase {
             subscripts?.last,
             Subscript(
                 parameters: [
-                    MethodParameter(argumentLabel: "b", name: "b", typeName: TypeName(name: "Int"))
+                    FunctionParameter(argumentLabel: "b", name: "b", typeName: TypeName(name: "Int"))
                 ],
                 returnTypeName: TypeName(name: "String"),
                 accessLevel: (.public, .private),

@@ -6,7 +6,7 @@ class MethodTests: XCTestCase {
     var sut: SourceryMethod!
 
     override func setUp() {
-        sut = Method(name: "foo(some: Int)", selectorName: "foo(some:)", parameters: [MethodParameter(name: "some", typeName: TypeName(name: "Int"))], definedInTypeName: TypeName(name: "Bar"))
+        sut = Method(name: "foo(some: Int)", selectorName: "foo(some:)", parameters: [FunctionParameter(name: "some", typeName: TypeName(name: "Int"))], definedInTypeName: TypeName(name: "Bar"))
     }
 
     func test_reportsShortName() {
@@ -43,20 +43,20 @@ class MethodTests: XCTestCase {
     }
 
     func test_equals_whenSameItems() {
-        XCTAssertEqual(sut, Method(name: "foo(some: Int)", selectorName: "foo(some:)", parameters: [MethodParameter(name: "some", typeName: TypeName(name: "Int"))], definedInTypeName: TypeName(name: "Bar")))
+        XCTAssertEqual(sut, Method(name: "foo(some: Int)", selectorName: "foo(some:)", parameters: [FunctionParameter(name: "some", typeName: TypeName(name: "Int"))], definedInTypeName: TypeName(name: "Bar")))
     }
 
     func test_differs_whenDifferentItems() {
-        let mockMethodParameters = [MethodParameter(name: "some", typeName: TypeName(name: "Int"))]
-        XCTAssertNotEqual(sut, Method(name: "foo(some: Int)", selectorName: "foo(some:)", parameters: [MethodParameter(name: "some", typeName: TypeName(name: "Int"))], definedInTypeName: TypeName(name: "Baz")))
-        XCTAssertNotEqual(sut, Method(name: "bar(some: Int)", selectorName: "bar(some:)", parameters: mockMethodParameters, returnTypeName: TypeName(name: "Void"), accessLevel: .internal, isStatic: false, isClass: false, isFailableInitializer: false, annotations: [:]))
+        let parameters = [FunctionParameter(name: "some", typeName: TypeName(name: "Int"))]
+        XCTAssertNotEqual(sut, Method(name: "foo(some: Int)", selectorName: "foo(some:)", parameters: [FunctionParameter(name: "some", typeName: TypeName(name: "Int"))], definedInTypeName: TypeName(name: "Baz")))
+        XCTAssertNotEqual(sut, Method(name: "bar(some: Int)", selectorName: "bar(some:)", parameters: parameters, returnTypeName: TypeName(name: "Void"), accessLevel: .internal, isStatic: false, isClass: false, isFailableInitializer: false, annotations: [:]))
         XCTAssertNotEqual(sut, Method(name: "foo(some: Int)", selectorName: "foo(some:)", parameters: [], returnTypeName: TypeName(name: "Void"), accessLevel: .internal, isStatic: false, isClass: false, isFailableInitializer: false, annotations: [:]))
-        XCTAssertNotEqual(sut, Method(name: "foo(some: Int)", selectorName: "foo(some:)", parameters: mockMethodParameters, returnTypeName: TypeName(name: "String"), accessLevel: .internal, isStatic: false, isClass: false, isFailableInitializer: false, annotations: [:]))
-        XCTAssertNotEqual(sut, Method(name: "foo(some: Int)", selectorName: "foo(some:)", parameters: mockMethodParameters, returnTypeName: TypeName(name: "Void"), throws: true, accessLevel: .internal, isStatic: false, isClass: false, isFailableInitializer: false, annotations: [:]))
-        XCTAssertNotEqual(sut, Method(name: "foo(some: Int)", selectorName: "foo(some:)", parameters: mockMethodParameters, returnTypeName: TypeName(name: "Void"), accessLevel: .public, isStatic: false, isClass: false, isFailableInitializer: false, annotations: [:]))
-        XCTAssertNotEqual(sut, Method(name: "foo(some: Int)", selectorName: "foo(some:)", parameters: mockMethodParameters, returnTypeName: TypeName(name: "Void"), accessLevel: .internal, isStatic: true, isClass: false, isFailableInitializer: false, annotations: [:]))
-        XCTAssertNotEqual(sut, Method(name: "foo(some: Int)", selectorName: "foo(some:)", parameters: mockMethodParameters, returnTypeName: TypeName(name: "Void"), accessLevel: .internal, isStatic: false, isClass: true, isFailableInitializer: false, annotations: [:]))
-        XCTAssertNotEqual(sut, Method(name: "foo(some: Int)", selectorName: "foo(some:)", parameters: mockMethodParameters, returnTypeName: TypeName(name: "Void"), accessLevel: .internal, isStatic: false, isClass: false, isFailableInitializer: true, annotations: [:]))
-        XCTAssertNotEqual(sut, Method(name: "foo(some: Int)", selectorName: "foo(some:)", parameters: mockMethodParameters, returnTypeName: TypeName(name: "Void"), accessLevel: .internal, isStatic: false, isClass: false, isFailableInitializer: false, annotations: ["some": NSNumber(value: true)]))
+        XCTAssertNotEqual(sut, Method(name: "foo(some: Int)", selectorName: "foo(some:)", parameters: parameters, returnTypeName: TypeName(name: "String"), accessLevel: .internal, isStatic: false, isClass: false, isFailableInitializer: false, annotations: [:]))
+        XCTAssertNotEqual(sut, Method(name: "foo(some: Int)", selectorName: "foo(some:)", parameters: parameters, returnTypeName: TypeName(name: "Void"), throws: true, accessLevel: .internal, isStatic: false, isClass: false, isFailableInitializer: false, annotations: [:]))
+        XCTAssertNotEqual(sut, Method(name: "foo(some: Int)", selectorName: "foo(some:)", parameters: parameters, returnTypeName: TypeName(name: "Void"), accessLevel: .public, isStatic: false, isClass: false, isFailableInitializer: false, annotations: [:]))
+        XCTAssertNotEqual(sut, Method(name: "foo(some: Int)", selectorName: "foo(some:)", parameters: parameters, returnTypeName: TypeName(name: "Void"), accessLevel: .internal, isStatic: true, isClass: false, isFailableInitializer: false, annotations: [:]))
+        XCTAssertNotEqual(sut, Method(name: "foo(some: Int)", selectorName: "foo(some:)", parameters: parameters, returnTypeName: TypeName(name: "Void"), accessLevel: .internal, isStatic: false, isClass: true, isFailableInitializer: false, annotations: [:]))
+        XCTAssertNotEqual(sut, Method(name: "foo(some: Int)", selectorName: "foo(some:)", parameters: parameters, returnTypeName: TypeName(name: "Void"), accessLevel: .internal, isStatic: false, isClass: false, isFailableInitializer: true, annotations: [:]))
+        XCTAssertNotEqual(sut, Method(name: "foo(some: Int)", selectorName: "foo(some:)", parameters: parameters, returnTypeName: TypeName(name: "Void"), accessLevel: .internal, isStatic: false, isClass: false, isFailableInitializer: false, annotations: ["some": NSNumber(value: true)]))
     }
 }

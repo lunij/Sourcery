@@ -81,38 +81,38 @@ class TypedTests: XCTestCase {
         XCTAssertEqual(sut.actualTypeName, "Int".typeName)
     }
 
-    // MARK: - MethodParameter
+    // MARK: - FunctionParameter
 
-    func test_MethodParameter_canReportOptional() {
-        XCTAssertEqual(MethodParameter(typeName: .optionalInt).isOptional, true)
-        XCTAssertEqual(MethodParameter(typeName: .optionalInt).isImplicitlyUnwrappedOptional, false)
-        XCTAssertEqual(MethodParameter(typeName: .optionalInt).unwrappedTypeName, "Int")
-        XCTAssertEqual(MethodParameter(typeName: .implicitlyUnwrappedOptionalInt).isOptional, true)
-        XCTAssertEqual(MethodParameter(typeName: .implicitlyUnwrappedOptionalInt).isImplicitlyUnwrappedOptional, true)
+    func test_FunctionParameter_canReportOptional() {
+        XCTAssertEqual(FunctionParameter(typeName: .optionalInt).isOptional, true)
+        XCTAssertEqual(FunctionParameter(typeName: .optionalInt).isImplicitlyUnwrappedOptional, false)
+        XCTAssertEqual(FunctionParameter(typeName: .optionalInt).unwrappedTypeName, "Int")
+        XCTAssertEqual(FunctionParameter(typeName: .implicitlyUnwrappedOptionalInt).isOptional, true)
+        XCTAssertEqual(FunctionParameter(typeName: .implicitlyUnwrappedOptionalInt).isImplicitlyUnwrappedOptional, true)
     }
 
-    func test_MethodParameter_canReportTupleType() {
-        let sut = MethodParameter(typeName: .doubleIntTuple)
+    func test_FunctionParameter_canReportTupleType() {
+        let sut = FunctionParameter(typeName: .doubleIntTuple)
         XCTAssertEqual(sut.isTuple, true)
     }
 
-    func test_MethodParameter_canReportClosureType() {
-        let sut = MethodParameter(typeName: .closure)
+    func test_FunctionParameter_canReportClosureType() {
+        let sut = FunctionParameter(typeName: .closure)
         XCTAssertEqual(sut.isClosure, true)
     }
 
-    func test_MethodParameter_canReportArrayType() {
-        let sut = MethodParameter(typeName: .intArray)
+    func test_FunctionParameter_canReportArrayType() {
+        let sut = FunctionParameter(typeName: .intArray)
         XCTAssertEqual(sut.isArray, true)
     }
 
-    func test_MethodParameter_canReportDictionaryType() {
-        let sut = MethodParameter(typeName: .intIntDictionary)
+    func test_FunctionParameter_canReportDictionaryType() {
+        let sut = FunctionParameter(typeName: .intIntDictionary)
         XCTAssertEqual(sut.isDictionary, true)
     }
 
-    func test_MethodParameter_canReportActualTypeName() {
-        let sut = MethodParameter(typeName: "Alias".typeName)
+    func test_FunctionParameter_canReportActualTypeName() {
+        let sut = FunctionParameter(typeName: "Alias".typeName)
         XCTAssertEqual(sut.actualTypeName, "Alias".typeName)
 
         sut.typeName.actualTypeName = "Int".typeName

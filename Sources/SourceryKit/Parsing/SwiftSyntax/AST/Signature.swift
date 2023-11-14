@@ -2,7 +2,7 @@ import SwiftSyntax
 
 public struct Signature {
     /// The function inputs.
-    public let input: [MethodParameter]
+    public let input: [FunctionParameter]
 
     /// The function output, if any.
     public let output: TypeName?
@@ -30,7 +30,7 @@ public struct Signature {
         throwsOrRethrowsKeyword: String?,
         getAnnotationUseCase: GetAnnotationUseCase
     ) {
-        input = parameters?.map { MethodParameter($0, getAnnotationUseCase: getAnnotationUseCase) } ?? []
+        input = parameters?.map { FunctionParameter($0, getAnnotationUseCase: getAnnotationUseCase) } ?? []
         self.output = output
         self.asyncKeyword = asyncKeyword
         self.throwsOrRethrowsKeyword = throwsOrRethrowsKeyword

@@ -112,7 +112,7 @@ class SwiftSyntaxParserAttributeTests: XCTestCase {
         XCTAssertEqual("actor Foo { func bar() {} }".parse().first?.methods.first?.isNonisolated, false)
     }
 
-    func test_parsesMethodParameterAttributes() {
+    func test_parsesFunctionParameterAttributes() {
         XCTAssertEqual("class Foo { func some(param: @escaping ()->()) {} }".parse().first?.methods.first?.parameters.first?.typeAttributes, [
             "escaping": [Attribute(name: "escaping")]
         ])

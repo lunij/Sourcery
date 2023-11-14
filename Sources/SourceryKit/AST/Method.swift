@@ -178,7 +178,7 @@ public final class Method: Diffable, Annotated, Documented, Definition, Equatabl
     }
 
     /// Method parameters
-    public var parameters: [MethodParameter]
+    public var parameters: [FunctionParameter]
 
     /// Return value type name used in declaration, including generic constraints, i.e. `where T: Equatable`
     public var returnTypeName: TypeName
@@ -318,7 +318,7 @@ public final class Method: Diffable, Annotated, Documented, Definition, Equatabl
 
     public init(name: String,
                 selectorName: String? = nil,
-                parameters: [MethodParameter] = [],
+                parameters: [FunctionParameter] = [],
                 returnTypeName: TypeName = TypeName(name: "Void"),
                 isAsync: Bool = false,
                 throws: Bool = false,

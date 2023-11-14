@@ -1,6 +1,6 @@
 import SwiftSyntax
 
-extension MethodParameter {
+extension FunctionParameter {
     convenience init(_ node: FunctionParameterSyntax, getAnnotationUseCase: GetAnnotationUseCase) {
         let firstName = node.firstName.text.trimmed.nilIfNotValidParameterName
 

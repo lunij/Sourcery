@@ -4,7 +4,7 @@ import Foundation
 public final class Subscript: Diffable, Annotated, Documented, Definition, Equatable, Hashable {
 
     /// Method parameters
-    public var parameters: [MethodParameter]
+    public var parameters: [FunctionParameter]
 
     /// Return value type name used in declaration, including generic constraints, i.e. `where T: Equatable`
     public var returnTypeName: TypeName
@@ -82,7 +82,7 @@ public final class Subscript: Diffable, Annotated, Documented, Definition, Equat
     // sourcery: skipEquality, skipDescription, skipCoding
     public var __parserData: Any?
 
-    public init(parameters: [MethodParameter] = [],
+    public init(parameters: [FunctionParameter] = [],
                 returnTypeName: TypeName,
                 accessLevel: (read: AccessLevel, write: AccessLevel) = (.internal, .internal),
                 attributes: AttributeList = [:],

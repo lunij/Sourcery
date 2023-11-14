@@ -1,8 +1,8 @@
 import Foundation
 import Stencil
 
-/// Describes method parameter
-public class MethodParameter: Diffable, Typed, Annotated, Hashable {
+/// Describes a function parameter
+public class FunctionParameter: Diffable, Typed, Annotated, Hashable {
     /// Parameter external name
     public var argumentLabel: String?
 
@@ -76,8 +76,8 @@ public class MethodParameter: Diffable, Typed, Annotated, Hashable {
 
     public func diffAgainst(_ object: Any?) -> DiffableResult {
         let results = DiffableResult()
-        guard let castObject = object as? MethodParameter else {
-            results.append("Incorrect type <expected: MethodParameter, received: \(Swift.type(of: object))>")
+        guard let castObject = object as? FunctionParameter else {
+            results.append("Incorrect type <expected: FunctionParameter, received: \(Swift.type(of: object))>")
             return results
         }
         results.append(contentsOf: DiffableResult(identifier: "argumentLabel").trackDifference(actual: argumentLabel, expected: castObject.argumentLabel))
@@ -100,7 +100,7 @@ public class MethodParameter: Diffable, Typed, Annotated, Hashable {
         hasher.combine(annotations)
     }
 
-    public static func == (lhs: MethodParameter, rhs: MethodParameter) -> Bool {
+    public static func == (lhs: FunctionParameter, rhs: FunctionParameter) -> Bool {
         lhs.argumentLabel == rhs.argumentLabel
             && lhs.name == rhs.name
             && lhs.typeName == rhs.typeName
@@ -111,7 +111,7 @@ public class MethodParameter: Diffable, Typed, Annotated, Hashable {
     }
 }
 
-extension MethodParameter: CustomStringConvertible {
+extension FunctionParameter: CustomStringConvertible {
     public var description: String {
         let typeSuffix = ": \(`inout` ? "inout " : "")\(typeName.asSource)\(defaultValue.map { " = \($0)" } ?? "")" + (isVariadic ? "..." : "")
         guard argumentLabel != name else {
@@ -126,7 +126,7 @@ extension MethodParameter: CustomStringConvertible {
     }
 }
 
-extension MethodParameter: DynamicMemberLookup {
+extension FunctionParameter: DynamicMemberLookup {
     public subscript(dynamicMember member: String) -> Any? {
         switch member {
         case "actualTypeName": typeName.actualTypeName
@@ -153,7 +153,7 @@ extension MethodParameter: DynamicMemberLookup {
     }
 }
 
-public extension [MethodParameter] {
+public extension [FunctionParameter] {
     var asSource: String {
         "(\(map(\.description).joined(separator: ", ")))"
     }

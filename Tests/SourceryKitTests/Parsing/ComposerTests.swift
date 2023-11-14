@@ -324,7 +324,7 @@ final class ComposerTests: XCTestCase {
             name: "fooMethod(bar: String)",
             selectorName: "fooMethod(bar:)",
             parameters: [
-                MethodParameter(name: "bar", typeName: TypeName(name: "String"))
+                FunctionParameter(name: "bar", typeName: TypeName(name: "String"))
             ],
             returnTypeName: TypeName(name: "Void"),
             definedInTypeName: TypeName(name: "Foo")
@@ -333,7 +333,7 @@ final class ComposerTests: XCTestCase {
             name: "fooMethod(bar: String = \"Baz\")",
             selectorName: "fooMethod(bar:)",
             parameters: [
-                MethodParameter(name: "bar", typeName: TypeName(name: "String"), defaultValue: "\"Baz\"")
+                FunctionParameter(name: "bar", typeName: TypeName(name: "String"), defaultValue: "\"Baz\"")
             ],
             returnTypeName: TypeName(name: "Void"),
             accessLevel: .internal,
@@ -456,7 +456,7 @@ final class ComposerTests: XCTestCase {
                         Method(
                             name: "init?(rawValue: String)",
                             selectorName: "init(rawValue:)",
-                            parameters: [MethodParameter(name: "rawValue",typeName: TypeName(name: "String"))],
+                            parameters: [FunctionParameter(name: "rawValue",typeName: TypeName(name: "String"))],
                             returnTypeName: TypeName(name: "Foo?"),
                             isStatic: true,
                             isFailableInitializer: true,
@@ -498,7 +498,7 @@ final class ComposerTests: XCTestCase {
                         Method(
                             name: "init?(rawValue: RawValue)",
                             selectorName: "init(rawValue:)",
-                            parameters: [MethodParameter(name: "rawValue", typeName: TypeName(name: "RawValue"))],
+                            parameters: [FunctionParameter(name: "rawValue", typeName: TypeName(name: "RawValue"))],
                             returnTypeName: TypeName(name: "Foo?"),
                             isStatic: true,
                             isFailableInitializer: true,
@@ -541,7 +541,7 @@ final class ComposerTests: XCTestCase {
                         Method(
                             name: "init?(rawValue: RawValue)",
                             selectorName: "init(rawValue:)",
-                            parameters: [MethodParameter(name: "rawValue", typeName: TypeName(name: "RawValue"))],
+                            parameters: [FunctionParameter(name: "rawValue", typeName: TypeName(name: "RawValue"))],
                             returnTypeName: TypeName(name: "Foo?"),
                             isStatic: true,
                             isFailableInitializer: true,
@@ -1349,28 +1349,28 @@ final class ComposerTests: XCTestCase {
         XCTAssertEqual(method?.returnTypeName.isTuple, true)
     }
 
-    func test_typealiases_andMethodParameter_itReplacesMethodParameterTypeAliasWithActualType() {
-        let expectedMethodParameter = MethodParameter(name: "foo", typeName: TypeName(name: "FooAlias", actualTypeName: TypeName(name: "Foo")), type: Class(name: "Foo"))
+    func test_typealiases_andFunctionParameter_itReplacesFunctionParameterTypeAliasWithActualType() {
+        let expectedFunctionParameter = FunctionParameter(name: "foo", typeName: TypeName(name: "FooAlias", actualTypeName: TypeName(name: "Foo")), type: Class(name: "Foo"))
 
         let types = sut.compose("""
         typealias FooAlias = Foo
         class Foo {}
         class Bar { func some(foo: FooAlias) }
         """).types
-        let methodParameter = types.first?.methods.first?.parameters.first
+        let functionParameter = types.first?.methods.first?.parameters.first
 
-        XCTAssertEqual(methodParameter, expectedMethodParameter)
-        XCTAssertEqual(methodParameter?.actualTypeName, expectedMethodParameter.actualTypeName)
-        XCTAssertEqual(methodParameter?.type, Class(name: "Foo"))
+        XCTAssertEqual(functionParameter, expectedFunctionParameter)
+        XCTAssertEqual(functionParameter?.actualTypeName, expectedFunctionParameter.actualTypeName)
+        XCTAssertEqual(functionParameter?.type, Class(name: "Foo"))
     }
 
-    func test_typealiases_andMethodParameter_itReplacesTupleElementsAliasTypesWithActualTypes() {
+    func test_typealiases_andFunctionParameter_itReplacesTupleElementsAliasTypesWithActualTypes() {
         let expectedActualTypeName = TypeName(name: "(Foo, Int)")
         expectedActualTypeName.tuple = TupleType(name: "(Foo, Int)", elements: [
             TupleElement(name: "0", typeName: TypeName(name: "Foo"), type: Class(name: "Foo")),
             TupleElement(name: "1", typeName: TypeName(name: "Int"))
         ])
-        let expectedMethodParameter = MethodParameter(
+        let expectedFunctionParameter = FunctionParameter(
             name: "foo",
             typeName: TypeName(name: "(FooAlias, Int)", actualTypeName: expectedActualTypeName, tuple: expectedActualTypeName.tuple)
         )
@@ -1380,31 +1380,31 @@ final class ComposerTests: XCTestCase {
         class Foo {}
         class Bar { func some(foo: (FooAlias, Int)) }
         """).types
-        let methodParameter = types.first?.methods.first?.parameters.first
-        let tupleElement = methodParameter?.typeName.tuple?.elements.first
+        let functionParameter = types.first?.methods.first?.parameters.first
+        let tupleElement = functionParameter?.typeName.tuple?.elements.first
 
-        XCTAssertEqual(methodParameter, expectedMethodParameter)
-        XCTAssertEqual(methodParameter?.actualTypeName, expectedMethodParameter.actualTypeName)
+        XCTAssertEqual(functionParameter, expectedFunctionParameter)
+        XCTAssertEqual(functionParameter?.actualTypeName, expectedFunctionParameter.actualTypeName)
         XCTAssertEqual(tupleElement?.type, Class(name: "Foo"))
     }
 
-    func test_typealiases_andMethodParameter_itReplacesMethodParameterAliasTypeWithActualTupleTypeName() {
+    func test_typealiases_andFunctionParameter_itReplacesFunctionParameterAliasTypeWithActualTupleTypeName() {
         let expectedActualTypeName = TypeName(name: "(Foo, Int)")
         expectedActualTypeName.tuple = TupleType(name: "(Foo, Int)", elements: [
             TupleElement(name: "0", typeName: TypeName(name: "Foo"), type: Class(name: "Foo")),
             TupleElement(name: "1", typeName: TypeName(name: "Int"))
         ])
-        let expectedMethodParameter = MethodParameter(
+        let expectedFunctionParameter = FunctionParameter(
             name: "foo",
             typeName: TypeName(name: "GlobalAlias", actualTypeName: expectedActualTypeName, tuple: expectedActualTypeName.tuple)
         )
 
         let types = sut.compose("typealias GlobalAlias = (Foo, Int); class Foo {}; class Bar { func some(foo: GlobalAlias) }").types
-        let methodParameter = types.first?.methods.first?.parameters.first
+        let functionParameter = types.first?.methods.first?.parameters.first
 
-        XCTAssertEqual(methodParameter, expectedMethodParameter)
-        XCTAssertEqual(methodParameter?.actualTypeName, expectedMethodParameter.actualTypeName)
-        XCTAssertEqual(methodParameter?.typeName.isTuple, true)
+        XCTAssertEqual(functionParameter, expectedFunctionParameter)
+        XCTAssertEqual(functionParameter?.actualTypeName, expectedFunctionParameter.actualTypeName)
+        XCTAssertEqual(functionParameter?.typeName.isTuple, true)
     }
 
     func test_typealias_andAssociatedValue_itReplacesAssociatedValueTypeAliasWithActualType() {

@@ -56,7 +56,7 @@ extension Subscript {
         }
 
         self.init(
-            parameters: node.parameterClause.parameters.map { MethodParameter($0, getAnnotationUseCase: getAnnotationUseCase) },
+            parameters: node.parameterClause.parameters.map { FunctionParameter($0, getAnnotationUseCase: getAnnotationUseCase) },
             returnTypeName: TypeName(node.returnClause.type.description.trimmed),
             accessLevel: (read: readAccess, write: isWritable ? writeAccess : .none),
             attributes: .init(from: node.attributes),
