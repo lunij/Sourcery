@@ -109,7 +109,7 @@ class SyntaxTreeCollector: SyntaxVisitor {
             return .skipChildren
         }
 
-        enumeration.cases.append(contentsOf: EnumCase.from(node, getAnnotationUseCase: getAnnotationUseCase))
+        enumeration.cases.append(contentsOf: node.enumCases(getAnnotationUseCase: getAnnotationUseCase))
         return .skipChildren
     }
 
