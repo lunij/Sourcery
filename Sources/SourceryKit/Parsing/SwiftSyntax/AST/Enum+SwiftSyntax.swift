@@ -1,7 +1,12 @@
 import SwiftSyntax
 
 extension Enum {
-    convenience init(_ node: EnumDeclSyntax, parent: Type?, getAnnotationUseCase: GetAnnotationUseCase) {
+    convenience init(
+        _ node: EnumDeclSyntax,
+        parent: Type?,
+        getAnnotationUseCase: GetAnnotationUseCase,
+        getDocumentationUseCase: GetDocumentationUseCase?
+    ) {
         let modifiers = node.modifiers.map(Modifier.init)
 
         self.init(
@@ -19,7 +24,7 @@ extension Enum {
             attributes: .init(from: node.attributes),
             modifiers: modifiers,
             annotations: getAnnotationUseCase.annotations(from: node),
-            documentation: getAnnotationUseCase.documentation(from: node),
+            documentation: getDocumentationUseCase?.documentation(from: node) ?? [],
             isGeneric: node.genericParameterClause?.parameters.isEmpty == false
         )
     }

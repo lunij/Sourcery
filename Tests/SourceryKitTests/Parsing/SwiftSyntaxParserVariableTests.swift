@@ -248,7 +248,7 @@ class SwiftSyntaxParserVariableTests: XCTestCase {
         let expectedVariable = Variable(name: "name", typeName: TypeName(name: "Int"), accessLevel: (read: .internal, write: .none), isComputed: true)
         expectedVariable.annotations["isSet"] = NSNumber(value: true)
         expectedVariable.annotations["numberOfIterations"] = NSNumber(value: 2)
-        expectedVariable.documentation = ["isSet is used for something useful"]
+        expectedVariable.documentation = ["/// isSet is used for something useful"]
 
         let variable = """
         // sourcery: isSet

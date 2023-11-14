@@ -2,7 +2,12 @@ import Foundation
 import SwiftSyntax
 
 extension Actor {
-    convenience init(_ node: ActorDeclSyntax, parent: Type?, getAnnotationUseCase: GetAnnotationUseCase) {
+    convenience init(
+        _ node: ActorDeclSyntax,
+        parent: Type?,
+        getAnnotationUseCase: GetAnnotationUseCase,
+        getDocumentationUseCase: GetDocumentationUseCase?
+    ) {
         let modifiers = node.modifiers.map(Modifier.init)
 
         self.init(
@@ -19,7 +24,7 @@ extension Actor {
           attributes: .init(from: node.attributes),
           modifiers: modifiers,
           annotations: getAnnotationUseCase.annotations(from: node),
-          documentation: getAnnotationUseCase.documentation(from: node),
+          documentation: getDocumentationUseCase?.documentation(from: node) ?? [],
           isGeneric: node.genericParameterClause?.parameters.isEmpty == false
         )
     }

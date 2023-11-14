@@ -2,7 +2,12 @@ import Foundation
 import SwiftSyntax
 
 extension Struct {
-    convenience init(_ node: StructDeclSyntax, parent: Type?, getAnnotationUseCase: GetAnnotationUseCase) {
+    convenience init(
+        _ node: StructDeclSyntax,
+        parent: Type?,
+        getAnnotationUseCase: GetAnnotationUseCase,
+        getDocumentationUseCase: GetDocumentationUseCase?
+    ) {
         let modifiers = node.modifiers.map(Modifier.init)
 
         self.init(
@@ -19,7 +24,7 @@ extension Struct {
             attributes: .init(from: node.attributes),
             modifiers: modifiers,
             annotations: getAnnotationUseCase.annotations(from: node),
-            documentation: getAnnotationUseCase.documentation(from: node),
+            documentation: getDocumentationUseCase?.documentation(from: node) ?? [],
             isGeneric: node.genericParameterClause?.parameters.isEmpty == false
         )
     }

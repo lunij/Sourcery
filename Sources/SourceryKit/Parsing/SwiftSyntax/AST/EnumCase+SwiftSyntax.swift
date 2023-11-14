@@ -1,8 +1,25 @@
 import Foundation
 import SwiftSyntax
 
+extension EnumCaseDeclSyntax {
+    func enumCases(
+        getAnnotationUseCase: GetAnnotationUseCase,
+        getDocumentationUseCase: GetDocumentationUseCase?
+    ) -> [EnumCase] {
+        let documentation = getDocumentationUseCase?.documentation(from: self) ?? []
+        return elements.map {
+            EnumCase($0, parent: self, getAnnotationUseCase: getAnnotationUseCase, documentation: documentation)
+        }
+    }
+}
+
 extension EnumCase {
-    init(_ node: EnumCaseElementSyntax, parent: EnumCaseDeclSyntax, getAnnotationUseCase: GetAnnotationUseCase) {
+    fileprivate init(
+        _ node: EnumCaseElementSyntax,
+        parent: EnumCaseDeclSyntax,
+        getAnnotationUseCase: GetAnnotationUseCase,
+        documentation: Documentation
+    ) {
         var associatedValues: [AssociatedValue] = []
         if let paramList = node.parameterClause?.parameters {
             let hasManyValues = paramList.count > 1
@@ -46,16 +63,8 @@ extension EnumCase {
             rawValue: rawValue,
             associatedValues: associatedValues,
             annotations: getAnnotationUseCase.annotations(from: node),
-            documentation: getAnnotationUseCase.documentation(from: node),
+            documentation: documentation,
             indirect: indirect
         )
-    }
-}
-
-extension EnumCaseDeclSyntax {
-    func enumCases(getAnnotationUseCase: GetAnnotationUseCase) -> [EnumCase] {
-        elements.compactMap {
-            EnumCase($0, parent: self, getAnnotationUseCase: getAnnotationUseCase)
-        }
     }
 }

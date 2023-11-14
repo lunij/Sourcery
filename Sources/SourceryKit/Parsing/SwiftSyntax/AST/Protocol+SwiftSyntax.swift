@@ -2,7 +2,12 @@ import Foundation
 import SwiftSyntax
 
 extension SourceryProtocol {
-    convenience init(_ node: ProtocolDeclSyntax, parent: Type?, getAnnotationParser: GetAnnotationUseCase) {
+    convenience init(
+        _ node: ProtocolDeclSyntax,
+        parent: Type?,
+        getAnnotationParser: GetAnnotationUseCase,
+        getDocumentationUseCase: GetDocumentationUseCase?
+    ) {
         let modifiers = node.modifiers.map(Modifier.init)
 
         let genericRequirements: [GenericRequirement] = node.genericWhereClause?.requirements.compactMap { requirement in
@@ -29,7 +34,7 @@ extension SourceryProtocol {
           attributes: .init(from: node.attributes),
           modifiers: modifiers,
           annotations: getAnnotationParser.annotations(from: node),
-          documentation: getAnnotationParser.documentation(from: node)
+          documentation: getDocumentationUseCase?.documentation(from: node) ?? []
         )
     }
 }

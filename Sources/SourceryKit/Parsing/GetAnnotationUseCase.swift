@@ -4,7 +4,6 @@ public class GetAnnotationUseCase {
     private let annotationParser: AnnotationParser
     private let lines: [AnnotationParser.Line]
     private var sourceLocationConverter: SourceLocationConverter?
-    private var parseDocumentation: Bool
 
     var all: Annotations {
         var all = Annotations()
@@ -19,27 +18,23 @@ public class GetAnnotationUseCase {
     convenience init(
         content: String,
         annotationParser: AnnotationParser = AnnotationParser(),
-        sourceLocationConverter: SourceLocationConverter? = nil,
-        parseDocumentation: Bool = false
+        sourceLocationConverter: SourceLocationConverter? = nil
     ) {
         self.init(
             annotationParser: annotationParser,
             lines: annotationParser.parse(content),
-            sourceLocationConverter: sourceLocationConverter,
-            parseDocumentation: parseDocumentation
+            sourceLocationConverter: sourceLocationConverter
         )
     }
 
     init(
         annotationParser: AnnotationParser,
         lines: [AnnotationParser.Line],
-        sourceLocationConverter: SourceLocationConverter? = nil,
-        parseDocumentation: Bool = false
+        sourceLocationConverter: SourceLocationConverter? = nil
     ) {
         self.annotationParser = annotationParser
         self.lines = lines
         self.sourceLocationConverter = sourceLocationConverter
-        self.parseDocumentation = parseDocumentation
     }
 
     func annotations(from node: IdentifierSyntax) -> Annotations {
@@ -54,52 +49,6 @@ public class GetAnnotationUseCase {
             location: findLocation(syntax: token),
             precedingComments: token.leadingTrivia.compactMap(\.comment)
         )
-    }
-
-    func documentation(from node: IdentifierSyntax) -> Documentation {
-        guard parseDocumentation else {
-            return  []
-        }
-        return documentationFrom(
-            location: findLocation(syntax: node.identifier),
-            precedingComments: node.leadingTrivia.compactMap(\.comment)
-        )
-    }
-
-    func documentation(fromToken token: SyntaxProtocol) -> Documentation {
-        guard parseDocumentation else {
-            return  []
-        }
-        return documentationFrom(
-            location: findLocation(syntax: token),
-            precedingComments: token.leadingTrivia.compactMap(\.comment)
-        )
-    }
-
-    private func documentationFrom(location: SwiftSyntax.SourceLocation, precedingComments: [String]) -> Documentation {
-        guard parseDocumentation else {
-            return []
-        }
-
-        // Inline documentation not currently supported
-        _ = location.column
-
-        // var stop = false
-        // var documentation = inlineDocumentationFrom(line: (lineNumber, column), stop: &stop)
-        // guard !stop else { return annotations }
-
-        var documentation: Documentation = []
-
-        for line in lines[0 ..< location.line - 1].reversed() {
-            if line.type == .documentationComment {
-                documentation.append(line.content.trimmingCharacters(in: .whitespaces).trimmingPrefix("///").trimmingPrefix("/**").trimmingPrefix(" "))
-            }
-            if line.type != .comment && line.type != .documentationComment {
-                break
-            }
-        }
-
-        return documentation.reversed()
     }
 
     private func findLocation(syntax: SyntaxProtocol) -> SwiftSyntax.SourceLocation {

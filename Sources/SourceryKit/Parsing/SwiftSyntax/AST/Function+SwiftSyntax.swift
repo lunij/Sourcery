@@ -6,7 +6,8 @@ extension Function {
         _ node: FunctionDeclSyntax,
         parent: Type?,
         typeName: TypeName?,
-        getAnnotationUseCase: GetAnnotationUseCase
+        getAnnotationUseCase: GetAnnotationUseCase,
+        getDocumentationUseCase: GetDocumentationUseCase?
     ) {
         self.init(
             node: node,
@@ -18,7 +19,8 @@ extension Function {
             attributes: node.attributes,
             genericParameterClause: node.genericParameterClause,
             genericWhereClause: node.genericWhereClause,
-            getAnnotationUseCase: getAnnotationUseCase
+            getAnnotationUseCase: getAnnotationUseCase,
+            getDocumentationUseCase: getDocumentationUseCase
         )
     }
 
@@ -26,7 +28,8 @@ extension Function {
         _ node: InitializerDeclSyntax,
         parent: Type,
         typeName: TypeName,
-        getAnnotationUseCase: GetAnnotationUseCase
+        getAnnotationUseCase: GetAnnotationUseCase,
+        getDocumentationUseCase: GetDocumentationUseCase?
     ) {
         let signature = node.signature
         self.init(
@@ -45,7 +48,8 @@ extension Function {
             attributes: node.attributes,
             genericParameterClause: node.genericParameterClause,
             genericWhereClause: node.genericWhereClause,
-            getAnnotationUseCase: getAnnotationUseCase
+            getAnnotationUseCase: getAnnotationUseCase,
+            getDocumentationUseCase: getDocumentationUseCase
         )
     }
 
@@ -53,7 +57,8 @@ extension Function {
         _ node: DeinitializerDeclSyntax,
         parent: Type,
         typeName: TypeName,
-        getAnnotationUseCase: GetAnnotationUseCase
+        getAnnotationUseCase: GetAnnotationUseCase,
+        getDocumentationUseCase: GetDocumentationUseCase?
     ) {
         self.init(
             node: node,
@@ -71,7 +76,8 @@ extension Function {
             attributes: node.attributes,
             genericParameterClause: nil,
             genericWhereClause: nil,
-            getAnnotationUseCase: getAnnotationUseCase
+            getAnnotationUseCase: getAnnotationUseCase,
+            getDocumentationUseCase: getDocumentationUseCase
         )
     }
 
@@ -85,7 +91,8 @@ extension Function {
         attributes: AttributeListSyntax?,
         genericParameterClause: GenericParameterClauseSyntax?,
         genericWhereClause: GenericWhereClauseSyntax?,
-        getAnnotationUseCase: GetAnnotationUseCase
+        getAnnotationUseCase: GetAnnotationUseCase,
+        getDocumentationUseCase: GetDocumentationUseCase?
     ) {
         let initializerNode = node as? InitializerDeclSyntax
 
@@ -132,10 +139,10 @@ extension Function {
         let documentation: Documentation
         if let function = node as? FunctionDeclSyntax {
             annotations = getAnnotationUseCase.annotations(from: function)
-            documentation = getAnnotationUseCase.documentation(from: function)
+            documentation = getDocumentationUseCase?.documentation(from: function) ?? []
         } else {
             annotations = getAnnotationUseCase.annotations(fromToken: node)
-            documentation = getAnnotationUseCase.documentation(fromToken: node)
+            documentation = getDocumentationUseCase?.documentation(from: node) ?? []
         }
 
         self.init(

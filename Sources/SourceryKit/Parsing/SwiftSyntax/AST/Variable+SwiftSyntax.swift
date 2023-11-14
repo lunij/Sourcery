@@ -10,7 +10,8 @@ extension Variable {
         isStatic: Bool,
         modifiers: [Modifier],
         visitingType: Type?,
-        getAnnotationUseCase: GetAnnotationUseCase
+        getAnnotationUseCase: GetAnnotationUseCase,
+        getDocumentationUseCase: GetDocumentationUseCase?
     ) {
         var writeAccess = writeAccess
         var hadGetter = false
@@ -90,7 +91,7 @@ extension Variable {
             attributes: .init(from: variableNode.attributes),
           modifiers: modifiers,
           annotations: getAnnotationUseCase.annotations(fromToken: variableNode.bindingSpecifier),
-          documentation: getAnnotationUseCase.documentation(fromToken: variableNode.bindingSpecifier),
+          documentation: getDocumentationUseCase?.documentation(from: variableNode.bindingSpecifier) ?? [],
           definedInTypeName: visitingType.map { TypeName($0.name) }
         )
     }
@@ -98,7 +99,8 @@ extension Variable {
     static func from(
         _ variableNode: VariableDeclSyntax,
         visitingType: Type?,
-        getAnnotationUseCase: GetAnnotationUseCase
+        getAnnotationUseCase: GetAnnotationUseCase,
+        getDocumentationUseCase: GetDocumentationUseCase?
     ) -> [Variable] {
         let modifiers = variableNode.modifiers.map(Modifier.init)
         let baseModifiers = modifiers.baseModifiers(parent: visitingType)
@@ -112,7 +114,8 @@ extension Variable {
                 isStatic: baseModifiers.isStatic || baseModifiers.isClass,
                 modifiers: modifiers,
                 visitingType: visitingType,
-                getAnnotationUseCase: getAnnotationUseCase
+                getAnnotationUseCase: getAnnotationUseCase,
+                getDocumentationUseCase: getDocumentationUseCase
             )
         }
     }
