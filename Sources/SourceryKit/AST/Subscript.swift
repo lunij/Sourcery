@@ -78,10 +78,6 @@ public final class Subscript: Diffable, Annotated, Documented, Definition, Equat
     /// Method modifiers, i.e. `private`
     public let modifiers: [Modifier]
 
-    // Underlying parser data, never to be used by anything else
-    // sourcery: skipEquality, skipDescription, skipCoding
-    public var __parserData: Any?
-
     public init(parameters: [FunctionParameter] = [],
                 returnTypeName: TypeName,
                 accessLevel: (read: AccessLevel, write: AccessLevel) = (.internal, .internal),

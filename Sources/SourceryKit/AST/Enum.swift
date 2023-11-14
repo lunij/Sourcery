@@ -112,7 +112,6 @@ public final class EnumCase: Diffable, Annotated, Documented, Equatable, Hashabl
         case "documentation": documentation
         case "indirect": indirect
         case "hasAssociatedValue": hasAssociatedValue
-        case "__parserData": __parserData
         case "description": description
         default:
             preconditionFailure("Member named '\(member)' does not exist.")
@@ -140,10 +139,6 @@ public final class EnumCase: Diffable, Annotated, Documented, Equatable, Hashabl
     public var hasAssociatedValue: Bool {
         return !associatedValues.isEmpty
     }
-
-    // Underlying parser data, never to be used by anything else
-    // sourcery: skipEquality, skipDescription, skipCoding
-    public var __parserData: Any?
 
     public init(name: String, rawValue: String? = nil, associatedValues: [AssociatedValue] = [], annotations: [String: NSObject] = [:], documentation: [String] = [], indirect: Bool = false) {
         self.name = name
