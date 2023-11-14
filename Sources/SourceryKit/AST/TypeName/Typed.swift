@@ -1,25 +1,49 @@
 import Foundation
 
-/// Descibes typed declaration, i.e. variable, method parameter, tuple element, enum case associated value
+/// Descibes common type properties
 public protocol Typed {
-
-    // sourcery: skipEquality, skipDescription
-    /// Type, if known
     var type: Type? { get }
-
-    // sourcery: skipEquality, skipDescription
-    /// Type name
     var typeName: TypeName { get }
+}
 
-    // sourcery: skipEquality, skipDescription
-    /// Whether type is optional
-    var isOptional: Bool { get }
+extension Typed {
+    /// Whether type is optional. Shorthand for `typeName.isOptional`
+    public var isOptional: Bool {
+        typeName.isOptional
+    }
 
-    // sourcery: skipEquality, skipDescription
-    /// Whether type is implicitly unwrapped optional
-    var isImplicitlyUnwrappedOptional: Bool { get }
+    /// Whether type is implicitly unwrapped optional. Shorthand for `typeName.isImplicitlyUnwrappedOptional`
+    public var isImplicitlyUnwrappedOptional: Bool {
+        typeName.isImplicitlyUnwrappedOptional
+    }
 
-    // sourcery: skipEquality, skipDescription
-    /// Type name without attributes and optional type information
-    var unwrappedTypeName: String { get }
+    /// Type name without attributes and optional type information. Shorthand for `typeName.unwrappedTypeName`
+    public var unwrappedTypeName: String {
+        typeName.unwrappedTypeName
+    }
+
+    /// Actual type name if declaration uses typealias, otherwise just a `typeName`. Shorthand for `typeName.actualTypeName`
+    public var actualTypeName: TypeName? {
+        typeName.actualTypeName ?? typeName
+    }
+
+    /// Whether type is a tuple. Shorthand for `typeName.isTuple`
+    public var isTuple: Bool {
+        typeName.isTuple
+    }
+
+    /// Whether type is a closure. Shorthand for `typeName.isClosure`
+    public var isClosure: Bool {
+        typeName.isClosure
+    }
+
+    /// Whether type is an array. Shorthand for `typeName.isArray`
+    public var isArray: Bool {
+        typeName.isArray
+    }
+
+    /// Whether type is a dictionary. Shorthand for `typeName.isDictionary`
+    public var isDictionary: Bool {
+        typeName.isDictionary
+    }
 }
