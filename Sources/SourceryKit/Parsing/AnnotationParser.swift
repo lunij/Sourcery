@@ -28,17 +28,6 @@ struct AnnotationParser {
         let blockAnnotations: Annotations
     }
 
-    func parse(_ content: String) -> Annotations {
-        let lines: [Line] = parse(contents: content)
-        var annotations = Annotations()
-        for line in lines {
-            for annotation in line.annotations {
-                annotations.append(key: annotation.key, value: annotation.value)
-            }
-        }
-        return annotations
-    }
-
     func parse(contents: String) -> [Line] {
         var annotationsBlock: Annotations?
         var fileAnnotationsBlock = Annotations()

@@ -166,3 +166,16 @@ class AnnotationParserTests: XCTestCase {
         XCTAssertEqual(parsedAnnotations["theArrays"] as? [String: [Int]], ["firstArray": [22, 55, 88], "secondArray": [1, 2, 3, 4]])
     }
 }
+
+private extension AnnotationParser {
+    func parse(_ content: String) -> Annotations {
+        let lines: [Line] = parse(contents: content)
+        var annotations = Annotations()
+        for line in lines {
+            for annotation in line.annotations {
+                annotations.append(key: annotation.key, value: annotation.value)
+            }
+        }
+        return annotations
+    }
+}
