@@ -12,21 +12,22 @@ class AnnotationParserTests: XCTestCase {
     }
 
     func test_parsesInlineAnnotations() {
-        let parsedAnnotations = sut.parse("""
+        let annotations = sut.parse("""
         // sourcery: skipDescription
         /* sourcery: skipEquality */
         /** sourcery: skipCoding */
         var name: Int { return 2 }
         """)
-        XCTAssertEqual(parsedAnnotations, [
-            "skipDescription": NSNumber(value: true),
-            "skipEquality": NSNumber(value: true),
-            "skipCoding": NSNumber(value: true)
+        XCTAssertEqual(annotations, [
+            .init(content: "// sourcery: skipDescription", type: .comment, annotations: ["skipDescription": NSNumber(value: true)], blockAnnotations: [:]),
+            .init(content: "/* sourcery: skipEquality */", type: .comment, annotations: ["skipEquality": NSNumber(value: true)], blockAnnotations: [:]),
+            .init(content: "/** sourcery: skipCoding */", type: .documentationComment, annotations: ["skipCoding": NSNumber(value: true)], blockAnnotations: [:]),
+            .init(content: "var name: Int { return 2 }", type: .other, annotations: [:], blockAnnotations: [:])
         ])
     }
 
     func test_parsesInlineAnnotationsFromMultilineComments() {
-        let parsedAnnotations = sut.parse("""
+        let annotations = sut.parse("""
         /**
          * Comment
          * sourcery: skipDescription
@@ -34,130 +35,174 @@ class AnnotationParserTests: XCTestCase {
          */
         var name: Int { return 2 }
         """)
-        XCTAssertEqual(parsedAnnotations, [
-            "skipDescription": NSNumber(value: true),
-            "skipEquality": NSNumber(value: true)
+        XCTAssertEqual(annotations, [
+            .init(content: "/**", type: .documentationComment, annotations: [:], blockAnnotations: [:]),
+            .init(content: " * Comment", type: .comment, annotations: [:], blockAnnotations: [:]),
+            .init(content: " * sourcery: skipDescription", type: .comment, annotations: ["skipDescription": NSNumber(value: true)], blockAnnotations: [:]),
+            .init(content: " * sourcery: skipEquality", type: .comment, annotations: ["skipEquality": NSNumber(value: true)], blockAnnotations: [:]),
+            .init(content: " */", type: .comment, annotations: [:], blockAnnotations: [:]),
+            .init(content: "var name: Int { return 2 }", type: .other, annotations: [:], blockAnnotations: [:])
         ])
     }
 
     func test_parsesMultilineAnnotationsIncludingNumbers() {
-        let parsedAnnotations = sut.parse("""
+        let annotations = sut.parse("""
         // sourcery: skipEquality, jsonKey = [\"json_key\": key, \"json_value\": value]
         // sourcery: thirdProperty = -3
         // sourcery: placeholder = \"geo:37.332112,-122.0329753?q=1 Infinite Loop\"
         var name: Int { return 2 }
         """)
-        XCTAssertEqual(parsedAnnotations, [
-            "skipEquality": NSNumber(value: true),
-            "placeholder": "geo:37.332112,-122.0329753?q=1 Infinite Loop" as NSString,
-            "jsonKey": "[\"json_key\": key, \"json_value\": value]" as NSString,
-            "thirdProperty": NSNumber(value: -3)
+        XCTAssertEqual(annotations, [
+            .init(content: "// sourcery: skipEquality, jsonKey = [\"json_key\": key, \"json_value\": value]", type: .comment, annotations: ["jsonKey": "[\"json_key\": key, \"json_value\": value]" as NSString, "skipEquality": NSNumber(value: true)], blockAnnotations: [:]),
+            .init(content: "// sourcery: thirdProperty = -3", type: .comment, annotations: ["thirdProperty": NSNumber(value: -3)], blockAnnotations: [:]),
+            .init(content: "// sourcery: placeholder = \"geo:37.332112,-122.0329753?q=1 Infinite Loop\"", type: .comment, annotations: ["placeholder": "geo:37.332112,-122.0329753?q=1 Infinite Loop" as NSString], blockAnnotations: [:]),
+            .init(content: "var name: Int { return 2 }", type: .other, annotations: [:], blockAnnotations: [:])
         ])
     }
 
     func test_parsesRepeatedAnnotationsIntoArray() {
-        let parsedAnnotations = sut.parse("// sourcery: implements = \"Service1\"\n// sourcery: implements = \"Service2\"")
-        XCTAssertEqual(parsedAnnotations["implements"] as? [String], ["Service1", "Service2"])
+        let annotations = sut.parse("// sourcery: implements = \"Service1\"\n// sourcery: implements = \"Service2\"")
+        XCTAssertEqual(annotations, [
+            .init(content: "// sourcery: implements = \"Service1\"", type: .comment, annotations: ["implements": "Service1" as NSString], blockAnnotations: [:]),
+            .init(content: "// sourcery: implements = \"Service2\"", type: .comment, annotations: ["implements": "Service2" as NSString], blockAnnotations: [:])
+        ])
     }
 
     func test_parsesAnnotationsInterleavedWithComments() {
-        let parsedAnnotations = sut.parse("""
+        let annotations = sut.parse("""
         // sourcery: isSet
         /// isSet is used for something useful
         // sourcery: numberOfIterations = 2
         var name: Int { return 2 }
         """)
-        XCTAssertEqual(parsedAnnotations, [
-            "isSet": NSNumber(value: true),
-            "numberOfIterations": NSNumber(value: 2)
+        XCTAssertEqual(annotations, [
+            .init(content: "// sourcery: isSet", type: .comment, annotations: ["isSet": NSNumber(value: true)], blockAnnotations: [:]),
+            .init(content: "/// isSet is used for something useful", type: .documentationComment, annotations: [:], blockAnnotations: [:]),
+            .init(content: "// sourcery: numberOfIterations = 2", type: .comment, annotations: ["numberOfIterations": NSNumber(value: 2)], blockAnnotations: [:]),
+            .init(content: "var name: Int { return 2 }", type: .other, annotations: [:], blockAnnotations: [:])
         ])
     }
 
     func test_parsesEndOfLineAnnotations() {
-        let parsedAnnotations = sut.parse(#"""
+        let annotations = sut.parse(#"""
         // sourcery: first = 1
         let property: Int // sourcery: second = 2, third = "three"
         """#)
-        XCTAssertEqual(parsedAnnotations, [
-            "first": NSNumber(value: 1),
-            "second": NSNumber(value: 2),
-            "third": "three" as NSString
+        XCTAssertEqual(annotations, [
+            .init(content: "// sourcery: first = 1", type: .comment, annotations: ["first": NSNumber(value: 1)], blockAnnotations: [:]),
+            .init(content: "let property: Int // sourcery: second = 2, third = \"three\"", type: .other, annotations: ["third": "three" as NSString, "second": NSNumber(value: 2)], blockAnnotations: [:])
         ])
     }
 
     func test_parsesEndOfLineBlockCommentAnnotations() {
-        let parsedAnnotations = sut.parse(#"""
+        let annotations = sut.parse(#"""
         // sourcery: first = 1
         let property: Int /* sourcery: second = 2, third = "three" */ // comment
         """#)
-        XCTAssertEqual(parsedAnnotations, [
-            "first": NSNumber(value: 1),
-            "second": NSNumber(value: 2),
-            "third": "three" as NSString
+        XCTAssertEqual(annotations, [
+            .init(content: "// sourcery: first = 1", type: .comment, annotations: ["first": NSNumber(value: 1)], blockAnnotations: [:]),
+            .init(content: "let property: Int /* sourcery: second = 2, third = \"three\" */ // comment", type: .other, annotations: ["second": NSNumber(value: 2), "third": "three" as NSString], blockAnnotations: [:])
         ])
     }
 
     func test_ignoresAnnotationsInStringLiterals() {
-        let parsedAnnotations = sut.parse(#"""
+        let annotations = sut.parse(#"""
         // sourcery: first = 1
         let property = "// sourcery: second = 2" // sourcery: third = 3
         """#)
-        XCTAssertEqual(parsedAnnotations, [
-            "first": NSNumber(value: 1),
-            "third": NSNumber(value: 3)
+        XCTAssertEqual(annotations, [
+            .init(content: "// sourcery: first = 1", type: .comment, annotations: ["first": NSNumber(value: 1)], blockAnnotations: [:]),
+            .init(content: "let property = \"// sourcery: second = 2\" // sourcery: third = 3", type: .other, annotations: ["third": NSNumber(value: 3)], blockAnnotations: [:])
         ])
     }
 
     func test_parsesFileAnnotations() {
-        let parsedAnnotations = sut.parse("""
+        let annotations = sut.parse("""
         // sourcery:file: isSet
         /// isSet is used for something useful
         var name: Int { return 2 }
         """)
-        XCTAssertEqual(parsedAnnotations, ["isSet": NSNumber(value: true)])
+        XCTAssertEqual(annotations, [
+            .init(content: "// sourcery:file: isSet", type: .file, annotations: ["isSet": NSNumber(value: true)], blockAnnotations: [:]),
+            .init(content: "/// isSet is used for something useful", type: .documentationComment, annotations: ["isSet": NSNumber(value: true)], blockAnnotations: [:]),
+            .init(content: "var name: Int { return 2 }", type: .other, annotations: ["isSet": NSNumber(value: true)], blockAnnotations: [:])
+        ])
     }
 
     func test_parsesNamespaceAnnotations() {
-        let parsedAnnotations = sut.parse("""
+        let annotations = sut.parse("""
         // sourcery:decoding:smth: key='aKey', default=0
         // sourcery:decoding:smth: prune
         var name: Int { return 2 }
         """)
-        XCTAssertEqual(parsedAnnotations["decoding"] as? Annotations, [
-            "smth": ["key": "aKey" as NSObject, "default": NSNumber(value: 0), "prune": NSNumber(value: true)] as NSObject
+        XCTAssertEqual(annotations, [
+            .init(content: "// sourcery:decoding:smth: key=\'aKey\', default=0", type: .comment, annotations: ["decoding": ["smth": ["key": "aKey" as NSObject, "default": NSNumber(value: 0)] as NSDictionary] as NSDictionary], blockAnnotations: [:]),
+            .init(content: "// sourcery:decoding:smth: prune", type: .comment, annotations: ["decoding": ["smth": ["prune": NSNumber(value: true)] as NSObject] as NSDictionary], blockAnnotations: [:]),
+            .init(content: "var name: Int { return 2 }", type: .other, annotations: [:], blockAnnotations: [:])
         ])
     }
 
     func test_parsesJsonStringAnnotationsIntoArray() {
-        let parsedAnnotations = sut.parse(#"// sourcery: theArray="[22,55,88]""#)
-        XCTAssertEqual(parsedAnnotations["theArray"] as? [Int], [22, 55, 88])
+        let annotations = sut.parse(#"// sourcery: theArray="[22,55,88]""#)
+        XCTAssertEqual(annotations, [
+            .init(content: "// sourcery: theArray=\"[22,55,88]\"", type: .comment, annotations: ["theArray": [22, 55, 88] as NSArray], blockAnnotations: [:])
+        ])
     }
 
     func test_parsesJsonStringAnnotationsIntoArraysOfDictionaries() {
-        let parsedAnnotations = sut.parse("// sourcery: propertyMapping=\"[{\"from\": \"lockVersion\", \"to\": \"version\"},{\"from\": \"goalStatus\", \"to\": \"status\"}]\"")
-        XCTAssertEqual(parsedAnnotations["propertyMapping"] as? [[String: String]], [["from": "lockVersion", "to": "version"], ["from": "goalStatus", "to": "status"]])
+        let annotations = sut.parse(#"// sourcery: propertyMapping="[{"from": "lockVersion", "to": "version"},{"from": "goalStatus", "to": "status"}]""#)
+        XCTAssertEqual(annotations, [
+            .init(
+                content: #"// sourcery: propertyMapping="[{"from": "lockVersion", "to": "version"},{"from": "goalStatus", "to": "status"}]""#,
+                type: .comment,
+                annotations: [
+                    "propertyMapping": [
+                        [
+                            "from": "lockVersion",
+                            "to": "version"
+                        ] as NSDictionary,
+                        [
+                            "from": "goalStatus",
+                            "to": "status"
+                        ] as NSDictionary
+                    ] as NSArray
+                ],
+                blockAnnotations: [:]
+            )
+        ])
     }
 
     func test_parsesJsonStringAnnotationsIntoDictionary() {
-        let parsedAnnotations = sut.parse("// sourcery: theDictionary=\"{\"firstValue\": 22,\"secondValue\": 55}\"")
-        XCTAssertEqual(parsedAnnotations["theDictionary"] as? [String: Int], ["firstValue": 22, "secondValue": 55])
+        let annotations = sut.parse(#"// sourcery: theDictionary="{"firstValue": 22,"secondValue": 55}""#)
+        XCTAssertEqual(annotations, [
+            .init(
+                content: #"// sourcery: theDictionary="{"firstValue": 22,"secondValue": 55}""#,
+                type: .comment,
+                annotations: [
+                    "theDictionary": [
+                        "firstValue": 22 as NSNumber,
+                        "secondValue": 55 as NSNumber
+                    ] as NSDictionary
+                ],
+                blockAnnotations: [:]
+            )
+        ])
     }
 
     func test_parsesJsonStringAnnotationsIntoDictionariesOfArrays() {
-        let parsedAnnotations = sut.parse("// sourcery: theArrays=\"{\"firstArray\":[22,55,88],\"secondArray\":[1,2,3,4]}\"")
-        XCTAssertEqual(parsedAnnotations["theArrays"] as? [String: [Int]], ["firstArray": [22, 55, 88], "secondArray": [1, 2, 3, 4]])
-    }
-}
-
-private extension AnnotationParser {
-    func parse(_ content: String) -> Annotations {
-        let lines: [Line] = parse(contents: content)
-        var annotations = Annotations()
-        for line in lines {
-            for annotation in line.annotations {
-                annotations.append(key: annotation.key, value: annotation.value)
-            }
-        }
-        return annotations
+        let annotations = sut.parse(#"// sourcery: theArrays="{"firstArray":[22,55,88],"secondArray":[1,2,3,4]}""#)
+        XCTAssertEqual(annotations, [
+            .init(
+                content: #"// sourcery: theArrays="{"firstArray":[22,55,88],"secondArray":[1,2,3,4]}""#,
+                type: .comment,
+                annotations: [
+                    "theArrays": [
+                        "firstArray": [22, 55, 88] as NSArray,
+                        "secondArray": [1, 2, 3, 4] as NSArray
+                    ] as NSDictionary
+                ],
+                blockAnnotations: [:]
+            )
+        ])
     }
 }

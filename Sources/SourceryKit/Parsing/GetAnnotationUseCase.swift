@@ -24,7 +24,7 @@ public class GetAnnotationUseCase {
     ) {
         self.init(
             annotationParser: annotationParser,
-            lines: annotationParser.parse(contents: content),
+            lines: annotationParser.parse(content),
             sourceLocationConverter: sourceLocationConverter,
             parseDocumentation: parseDocumentation
         )
@@ -131,7 +131,7 @@ public class GetAnnotationUseCase {
             inlineCommentFound = true
 
             let comment = String(prefix[commentStart.lowerBound...])
-            for annotation in annotationParser.parse(contents: comment)[0].annotations {
+            for annotation in annotationParser.parse(comment)[0].annotations {
                 annotations.append(key: annotation.key, value: annotation.value)
             }
             prefix = prefix[..<commentStart.lowerBound].trimmingCharacters(in: .whitespaces)

@@ -10,7 +10,7 @@ struct AnnotationParser {
         case file(Annotations)
     }
 
-    struct Line {
+    struct Line: Equatable {
         enum LineType {
             case comment
             case documentationComment
@@ -30,10 +30,10 @@ struct AnnotationParser {
 
     let argumentParser = AnnotationArgumentParser()
 
-    func parse(contents: String) -> [Line] {
+    func parse(_ content: String) -> [Line] {
         var annotationsBlock: Annotations?
         var fileAnnotationsBlock = Annotations()
-        return StringView(contents).lines
+        return StringView(content).lines
             .map { line in
                 let content = line.content.trimmingCharacters(in: .whitespaces)
                 var annotations = Annotations()
