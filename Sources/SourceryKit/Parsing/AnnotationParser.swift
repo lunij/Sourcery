@@ -33,61 +33,60 @@ struct AnnotationParser {
     func parse(_ content: String) -> [Line] {
         var annotationsBlock: Annotations?
         var fileAnnotationsBlock = Annotations()
-        return StringView(content).lines
-            .map { line in
-                let content = line.content.trimmingCharacters(in: .whitespaces)
-                var annotations = Annotations()
-                let isComment = content.hasPrefix("//") || content.hasPrefix("/*") || content.hasPrefix("*")
-                let isDocumentationComment = content.hasPrefix("///") || content.hasPrefix("/**")
-                var type = Line.LineType.other
-                if isDocumentationComment {
-                    type = .documentationComment
-                } else if isComment {
-                    type = .comment
-                }
-                if isComment {
-                    switch searchForAnnotations(commentLine: content) {
-                    case let .begin(items):
-                        type = .blockStart
-                        annotationsBlock = Annotations()
-                        items.forEach { annotationsBlock?[$0.key] = $0.value }
-                    case let .annotations(items):
-                        items.forEach { annotations[$0.key] = $0.value }
-                    case .end:
-                        if annotationsBlock != nil {
-                            type = .blockEnd
-                            annotationsBlock?.removeAll()
-                        } else {
-                            type = .inlineEnd
-                        }
-                    case .inlineStart:
-                        type = .inlineStart
-                    case let .file(items):
-                        type = .file
-                        items.forEach {
-                            fileAnnotationsBlock[$0.key] = $0.value
-                        }
-                    }
-                } else {
-                    searchForTrailingAnnotations(codeLine: content)
-                        .forEach { annotations[$0.key] = $0.value }
-                }
-
-                annotationsBlock?.forEach { annotation in
-                    annotations[annotation.key] = annotation.value
-                }
-
-                fileAnnotationsBlock.forEach { annotation in
-                    annotations[annotation.key] = annotation.value
-                }
-
-                return Line(
-                    content: line.content,
-                    type: type,
-                    annotations: annotations,
-                    blockAnnotations: annotationsBlock ?? [:]
-                )
+        return content.components(separatedBy: .newlines).map { line in
+            let content = line.trimmingCharacters(in: .whitespaces)
+            var annotations = Annotations()
+            let isComment = content.hasPrefix("//") || content.hasPrefix("/*") || content.hasPrefix("*")
+            let isDocumentationComment = content.hasPrefix("///") || content.hasPrefix("/**")
+            var type = Line.LineType.other
+            if isDocumentationComment {
+                type = .documentationComment
+            } else if isComment {
+                type = .comment
             }
+            if isComment {
+                switch searchForAnnotations(commentLine: content) {
+                case let .begin(items):
+                    type = .blockStart
+                    annotationsBlock = Annotations()
+                    items.forEach { annotationsBlock?[$0.key] = $0.value }
+                case let .annotations(items):
+                    items.forEach { annotations[$0.key] = $0.value }
+                case .end:
+                    if annotationsBlock != nil {
+                        type = .blockEnd
+                        annotationsBlock?.removeAll()
+                    } else {
+                        type = .inlineEnd
+                    }
+                case .inlineStart:
+                    type = .inlineStart
+                case let .file(items):
+                    type = .file
+                    items.forEach {
+                        fileAnnotationsBlock[$0.key] = $0.value
+                    }
+                }
+            } else {
+                searchForTrailingAnnotations(codeLine: content)
+                    .forEach { annotations[$0.key] = $0.value }
+            }
+
+            annotationsBlock?.forEach { annotation in
+                annotations[annotation.key] = annotation.value
+            }
+
+            fileAnnotationsBlock.forEach { annotation in
+                annotations[annotation.key] = annotation.value
+            }
+
+            return Line(
+                content: line,
+                type: type,
+                annotations: annotations,
+                blockAnnotations: annotationsBlock ?? [:]
+            )
+        }
     }
 
     private func searchForTrailingAnnotations(codeLine: String) -> Annotations {
