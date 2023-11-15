@@ -3,22 +3,12 @@ import SwiftSyntax
 public class GetAnnotationUseCase {
     private let annotationParser: AnnotationParser
     private let lines: [AnnotationParser.Line]
-    private var sourceLocationConverter: SourceLocationConverter?
-
-    var all: Annotations {
-        var all = Annotations()
-        lines.forEach {
-            $0.annotations.forEach {
-                all.append(key: $0.key, value: $0.value)
-            }
-        }
-        return all
-    }
+    private var sourceLocationConverter: SourceLocationConverter
 
     convenience init(
         content: String,
         annotationParser: AnnotationParser = AnnotationParser(),
-        sourceLocationConverter: SourceLocationConverter? = nil
+        sourceLocationConverter: SourceLocationConverter
     ) {
         self.init(
             annotationParser: annotationParser,
@@ -30,7 +20,7 @@ public class GetAnnotationUseCase {
     init(
         annotationParser: AnnotationParser,
         lines: [AnnotationParser.Line],
-        sourceLocationConverter: SourceLocationConverter? = nil
+        sourceLocationConverter: SourceLocationConverter
     ) {
         self.annotationParser = annotationParser
         self.lines = lines
@@ -38,36 +28,56 @@ public class GetAnnotationUseCase {
     }
 
     func annotations(from node: IdentifierSyntax) -> Annotations {
-        from(
-            location: findLocation(syntax: node.identifier),
-            precedingComments: node.leadingTrivia.compactMap(\.comment)
+        annotations(
+            at: findLocation(syntax: node.identifier),
+            trivia: node.leadingTrivia
         )
     }
 
     func annotations(fromToken token: SyntaxProtocol) -> Annotations {
-        from(
-            location: findLocation(syntax: token),
-            precedingComments: token.leadingTrivia.compactMap(\.comment)
+        annotations(
+            at: findLocation(syntax: token),
+            trivia: token.leadingTrivia
         )
     }
 
-    private func findLocation(syntax: SyntaxProtocol) -> SwiftSyntax.SourceLocation {
-        sourceLocationConverter!.location(for: syntax.positionAfterSkippingLeadingTrivia)
+    private func findLocation(syntax: SyntaxProtocol) -> SourceLocation {
+        sourceLocationConverter.location(for: syntax.positionAfterSkippingLeadingTrivia)
     }
 
-    func inlineFrom(line lineInfo: (line: Int, character: Int), stop: inout Bool) -> Annotations {
+    private func annotations(at location: SourceLocation, trivia: Trivia) -> Annotations {
+        var stop = false
+        var annotations = inlineFrom(line: (location.line, location.column), stop: &stop)
+        guard !stop else { return annotations }
+
+        for line in lines[0 ..< location.line - 1].reversed() {
+            line.annotations.forEach { annotation in
+                annotations.append(key: annotation.key, value: annotation.value)
+            }
+            if line.type != .comment && line.type != .documentationComment {
+                break
+            }
+        }
+
+        lines[location.line - 1].annotations.forEach { annotation in
+            annotations.append(key: annotation.key, value: annotation.value)
+        }
+
+        return annotations
+    }
+
+    private func inlineFrom(line lineInfo: (line: Int, character: Int), stop: inout Bool) -> Annotations {
         let sourceLine = lines[lineInfo.line - 1]
         var prefix = sourceLine.content.bridge()
             .substring(to: max(0, lineInfo.character - 1))
             .trimmingCharacters(in: .whitespaces)
 
         guard !prefix.isEmpty else { return [:] }
-        var annotations = sourceLine.blockAnnotations // get block annotations for this line
-        sourceLine.annotations.forEach { annotation in  // TODO: verify
+        var annotations = sourceLine.blockAnnotations
+        sourceLine.annotations.forEach { annotation in
             annotations.append(key: annotation.key, value: annotation.value)
         }
 
-        // `case` is not included in the key of enum case definition, so we strip it manually
         let isInsideCaseDefinition = prefix.trimmingCharacters(in: .whitespacesAndNewlines).hasPrefix("case")
         prefix = prefix.trimmingPrefix("case").trimmingCharacters(in: .whitespaces)
         var inlineCommentFound = false
@@ -102,27 +112,6 @@ public class GetAnnotationUseCase {
                 stop = true
                 return annotations
             }
-        }
-
-        return annotations
-    }
-
-    func from(location: SwiftSyntax.SourceLocation, precedingComments: [String]) -> Annotations {
-        var stop = false
-        var annotations = inlineFrom(line: (location.line, location.column), stop: &stop)
-        guard !stop else { return annotations }
-
-        for line in lines[0 ..< location.line - 1].reversed() {
-            line.annotations.forEach { annotation in
-                annotations.append(key: annotation.key, value: annotation.value)
-            }
-            if line.type != .comment && line.type != .documentationComment {
-                break
-            }
-        }
-
-        lines[location.line - 1].annotations.forEach { annotation in
-            annotations.append(key: annotation.key, value: annotation.value)
         }
 
         return annotations
