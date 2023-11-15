@@ -13,13 +13,13 @@ class AnnotationParserTests: XCTestCase {
 
     func test_parsesInlineAnnotations() {
         let annotations = sut.parse("""
-        // sourcery: skipDescription
+        // sourcery: foo = "🌍"
         /* sourcery: skipEquality */
         /** sourcery: skipCoding */
         var name: Int { return 2 }
         """)
         XCTAssertEqual(annotations, [
-            .init(content: "// sourcery: skipDescription", type: .comment, annotations: ["skipDescription": NSNumber(value: true)], blockAnnotations: [:]),
+            .init(content: "// sourcery: foo = \"🌍\"", type: .comment, annotations: ["foo": "🌍" as NSString], blockAnnotations: [:]),
             .init(content: "/* sourcery: skipEquality */", type: .comment, annotations: ["skipEquality": NSNumber(value: true)], blockAnnotations: [:]),
             .init(content: "/** sourcery: skipCoding */", type: .documentationComment, annotations: ["skipCoding": NSNumber(value: true)], blockAnnotations: [:]),
             .init(content: "var name: Int { return 2 }", type: .other, annotations: [:], blockAnnotations: [:])
