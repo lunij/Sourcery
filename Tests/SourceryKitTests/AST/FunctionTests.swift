@@ -57,6 +57,6 @@ class FunctionTests: XCTestCase {
         XCTAssertNotEqual(sut, Function(name: "foo(some: Int)", selectorName: "foo(some:)", parameters: parameters, returnTypeName: TypeName(name: "Void"), accessLevel: .internal, isStatic: true, isClass: false, isFailableInitializer: false, annotations: [:]))
         XCTAssertNotEqual(sut, Function(name: "foo(some: Int)", selectorName: "foo(some:)", parameters: parameters, returnTypeName: TypeName(name: "Void"), accessLevel: .internal, isStatic: false, isClass: true, isFailableInitializer: false, annotations: [:]))
         XCTAssertNotEqual(sut, Function(name: "foo(some: Int)", selectorName: "foo(some:)", parameters: parameters, returnTypeName: TypeName(name: "Void"), accessLevel: .internal, isStatic: false, isClass: false, isFailableInitializer: true, annotations: [:]))
-        XCTAssertNotEqual(sut, Function(name: "foo(some: Int)", selectorName: "foo(some:)", parameters: parameters, returnTypeName: TypeName(name: "Void"), accessLevel: .internal, isStatic: false, isClass: false, isFailableInitializer: false, annotations: ["some": NSNumber(value: true)]))
+        XCTAssertNotEqual(sut, Function(name: "foo(some: Int)", selectorName: "foo(some:)", parameters: parameters, returnTypeName: TypeName(name: "Void"), accessLevel: .internal, isStatic: false, isClass: false, isFailableInitializer: false, annotations: ["some": .bool(true)]))
     }
 }

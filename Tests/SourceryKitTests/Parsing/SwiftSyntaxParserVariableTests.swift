@@ -211,7 +211,7 @@ class SwiftSyntaxParserVariableTests: XCTestCase {
 
     func test_annotations_parsesSingleAnnotation() {
         let expectedVariable = Variable(name: "name", typeName: TypeName(name: "Int"), accessLevel: (read: .internal, write: .none), isComputed: true)
-        expectedVariable.annotations["skipEquability"] = NSNumber(value: true)
+        expectedVariable.annotations["skipEquability"] = true
 
         XCTAssertEqual("""
         // sourcery: skipEquability
@@ -221,8 +221,8 @@ class SwiftSyntaxParserVariableTests: XCTestCase {
 
     func test_annotations_parsesMultipleAnnotationsOnTheSameLine() {
         let expectedVariable = Variable(name: "name", typeName: TypeName(name: "Int"), accessLevel: (read: .internal, write: .none), isComputed: true)
-        expectedVariable.annotations["skipEquability"] = NSNumber(value: true)
-        expectedVariable.annotations["jsonKey"] = "json_key" as NSString
+        expectedVariable.annotations["skipEquability"] = true
+        expectedVariable.annotations["jsonKey"] = "json_key"
 
         XCTAssertEqual("""
         // sourcery: skipEquability, jsonKey = \"json_key\"
@@ -232,9 +232,9 @@ class SwiftSyntaxParserVariableTests: XCTestCase {
 
     func test_annotations_parsesMultilineAnnotationsIncludingNumbers() {
         let expectedVariable = Variable(name: "name", typeName: TypeName(name: "Int"), accessLevel: (read: .internal, write: .none), isComputed: true)
-        expectedVariable.annotations["skipEquability"] = NSNumber(value: true)
-        expectedVariable.annotations["jsonKey"] = "json_key" as NSString
-        expectedVariable.annotations["thirdProperty"] = NSNumber(value: -3)
+        expectedVariable.annotations["skipEquability"] = true
+        expectedVariable.annotations["jsonKey"] = "json_key"
+        expectedVariable.annotations["thirdProperty"] = -3
 
         let variable = """
         // sourcery: skipEquability, jsonKey = \"json_key\"
@@ -246,8 +246,8 @@ class SwiftSyntaxParserVariableTests: XCTestCase {
 
     func test_annotations_parsesAnnotationsInterleavedWithComments() {
         let expectedVariable = Variable(name: "name", typeName: TypeName(name: "Int"), accessLevel: (read: .internal, write: .none), isComputed: true)
-        expectedVariable.annotations["isSet"] = NSNumber(value: true)
-        expectedVariable.annotations["numberOfIterations"] = NSNumber(value: 2)
+        expectedVariable.annotations["isSet"] = true
+        expectedVariable.annotations["numberOfIterations"] = 2
         expectedVariable.documentation = ["/// isSet is used for something useful"]
 
         let variable = """
@@ -261,7 +261,7 @@ class SwiftSyntaxParserVariableTests: XCTestCase {
 
     func test_annotations_stopsParsingAnnotationsIfItEncountersNonCommentLine() {
         let expectedVariable = Variable(name: "name", typeName: TypeName(name: "Int"), accessLevel: (read: .internal, write: .none), isComputed: true)
-        expectedVariable.annotations["numberOfIterations"] = NSNumber(value: 2)
+        expectedVariable.annotations["numberOfIterations"] = 2
 
         let variable = """
         // sourcery: isSet
@@ -289,8 +289,8 @@ class SwiftSyntaxParserVariableTests: XCTestCase {
 
     func test_annotations_parsesTrailingAnnotations() {
         let expectedVariable = Variable(name: "name", typeName: TypeName(name: "Int"), accessLevel: (read: .internal, write: .none), isComputed: true)
-        expectedVariable.annotations["jsonKey"] = "json_key" as NSString
-        expectedVariable.annotations["skipEquability"] = NSNumber(value: true)
+        expectedVariable.annotations["jsonKey"] = "json_key"
+        expectedVariable.annotations["skipEquability"] = true
 
         XCTAssertEqual("// sourcery: jsonKey = \"json_key\"\nvar name: Int { return 2 } // sourcery: skipEquability".structVariable, expectedVariable)
     }

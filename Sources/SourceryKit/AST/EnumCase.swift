@@ -29,7 +29,7 @@ public struct EnumCase: Annotated, Documented, Hashable {
         name: String,
         rawValue: String? = nil,
         associatedValues: [AssociatedValue] = [],
-        annotations: [String: NSObject] = [:],
+        annotations: [String: AnnotationValue] = [:],
         documentation: [String] = [],
         indirect: Bool = false
     ) {

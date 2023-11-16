@@ -100,7 +100,7 @@ struct AnnotationParser {
             let trailing = String(lastBlockComponent[trailingStart...])
             if trailing.components(separatedBy: "//", excludingDelimiterBetween: ("", "")).first?.trimmed.count == 0 {
                 let upperBound = endBlockRange.lowerBound
-                return argumentParser.parseArguments(from: String(lastBlockComponent[lowerBound ..< upperBound]))
+                return try! argumentParser.parseArguments(from: String(lastBlockComponent[lowerBound ..< upperBound]))
             }
         }
 
@@ -109,7 +109,7 @@ struct AnnotationParser {
            let trailingComment = components.last?.stripped(),
            let lowerBound = trailingComment.range(of: "sourcery:")?.upperBound
         {
-            return argumentParser.parseArguments(from: String(trailingComment[lowerBound...]))
+            return try! argumentParser.parseArguments(from: String(trailingComment[lowerBound...]))
         }
 
         return [:]
@@ -149,7 +149,7 @@ struct AnnotationParser {
         }
 
         if let lowerBound, let upperBound {
-            let annotations = argumentParser.parseArguments(from: String(commentLine[lowerBound ..< upperBound]))
+            let annotations = try! argumentParser.parseArguments(from: String(commentLine[lowerBound ..< upperBound]))
             if insideBlock {
                 return .begin(annotations)
             } else if insideFileBlock {

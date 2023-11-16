@@ -83,7 +83,7 @@ public final class Subscript: Diffable, Annotated, Documented, Definition, Equat
                 accessLevel: (read: AccessLevel, write: AccessLevel) = (.internal, .internal),
                 attributes: AttributeList = [:],
                 modifiers: [Modifier] = [],
-                annotations: [String: NSObject] = [:],
+                annotations: [String: AnnotationValue] = [:],
                 documentation: [String] = [],
                 definedInTypeName: TypeName? = nil) {
 

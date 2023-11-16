@@ -152,7 +152,7 @@ public final class Function: Annotated, Documented, Definition {
         isFailableInitializer: Bool = false,
         attributes: AttributeList = [:],
         modifiers: [Modifier] = [],
-        annotations: [String: NSObject] = [:],
+        annotations: [String: AnnotationValue] = [:],
         documentation: [String] = [],
         definedInTypeName: TypeName? = nil
     ) {

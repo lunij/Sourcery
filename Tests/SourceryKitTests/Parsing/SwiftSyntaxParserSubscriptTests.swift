@@ -89,9 +89,9 @@ class SwiftSyntaxParserSubscriptTests: XCTestCase {
         """).types.first?.subscripts
 
         let subscriptAnnotations = subscripts?.first?.annotations
-        XCTAssertEqual(subscriptAnnotations, ["thisIsSubscript": NSNumber(value: true)])
+        XCTAssertEqual(subscriptAnnotations, ["thisIsSubscript": true])
 
         let paramAnnotations = subscripts?.first?.parameters.first?.annotations
-        XCTAssertEqual(paramAnnotations, ["thisIsSubscriptParam": NSNumber(value: true)])
+        XCTAssertEqual(paramAnnotations, ["thisIsSubscriptParam": true])
     }
 }

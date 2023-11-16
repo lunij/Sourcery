@@ -35,16 +35,14 @@ public final class StencilTemplate: Stencil.StencilSwiftTemplate {
         let ext = Stencil.Extension()
 
         ext.registerFilter("json") { (value, arguments) -> Any? in
-            guard let value = value else { return nil }
+            guard let value = value as? Encodable else { return nil }
             guard arguments.isEmpty || arguments.count == 1 && arguments.first is Bool else {
                 throw TemplateSyntaxError("'json' filter takes a single boolean argument")
             }
-            var options: JSONSerialization.WritingOptions = []
             let prettyPrinted = arguments.first as? Bool ?? false
-            if prettyPrinted {
-                options = [.prettyPrinted]
-            }
-            let data = try JSONSerialization.data(withJSONObject: value, options: options)
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = prettyPrinted ? .prettyPrinted : []
+            let data = try encoder.encode(value)
             return String(data: data, encoding: .utf8)
         }
 
@@ -85,25 +83,8 @@ public final class StencilTemplate: Stencil.StencilSwiftTemplate {
         ext.registerFilter("reversed", filter: reversed)
         ext.registerFilter("toArray", filter: toArray)
 
-        ext.registerFilterWithArguments("sorted") { (array, propertyName: String) -> Any? in
-            switch array {
-            case let array as NSArray:
-                let sortDescriptor = NSSortDescriptor(key: propertyName, ascending: true, selector: #selector(NSString.caseInsensitiveCompare))
-                return array.sortedArray(using: [sortDescriptor])
-            default:
-                return nil
-            }
-        }
-
-        ext.registerFilterWithArguments("sortedDescending") { (array, propertyName: String) -> Any? in
-            switch array {
-            case let array as NSArray:
-                let sortDescriptor = NSSortDescriptor(key: propertyName, ascending: false, selector: #selector(NSString.caseInsensitiveCompare))
-                return array.sortedArray(using: [sortDescriptor])
-            default:
-                return nil
-            }
-        }
+        ext.registerFilterWithArguments("sorted", filter: sort(by: <))
+        ext.registerFilterWithArguments("sortedDescending", filter: sort(by: >))
 
         ext.registerBoolFilter("initializer", filter: { (m: Function) in m.isInitializer })
         ext.registerBoolFilterOr("class",
@@ -157,14 +138,14 @@ public extension Annotated {
         if annotation.contains("=") {
             let components = annotation.components(separatedBy: "=").map({ $0.trimmingCharacters(in: .whitespaces) })
             var keyPath = components[0].components(separatedBy: ".")
-            var annotationValue: Annotations? = annotations
-            while !keyPath.isEmpty && annotationValue != nil {
+            var annotations: Annotations? = annotations
+            while !keyPath.isEmpty && annotations != nil {
                 let key = keyPath.removeFirst()
-                let value = annotationValue?[key]
+                let value = annotations?[key]
                 if keyPath.isEmpty {
                     return value?.description == components[1]
-                } else {
-                    annotationValue = value as? Annotations
+                } else if case let .dictionary(value) = value {
+                    annotations = value
                 }
             }
             return false
@@ -265,37 +246,58 @@ public extension Stencil.Extension {
 
 }
 
-private func toArray(_ value: Any?) -> Any? {
-    switch value {
-    case let array as NSArray:
-        return array
-    case .some(let something):
-        return [something]
-    default:
-        return nil
+protocol ArrayConvertible {
+    func toArray<T>() throws -> [T]
+}
+
+extension Array: ArrayConvertible {
+    func toArray<T>() throws -> [T] {
+        compactMap { $0 as? T }
     }
+}
+
+private func sort(by comparator: @escaping (String, String) -> Bool) -> (Any?, String) throws -> Any? {
+    { value, member -> Any? in
+        guard let array: [DynamicMemberLookup] = try? (value as? ArrayConvertible)?.toArray() else {
+            return nil
+        }
+        return array.sorted {
+            guard let lhs = $0[dynamicMember: member] as? String,
+                  let rhs = $1[dynamicMember: member] as? String
+            else {
+                return false
+            }
+            return comparator(lhs.lowercased(), rhs.lowercased())
+        }
+    }
+}
+
+private func toArray(_ value: Any?) -> Any? {
+    if let value: [Any] = try? (value as? ArrayConvertible)?.toArray() {
+        return value
+    }
+    return [value]
 }
 
 private func reversed(_ value: Any?) -> Any? {
-    guard let array = value as? NSArray else {
+    guard let array: [any Comparable] = try? (value as? ArrayConvertible)?.toArray() else {
         return value
     }
-    return array.reversed()
+    return Array(array.reversed())
 }
 
 private func count(_ value: Any?) -> Any? {
-    guard let array = value as? NSArray else {
-        return value
+    guard let array: [Any] = try? (value as? ArrayConvertible)?.toArray() else {
+        return nil
     }
     return array.count
 }
 
 private func isEmpty(_ value: Any?) -> Any? {
-    guard let array = value as? NSArray else {
-        return false
+    guard let array: [Any] = try? (value as? ArrayConvertible)?.toArray() else {
+        return nil
     }
-    // swiftlint:disable:next empty_count
-    return array.count == 0
+    return array.isEmpty
 }
 
 private struct Filter<T> {

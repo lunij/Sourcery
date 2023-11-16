@@ -6,25 +6,25 @@ import XCTest
 class StencilTemplateTests: XCTestCase {
     func test_json_whenDictionary_rendersUnprettyJson() {
         let result = try? StencilTemplate(content: "{{ argument.json | json }}")
-            .render(.fake(arguments: ["json": ["Version": 1] as NSDictionary]))
+            .render(.fake(arguments: ["json": ["Version": 1]]))
         XCTAssertEqual(result, "{\"Version\":1}")
     }
 
     func test_json_whenDictionary_rendersPrettyJson() {
         let result = try? StencilTemplate(content: "{{ argument.json | json:true }}")
-            .render(.fake(arguments: ["json": ["Version": 1] as NSDictionary]))
+            .render(.fake(arguments: ["json": ["Version": 1]]))
         XCTAssertEqual(result, "{\n  \"Version\" : 1\n}")
     }
 
     func test_json_whenArray_rendersUnprettyJson() {
         let result = try? StencilTemplate(content: "{{ argument.json | json }}")
-            .render(.fake(arguments: ["json": ["a", "b"] as NSArray]))
+            .render(.fake(arguments: ["json": ["a", "b"]]))
         XCTAssertEqual(result, "[\"a\",\"b\"]")
     }
 
     func test_json_whenArray_rendersPrettyJson() {
         let result = try? StencilTemplate(content: "{{ argument.json | json:true }}")
-            .render(.fake(arguments: ["json": ["a", "b"] as NSArray]))
+            .render(.fake(arguments: ["json": ["a", "b"]]))
         XCTAssertEqual(result, "[\n  \"a\",\n  \"b\"\n]")
     }
 
@@ -207,7 +207,7 @@ private extension TemplateContext {
     static func fake(
         types: Types = .init(types: []),
         functions: [Function] = [],
-        arguments: [String: NSObject] = [:]
+        arguments: [String: AnnotationValue] = [:]
     ) -> Self {
         .init(
             types: types,
@@ -219,9 +219,9 @@ private extension TemplateContext {
 
 private func generate(_ template: String) -> String {
     let arrayAnnotations = Variable(name: "annotated1", typeName: TypeName(name: "MyClass"))
-    arrayAnnotations.annotations = ["Foo": ["Hello", "beautiful", "World"] as NSArray]
+    arrayAnnotations.annotations = ["Foo": ["Hello", "beautiful", "World"]]
     let singleAnnotation = Variable(name: "annotated2", typeName: TypeName(name: "MyClass"))
-    singleAnnotation.annotations = ["Foo": "HelloWorld" as NSString]
+    singleAnnotation.annotations = ["Foo": "HelloWorld"]
     let result = try? StencilTemplate(content: template).render(TemplateContext(
         types: Types(types: [
             Class(name: "MyClass", variables: [

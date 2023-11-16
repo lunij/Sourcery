@@ -16,18 +16,18 @@ class SwiftSyntaxParserTests: XCTestCase {
         public extension AnyPublisher {}
         """.parse().types.first?.annotations
 
-        XCTAssertEqual(annotations, ["forceMockPublisher": NSNumber(value: true)])
+        XCTAssertEqual(annotations, ["forceMockPublisher": true])
     }
 
     func test_parsesAnnotationBlock() {
-        let annotations = [
-            ["skipEquality": NSNumber(value: true)],
-            ["skipEquality": NSNumber(value: true), "extraAnnotation": NSNumber(value: Float(2))],
+        let annotations: [Annotations] = [
+            ["skipEquality": true],
+            ["skipEquality": true, "extraAnnotation": 2],
             [:]
         ]
         let expectedVariables = (1...3)
             .map { Variable(name: "property\($0)", typeName: TypeName(name: "Int"), annotations: annotations[$0 - 1], definedInTypeName: TypeName(name: "Foo")) }
-        let expectedType = Class(name: "Foo", variables: expectedVariables, annotations: ["skipEquality": NSNumber(value: true)])
+        let expectedType = Class(name: "Foo", variables: expectedVariables, annotations: ["skipEquality": true])
 
         let result = """
         // sourcery:begin: skipEquality
@@ -44,14 +44,14 @@ class SwiftSyntaxParserTests: XCTestCase {
     }
 
     func test_parsesFileAnnotationBlock() {
-        let annotations: [[String: NSObject]] = [
-            ["fileAnnotation": NSNumber(value: true), "skipEquality": NSNumber(value: true)],
-            ["fileAnnotation": NSNumber(value: true), "skipEquality": NSNumber(value: true), "extraAnnotation": NSNumber(value: Float(2))],
-            ["fileAnnotation": NSNumber(value: true)]
+        let annotations: [Annotations] = [
+            ["fileAnnotation": true, "skipEquality": true],
+            ["fileAnnotation": true, "skipEquality": true, "extraAnnotation": 2],
+            ["fileAnnotation": true]
         ]
         let expectedVariables = (1...3)
             .map { Variable(name: "property\($0)", typeName: TypeName(name: "Int"), annotations: annotations[$0 - 1], definedInTypeName: TypeName(name: "Foo")) }
-        let expectedType = Class(name: "Foo", variables: expectedVariables, annotations: ["fileAnnotation": NSNumber(value: true), "skipEquality": NSNumber(value: true)])
+        let expectedType = Class(name: "Foo", variables: expectedVariables, annotations: ["fileAnnotation": true, "skipEquality": true])
 
         let result = """
         // sourcery:file: fileAnnotation
@@ -260,15 +260,15 @@ class SwiftSyntaxParserTests: XCTestCase {
 
     func test_class_parsesAnnotations() {
         let expectedType = Class(name: "Foo", accessLevel: .internal, isExtension: false, variables: [], inheritedTypes: ["TestProtocol"])
-        expectedType.annotations["firstLine"] = NSNumber(value: true)
-        expectedType.annotations["thirdLine"] = NSNumber(value: 4543)
+        expectedType.annotations["firstLine"] = true
+        expectedType.annotations["thirdLine"] = 4543
 
         XCTAssertEqual("// sourcery: thirdLine = 4543\n/// comment\n// sourcery: firstLine\nclass Foo: TestProtocol { }".parse().types, [expectedType])
     }
 
     func test_class_parsesDocumentation() {
         let expectedType = Class(name: "Foo", accessLevel: .internal, isExtension: false, variables: [], inheritedTypes: ["TestProtocol"])
-        expectedType.annotations["thirdLine"] = NSNumber(value: 4543)
+        expectedType.annotations["thirdLine"] = 4543
         expectedType.documentation = ["/// doc", "/// comment", "///baz"]
 
         XCTAssertEqual(
@@ -442,21 +442,21 @@ class SwiftSyntaxParserTests: XCTestCase {
             Enum(name: "Foo", cases: [
                 EnumCase(name: "optionA", associatedValues: [
                     AssociatedValue(name: nil, typeName: TypeName(name: "Int"), annotations: [
-                        "first": NSNumber(value: true),
-                        "second": "value" as NSString,
-                        "block": NSNumber(value: true)
+                        "first": true,
+                        "second": "value",
+                        "block": true
                     ])
                 ], annotations: [
-                    "block": NSNumber(value: true),
-                    "first": NSNumber(value: true),
-                    "second": "value" as NSString
+                    "block": true,
+                    "first": true,
+                    "second": "value"
                 ]),
                 EnumCase(name: "optionB", annotations: [
-                    "block": NSNumber(value: true),
-                    "third": NSNumber(value: true)
+                    "block": true,
+                    "third": true
                 ]),
                 EnumCase(name: "optionC", annotations: [
-                    "block": NSNumber(value: true)
+                    "block": true
                 ])
             ])
         ])
@@ -476,21 +476,21 @@ class SwiftSyntaxParserTests: XCTestCase {
             cases: [
                 EnumCase(name: "optionA", associatedValues: [
                     AssociatedValue(name: nil, typeName: TypeName(name: "Int"), annotations: [
-                        "first": NSNumber(value: true),
-                        "second": "value" as NSString,
-                        "block": NSNumber(value: true)
+                        "first": true,
+                        "second": "value",
+                        "block": true
                     ])
                 ], annotations: [
-                    "block": NSNumber(value: true),
-                    "first": NSNumber(value: true),
-                    "second": "value" as NSString
+                    "block": true,
+                    "first": true,
+                    "second": "value"
                 ]),
                 EnumCase(name: "optionB", annotations: [
-                    "block": NSNumber(value: true),
-                    "third": NSNumber(value: true)
+                    "block": true,
+                    "third": true
                 ]),
                 EnumCase(name: "optionC", annotations: [
-                    "block": NSNumber(value: true)
+                    "block": true
                 ])
             ])
         )
@@ -508,20 +508,20 @@ class SwiftSyntaxParserTests: XCTestCase {
             cases: [
                 EnumCase(name: "optionA", associatedValues: [
                     AssociatedValue(name: nil, typeName: TypeName(name: "Int"), annotations: [
-                        "block": NSNumber(value: true)
+                        "block": true
                     ])
                 ], annotations: [
-                    "block": NSNumber(value: true),
-                    "first": NSNumber(value: true),
-                    "second": "value" as NSString
+                    "block": true,
+                    "first": true,
+                    "second": "value"
                 ]),
                 EnumCase(name: "optionB", annotations: [
-                    "block": NSNumber(value: true),
-                    "third": NSNumber(value: true),
-                    "fourth": "value" as NSString
+                    "block": true,
+                    "third": true,
+                    "fourth": "value"
                 ]),
                 EnumCase(name: "optionC", annotations: [
-                    "block": NSNumber(value: true)
+                    "block": true
                 ])
             ])
         )
@@ -546,16 +546,16 @@ class SwiftSyntaxParserTests: XCTestCase {
                 EnumCase(name: "optionA", associatedValues: [
                     AssociatedValue(name: nil, typeName: TypeName(name: "Int"))
                 ], annotations: [
-                    "first": NSNumber(value: true),
-                    "second": "value" as NSString
+                    "first": true,
+                    "second": "value"
                 ]),
                 EnumCase(name: "optionB", annotations: [
-                    "third": NSNumber(value: true)
+                    "third": true
                 ]),
                 EnumCase(name: "optionC")
             ], variables: [
-                Variable(name: "first", typeName: TypeName(name: "Int"), accessLevel: (.internal, .none), isComputed: true, annotations: [ "var": NSNumber(value: true) ], definedInTypeName: TypeName(name: "Foo")),
-                Variable(name: "second", typeName: TypeName(name: "Int"), accessLevel: (.internal, .none), isComputed: true, annotations: [ "var": NSNumber(value: true) ], definedInTypeName: TypeName(name: "Foo"))
+                Variable(name: "first", typeName: TypeName(name: "Int"), accessLevel: (.internal, .none), isComputed: true, annotations: [ "var": true ], definedInTypeName: TypeName(name: "Foo")),
+                Variable(name: "second", typeName: TypeName(name: "Int"), accessLevel: (.internal, .none), isComputed: true, annotations: [ "var": true ], definedInTypeName: TypeName(name: "Foo"))
             ])
         )
     }
@@ -575,7 +575,7 @@ class SwiftSyntaxParserTests: XCTestCase {
                 name: "Foo",
                 cases: [
                     EnumCase(name: "optionA", associatedValues: [
-                        AssociatedValue(name: nil, typeName: TypeName(name: "Int"), annotations: ["first": NSNumber(value: true), "second": NSNumber(value: true), "third": "value" as NSString])
+                        AssociatedValue(name: nil, typeName: TypeName(name: "Int"), annotations: ["first": true, "second": true, "third": "value"])
                     ]),
                     EnumCase(name: "optionB")
                 ]
@@ -590,7 +590,7 @@ class SwiftSyntaxParserTests: XCTestCase {
                 name: "Foo",
                 cases: [
                     EnumCase(name: "optionA", associatedValues: [
-                        AssociatedValue(name: nil, typeName: TypeName(name: "Int"), annotations: ["annotation": NSNumber(value: true)])
+                        AssociatedValue(name: nil, typeName: TypeName(name: "Int"), annotations: ["annotation": true])
                     ]),
                     EnumCase(name: "optionB")
                 ]

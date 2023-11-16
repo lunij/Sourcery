@@ -57,6 +57,6 @@ class SwiftSyntaxParserProtocolCompositionTests: XCTestCase {
         """).types
         let protocolComp = types.first(where: { $0 is ProtocolComposition }) as? ProtocolComposition
 
-        XCTAssertEqual(protocolComp?.annotations, ["TestAnnotation": NSNumber(true)])
+        XCTAssertEqual(protocolComp?.annotations, ["TestAnnotation": true])
     }
 }

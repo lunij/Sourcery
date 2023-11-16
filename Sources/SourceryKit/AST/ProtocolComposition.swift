@@ -24,7 +24,7 @@ public final class ProtocolComposition: Type {
                 containedTypes: [Type] = [],
                 typealiases: [Typealias] = [],
                 attributes: AttributeList = [:],
-                annotations: [String: NSObject] = [:],
+                annotations: [String: AnnotationValue] = [:],
                 isGeneric: Bool = false,
                 composedTypeNames: [TypeName] = [],
                 composedTypes: [Type]? = nil) {

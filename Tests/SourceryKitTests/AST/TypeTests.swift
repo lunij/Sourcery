@@ -24,7 +24,7 @@ class TypeTests: XCTestCase {
         superType = Type(name: "Supertype", variables: [supertypeVariable], methods: [superTypeMethod], inheritedTypes: ["Protocol"])
         superType.implements["Protocol"] = protocolType
 
-        sut = Type(name: "Foo", parent: parentType, variables: [storedVariable, computedVariable, staticVariable, overrideVariable], methods: [initializer, overrideMethod, secondMethod], inheritedTypes: ["NSObject"], annotations: ["something": NSNumber(value: 161)])
+        sut = Type(name: "Foo", parent: parentType, variables: [storedVariable, computedVariable, staticVariable, overrideVariable], methods: [initializer, overrideMethod, secondMethod], inheritedTypes: ["NSObject"], annotations: ["something": 161])
         sut.supertype = superType
     }
 
@@ -138,12 +138,11 @@ class TypeTests: XCTestCase {
     }
 
     func test_extend_addsAnnotations() {
-        let expected: [String: NSObject] = ["something": NSNumber(value: 161), "ExtraAnnotation": "ExtraValue" as NSString]
-        let type = Type(name: "Foo", isExtension: true, annotations: ["ExtraAnnotation": "ExtraValue" as NSString])
+        let type = Type(name: "Foo", isExtension: true, annotations: ["ExtraAnnotation": "ExtraValue"])
 
         sut.extend(type)
 
-        XCTAssertEqual(sut.annotations, expected)
+        XCTAssertEqual(sut.annotations, ["something": 161, "ExtraAnnotation": "ExtraValue"])
     }
 
     func test_extend_addsInheritedTypes() {
@@ -178,17 +177,17 @@ class TypeTests: XCTestCase {
     }
 
     func test_equals_whenSameItems() {
-        XCTAssertEqual(sut, Type(name: "Foo", parent: parentType, accessLevel: .internal, isExtension: false, variables: [storedVariable, computedVariable, staticVariable, overrideVariable], methods: [initializer, overrideMethod, secondMethod], inheritedTypes: ["NSObject"], annotations: ["something": NSNumber(value: 161)]))
+        XCTAssertEqual(sut, Type(name: "Foo", parent: parentType, accessLevel: .internal, isExtension: false, variables: [storedVariable, computedVariable, staticVariable, overrideVariable], methods: [initializer, overrideMethod, secondMethod], inheritedTypes: ["NSObject"], annotations: ["something": 161]))
     }
 
     func test_differs_whenDifferentItems() {
-        XCTAssertNotEqual(sut, Type(name: "Bar", parent: parentType, accessLevel: .internal, isExtension: false, variables: [storedVariable, computedVariable], methods: [initializer], inheritedTypes: ["NSObject"], annotations: ["something": NSNumber(value: 161)]))
-        XCTAssertNotEqual(sut, Type(name: "Foo", parent: parentType, accessLevel: .public, isExtension: false, variables: [storedVariable, computedVariable], methods: [initializer], inheritedTypes: ["NSObject"], annotations: ["something": NSNumber(value: 161)]))
-        XCTAssertNotEqual(sut, Type(name: "Foo", parent: parentType, accessLevel: .internal, isExtension: true, variables: [storedVariable, computedVariable], methods: [initializer], inheritedTypes: ["NSObject"], annotations: ["something": NSNumber(value: 161)]))
-        XCTAssertNotEqual(sut, Type(name: "Foo", parent: parentType, accessLevel: .internal, isExtension: false, variables: [computedVariable], methods: [initializer], inheritedTypes: ["NSObject"], annotations: ["something": NSNumber(value: 161)]))
-        XCTAssertNotEqual(sut, Type(name: "Foo", parent: parentType, accessLevel: .internal, isExtension: false, variables: [storedVariable, computedVariable], methods: [initializer], inheritedTypes: [], annotations: ["something": NSNumber(value: 161)]))
-        XCTAssertNotEqual(sut, Type(name: "Foo", parent: nil, accessLevel: .internal, isExtension: false, variables: [storedVariable, computedVariable], methods: [initializer], inheritedTypes: ["NSObject"], annotations: ["something": NSNumber(value: 161)]))
+        XCTAssertNotEqual(sut, Type(name: "Bar", parent: parentType, accessLevel: .internal, isExtension: false, variables: [storedVariable, computedVariable], methods: [initializer], inheritedTypes: ["NSObject"], annotations: ["something": 161]))
+        XCTAssertNotEqual(sut, Type(name: "Foo", parent: parentType, accessLevel: .public, isExtension: false, variables: [storedVariable, computedVariable], methods: [initializer], inheritedTypes: ["NSObject"], annotations: ["something": 161]))
+        XCTAssertNotEqual(sut, Type(name: "Foo", parent: parentType, accessLevel: .internal, isExtension: true, variables: [storedVariable, computedVariable], methods: [initializer], inheritedTypes: ["NSObject"], annotations: ["something": 161]))
+        XCTAssertNotEqual(sut, Type(name: "Foo", parent: parentType, accessLevel: .internal, isExtension: false, variables: [computedVariable], methods: [initializer], inheritedTypes: ["NSObject"], annotations: ["something": 161]))
+        XCTAssertNotEqual(sut, Type(name: "Foo", parent: parentType, accessLevel: .internal, isExtension: false, variables: [storedVariable, computedVariable], methods: [initializer], inheritedTypes: [], annotations: ["something": 161]))
+        XCTAssertNotEqual(sut, Type(name: "Foo", parent: nil, accessLevel: .internal, isExtension: false, variables: [storedVariable, computedVariable], methods: [initializer], inheritedTypes: ["NSObject"], annotations: ["something": 161]))
         XCTAssertNotEqual(sut, Type(name: "Foo", parent: parentType, accessLevel: .internal, isExtension: false, variables: [storedVariable, computedVariable], methods: [initializer], inheritedTypes: ["NSObject"], annotations: [:]))
-        XCTAssertNotEqual(sut, Type(name: "Foo", parent: parentType, accessLevel: .internal, isExtension: false, variables: [storedVariable, computedVariable], methods: [], inheritedTypes: ["NSObject"], annotations: ["something": NSNumber(value: 161)]))
+        XCTAssertNotEqual(sut, Type(name: "Foo", parent: parentType, accessLevel: .internal, isExtension: false, variables: [storedVariable, computedVariable], methods: [], inheritedTypes: ["NSObject"], annotations: ["something": 161]))
     }
 }

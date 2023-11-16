@@ -131,7 +131,7 @@ public final class Variable: Diffable, Typed, Annotated, Documented, Definition,
                 defaultValue: String? = nil,
                 attributes: AttributeList = [:],
                 modifiers: [Modifier] = [],
-                annotations: [String: NSObject] = [:],
+                annotations: [String: AnnotationValue] = [:],
                 documentation: [String] = [],
                 definedInTypeName: TypeName? = nil) {
 

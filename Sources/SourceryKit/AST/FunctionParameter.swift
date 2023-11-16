@@ -41,7 +41,7 @@ public class FunctionParameter: Diffable, Typed, Annotated, Hashable {
         typeName: TypeName,
         type: Type? = nil,
         defaultValue: String? = nil,
-        annotations: [String: NSObject] = [:], 
+        annotations: [String: AnnotationValue] = [:], 
         isInout: Bool = false,
         isVariadic: Bool = false
     ) {
@@ -60,7 +60,7 @@ public class FunctionParameter: Diffable, Typed, Annotated, Hashable {
         typeName: TypeName,
         type: Type? = nil,
         defaultValue: String? = nil,
-        annotations: [String: NSObject] = [:],
+        annotations: [String: AnnotationValue] = [:],
         isInout: Bool = false,
         isVariadic: Bool = false
     ) {

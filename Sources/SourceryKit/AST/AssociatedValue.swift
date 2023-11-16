@@ -29,7 +29,7 @@ public final class AssociatedValue: Typed, Annotated {
         typeName: TypeName,
         type: Type? = nil,
         defaultValue: String? = nil,
-        annotations: [String: NSObject] = [:]
+        annotations: [String: AnnotationValue] = [:]
     ) {
         self.localName = localName
         self.externalName = externalName
@@ -44,7 +44,7 @@ public final class AssociatedValue: Typed, Annotated {
         typeName: TypeName,
         type: Type? = nil,
         defaultValue: String? = nil,
-        annotations: [String: NSObject] = [:]
+        annotations: [String: AnnotationValue] = [:]
     ) {
         self.init(
             localName: name,

@@ -11,7 +11,7 @@ extension Configuration {
         cacheDisabled: Bool = true,
         forceParse: [String] = [],
         parseDocumentation: Bool = false,
-        arguments: [String: NSObject] = [:]
+        arguments: [String: AnnotationValue] = [:]
     ) -> Self {
         .init(
             sources: sources,

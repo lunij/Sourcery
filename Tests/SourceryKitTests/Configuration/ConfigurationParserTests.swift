@@ -230,8 +230,8 @@ class ConfigurationParserTests: XCTestCase {
         """
         let config = try XCTUnwrap(sut.parse(from: yaml).first)
         XCTAssertEqual(config.sources, ["/base/path/Sources"])
-        XCTAssertEqual(config.arguments["serverUrl"] as? String, "www.example.com")
-        XCTAssertEqual(config.arguments["serverPort"] as? String, "")
+        XCTAssertEqual(config.arguments["serverUrl"], "www.example.com")
+        XCTAssertEqual(config.arguments["serverPort"], "")
     }
 
     func test_parsesMultipleConfigurations() throws {
@@ -255,9 +255,7 @@ class ConfigurationParserTests: XCTestCase {
         XCTAssertEqual(configs.count, 2)
 
         for (offset, config) in configs.enumerated() {
-            let configServerUrl = config.arguments["serverUrl"] as? String
-
-            XCTAssertEqual(configServerUrl, "www.example.com/\(offset)")
+            XCTAssertEqual(config.arguments["serverUrl"], .string("www.example.com/\(offset)"))
             XCTAssertEqual(config.sources, [SourceFile(path: Path("/base/path/Sources/\(offset)"))])
         }
     }

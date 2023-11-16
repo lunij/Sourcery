@@ -23,7 +23,7 @@ public final class Actor: Type {
                          typealiases: [Typealias] = [],
                          attributes: AttributeList = [:],
                          modifiers: [Modifier] = [],
-                         annotations: [String: NSObject] = [:],
+                         annotations: [String: AnnotationValue] = [:],
                          documentation: [String] = [],
                          isGeneric: Bool = false) {
         super.init(

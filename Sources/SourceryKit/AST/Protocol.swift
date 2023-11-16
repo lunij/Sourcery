@@ -36,7 +36,7 @@ public final class Protocol: Type {
                 genericRequirements: [GenericRequirement] = [],
                 attributes: AttributeList = [:],
                 modifiers: [Modifier] = [],
-                annotations: [String: NSObject] = [:],
+                annotations: [String: AnnotationValue] = [:],
                 documentation: [String] = []) {
         self.genericRequirements = genericRequirements
         self.associatedTypes = associatedTypes

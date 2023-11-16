@@ -75,7 +75,7 @@ class ConfigurationParser: ConfigurationParsing {
             cacheDisabled: cacheDisabled,
             forceParse: dict["forceParse"] as? [String] ?? [],
             parseDocumentation: dict["parseDocumentation"] as? Bool ?? false,
-            arguments: dict["args"] as? [String: NSObject] ?? [:]
+            arguments: (dict["args"] as? [String: Any] ?? [:]).bridged
         )
     }
 
@@ -342,5 +342,13 @@ private extension Project.Target.XCFramework {
 
         self.path = path
         self.swiftInterfacePath = swiftInterfacePath
+    }
+}
+
+private extension [String: Any] {
+    var bridged: [String: AnnotationValue] {
+        reduce(into: [String: AnnotationValue]()) { result, dict in
+            result[dict.key] = .init(dict.value)
+        }
     }
 }

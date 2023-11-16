@@ -35,7 +35,7 @@ public final class ClosureParameter: Typed, Annotated {
         typeName: TypeName,
         type: Type? = nil,
         defaultValue: String? = nil,
-        annotations: [String: NSObject] = [:],
+        annotations: [String: AnnotationValue] = [:],
         isInout: Bool = false
     ) {
         self.typeName = typeName

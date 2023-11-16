@@ -228,13 +228,14 @@ class StencilTemplateTests2: XCTestCase {
 
     func test_additionalArguments_parsesNumbers() {
         XCTAssertEqual("{% if argument.number > 2 %}TRUE{% endif %}".generate(), "TRUE")
+        XCTAssertEqual("{{ argument.number }}".generate(), "4")
     }
 }
 
-private func beforeEachGenerate() -> ([Type], [String: NSObject]) {
+private func beforeEachGenerate() -> ([Type], [String: AnnotationValue]) {
     let fooType = Class(name: "Foo", variables: [Variable(name: "intValue", typeName: TypeName(name: "Int"))], inheritedTypes: ["NSObject", "Decodable", "AlternativeProtocol"])
-    let fooSubclassType = Class(name: "FooSubclass", inheritedTypes: ["Foo", "ProtocolBasedOnKnownProtocol"], annotations: ["foo": NSNumber(value: 2), "smth": ["bar": NSNumber(value: 2)] as NSObject])
-    let barType = Struct(name: "Bar", inheritedTypes: ["KnownProtocol", "Decodable"], annotations: ["bar": NSNumber(value: true)])
+    let fooSubclassType = Class(name: "FooSubclass", inheritedTypes: ["Foo", "ProtocolBasedOnKnownProtocol"], annotations: ["foo": 2, "smth": ["bar": 2]])
+    let barType = Struct(name: "Bar", inheritedTypes: ["KnownProtocol", "Decodable"], annotations: ["bar": true])
 
     let complexType = Struct(name: "Complex", accessLevel: .public, isExtension: false, variables: [])
     let fooVar = Variable(name: "foo", typeName: TypeName(name: "Foo"), accessLevel: (read: .public, write: .private), isComputed: false, definedInTypeName: TypeName(name: "Complex"))
@@ -295,7 +296,7 @@ private func beforeEachGenerate() -> ([Type], [String: NSObject]) {
         Protocol(name: "ProtocolBasedOnKnownProtocol", inheritedTypes: ["KnownProtocol"])
     ]
 
-    let arguments: [String: NSObject] = ["some": "value" as NSString, "number": NSNumber(value: Float(4))]
+    let arguments: [String: AnnotationValue] = ["some": "value", "number": 4]
     return (types, arguments)
 }
 

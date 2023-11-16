@@ -1,5 +1,4 @@
 import PathKit
-import QuartzCore
 
 public struct Configuration: Equatable {
     public let sources: [SourceFile]
@@ -10,7 +9,7 @@ public struct Configuration: Equatable {
     public let cacheDisabled: Bool
     public let forceParse: [String]
     public let parseDocumentation: Bool
-    public let arguments: [String: NSObject]
+    public let arguments: [String: AnnotationValue]
 
     public init(
         sources: [SourceFile],
@@ -21,7 +20,7 @@ public struct Configuration: Equatable {
         cacheDisabled: Bool,
         forceParse: [String],
         parseDocumentation: Bool,
-        arguments: [String: NSObject]
+        arguments: [String: AnnotationValue]
     ) {
         self.sources = sources
         self.templates = templates

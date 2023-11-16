@@ -5,14 +5,14 @@ import Stencil
 public final class TemplateContext: Diffable, Equatable, Hashable, CustomStringConvertible {
     public let functions: [Function]
     public let types: Types
-    public let argument: [String: NSObject]
+    public let argument: [String: AnnotationValue]
 
     // sourcery: skipDescription
     public var type: [String: Type] {
         return types.typesByName
     }
 
-    public init(types: Types, functions: [Function], arguments: [String: NSObject]) {
+    public init(types: Types, functions: [Function], arguments: [String: AnnotationValue]) {
         self.types = types
         self.functions = functions
         self.argument = arguments

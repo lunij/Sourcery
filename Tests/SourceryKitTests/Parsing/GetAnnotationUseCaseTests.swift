@@ -31,7 +31,7 @@ class GetAnnotationUseCaseTests: XCTestCase {
             memberBlock: .init(members: [])
         )
         let annotations = sut.annotations(from: declaration)
-        XCTAssertEqual(annotations, ["skipEquality": NSNumber(value: true)])
+        XCTAssertEqual(annotations, ["skipEquality": true])
     }
 }
 

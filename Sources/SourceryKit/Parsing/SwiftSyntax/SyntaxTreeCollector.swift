@@ -297,7 +297,7 @@ class SyntaxTreeCollector: SyntaxVisitor {
         return .visitChildren
     }
 
-    private func processPossibleProtocolComposition(for typeName: String, localName: String, annotations: [String: NSObject] = [:], accessLevel: AccessLevel = .internal) -> Type? {
+    private func processPossibleProtocolComposition(for typeName: String, localName: String, annotations: [String: AnnotationValue] = [:], accessLevel: AccessLevel = .internal) -> Type? {
         if let composedTypeNames = extractComposedTypeNames(from: typeName, trimmingCharacterSet: .whitespaces), composedTypeNames.count > 1 {
             let inheritedTypes = composedTypeNames.map { $0.name }
             let composition = ProtocolComposition(

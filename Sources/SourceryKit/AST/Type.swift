@@ -343,7 +343,7 @@ public class Type: Diffable, Annotated, Documented, CustomStringConvertible, Has
         typealiases: [Typealias] = [],
         attributes: AttributeList = [:],
         modifiers: [Modifier] = [],
-        annotations: [String: NSObject] = [:],
+        annotations: [String: AnnotationValue] = [:],
         documentation: [String] = [],
         isGeneric: Bool = false
     ) {
