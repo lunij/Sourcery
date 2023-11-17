@@ -19,58 +19,6 @@ class SwiftSyntaxParserTests: XCTestCase {
         XCTAssertEqual(annotations, ["forceMockPublisher": true])
     }
 
-    func test_parsesAnnotationBlock() {
-        let annotations: [Annotations] = [
-            ["skipEquality": true],
-            ["skipEquality": true, "extraAnnotation": 2],
-            [:]
-        ]
-        let expectedVariables = (1...3)
-            .map { Variable(name: "property\($0)", typeName: TypeName(name: "Int"), annotations: annotations[$0 - 1], definedInTypeName: TypeName(name: "Foo")) }
-        let expectedType = Class(name: "Foo", variables: expectedVariables, annotations: ["skipEquality": true])
-
-        let result = """
-        // sourcery:begin: skipEquality
-        class Foo {
-            var property1: Int
-            // sourcery: extraAnnotation = 2
-            var property2: Int
-            // sourcery:end
-            var property3: Int
-        }
-        """.parse()
-
-        XCTAssertEqual(result.types, [expectedType])
-    }
-
-    func test_parsesFileAnnotationBlock() {
-        let annotations: [Annotations] = [
-            ["fileAnnotation": true, "skipEquality": true],
-            ["fileAnnotation": true, "skipEquality": true, "extraAnnotation": 2],
-            ["fileAnnotation": true]
-        ]
-        let expectedVariables = (1...3)
-            .map { Variable(name: "property\($0)", typeName: TypeName(name: "Int"), annotations: annotations[$0 - 1], definedInTypeName: TypeName(name: "Foo")) }
-        let expectedType = Class(name: "Foo", variables: expectedVariables, annotations: ["fileAnnotation": true, "skipEquality": true])
-
-        let result = """
-        // sourcery:file: fileAnnotation
-        // sourcery:begin: skipEquality
-
-        class Foo {
-            var property1: Int
-
-            // sourcery: extraAnnotation = 2
-            var property2: Int
-
-            // sourcery:end
-            var property3: Int
-        }
-        """.parse()
-
-        XCTAssertEqual(result.types.first, expectedType)
-    }
-
     func test_struct_parsesStruct() {
         XCTAssertEqual("struct Foo { }".parse().types, [
             Struct(name: "Foo", accessLevel: .internal, isExtension: false, variables: [])
@@ -430,34 +378,19 @@ class SwiftSyntaxParserTests: XCTestCase {
     func test_enum_parsesCasesWithAnnotations() {
         XCTAssertEqual("""
         enum Foo {
-            // sourcery:begin: block
             // sourcery: first, second=\"value\"
             case optionA(/* sourcery: first, second = \"value\" */Int)
             // sourcery: third
             case optionB
             case optionC
-            // sourcery:end
         }
         """.parse().types, [
             Enum(name: "Foo", cases: [
                 EnumCase(name: "optionA", associatedValues: [
-                    AssociatedValue(name: nil, typeName: TypeName(name: "Int"), annotations: [
-                        "first": true,
-                        "second": "value",
-                        "block": true
-                    ])
-                ], annotations: [
-                    "block": true,
-                    "first": true,
-                    "second": "value"
-                ]),
-                EnumCase(name: "optionB", annotations: [
-                    "block": true,
-                    "third": true
-                ]),
-                EnumCase(name: "optionC", annotations: [
-                    "block": true
-                ])
+                    AssociatedValue(name: nil, typeName: TypeName(name: "Int"), annotations: ["first": true, "second": "value",])
+                ], annotations: ["first": true, "second": "value"]),
+                EnumCase(name: "optionB", annotations: ["third": true]),
+                EnumCase(name: "optionC")
             ])
         ])
     }
@@ -465,33 +398,18 @@ class SwiftSyntaxParserTests: XCTestCase {
     func test_enum_parsesCasesWithInlineAnnotations() {
         XCTAssertEqual("""
         enum Foo {
-            //sourcery:begin: block
             /* sourcery: first, second = \"value\" */ case optionA(/* sourcery: first, second = \"value\" */Int);
             /* sourcery: third */ case optionB
             case optionC
-            //sourcery:end
         }
         """.parse().types.first, Enum(
             name: "Foo",
             cases: [
                 EnumCase(name: "optionA", associatedValues: [
-                    AssociatedValue(name: nil, typeName: TypeName(name: "Int"), annotations: [
-                        "first": true,
-                        "second": "value",
-                        "block": true
-                    ])
-                ], annotations: [
-                    "block": true,
-                    "first": true,
-                    "second": "value"
-                ]),
-                EnumCase(name: "optionB", annotations: [
-                    "block": true,
-                    "third": true
-                ]),
-                EnumCase(name: "optionC", annotations: [
-                    "block": true
-                ])
+                    AssociatedValue(name: nil, typeName: TypeName(name: "Int"), annotations: ["first": true, "second": "value"])
+                ], annotations: ["first": true, "second": "value"]),
+                EnumCase(name: "optionB", annotations: ["third": true]),
+                EnumCase(name: "optionC")
             ])
         )
     }
@@ -499,30 +417,16 @@ class SwiftSyntaxParserTests: XCTestCase {
     func test_enum_parsesOneLineCasesWithInlineAnnotations() {
         XCTAssertEqual("""
         enum Foo {
-            //sourcery:begin: block
             case /* sourcery: first, second = \"value\" */ optionA(Int), /* sourcery: third, fourth = \"value\" */ optionB, optionC
-            //sourcery:end
         }
         """.parse().types.first, Enum(
             name: "Foo",
             cases: [
                 EnumCase(name: "optionA", associatedValues: [
-                    AssociatedValue(name: nil, typeName: TypeName(name: "Int"), annotations: [
-                        "block": true
-                    ])
-                ], annotations: [
-                    "block": true,
-                    "first": true,
-                    "second": "value"
-                ]),
-                EnumCase(name: "optionB", annotations: [
-                    "block": true,
-                    "third": true,
-                    "fourth": "value"
-                ]),
-                EnumCase(name: "optionC", annotations: [
-                    "block": true
-                ])
+                    AssociatedValue(name: nil, typeName: TypeName(name: "Int"))
+                ], annotations: ["first": true, "second": "value"]),
+                EnumCase(name: "optionB", annotations: ["third": true, "fourth": "value"]),
+                EnumCase(name: "optionC")
             ])
         )
     }

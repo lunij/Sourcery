@@ -19,10 +19,10 @@ class AnnotationParserTests: XCTestCase {
         var name: Int { return 2 }
         """)
         XCTAssertEqual(annotations, [
-            .init(content: "// sourcery: foo = \"🌍\"", type: .comment, annotations: ["foo": "🌍"], blockAnnotations: [:]),
-            .init(content: "/* sourcery: skipEquality */", type: .comment, annotations: ["skipEquality": true], blockAnnotations: [:]),
-            .init(content: "/** sourcery: skipCoding */", type: .documentationComment, annotations: ["skipCoding": true], blockAnnotations: [:]),
-            .init(content: "var name: Int { return 2 }", type: .other, annotations: [:], blockAnnotations: [:])
+            .init(content: "// sourcery: foo = \"🌍\"", type: .comment, annotations: ["foo": "🌍"]),
+            .init(content: "/* sourcery: skipEquality */", type: .comment, annotations: ["skipEquality": true]),
+            .init(content: "/** sourcery: skipCoding */", type: .documentationComment, annotations: ["skipCoding": true]),
+            .init(content: "var name: Int { return 2 }", type: .other, annotations: [:])
         ])
     }
 
@@ -36,12 +36,12 @@ class AnnotationParserTests: XCTestCase {
         var name: Int { return 2 }
         """)
         XCTAssertEqual(annotations, [
-            .init(content: "/**", type: .documentationComment, annotations: [:], blockAnnotations: [:]),
-            .init(content: " * Comment", type: .comment, annotations: [:], blockAnnotations: [:]),
-            .init(content: " * sourcery: skipDescription", type: .comment, annotations: ["skipDescription": true], blockAnnotations: [:]),
-            .init(content: " * sourcery: skipEquality", type: .comment, annotations: ["skipEquality": true], blockAnnotations: [:]),
-            .init(content: " */", type: .comment, annotations: [:], blockAnnotations: [:]),
-            .init(content: "var name: Int { return 2 }", type: .other, annotations: [:], blockAnnotations: [:])
+            .init(content: "/**", type: .documentationComment, annotations: [:]),
+            .init(content: " * Comment", type: .comment, annotations: [:]),
+            .init(content: " * sourcery: skipDescription", type: .comment, annotations: ["skipDescription": true]),
+            .init(content: " * sourcery: skipEquality", type: .comment, annotations: ["skipEquality": true]),
+            .init(content: " */", type: .comment, annotations: [:]),
+            .init(content: "var name: Int { return 2 }", type: .other, annotations: [:])
         ])
     }
 
@@ -53,18 +53,18 @@ class AnnotationParserTests: XCTestCase {
         var name: Int { return 2 }
         """)
         XCTAssertEqual(annotations, [
-            .init(content: "// sourcery: skipEquality, jsonKey = \"[\\\"json_key\\\": key, \\\"json_value\\\": value]\"", type: .comment, annotations: ["jsonKey": "[\"json_key\": key, \"json_value\": value]", "skipEquality": true], blockAnnotations: [:]),
-            .init(content: "// sourcery: thirdProperty = -3", type: .comment, annotations: ["thirdProperty": -3], blockAnnotations: [:]),
-            .init(content: "// sourcery: placeholder = \"geo:37.332112,-122.0329753?q=1 Infinite Loop\"", type: .comment, annotations: ["placeholder": "geo:37.332112,-122.0329753?q=1 Infinite Loop"], blockAnnotations: [:]),
-            .init(content: "var name: Int { return 2 }", type: .other, annotations: [:], blockAnnotations: [:])
+            .init(content: "// sourcery: skipEquality, jsonKey = \"[\\\"json_key\\\": key, \\\"json_value\\\": value]\"", type: .comment, annotations: ["jsonKey": "[\"json_key\": key, \"json_value\": value]", "skipEquality": true]),
+            .init(content: "// sourcery: thirdProperty = -3", type: .comment, annotations: ["thirdProperty": -3]),
+            .init(content: "// sourcery: placeholder = \"geo:37.332112,-122.0329753?q=1 Infinite Loop\"", type: .comment, annotations: ["placeholder": "geo:37.332112,-122.0329753?q=1 Infinite Loop"]),
+            .init(content: "var name: Int { return 2 }", type: .other, annotations: [:])
         ])
     }
 
     func test_parsesRepeatedAnnotationsIntoArray() {
         let annotations = sut.parse("// sourcery: implements = \"Service1\"\n// sourcery: implements = \"Service2\"")
         XCTAssertEqual(annotations, [
-            .init(content: "// sourcery: implements = \"Service1\"", type: .comment, annotations: ["implements": "Service1"], blockAnnotations: [:]),
-            .init(content: "// sourcery: implements = \"Service2\"", type: .comment, annotations: ["implements": "Service2"], blockAnnotations: [:])
+            .init(content: "// sourcery: implements = \"Service1\"", type: .comment, annotations: ["implements": "Service1"]),
+            .init(content: "// sourcery: implements = \"Service2\"", type: .comment, annotations: ["implements": "Service2"])
         ])
     }
 
@@ -76,10 +76,10 @@ class AnnotationParserTests: XCTestCase {
         var name: Int { return 2 }
         """)
         XCTAssertEqual(annotations, [
-            .init(content: "// sourcery: isSet", type: .comment, annotations: ["isSet": true], blockAnnotations: [:]),
-            .init(content: "/// isSet is used for something useful", type: .documentationComment, annotations: [:], blockAnnotations: [:]),
-            .init(content: "// sourcery: numberOfIterations = 2", type: .comment, annotations: ["numberOfIterations": 2], blockAnnotations: [:]),
-            .init(content: "var name: Int { return 2 }", type: .other, annotations: [:], blockAnnotations: [:])
+            .init(content: "// sourcery: isSet", type: .comment, annotations: ["isSet": true]),
+            .init(content: "/// isSet is used for something useful", type: .documentationComment, annotations: [:]),
+            .init(content: "// sourcery: numberOfIterations = 2", type: .comment, annotations: ["numberOfIterations": 2]),
+            .init(content: "var name: Int { return 2 }", type: .other, annotations: [:])
         ])
     }
 
@@ -89,8 +89,8 @@ class AnnotationParserTests: XCTestCase {
         let property: Int // sourcery: second = 2, third = "three"
         """#)
         XCTAssertEqual(annotations, [
-            .init(content: "// sourcery: first = 1", type: .comment, annotations: ["first": 1], blockAnnotations: [:]),
-            .init(content: "let property: Int // sourcery: second = 2, third = \"three\"", type: .other, annotations: ["third": "three", "second": 2], blockAnnotations: [:])
+            .init(content: "// sourcery: first = 1", type: .comment, annotations: ["first": 1]),
+            .init(content: "let property: Int // sourcery: second = 2, third = \"three\"", type: .other, annotations: ["third": "three", "second": 2])
         ])
     }
 
@@ -100,8 +100,8 @@ class AnnotationParserTests: XCTestCase {
         let property: Int /* sourcery: second = 2, third = "three" */ // comment
         """#)
         XCTAssertEqual(annotations, [
-            .init(content: "// sourcery: first = 1", type: .comment, annotations: ["first": 1], blockAnnotations: [:]),
-            .init(content: "let property: Int /* sourcery: second = 2, third = \"three\" */ // comment", type: .other, annotations: ["second": 2, "third": "three"], blockAnnotations: [:])
+            .init(content: "// sourcery: first = 1", type: .comment, annotations: ["first": 1]),
+            .init(content: "let property: Int /* sourcery: second = 2, third = \"three\" */ // comment", type: .other, annotations: ["second": 2, "third": "three"])
         ])
     }
 
@@ -111,21 +111,8 @@ class AnnotationParserTests: XCTestCase {
         let property = "// sourcery: second = 2" // sourcery: third = 3
         """#)
         XCTAssertEqual(annotations, [
-            .init(content: "// sourcery: first = 1", type: .comment, annotations: ["first": 1], blockAnnotations: [:]),
-            .init(content: "let property = \"// sourcery: second = 2\" // sourcery: third = 3", type: .other, annotations: ["third": 3], blockAnnotations: [:])
-        ])
-    }
-
-    func test_parsesFileAnnotations() {
-        let annotations = sut.parse("""
-        // sourcery:file: isSet
-        /// isSet is used for something useful
-        var name: Int { return 2 }
-        """)
-        XCTAssertEqual(annotations, [
-            .init(content: "// sourcery:file: isSet", type: .file, annotations: ["isSet": true], blockAnnotations: [:]),
-            .init(content: "/// isSet is used for something useful", type: .documentationComment, annotations: ["isSet": true], blockAnnotations: [:]),
-            .init(content: "var name: Int { return 2 }", type: .other, annotations: ["isSet": true], blockAnnotations: [:])
+            .init(content: "// sourcery: first = 1", type: .comment, annotations: ["first": 1]),
+            .init(content: "let property = \"// sourcery: second = 2\" // sourcery: third = 3", type: .other, annotations: ["third": 3])
         ])
     }
 
@@ -136,16 +123,16 @@ class AnnotationParserTests: XCTestCase {
         var name: Int { return 2 }
         """)
         XCTAssertEqual(annotations, [
-            .init(content: "// sourcery:decoding:smth: key=\'aKey\', default=0", type: .comment, annotations: ["decoding": ["smth": ["key": "aKey", "default": 0]]], blockAnnotations: [:]),
-            .init(content: "// sourcery:decoding:smth: prune", type: .comment, annotations: ["decoding": ["smth": ["prune": true]]], blockAnnotations: [:]),
-            .init(content: "var name: Int { return 2 }", type: .other, annotations: [:], blockAnnotations: [:])
+            .init(content: "// sourcery:decoding:smth: key=\'aKey\', default=0", type: .comment, annotations: ["decoding": ["smth": ["key": "aKey", "default": 0]]]),
+            .init(content: "// sourcery:decoding:smth: prune", type: .comment, annotations: ["decoding": ["smth": ["prune": true]]]),
+            .init(content: "var name: Int { return 2 }", type: .other, annotations: [:])
         ])
     }
 
     func test_parsesJsonStringAnnotationsIntoArray() {
         let annotations = sut.parse("// sourcery: theArray=[22,55,88]")
         XCTAssertEqual(annotations, [
-            .init(content: "// sourcery: theArray=[22,55,88]", type: .comment, annotations: ["theArray": [22, 55, 88]], blockAnnotations: [:])
+            .init(content: "// sourcery: theArray=[22,55,88]", type: .comment, annotations: ["theArray": [22, 55, 88]])
         ])
     }
 
@@ -166,8 +153,7 @@ class AnnotationParserTests: XCTestCase {
                             "to": "status"
                         ]
                     ]
-                ],
-                blockAnnotations: [:]
+                ]
             )
         ])
     }
@@ -183,8 +169,7 @@ class AnnotationParserTests: XCTestCase {
                         "firstValue": 22,
                         "secondValue": 55
                     ]
-                ],
-                blockAnnotations: [:]
+                ]
             )
         ])
     }
@@ -200,8 +185,7 @@ class AnnotationParserTests: XCTestCase {
                         "firstArray": [22, 55, 88],
                         "secondArray": [1, 2, 3, 4]
                     ]
-                ],
-                blockAnnotations: [:]
+                ]
             )
         ])
     }

@@ -406,33 +406,61 @@ class SwiftSyntaxParserFunctionTests: XCTestCase {
     }
 
     func test_parsesParameterAnnotations() {
-        XCTAssertEqual("class Foo {\n //sourcery: foo\nfunc foo(\n// sourcery: annotationA\na: Int,\n// sourcery: annotationB\nb: Int) {}\n//sourcery: bar\nfunc bar(\n// sourcery: annotationA\na: Int,\n// sourcery: annotationB\nb: Int) {} }".parse(), [
-            Class(name: "Foo", methods: [
-                Function(name: "foo(a: Int, b: Int)", selectorName: "foo(a:b:)", parameters: [
-                    FunctionParameter(name: "a", typeName: TypeName(name: "Int"), annotations: ["annotationA": true]),
-                    FunctionParameter(name: "b", typeName: TypeName(name: "Int"), annotations: ["annotationB": true])
-                ], annotations: ["foo": true], definedInTypeName: TypeName(name: "Foo")),
-                Function(name: "bar(a: Int, b: Int)", selectorName: "bar(a:b:)", parameters: [
-                    FunctionParameter(name: "a", typeName: TypeName(name: "Int"), annotations: ["annotationA": true]),
-                    FunctionParameter(name: "b", typeName: TypeName(name: "Int"), annotations: ["annotationB": true])
-                ], annotations: ["bar": true], definedInTypeName: TypeName(name: "Foo"))
-            ])
-        ])
+        XCTAssertEqual(
+            """
+            class Foo {
+                //sourcery: foo
+                func foo(
+                    // sourcery: annotationA
+                    a: Int,
+                    // sourcery: annotationB
+                    b: Int
+                ) {}
+                //sourcery: bar
+                func bar(
+                    // sourcery: annotationA
+                    a: Int,
+                    // sourcery: annotationB
+                    b: Int
+                ) {}
+            }
+            """.parse(), [
+                Class(name: "Foo", methods: [
+                    Function(name: "foo(a: Int, b: Int)", selectorName: "foo(a:b:)", parameters: [
+                        FunctionParameter(name: "a", typeName: TypeName(name: "Int"), annotations: ["annotationA": true]),
+                        FunctionParameter(name: "b", typeName: TypeName(name: "Int"), annotations: ["annotationB": true])
+                    ], annotations: ["foo": true], definedInTypeName: TypeName(name: "Foo")),
+                    Function(name: "bar(a: Int, b: Int)", selectorName: "bar(a:b:)", parameters: [
+                        FunctionParameter(name: "a", typeName: TypeName(name: "Int"), annotations: ["annotationA": true]),
+                        FunctionParameter(name: "b", typeName: TypeName(name: "Int"), annotations: ["annotationB": true])
+                    ], annotations: ["bar": true], definedInTypeName: TypeName(name: "Foo"))
+                ])
+            ]
+        )
     }
 
     func test_parsesParameterInlineAnnotations() {
-        XCTAssertEqual("class Foo {\n//sourcery:begin:func\n //sourcery: foo\nfunc foo(/* sourcery: annotationA */a: Int, /* sourcery: annotationB*/b: Int) {}\n//sourcery: bar\nfunc bar(/* sourcery: annotationA */a: Int, /* sourcery: annotationB*/b: Int) {}\n//sourcery:end}".parse(), [
-            Class(name: "Foo", methods: [
-                Function(name: "foo(a: Int, b: Int)", selectorName: "foo(a:b:)", parameters: [
-                    FunctionParameter(name: "a", typeName: TypeName(name: "Int"), annotations: ["annotationA": true, "func": true]),
-                    FunctionParameter(name: "b", typeName: TypeName(name: "Int"), annotations: ["annotationB": true, "func": true])
-                ], annotations: ["foo": true, "func": true], definedInTypeName: TypeName(name: "Foo")),
-                Function(name: "bar(a: Int, b: Int)", selectorName: "bar(a:b:)", parameters: [
-                    FunctionParameter(name: "a", typeName: TypeName(name: "Int"), annotations: ["annotationA": true, "func": true]),
-                    FunctionParameter(name: "b", typeName: TypeName(name: "Int"), annotations: ["annotationB": true, "func": true])
-                ], annotations: ["bar": true, "func": true], definedInTypeName: TypeName(name: "Foo"))
-            ])
-        ])
+        XCTAssertEqual(
+            """
+            class Foo {
+                //sourcery: foo
+                func foo(/* sourcery: annotationA */a: Int, /* sourcery: annotationB*/b: Int) {}
+                //sourcery: bar
+                func bar(/* sourcery: annotationA */a: Int, /* sourcery: annotationB*/b: Int) {}
+            }
+            """.parse(), [
+                Class(name: "Foo", methods: [
+                    Function(name: "foo(a: Int, b: Int)", selectorName: "foo(a:b:)", parameters: [
+                        FunctionParameter(name: "a", typeName: TypeName(name: "Int"), annotations: ["annotationA": true]),
+                        FunctionParameter(name: "b", typeName: TypeName(name: "Int"), annotations: ["annotationB": true])
+                    ], annotations: ["foo": true], definedInTypeName: TypeName(name: "Foo")),
+                    Function(name: "bar(a: Int, b: Int)", selectorName: "bar(a:b:)", parameters: [
+                        FunctionParameter(name: "a", typeName: TypeName(name: "Int"), annotations: ["annotationA": true]),
+                        FunctionParameter(name: "b", typeName: TypeName(name: "Int"), annotations: ["annotationB": true])
+                    ], annotations: ["bar": true], definedInTypeName: TypeName(name: "Foo"))
+                ])
+            ]
+        )
     }
 }
 

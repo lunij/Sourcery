@@ -73,7 +73,7 @@ public class GetAnnotationUseCase {
             .trimmingCharacters(in: .whitespaces)
 
         guard !prefix.isEmpty else { return [:] }
-        var annotations = sourceLine.blockAnnotations
+        var annotations: Annotations = [:]
         sourceLine.annotations.forEach { annotation in
             annotations.append(key: annotation.key, value: annotation.value)
         }
