@@ -14,7 +14,7 @@ extension Function {
             parent: parent,
             identifier: node.name.text.trimmed,
             typeName: typeName,
-            signature: Signature(node.signature, getAnnotationUseCase: getAnnotationUseCase),
+            signature: FunctionSignature(node.signature, getAnnotationUseCase: getAnnotationUseCase),
             modifiers: node.modifiers,
             attributes: node.attributes,
             genericParameterClause: node.genericParameterClause,
@@ -31,19 +31,12 @@ extension Function {
         getAnnotationUseCase: GetAnnotationUseCase,
         getDocumentationUseCase: GetDocumentationUseCase?
     ) {
-        let signature = node.signature
         self.init(
             node: node,
             parent: parent,
             identifier: "init\(node.optionalMark?.text.trimmed ?? "")",
             typeName: typeName,
-            signature: Signature(
-                parameters: signature.parameterClause.parameters,
-                output: nil,
-                asyncKeyword: nil,
-                throwsOrRethrowsKeyword: signature.effectSpecifiers?.throwsSpecifier?.description.trimmed,
-                getAnnotationUseCase: getAnnotationUseCase
-            ),
+            signature: FunctionSignature(node.signature, getAnnotationUseCase: getAnnotationUseCase),
             modifiers: node.modifiers,
             attributes: node.attributes,
             genericParameterClause: node.genericParameterClause,
@@ -65,13 +58,7 @@ extension Function {
             parent: parent,
             identifier: "deinit",
             typeName: typeName,
-            signature: Signature(
-                parameters: nil,
-                output: nil,
-                asyncKeyword: nil,
-                throwsOrRethrowsKeyword: nil,
-                getAnnotationUseCase: getAnnotationUseCase
-            ),
+            signature: FunctionSignature(parameters: []),
             modifiers: node.modifiers,
             attributes: node.attributes,
             genericParameterClause: nil,
@@ -86,7 +73,7 @@ extension Function {
         parent: Type?,
         identifier: String,
         typeName: TypeName?,
-        signature: Signature,
+        signature: FunctionSignature,
         modifiers: DeclModifierListSyntax?,
         attributes: AttributeListSyntax?,
         genericParameterClause: GenericParameterClauseSyntax?,
@@ -106,7 +93,7 @@ extension Function {
                 typeName
             }
         } else {
-            signature.output ?? TypeName(name: "Void")
+            signature.returnType ?? TypeName(name: "Void")
         }
 
         let funcName = identifier.last == "?" ? String(identifier.dropLast()) : identifier
@@ -148,7 +135,7 @@ extension Function {
         self.init(
             name: name,
             selectorName: selectorName,
-            parameters: signature.input,
+            parameters: signature.parameters,
             returnTypeName: returnTypeName,
             isAsync: signature.asyncKeyword == "async",
             throws: signature.throwsOrRethrowsKeyword == "throws",
