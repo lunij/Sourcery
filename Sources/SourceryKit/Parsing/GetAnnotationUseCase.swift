@@ -98,17 +98,7 @@ public class GetAnnotationUseCase {
     }
 
     private func parse(from trivia: Trivia) -> Annotations {
-        let comments = trivia.pieces.compactMap {
-            switch $0 {
-            case let .docLineComment(value), let .docBlockComment(value):
-                return value
-            case let .lineComment(value), let .blockComment(value):
-                return value
-            default:
-                return nil
-            }
-        }
-
+        let comments = trivia.pieces.compactMap(\.comment)
         var annotations: Annotations = [:]
 
         for comment in comments {
@@ -118,5 +108,19 @@ public class GetAnnotationUseCase {
         }
 
         return annotations
+    }
+}
+
+private extension TriviaPiece {
+    var comment: String? {
+        switch self {
+        case let .lineComment(comment),
+             let .blockComment(comment),
+             let .docLineComment(comment),
+             let .docBlockComment(comment):
+            comment
+        default:
+            nil
+        }
     }
 }
