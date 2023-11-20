@@ -109,16 +109,11 @@ public class GetAnnotationUseCase {
             }
         }
 
-        var lines: [AnnotationParser.Line] = []
+        var annotations: Annotations = [:]
 
         for comment in comments {
-            lines.append(contentsOf: annotationParser.parse(comment))
-        }
-
-        var annotations = Annotations()
-        for line in lines {
-            for annotation in line.annotations {
-                annotations.append(key: annotation.key, value: annotation.value)
+            for (key, value) in annotationParser.parse(comment) {
+                annotations.append(key: key, value: value)
             }
         }
 
