@@ -7,8 +7,15 @@ extension EnumCaseDeclSyntax {
         getDocumentationUseCase: GetDocumentationUseCase?
     ) -> [EnumCase] {
         let documentation = getDocumentationUseCase?.documentation(from: self) ?? []
-        return elements.map {
-            EnumCase($0, parent: self, getAnnotationUseCase: getAnnotationUseCase, documentation: documentation)
+        let caseElementAnnotationsMap = getAnnotationUseCase.parseAnnotations(from: self)
+        return caseElementAnnotationsMap.map { element, annotations in
+            EnumCase(
+                element,
+                parent: self,
+                getAnnotationUseCase: getAnnotationUseCase,
+                annotations: annotations,
+                documentation: documentation
+            )
         }
     }
 }
@@ -18,35 +25,37 @@ extension EnumCase {
         _ node: EnumCaseElementSyntax,
         parent: EnumCaseDeclSyntax,
         getAnnotationUseCase: GetAnnotationUseCase,
+        annotations: Annotations,
         documentation: Documentation
     ) {
         var associatedValues: [AssociatedValue] = []
-        if let paramList = node.parameterClause?.parameters {
-            let hasManyValues = paramList.count > 1
-            associatedValues = paramList
-                .enumerated()
-                .map { idx, param in
-                    let name = param.firstName?.text.trimmed.nilIfNotValidParameterName
-                    let secondName = param.secondName?.text.trimmed
 
-                    let defaultValue = param.defaultValue?.value.description.trimmed
-                    var externalName: String? = secondName
-                    if externalName == nil, hasManyValues {
-                        externalName = name ?? "\(idx)"
-                    }
+        if let parameterClause = node.parameterClause {
+            let parameterAnnotationsMap = getAnnotationUseCase.parseAnnotations(from: parameterClause)
 
-                    var collectedAnnotations = Annotations()
-                    collectedAnnotations = getAnnotationUseCase.annotations(fromToken: param.type)
+            let hasManyValues = parameterAnnotationsMap.count > 1
 
-                    return AssociatedValue(
-                        localName: name,
-                        externalName: externalName,
-                        typeName: .init(param.type),
-                        type: nil,
-                        defaultValue: defaultValue,
-                        annotations: collectedAnnotations
-                    )
+            associatedValues = parameterAnnotationsMap.enumerated().map { index, parameterWithAnnotations in
+                let parameter = parameterWithAnnotations.parameter
+                let name = parameter.firstName?.text.trimmed.nilIfNotValidParameterName
+                let secondName = parameter.secondName?.text.trimmed
+
+                let defaultValue = parameter.defaultValue?.value.description.trimmed
+
+                var externalName: String? = secondName
+                if externalName == nil, hasManyValues {
+                    externalName = name ?? "\(index)"
                 }
+
+                return AssociatedValue(
+                    localName: name,
+                    externalName: externalName,
+                    typeName: .init(parameter.type),
+                    type: nil,
+                    defaultValue: defaultValue,
+                    annotations: parameterWithAnnotations.annotations
+                )
+            }
         }
 
         var rawValue = node.rawValue?.value.trimmedDescription
@@ -62,7 +71,7 @@ extension EnumCase {
             name: node.name.text.trimmed,
             rawValue: rawValue,
             associatedValues: associatedValues,
-            annotations: getAnnotationUseCase.annotations(from: node),
+            annotations: annotations,
             documentation: documentation,
             indirect: indirect
         )

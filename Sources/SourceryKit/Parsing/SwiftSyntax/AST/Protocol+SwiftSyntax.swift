@@ -33,7 +33,7 @@ extension SourceryProtocol {
           genericRequirements: genericRequirements,
           attributes: .init(from: node.attributes),
           modifiers: modifiers,
-          annotations: getAnnotationParser.annotations(from: node),
+          annotations: getAnnotationParser.parseAnnotations(from: node),
           documentation: getDocumentationUseCase?.documentation(from: node) ?? []
         )
     }

@@ -90,7 +90,7 @@ extension Variable {
           defaultValue: node.initializer?.value.description.trimmingCharacters(in: .whitespacesAndNewlines),
             attributes: .init(from: variableNode.attributes),
           modifiers: modifiers,
-          annotations: getAnnotationUseCase.annotations(fromToken: variableNode.bindingSpecifier),
+          annotations: getAnnotationUseCase.parseAnnotations(from: variableNode.bindingSpecifier),
           documentation: getDocumentationUseCase?.documentation(from: variableNode.bindingSpecifier) ?? [],
           definedInTypeName: visitingType.map { TypeName($0.name) }
         )

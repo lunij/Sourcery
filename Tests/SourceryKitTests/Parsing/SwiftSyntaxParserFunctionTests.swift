@@ -462,6 +462,18 @@ class SwiftSyntaxParserFunctionTests: XCTestCase {
             ]
         )
     }
+
+    func test_parsesParameterInlineAnnotations_minimalized() {
+        let types = """
+        class Foo {
+            func foo(/* sourcery: annotationA */a: Int, /* sourcery: annotationB*/b: Int) {}
+        }
+        """.parse()
+        XCTAssertEqual(types.first?.methods.first?.parameters.map(\.annotations), [
+            ["annotationA": true],
+            ["annotationB": true]
+        ])
+    }
 }
 
 private extension String {

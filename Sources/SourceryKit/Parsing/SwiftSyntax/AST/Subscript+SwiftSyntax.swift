@@ -60,13 +60,15 @@ extension Subscript {
             readAccess = parentAccess
         }
 
+        let parameterAnnotationsMap = getAnnotationUseCase.parseAnnotations(from: node.parameterClause)
+
         self.init(
-            parameters: node.parameterClause.parameters.map { FunctionParameter($0, getAnnotationUseCase: getAnnotationUseCase) },
+            parameters: parameterAnnotationsMap.map { FunctionParameter($0.parameter, annotations: $0.annotations) },
             returnTypeName: TypeName(node.returnClause.type.description.trimmed),
             accessLevel: (read: readAccess, write: isWritable ? writeAccess : .none),
             attributes: .init(from: node.attributes),
             modifiers: modifiers,
-            annotations: node.firstToken(viewMode: .sourceAccurate).map { getAnnotationUseCase.annotations(fromToken: $0) } ?? [:],
+            annotations: node.firstToken(viewMode: .sourceAccurate).map { getAnnotationUseCase.parseAnnotations(from: $0) } ?? [:],
             documentation: node.firstToken(viewMode: .sourceAccurate).map { getDocumentationUseCase?.documentation(from: $0) ?? [] } ?? [],
             definedInTypeName: TypeName(parent.name)
         )

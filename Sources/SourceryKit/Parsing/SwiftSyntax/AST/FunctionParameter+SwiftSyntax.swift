@@ -1,7 +1,10 @@
 import SwiftSyntax
 
 extension FunctionParameter {
-    convenience init(_ node: FunctionParameterSyntax, getAnnotationUseCase: GetAnnotationUseCase) {
+    convenience init(
+        _ node: FunctionParameterSyntax,
+        annotations: Annotations
+    ) {
         let firstName = node.firstName.text.trimmed.nilIfNotValidParameterName
 
         let typeName = TypeName(node.type)
@@ -18,7 +21,7 @@ extension FunctionParameter {
             typeName: typeName,
             type: nil, // will be set during resolving process
             defaultValue: node.defaultValue?.value.description.trimmed,
-            annotations: node.firstToken(viewMode: .sourceAccurate).map { getAnnotationUseCase.annotations(fromToken: $0) } ?? [:],
+            annotations: annotations,
             isInout: specifiers.isInOut,
             isVariadic: node.ellipsis != nil
         )

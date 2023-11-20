@@ -23,7 +23,7 @@ extension Class {
           typealiases: [],
             attributes: .init(from: node.attributes),
           modifiers: modifiers,
-          annotations: getAnnotationUseCase.annotations(from: node),
+          annotations: getAnnotationUseCase.parseAnnotations(from: node),
           documentation: getDocumentationUseCase?.documentation(from: node) ?? [],
             isGeneric: node.genericParameterClause?.parameters.isEmpty == false
         )

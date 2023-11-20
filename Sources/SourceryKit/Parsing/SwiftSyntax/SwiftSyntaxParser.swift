@@ -42,10 +42,7 @@ final class SwiftSyntaxParser: SwiftSyntaxParsing {
         let collector = SyntaxTreeCollector(
             file: fileName,
             module: module,
-            getAnnotationUseCase: GetAnnotationUseCase(
-                content: content,
-                sourceLocationConverter: sourceLocationConverter
-            ),
+            getAnnotationUseCase: GetAnnotationUseCase(),
             getDocumentationUseCase: parseDocumentation ? GetDocumentationUseCase() : nil,
             sourceLocationConverter: sourceLocationConverter
         )

@@ -14,8 +14,9 @@ public struct FunctionSignature {
     public let throwsOrRethrowsKeyword: String?
 
     public init(_ node: FunctionSignatureSyntax, getAnnotationUseCase: GetAnnotationUseCase) {
+        let parameterAnnotationsMap = getAnnotationUseCase.parseAnnotations(from: node.parameterClause)
         self.init(
-            parameters: node.parameterClause.parameters.map { FunctionParameter($0, getAnnotationUseCase: getAnnotationUseCase) },
+            parameters: parameterAnnotationsMap.map { FunctionParameter($0.parameter, annotations: $0.annotations) },
             returnType: node.returnClause.map { TypeName($0.type) },
             asyncKeyword: node.effectSpecifiers?.asyncSpecifier?.text,
             throwsOrRethrowsKeyword: node.effectSpecifiers?.throwsSpecifier?.trimmedDescription

@@ -145,7 +145,7 @@ class SyntaxTreeCollector: SyntaxVisitor {
               typealiases: [],
               attributes: .init(from: node.attributes),
               modifiers: modifiers,
-              annotations: getAnnotationUseCase.annotations(fromToken: node.extensionKeyword),
+              annotations: getAnnotationUseCase.parseAnnotations(from: node),
               documentation: getDocumentationUseCase?.documentation(from: node.extensionKeyword) ?? [],
               isGeneric: false
             )
@@ -237,7 +237,7 @@ class SyntaxTreeCollector: SyntaxVisitor {
         let typeName = TypeName(node.initializer.value)
         let modifiers = node.modifiers.map(Modifier.init)
         let baseModifiers = modifiers.baseModifiers(parent: visitingType)
-        let annotations = getAnnotationUseCase.annotations(from: node)
+        let annotations = getAnnotationUseCase.parseAnnotations(from: node)
 
         if let composition = processPossibleProtocolComposition(for: typeName.name, localName: localName, annotations: annotations, accessLevel: baseModifiers.readAccess) {
             if let visitingType = visitingType {

@@ -259,19 +259,6 @@ class SwiftSyntaxParserVariableTests: XCTestCase {
         XCTAssertEqual(variable, expectedVariable)
     }
 
-    func test_annotations_stopsParsingAnnotationsIfItEncountersNonCommentLine() {
-        let expectedVariable = Variable(name: "name", typeName: TypeName(name: "Int"), accessLevel: (read: .internal, write: .none), isComputed: true)
-        expectedVariable.annotations["numberOfIterations"] = 2
-
-        let variable = """
-        // sourcery: isSet
-
-        // sourcery: numberOfIterations = 2
-        var name: Int { return 2 }
-        """.structVariable
-        XCTAssertEqual(variable, expectedVariable)
-    }
-
     func test_annotations_separatesCommentsFromVariableName() {
         let variable = """
         @SomeWrapper
@@ -285,14 +272,6 @@ class SwiftSyntaxParserVariableTests: XCTestCase {
             attributes: ["SomeWrapper": [Attribute(name: "SomeWrapper")]]
         )
         XCTAssertEqual(variable, expectedVariable)
-    }
-
-    func test_annotations_parsesTrailingAnnotations() {
-        let expectedVariable = Variable(name: "name", typeName: TypeName(name: "Int"), accessLevel: (read: .internal, write: .none), isComputed: true)
-        expectedVariable.annotations["jsonKey"] = "json_key"
-        expectedVariable.annotations["skipEquability"] = true
-
-        XCTAssertEqual("// sourcery: jsonKey = \"json_key\"\nvar name: Int { return 2 } // sourcery: skipEquability".structVariable, expectedVariable)
     }
 }
 

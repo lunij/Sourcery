@@ -1,116 +1,124 @@
 import SwiftSyntax
 
 public class GetAnnotationUseCase {
-    private let annotationParser: AnnotationParser
-    private let lines: [AnnotationParser.Line]
-    private var sourceLocationConverter: SourceLocationConverter
+    private let annotationParser = AnnotationParser()
 
-    convenience init(
-        content: String,
-        annotationParser: AnnotationParser = AnnotationParser(),
-        sourceLocationConverter: SourceLocationConverter
-    ) {
-        self.init(
-            annotationParser: annotationParser,
-            lines: annotationParser.parse(content),
-            sourceLocationConverter: sourceLocationConverter
-        )
+    func parseAnnotations(from node: DeclSyntaxProtocol) -> Annotations {
+        parse(from: node.leadingTrivia)
     }
 
-    init(
-        annotationParser: AnnotationParser,
-        lines: [AnnotationParser.Line],
-        sourceLocationConverter: SourceLocationConverter
-    ) {
-        self.annotationParser = annotationParser
-        self.lines = lines
-        self.sourceLocationConverter = sourceLocationConverter
+    func parseAnnotations(from node: EnumCaseDeclSyntax) -> [(element: EnumCaseElementSyntax, annotations: Annotations)] {
+        let allElementsAnnotations = parse(from: node.leadingTrivia)
+        var annotationsOfNextParam: Annotations?
+        return node.elements.enumerated().map { index, element in
+            var annotations = allElementsAnnotations
+
+            if index == 0 {
+                for (key, value) in parse(from: node.caseKeyword.trailingTrivia) {
+                    annotations[key] = value
+                }
+            }
+
+            if let annotationsOfNextParam {
+                for (key, value) in annotationsOfNextParam {
+                    annotations[key] = value
+                }
+            }
+
+            if let trailingComma = element.trailingComma {
+                annotationsOfNextParam = parse(from: trailingComma.trailingTrivia)
+            }
+
+            return (element, annotations)
+        }
     }
 
-    func annotations(from node: IdentifierSyntax) -> Annotations {
-        annotations(
-            at: findLocation(syntax: node.identifier),
-            trivia: node.leadingTrivia
-        )
+    func parseAnnotations(from node: ExtensionDeclSyntax) -> Annotations {
+        if let firstModifier = node.modifiers.first {
+            return parse(from: firstModifier.name.leadingTrivia)
+        }
+        return parse(from: node.extensionKeyword.leadingTrivia)
     }
 
-    func annotations(fromToken token: SyntaxProtocol) -> Annotations {
-        annotations(
-            at: findLocation(syntax: token),
-            trivia: token.leadingTrivia
-        )
+    func parseAnnotations(from node: TokenSyntax) -> Annotations {
+        parse(from: node.leadingTrivia)
     }
 
-    private func findLocation(syntax: SyntaxProtocol) -> SourceLocation {
-        sourceLocationConverter.location(for: syntax.positionAfterSkippingLeadingTrivia)
+    func parseAnnotations(from parameterClause: EnumCaseParameterClauseSyntax) -> [(parameter: EnumCaseParameterSyntax, annotations: Annotations)] {
+        var annotationsOfNextParam: Annotations?
+        return parameterClause.parameters.enumerated().map { index, parameter in
+            guard let typeName = parameter.type.as(IdentifierTypeSyntax.self)?.name else {
+                return (parameter, [:])
+            }
+            var annotations = parseAnnotations(from: typeName)
+
+            if index == 0 {
+                for (key, value) in parse(from: parameterClause.leftParen.trailingTrivia) {
+                    annotations[key] = value
+                }
+            }
+
+            if let annotationsOfNextParam {
+                for (key, value) in annotationsOfNextParam {
+                    annotations[key] = value
+                }
+            }
+
+            if let trailingComma = parameter.trailingComma {
+                annotationsOfNextParam = parse(from: trailingComma.trailingTrivia)
+            }
+
+            return (parameter, annotations)
+        }
     }
 
-    private func annotations(at location: SourceLocation, trivia: Trivia) -> Annotations {
-        var stop = false
-        var annotations = inlineFrom(line: (location.line, location.column), stop: &stop)
-        guard !stop else { return annotations }
+    func parseAnnotations(from parameterClause: FunctionParameterClauseSyntax) -> [(parameter: FunctionParameterSyntax, annotations: Annotations)] {
+        var annotationsOfNextParam: Annotations?
+        return parameterClause.parameters.enumerated().map { index, parameter in
+            var annotations = parseAnnotations(from: parameter.firstName)
 
-        for line in lines[0 ..< location.line - 1].reversed() {
-            line.annotations.forEach { annotation in
+            if index == 0 {
+                for (key, value) in parse(from: parameterClause.leftParen.trailingTrivia) {
+                    annotations[key] = value
+                }
+            }
+
+            if let annotationsOfNextParam {
+                for (key, value) in annotationsOfNextParam {
+                    annotations[key] = value
+                }
+            }
+
+            if let trailingComma = parameter.trailingComma {
+                annotationsOfNextParam = parse(from: trailingComma.trailingTrivia)
+            }
+
+            return (parameter, annotations)
+        }
+    }
+
+    private func parse(from trivia: Trivia) -> Annotations {
+        let comments = trivia.pieces.compactMap {
+            switch $0 {
+            case let .docLineComment(value), let .docBlockComment(value):
+                return value
+            case let .lineComment(value), let .blockComment(value):
+                return value
+            default:
+                return nil
+            }
+        }
+
+        var lines: [AnnotationParser.Line] = []
+
+        for comment in comments {
+            lines.append(contentsOf: annotationParser.parse(comment))
+        }
+
+        var annotations = Annotations()
+        for line in lines {
+            for annotation in line.annotations {
                 annotations.append(key: annotation.key, value: annotation.value)
-            }
-            if line.type != .comment && line.type != .documentationComment {
-                break
-            }
-        }
-
-        lines[location.line - 1].annotations.forEach { annotation in
-            annotations.append(key: annotation.key, value: annotation.value)
-        }
-
-        return annotations
-    }
-
-    private func inlineFrom(line lineInfo: (line: Int, character: Int), stop: inout Bool) -> Annotations {
-        let sourceLine = lines[lineInfo.line - 1]
-        var prefix = sourceLine.content.bridge()
-            .substring(to: max(0, lineInfo.character - 1))
-            .trimmingCharacters(in: .whitespaces)
-
-        guard !prefix.isEmpty else { return [:] }
-        var annotations: Annotations = [:]
-        sourceLine.annotations.forEach { annotation in
-            annotations.append(key: annotation.key, value: annotation.value)
-        }
-
-        let isInsideCaseDefinition = prefix.trimmingCharacters(in: .whitespacesAndNewlines).hasPrefix("case")
-        prefix = prefix.trimmingPrefix("case").trimmingCharacters(in: .whitespaces)
-        var inlineCommentFound = false
-
-        while !prefix.isEmpty {
-            guard prefix.hasSuffix("*/"), let commentStart = prefix.range(of: "/*", options: [.backwards]) else {
-                break
-            }
-
-            inlineCommentFound = true
-
-            let comment = String(prefix[commentStart.lowerBound...])
-            for annotation in annotationParser.parse(comment)[0].annotations {
-                annotations.append(key: annotation.key, value: annotation.value)
-            }
-            prefix = prefix[..<commentStart.lowerBound].trimmingCharacters(in: .whitespaces)
-        }
-
-        if (inlineCommentFound || isInsideCaseDefinition) && !prefix.isEmpty {
-            stop = true
-            return annotations
-        }
-
-        // if previous line is not comment or has some trailing non-comment blocks
-        // we return currently aggregated annotations
-        // as annotations on previous line belong to previous declaration
-        if lineInfo.line - 2 > 0 {
-            let previousLine = lines[lineInfo.line - 2]
-            let content = previousLine.content.trimmingCharacters(in: .whitespaces)
-
-            guard previousLine.type == .comment || previousLine.type == .documentationComment, content.hasPrefix("//") || content.hasSuffix("*/") else {
-                stop = true
-                return annotations
             }
         }
 

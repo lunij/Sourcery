@@ -125,10 +125,10 @@ extension Function {
         let annotations: Annotations
         let documentation: Documentation
         if let function = node as? FunctionDeclSyntax {
-            annotations = getAnnotationUseCase.annotations(from: function)
+            annotations = getAnnotationUseCase.parseAnnotations(from: function)
             documentation = getDocumentationUseCase?.documentation(from: function) ?? []
         } else {
-            annotations = getAnnotationUseCase.annotations(fromToken: node)
+            annotations = getAnnotationUseCase.parseAnnotations(from: node)
             documentation = getDocumentationUseCase?.documentation(from: node) ?? []
         }
 
