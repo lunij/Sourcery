@@ -28,7 +28,7 @@ public final class StencilTemplate: Stencil.StencilSwiftTemplate {
             result = result.trimmed
         }
         
-        return result.replacingOccurrences(of: NewLineNode.marker, with: "\n")
+        return result
     }
 
     public static func sourceryEnvironment(templatePath: Path? = nil) -> Stencil.Environment {
@@ -98,7 +98,6 @@ public final class StencilTemplate: Stencil.StencilSwiftTemplate {
                                  other: { (m: Function) in !(m.isStatic || m.isClass) })
 
         ext.registerBoolFilterWithArguments("annotated", filter: { (a: Annotated, annotation) in a.isAnnotated(with: annotation) })
-        ext.registerTag("newline", parser: NewLineNode.parse)
         ext.registerTag("typed", parser: TypedNode.parse)
 
         var extensions = stencilSwiftEnvironment().extensions
